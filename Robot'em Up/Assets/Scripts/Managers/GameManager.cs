@@ -9,10 +9,12 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public LevelManager levelManager;
     [HideInInspector] public InputManager inputManager;
     [HideInInspector] public EventManager eventManager;
+    [HideInInspector] public EnemyManager enemyManager;
 
     public GameObject mainCameraGO;
     public GameObject playerOne;
     public GameObject playerTwo;
+    public List<GameObject> enemies; 
 
     [SerializeField]
     GameObject dummyPrefab;
