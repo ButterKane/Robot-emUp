@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public InputManager inputManager;
 
     public GameObject mainCameraGO;
+    public GameObject playerOne;
+    public GameObject playerTwo;
 
 
     private void Awake()
@@ -17,6 +19,9 @@ public class GameManager : MonoBehaviour
         i = this;
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
+
+        playerOne.GetComponent<PlayerController>().otherPlayer = playerTwo.transform;
+        playerTwo.GetComponent<PlayerController>().otherPlayer = playerOne.transform;
     }
 
     // Start is called before the first frame update

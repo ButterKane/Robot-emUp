@@ -7,11 +7,16 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
     public Transform self;
+    public Transform otherPlayer;
     public Rigidbody rb;
     public Camera cam;
 
+    [SerializeField]
+    private DummyPlayer dummyBehaviourScript;
+
     [Space(2)]
     [Header("General settings")]
+    public bool isDummyPlayer = false;
     public int inputIndex;
     public Color playerColor;
 
@@ -45,7 +50,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ApplyMove();
+        if (!isDummyPlayer)
+        {
+            ApplyMove();
+        }
+        else
+        {
+            dummyBehaviourScript.MoveAroundPlayer(otherPlayer);
+        }
     }
     
 
@@ -53,8 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         if (GameManager.i.inputManager.inputDisabled) { input = Vector3.zero; return; }
 
-        input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        Debug.Log("input = " + input);
+        input = new Vector3(Input.GetAxis("Horizontal") * accelerationSpeed * Time.deltaTime, 0, Input.GetAxis("Vertical") * accelerationSpeed * Time.deltaTime);
     }
 
     void GetMove()
@@ -63,7 +74,12 @@ public class PlayerController : MonoBehaviour
 
         if (input.magnitude > inputManager. minJoystickStrength)
         {
-            movementDirection = inputManager.GetMoveAsViewedWithCamera(input.x, input.z);
+            movementDirection = inputManager.GetMoveAsViewedWithCamera(input.x, input.z) ;
+        }
+        else
+        {
+            movementDirection = Vector3.zero;
+            rb.velocity = Vector3.zero;
         }
     }
 
@@ -72,6 +88,6 @@ public class PlayerController : MonoBehaviour
         GetMove();
 
         // Apply the movement
-        rb.AddForce(movementDirection * input.magnitude * accelerationSpeed * Time.deltaTime, ForceMode.VelocityChange);
+        rb.AddForce(movementDirection * input.magnitude , ForceMode.VelocityChange);
     }
 }
