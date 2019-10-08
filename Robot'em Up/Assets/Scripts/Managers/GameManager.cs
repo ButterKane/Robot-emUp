@@ -8,10 +8,14 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public static GameManager i;
     [HideInInspector] public LevelManager levelManager;
     [HideInInspector] public InputManager inputManager;
+    [HideInInspector] public EventManager eventManager;
 
     public GameObject mainCameraGO;
     public GameObject playerOne;
     public GameObject playerTwo;
+
+    [SerializeField]
+    GameObject dummyPrefab;
 
 
     private void Awake()
@@ -19,20 +23,25 @@ public class GameManager : MonoBehaviour
         i = this;
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
+        if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 
-        playerOne.GetComponent<PlayerController>().otherPlayer = playerTwo.transform;
-        playerTwo.GetComponent<PlayerController>().otherPlayer = playerOne.transform;
+        if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void AssignPlayers()
     {
-        
+        if (playerTwo != null) { playerOne.GetComponent<PlayerController>().otherPlayer = playerTwo.transform; }
+        if (playerOne != null) { playerTwo.GetComponent<PlayerController>().otherPlayer = playerOne.transform; }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        EventManager.DummySpawn += SpawnDummy;
+    }
+
+    void SpawnDummy()
+    {
+        playerTwo = Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
+        if (playerOne && playerTwo) { AssignPlayers(); }
     }
 }

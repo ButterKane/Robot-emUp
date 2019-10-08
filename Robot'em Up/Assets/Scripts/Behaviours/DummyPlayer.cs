@@ -18,6 +18,7 @@ public class DummyPlayer : MonoBehaviour
     public void MoveAroundPlayer(Transform otherPlayer)
     {
         Vector3 targetPosition = otherPlayer.position;
+
         self.LookAt(targetPosition);
 
         float distanceToTarget = (targetPosition - self.position).magnitude;
