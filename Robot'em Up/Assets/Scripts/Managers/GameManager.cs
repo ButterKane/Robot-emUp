@@ -32,8 +32,14 @@ public class GameManager : MonoBehaviour
 
     private void AssignPlayers()
     {
-        if (playerTwo != null) { playerOne.GetComponent<PlayerController>().otherPlayer = playerTwo.transform; }
-        if (playerOne != null) { playerTwo.GetComponent<PlayerController>().otherPlayer = playerOne.transform; }
+        if (playerTwo != null)
+        {
+            playerOne.GetComponent<PlayerController>().otherPlayer = playerOne.GetComponent<PlayerController>().ballTarget = playerTwo.transform;
+        }
+        if (playerOne != null)
+        {
+            playerTwo.GetComponent<PlayerController>().otherPlayer = playerTwo.GetComponent<PlayerController>().ballTarget = playerOne.transform;
+        }
     }
 
     private void OnEnable()

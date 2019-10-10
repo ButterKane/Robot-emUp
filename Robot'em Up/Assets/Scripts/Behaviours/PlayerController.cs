@@ -28,7 +28,8 @@ public class PlayerController : MonoBehaviour
     public float maxSpeedMax = 11;
     public float maxAcceleration = 10;
 
-
+    public GameObject ballPrefab;
+    public Transform ballTarget;
 
     Vector3 input;
     InputManager inputManager;
@@ -58,6 +59,23 @@ public class PlayerController : MonoBehaviour
         {
             dummyBehaviourScript.MoveAroundPlayer(otherPlayer);
         }
+
+        if(Input.GetKeyDown(KeyCode.B))
+        {
+            var ball = Instantiate(ballPrefab);
+            ball.transform.position = self.position + self.forward;
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                ball.GetComponent<BallBehaviour>().ThrowCurveBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
+            }
+            else
+            {
+                ball.GetComponent<BallBehaviour>().ThrowStraightBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
+            }
+        }
+
+        
     }
     
 
