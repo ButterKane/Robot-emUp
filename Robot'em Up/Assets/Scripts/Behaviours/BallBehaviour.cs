@@ -40,21 +40,16 @@ public class BallBehaviour : MonoBehaviour
         Vector3 startPoint = self.position;
         Vector3 endPoint = destination;
 
-        Vector3 lastPos1 = startPoint;
-        Vector3 lastPos2 = endPoint;
-
         Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         while (straightBallAvancement < 1)
         {
-            lastPos1 = self.position;
             self.position = Vector3.Lerp(startPoint, destination, straightBallAvancement);
-            lastPos2 = self.position;
             straightBallAvancement += Time.deltaTime;
             yield return null;
         }
 
-        EndOfPass((lastPos2 - lastPos1).normalized);
+        EndOfPass((endPoint - startPoint));
     }
 
     public void ThrowCurveBall(Vector3 destination, float distanceToTarget, Transform thrower)
@@ -99,6 +94,9 @@ public class BallBehaviour : MonoBehaviour
     {
         Vector2 start = new Vector2(startPoint.x, startPoint.z);
         Vector2 end = new Vector2(endPoint.x, endPoint.z);
+        
+        Vector3 lastPos1 = startPoint;
+        Vector3 lastPos2 = endPoint;
 
         Vector2 difference = end - start;
         float span = difference.magnitude;
@@ -131,22 +129,35 @@ public class BallBehaviour : MonoBehaviour
             float actualSpeed = 0;
             do
             {
+                lastPos1 = movingObject.position;
                 float angle = startAngle + curveBallAvancement * travel;
                 movingObject.position = center3D + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * absRadius;
+
+                
                 Debug.DrawRay(self.position, Vector3.up, Color.red, 7);
                 actualSpeed++;
                 curveBallAvancement += Time.deltaTime / duration;
             } while (actualSpeed < ballSpeed);
 
+            lastPos2 = movingObject.position;
             yield return null;
         } while (curveBallAvancement < 1f);
 
         movingObject.position = endPoint;
+        
+        EndOfPass((lastPos2 - lastPos1) * 150); // 150 is to make the propulsion "present". or else it's not strong enough
     }
 
     public void EndOfPass(Vector3 movementDirection)
     {
         rb.useGravity = true;
-        rb.AddForce(movementDirection * 3, ForceMode.VelocityChange);
+        rb.AddForce(movementDirection, ForceMode.VelocityChange);
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        StopAllCoroutines();
+        rb.useGravity = true;
+        rb.AddForce(Vector3.up, ForceMode.Impulse);
     }
 }
