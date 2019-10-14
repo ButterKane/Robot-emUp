@@ -75,7 +75,6 @@ public class PlayerController : MonoBehaviour
         // Enter Aiming mode
         if (Input.GetButton("XboxRightBumperPlayer1"))
         {
-            Debug.Log("Right Bumper");
             playerState = PlayerState.Aiming;
 
             GetMove();

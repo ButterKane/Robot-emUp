@@ -256,11 +256,14 @@ MonoBehaviour:
   isDummyPlayer: 1
   inputIndex: 0
   playerColor: {r: 0, g: 0, b: 0, a: 0}
+  playerState: 0
   accelerationSpeed: 15
   minWalkSpeed: 0.1
   maxSpeedMin: 9
   maxSpeedMax: 11
   maxAcceleration: 10
+  ballPrefab: {fileID: 0}
+  ballTarget: {fileID: 0}
 --- !u!114 &7382338635760552524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,7 +276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 536e63f7b77014848b2dc7bdb92a041a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceToOtherPlayer: 5
+  distanceToOtherPlayer: 15
   orbitSpeed: 50
   adjustDistanceSpeed: 10
   rb: {fileID: 0}

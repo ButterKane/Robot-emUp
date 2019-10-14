@@ -120,6 +120,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &210162528
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 210162529}
+  - component: {fileID: 210162530}
+  m_Layer: 13
+  m_Name: BallContact
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &210162529
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210162528}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 812244976}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &210162530
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210162528}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &811493212
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,7 +175,6 @@ GameObject:
   - component: {fileID: 811493213}
   - component: {fileID: 811493216}
   - component: {fileID: 811493215}
-  - component: {fileID: 811493214}
   m_Layer: 0
   m_Name: Forward
   m_TagString: Untagged
@@ -153,19 +196,6 @@ Transform:
   m_Father: {fileID: 1586301168}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &811493214
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 811493212}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &811493215
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -239,10 +269,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 812244975}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19.241886, y: 1.4999814, z: 9.188721}
+  m_LocalPosition: {x: 3.23, y: 1.4999814, z: 3.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1586301168}
+  - {fileID: 210162529}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -477,7 +508,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 28.802002, y: 0, z: 0}
---- !u!1001 &1532300760
+--- !u!1001 &1099405979
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -492,7 +523,7 @@ PrefabInstance:
     - target: {fileID: 8002156869550930621, guid: 7e6038a5222b0c54298ad7d3649f0c6c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 35.1
+      value: 16.696423
       objectReference: {fileID: 0}
     - target: {fileID: 8002156869550930621, guid: 7e6038a5222b0c54298ad7d3649f0c6c,
         type: 3}
@@ -502,7 +533,7 @@ PrefabInstance:
     - target: {fileID: 8002156869550930621, guid: 7e6038a5222b0c54298ad7d3649f0c6c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3
+      value: 9.147495
       objectReference: {fileID: 0}
     - target: {fileID: 8002156869550930621, guid: 7e6038a5222b0c54298ad7d3649f0c6c,
         type: 3}
@@ -558,7 +589,7 @@ GameObject:
   - component: {fileID: 1586301171}
   - component: {fileID: 1586301170}
   - component: {fileID: 1586301169}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -888,11 +919,5 @@ PrefabInstance:
       propertyPath: ballTarget
       value: 
       objectReference: {fileID: 812244976}
-    - target: {fileID: 6404156703192707881, guid: 5a28c9ced0d82b64b998000dde48c3e8,
-        type: 3}
-      propertyPath: ballPrefab
-      value: 
-      objectReference: {fileID: 8002156869550930618, guid: 7e6038a5222b0c54298ad7d3649f0c6c,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a28c9ced0d82b64b998000dde48c3e8, type: 3}

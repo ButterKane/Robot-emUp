@@ -77,6 +77,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void FollowPlayer(Transform playerToFollow)
     {
+        animator.SetBool("FollowingPlayer", true);
         Vector3 targetPosition = playerToFollow.position;
         
         self.LookAt(targetPosition);
@@ -87,5 +88,29 @@ public class EnemyBehaviour : MonoBehaviour
         rb.velocity = Vector3.zero;
 
         rb.AddForce(self.forward * followSpeed * Time.deltaTime, ForceMode.VelocityChange);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Collision enter");
+        if (collision.gameObject.tag == "Player")
+        {
+            DealDamage();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Trigger enter");
+        if (other.gameObject == GameManager.i.ball)
+        {
+            DamageTaken(GameManager.i.ballDamage);
+        }
+    }
+
+    private void DealDamage()
+    {
+        Debug.Log("Damaging player");
+        // TODO: deal damage to player
     }
 }

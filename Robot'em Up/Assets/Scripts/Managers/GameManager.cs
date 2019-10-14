@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     public GameObject mainCameraGO;
     public GameObject playerOne;
     public GameObject playerTwo;
+    public GameObject ball;
+    public BallBehaviour ballBehaviour;
+    public int ballDamage = 30;
     public List<GameObject> enemies; 
 
     [SerializeField]
@@ -28,6 +31,7 @@ public class GameManager : MonoBehaviour
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 
         if (playerOne && playerTwo) { AssignPlayers(); }
+
     }
 
     private void AssignPlayers()

@@ -10,7 +10,7 @@ public class DummyPlayer : MonoBehaviour
     public float adjustDistanceSpeed = 3f;
     public Rigidbody rb;
 
-    private void Start()
+    private void Awake()
     {
         self = transform;
         rb = this.gameObject.GetComponent<Rigidbody>();

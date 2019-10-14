@@ -20,6 +20,7 @@ public class BallBehaviour : MonoBehaviour
     {
         self = transform;
         rb = GetComponent<Rigidbody>();
+        GameManager.i.ball = this.gameObject;
     }
 
     // Update is called once per frame
@@ -30,15 +31,12 @@ public class BallBehaviour : MonoBehaviour
 
     public void ThrowStraightBall(Vector3 destination, float distanceToTarget, Transform thrower)
     {
-        Debug.Log("Throwing straight ball");
         straightBallAvancement = 0;
         StartCoroutine(ApplyStraightBallMovement(destination, distanceToTarget, thrower));
     }
 
     public IEnumerator ApplyStraightBallMovement(Vector3 destination, float distanceToTarget, Transform thrower)
     {
-        Debug.Log("straight ball coroutine");
-
         Vector3 startPoint = self.position;
         Vector3 endPoint = destination;
 
@@ -61,7 +59,6 @@ public class BallBehaviour : MonoBehaviour
 
     public void ThrowCurveBall(Vector3 destination, float distanceToTarget, Transform thrower)
     {
-        Debug.Log("Throwing curve ball");
         float throwAngle = Vector3.SignedAngle(thrower.forward, destination - thrower.position, Vector3.up);
         curveBallAvancement = 0;
         float throwSens = throwAngle > 0 ? 1 : -1;
@@ -69,8 +66,7 @@ public class BallBehaviour : MonoBehaviour
         throwAngle = Mathf.Clamp(Mathf.Abs(throwAngle), 0, 90);
 
         float radius = (90 / throwAngle) * (distanceToTarget / 2);
-
-        Debug.Log("throwAngle: " + throwAngle);
+        
         //StartCoroutine(ApplyCurveBallMovement(destination, distanceToTarget, thrower, throwAngle));
         StartCoroutine(FollowArc(self, self.position, destination, throwSens* radius, 5f));
     }
@@ -109,7 +105,6 @@ public class BallBehaviour : MonoBehaviour
 
         // Override the radius if it's too small to bridge the points.
         float absRadius = Mathf.Abs(throwSens);
-        Debug.Log("absRadius = " + absRadius);
         if (span > 2f * absRadius)
             throwSens = absRadius = span / 2f;
 
