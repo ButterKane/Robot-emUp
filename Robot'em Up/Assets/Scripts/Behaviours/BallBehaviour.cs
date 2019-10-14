@@ -8,6 +8,7 @@ public class BallBehaviour : MonoBehaviour
     public AnimationCurve curveBallSpeed;
     public float curveBallAvancement;
     public float straightBallAvancement;
+    public Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +19,7 @@ public class BallBehaviour : MonoBehaviour
     private void OnEnable()
     {
         self = transform;
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -37,17 +39,24 @@ public class BallBehaviour : MonoBehaviour
     {
         Debug.Log("straight ball coroutine");
 
-        Vector3 startPoint = thrower.position;
+        Vector3 startPoint = self.position;
         Vector3 endPoint = destination;
+
+        Vector3 lastPos1 = startPoint;
+        Vector3 lastPos2 = endPoint;
 
         Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         while (straightBallAvancement < 1)
         {
+            lastPos1 = self.position;
             self.position = Vector3.Lerp(startPoint, destination, straightBallAvancement);
+            lastPos2 = self.position;
             straightBallAvancement += Time.deltaTime;
             yield return null;
         }
+
+        EndOfPass((lastPos2 - lastPos1).normalized);
     }
 
     public void ThrowCurveBall(Vector3 destination, float distanceToTarget, Transform thrower)
@@ -55,11 +64,15 @@ public class BallBehaviour : MonoBehaviour
         Debug.Log("Throwing curve ball");
         float throwAngle = Vector3.SignedAngle(thrower.forward, destination - thrower.position, Vector3.up);
         curveBallAvancement = 0;
-        Debug.Log("throwAngle: " + throwAngle);
+        float throwSens = throwAngle > 0 ? 1 : -1;
+        
+        throwAngle = Mathf.Clamp(Mathf.Abs(throwAngle), 0, 90);
 
-        float throwSens = throwAngle > 0 ? -1 : 1;
+        float radius = (90 / throwAngle) * (distanceToTarget / 2);
+
+        Debug.Log("throwAngle: " + throwAngle);
         //StartCoroutine(ApplyCurveBallMovement(destination, distanceToTarget, thrower, throwAngle));
-        StartCoroutine(FollowArc(self, thrower.position, destination, throwSens, 5f));
+        StartCoroutine(FollowArc(self, self.position, destination, throwSens* radius, 5f));
     }
 
     public IEnumerator ApplyCurveBallMovement(Vector3 destination, float distanceToTarget, Transform thrower, float throwAngle)
@@ -69,7 +82,6 @@ public class BallBehaviour : MonoBehaviour
         float throwHeight = Mathf.Tan(throwAngle) * (distanceToTarget / 2);
         float throwSide = throwAngle > 0 ? -1 : 1;
         
-
         Vector3 highPoint = thrower.position + (destination - thrower.position) / 2 + throwSide *Vector3.right * throwHeight; // Play with 5.0 to change the curve
         
         while (curveBallAvancement < 1)
@@ -97,6 +109,7 @@ public class BallBehaviour : MonoBehaviour
 
         // Override the radius if it's too small to bridge the points.
         float absRadius = Mathf.Abs(throwSens);
+        Debug.Log("absRadius = " + absRadius);
         if (span > 2f * absRadius)
             throwSens = absRadius = span / 2f;
 
@@ -116,16 +129,29 @@ public class BallBehaviour : MonoBehaviour
         float travel = (endAngle - startAngle + 5f * Mathf.PI) % (2f * Mathf.PI) - Mathf.PI;
 
         Vector3 center3D = new Vector3(center.x, movingObject.position.y, center.y);
-        
+
+        int ballSpeed = 3; // Very ugly, needs to be changed
         do
         {
-            float angle = startAngle + curveBallAvancement * travel;
-            movingObject.position = center3D + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * absRadius;
-            Debug.DrawRay(self.position, Vector3.up, Color.red, 7);
-            curveBallAvancement += Time.deltaTime / duration;
+            float actualSpeed = 0;
+            do
+            {
+                float angle = startAngle + curveBallAvancement * travel;
+                movingObject.position = center3D + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * absRadius;
+                Debug.DrawRay(self.position, Vector3.up, Color.red, 7);
+                actualSpeed++;
+                curveBallAvancement += Time.deltaTime / duration;
+            } while (actualSpeed < ballSpeed);
+
             yield return null;
         } while (curveBallAvancement < 1f);
 
-        movingObject.position = end;
+        movingObject.position = endPoint;
+    }
+
+    public void EndOfPass(Vector3 movementDirection)
+    {
+        rb.useGravity = true;
+        rb.AddForce(movementDirection * 3, ForceMode.VelocityChange);
     }
 }

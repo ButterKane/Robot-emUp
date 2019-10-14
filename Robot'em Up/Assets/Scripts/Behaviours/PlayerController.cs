@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum PlayerState
+{
+    Idle,
+    Aiming,
+    Moving,
+    Dead
+}
+
 public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
@@ -19,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public bool isDummyPlayer = false;
     public int inputIndex;
     public Color playerColor;
+    public PlayerState playerState;
 
     [Space(2)]
     [Header("Movement settings")]
@@ -53,31 +62,76 @@ public class PlayerController : MonoBehaviour
     {
         if (!isDummyPlayer)
         {
-            ApplyMove();
+            if (playerState != PlayerState.Aiming && playerState != PlayerState.Dead)
+            {
+                ApplyMove();
+            }
         }
         else
         {
             dummyBehaviourScript.MoveAroundPlayer(otherPlayer);
         }
 
-        if(Input.GetKeyDown(KeyCode.B))
+        // Enter Aiming mode
+        if (Input.GetButton("XboxRightBumperPlayer1"))
         {
-            var ball = Instantiate(ballPrefab);
-            ball.transform.position = self.position + self.forward;
+            Debug.Log("Right Bumper");
+            playerState = PlayerState.Aiming;
 
-            if (Input.GetKey(KeyCode.LeftShift))
+            GetMove();
+
+            self.LookAt(self.position + movementDirection);
+        }
+
+        // Exit Aiming mode
+        if (Input.GetButtonUp("XboxRightBumperPlayer1"))
+        {
+            playerState = PlayerState.Idle;
+        }
+
+        // Throw straight ball
+        if (Input.GetButtonDown("XboxAButtonPlayer1"))
+        {
+            if (playerState == PlayerState.Aiming)
             {
-                ball.GetComponent<BallBehaviour>().ThrowCurveBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
-            }
-            else
-            {
+                var ball = Instantiate(ballPrefab);
+                ball.transform.position = self.position + self.forward * 2;
+
                 ball.GetComponent<BallBehaviour>().ThrowStraightBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
             }
         }
 
-        
+        // Throw curve ball
+        if (Input.GetButtonDown("XboxBButtonPlayer1"))
+        {
+            if (playerState == PlayerState.Aiming)
+            {
+                var ball = Instantiate(ballPrefab);
+                ball.transform.position = self.position + self.forward * 2;
+
+                ball.GetComponent<BallBehaviour>().ThrowCurveBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
+            }
+        }
+
+
+        // FOR DEBUG PURPOSES
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            var ball = Instantiate(ballPrefab);
+            ball.transform.position = self.position + self.forward * 2;
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                ball.GetComponent<BallBehaviour>().ThrowCurveBall(ballTarget.position, (ballTarget.position - ball.transform.position).magnitude, self);
+            }
+            else
+            {
+                ball.GetComponent<BallBehaviour>().ThrowStraightBall(ballTarget.position, (ballTarget.position - ball.transform.position).magnitude, self);
+            }
+        }
+
     }
-    
+
 
     void GetInput()
     {
@@ -90,9 +144,9 @@ public class PlayerController : MonoBehaviour
     {
         GetInput();
 
-        if (input.magnitude > inputManager. minJoystickStrength)
+        if (input.magnitude > inputManager.minJoystickStrength)
         {
-            movementDirection = inputManager.GetMoveAsViewedWithCamera(input.x, input.z) ;
+            movementDirection = inputManager.GetMoveAsViewedWithCamera(input.x, input.z);
         }
         else
         {
@@ -106,6 +160,6 @@ public class PlayerController : MonoBehaviour
         GetMove();
 
         // Apply the movement
-        rb.AddForce(movementDirection * input.magnitude , ForceMode.VelocityChange);
+        rb.AddForce(movementDirection * input.magnitude, ForceMode.VelocityChange);
     }
 }
