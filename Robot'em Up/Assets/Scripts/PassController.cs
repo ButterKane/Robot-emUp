@@ -14,6 +14,7 @@ public class PassController : MonoBehaviour
 {
 	[Header("Global Settings")]
 	public bool passPreviewInEditor;
+	public PassMode passMode;
 
 	[Header("Pass settings")]
 	public Transform startTransform;
@@ -25,7 +26,7 @@ public class PassController : MonoBehaviour
 	private void Update ()
 	{
 		if (passData == null) { return; }
-		pathCoordinates = GetPathCoordinates(startTransform.position, transform.forward, passData.maxLength);
+		pathCoordinates = GetPathCoordinates(startTransform.position, transform.forward, passData.maxDistance);
 		if (passPreviewInEditor)
 			PreviewPathInEditor(pathCoordinates);
 	}
@@ -58,7 +59,7 @@ public class PassController : MonoBehaviour
 
 	public void Shoot()
 	{
-		StartCoroutine(ShootCoreTowardDirection(passData));
+		ball.Shoot(startTransform.position, pathCoordinates[1] - pathCoordinates[0], passData);
 	}
 
 	public void Receive ()
@@ -102,28 +103,5 @@ public class PassController : MonoBehaviour
 			totalLength += Vector3.Distance(actualPosition, nextPosition);
 		}
 		return totalLength;
-	}
-
-	IEnumerator ShootCoreTowardDirection(PassDatas passData)
-	{
-		List<Vector3> currentPathCoordinates = pathCoordinates;
-		ball.transform.position = startTransform.position;
-		ball.DisableGravity();
-		ball.DisableCollisions();
-
-		for (int i = 0; i < currentPathCoordinates.Count - 1; i++)
-		{
-			if (i > passData.maxBounces) { break; }
-			Vector3 currentPoint = currentPathCoordinates[i];
-			Vector3 nextPoint = currentPathCoordinates[i + 1];
-			float distanceToNextPoint = Vector3.Distance(currentPoint, nextPoint);
-			for (float y = 0; y <= distanceToNextPoint; y += Time.deltaTime * passData.moveSpeed)
-			{
-				ball.transform.position = Vector3.Lerp(currentPoint, nextPoint, y / distanceToNextPoint);
-				yield return new WaitForEndOfFrame();
-			}
-		}
-		ball.EnableGravity();
-		ball.EnableCollisions();
 	}
 }

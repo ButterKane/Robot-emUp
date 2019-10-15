@@ -21,7 +21,7 @@ public class RetrieveBall : MonoBehaviour
 
             BallBehaviour ballBehaviour = other.gameObject.transform.parent.GetComponent<BallBehaviour>();
             ballBehaviour.StopAllCoroutines();
-            ballBehaviour.rb.velocity = Vector3.zero;
+           // ballBehaviour.rb.velocity = Vector3.zero;
         }
     }
 }
