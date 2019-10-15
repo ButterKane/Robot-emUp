@@ -11,7 +11,7 @@ public enum PlayerState
     Dead
 }
 
-public class PlayerController : MonoBehaviour
+public class PlayerControllerAlex : MonoBehaviour
 {
     [Header("Components")]
     public Transform self;

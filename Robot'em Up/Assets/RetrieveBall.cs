@@ -23,7 +23,7 @@ public class RetrieveBall : MonoBehaviour
         {
             Debug.Log("Player Trigger enter: " + other.name);
 
-            parent.GetComponent<PlayerController>().hasBall = true;
+            parent.GetComponent<PlayerControllerAlex>().hasBall = true;
 
             BallBehaviour ballBehaviour = other.gameObject.transform.parent.GetComponent<BallBehaviour>();
             ballBehaviour.StopAllCoroutines();

@@ -38,11 +38,11 @@ public class GameManager : MonoBehaviour
     {
         if (playerTwo != null)
         {
-            playerOne.GetComponent<PlayerController>().otherPlayer = playerOne.GetComponent<PlayerController>().ballTarget = playerTwo.transform;
+            playerOne.GetComponent<PlayerControllerAlex>().otherPlayer = playerOne.GetComponent<PlayerControllerAlex>().ballTarget = playerTwo.transform;
         }
         if (playerOne != null)
         {
-            playerTwo.GetComponent<PlayerController>().otherPlayer = playerTwo.GetComponent<PlayerController>().ballTarget = playerOne.transform;
+            playerTwo.GetComponent<PlayerControllerAlex>().otherPlayer = playerTwo.GetComponent<PlayerControllerAlex>().ballTarget = playerOne.transform;
         }
     }
 

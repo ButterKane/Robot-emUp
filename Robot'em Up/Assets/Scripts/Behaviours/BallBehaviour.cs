@@ -11,6 +11,8 @@ public class BallBehaviour : MonoBehaviour
     public Rigidbody rb;
     public GameObject thrower;
     public float magnetForceRatio = 10f;
+    private int defaultLayer = 0;
+
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,7 @@ public class BallBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
+        defaultLayer = gameObject.layer;
         self = transform;
         rb = GetComponent<Rigidbody>();
         GameManager.i.ball = this.gameObject;
@@ -199,4 +202,25 @@ public class BallBehaviour : MonoBehaviour
         } while (distance > 0.1f);
         
     }
+    public void EnableGravity()
+    {
+        rb.useGravity = true;
+    }
+
+    public void DisableGravity()
+    {
+        rb.useGravity = false;
+    }
+
+    public void EnableCollisions()
+    {
+        rb.isKinematic = false;
+        gameObject.layer = defaultLayer;
+    }
+    public void DisableCollisions()
+    {
+        rb.isKinematic = true;
+        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+    }
+
 }
