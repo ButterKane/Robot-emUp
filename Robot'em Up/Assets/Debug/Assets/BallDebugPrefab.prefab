@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 1972553381}
   m_Layer: 15
   m_Name: Contact
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 6052227695866878984}
   m_Layer: 11
   m_Name: BallDebugPrefab
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -210,6 +210,8 @@ MonoBehaviour:
   curveBallAvancement: 0
   straightBallAvancement: 0
   rb: {fileID: 0}
+  thrower: {fileID: 0}
+  magnetForceRatio: 10
 --- !u!54 &6052227695866878984
 Rigidbody:
   m_ObjectHideFlags: 0

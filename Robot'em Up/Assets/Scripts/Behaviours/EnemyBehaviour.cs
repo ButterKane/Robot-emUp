@@ -92,7 +92,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Collision enter");
         if (collision.gameObject.tag == "Player")
         {
             DealDamage();
@@ -101,7 +100,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger enter");
         if (other.gameObject == GameManager.i.ball)
         {
             DamageTaken(GameManager.i.ballDamage);

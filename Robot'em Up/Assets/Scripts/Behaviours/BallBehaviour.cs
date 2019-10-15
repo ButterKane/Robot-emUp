@@ -9,6 +9,8 @@ public class BallBehaviour : MonoBehaviour
     public float curveBallAvancement;
     public float straightBallAvancement;
     public Rigidbody rb;
+    public GameObject thrower;
+    public float magnetForceRatio = 10f;
 
     // Start is called before the first frame update
     void Start()
@@ -29,10 +31,12 @@ public class BallBehaviour : MonoBehaviour
 
     }
 
-    public void ThrowStraightBall(Vector3 destination, float distanceToTarget, Transform thrower)
+    public void ThrowStraightBall(Vector3 destination, float distanceToTarget, Transform throwingPlayer)
     {
+        thrower = throwingPlayer.gameObject;
+
         straightBallAvancement = 0;
-        StartCoroutine(ApplyStraightBallMovement(destination, distanceToTarget, thrower));
+        StartCoroutine(ApplyStraightBallMovement(destination, distanceToTarget, throwingPlayer));
     }
 
     public IEnumerator ApplyStraightBallMovement(Vector3 destination, float distanceToTarget, Transform thrower)
@@ -52,9 +56,11 @@ public class BallBehaviour : MonoBehaviour
         EndOfPass((endPoint - startPoint));
     }
 
-    public void ThrowCurveBall(Vector3 destination, float distanceToTarget, Transform thrower)
+    public void ThrowCurveBall(Vector3 destination, float distanceToTarget, Transform throwingPlayer)
     {
-        float throwAngle = Vector3.SignedAngle(thrower.forward, destination - thrower.position, Vector3.up);
+        thrower = throwingPlayer.gameObject;
+
+        float throwAngle = Vector3.SignedAngle(throwingPlayer.forward, destination - throwingPlayer.position, Vector3.up);
         curveBallAvancement = 0;
         float throwSens = throwAngle > 0 ? 1 : -1;
         
@@ -150,8 +156,10 @@ public class BallBehaviour : MonoBehaviour
 
     public void EndOfPass(Vector3 movementDirection)
     {
+        Debug.Log("End of pass");
         rb.useGravity = true;
-        rb.AddForce(movementDirection, ForceMode.VelocityChange);
+        rb.AddForce(movementDirection * 25, ForceMode.Acceleration);
+        thrower = null;
     }
 
     public void OnCollisionEnter(Collision collision)
@@ -159,5 +167,36 @@ public class BallBehaviour : MonoBehaviour
         StopAllCoroutines();
         rb.useGravity = true;
         rb.AddForce(Vector3.up, ForceMode.Impulse);
+    }
+
+    public void ActivateMagnet(Transform magnetPlayer)
+    {
+        Debug.Log("Activate magnet for " + magnetPlayer.name);
+        if (magnetPlayer.gameObject != thrower)
+        {
+            StartCoroutine(MagnetAttraction(magnetPlayer));
+        }
+        else
+        {
+            Debug.Log(magnetPlayer.gameObject.name + " is the thrower, don't magnet to it");
+        }
+    }
+
+    public IEnumerator MagnetAttraction(Transform magnetPlayer)
+    {
+        float distance;
+        do
+        {
+            rb.velocity = rb.velocity*0.99f;
+            Vector3 fromBallToPlayer = magnetPlayer.position - self.position;
+            distance = (fromBallToPlayer).magnitude;
+
+            rb.AddForce(fromBallToPlayer.normalized * (magnetForceRatio / distance), ForceMode.Acceleration);
+
+            Debug.DrawLine(self.position, magnetPlayer.position, Color.blue);
+
+            yield return null;
+        } while (distance > 0.1f);
+        
     }
 }

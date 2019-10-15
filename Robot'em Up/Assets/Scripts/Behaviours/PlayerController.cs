@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     public int inputIndex;
     public Color playerColor;
     public PlayerState playerState;
+    public bool hasBall;
 
     [Space(2)]
     [Header("Movement settings")]
