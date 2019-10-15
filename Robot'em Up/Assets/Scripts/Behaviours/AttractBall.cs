@@ -17,7 +17,7 @@ public class AttractBall : MonoBehaviour
         {
             Debug.Log("Magnet Trigger enter: " + other.name);
 
-            other.gameObject.transform.parent.GetComponent<BallBehaviour>().ActivateMagnet(parent);
+            //other.gameObject.transform.parent.GetComponent<BallBehaviour>().ActivateMagnet(parent);
         }
     }
 }

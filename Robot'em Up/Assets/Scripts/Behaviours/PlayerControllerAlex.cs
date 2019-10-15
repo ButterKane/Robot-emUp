@@ -72,64 +72,6 @@ public class PlayerControllerAlex : MonoBehaviour
         {
             dummyBehaviourScript.MoveAroundPlayer(otherPlayer);
         }
-
-        // Enter Aiming mode
-        if (Input.GetButton("XboxRightBumperPlayer1"))
-        {
-            playerState = PlayerState.Aiming;
-
-            GetMove();
-
-            self.LookAt(self.position + movementDirection);
-        }
-
-        // Exit Aiming mode
-        if (Input.GetButtonUp("XboxRightBumperPlayer1"))
-        {
-            playerState = PlayerState.Idle;
-        }
-
-        // Throw straight ball
-        if (Input.GetButtonDown("XboxAButtonPlayer1"))
-        {
-            if (playerState == PlayerState.Aiming)
-            {
-                var ball = Instantiate(ballPrefab);
-                ball.transform.position = self.position + self.forward * 2;
-
-                ball.GetComponent<BallBehaviour>().ThrowStraightBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
-            }
-        }
-
-        // Throw curve ball
-        if (Input.GetButtonDown("XboxBButtonPlayer1"))
-        {
-            if (playerState == PlayerState.Aiming)
-            {
-                var ball = Instantiate(ballPrefab);
-                ball.transform.position = self.position + self.forward * 2;
-
-                ball.GetComponent<BallBehaviour>().ThrowCurveBall(ballTarget.position, (ballTarget.position - self.position).magnitude, self);
-            }
-        }
-
-
-        // FOR DEBUG PURPOSES
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            var ball = Instantiate(ballPrefab);
-            ball.transform.position = self.position + self.forward * 2;
-
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                ball.GetComponent<BallBehaviour>().ThrowCurveBall(ballTarget.position, (ballTarget.position - ball.transform.position).magnitude, self);
-            }
-            else
-            {
-                ball.GetComponent<BallBehaviour>().ThrowStraightBall(ballTarget.position, (ballTarget.position - ball.transform.position).magnitude, self);
-            }
-        }
-
     }
 
 

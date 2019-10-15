@@ -11,12 +11,6 @@ public class RetrieveBall : MonoBehaviour
         parent = transform.parent;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Ball")
