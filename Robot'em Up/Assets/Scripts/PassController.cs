@@ -77,7 +77,23 @@ public class PassController : MonoBehaviour
 
 	public void Shoot()
 	{
-		ball.Shoot(handTransform.position, transform.forward, linkedPlayerController, passData);
+		if (!passPreview)
+		{
+			PlayerController otherPlayer = null;
+			foreach (PlayerController p in FindObjectsOfType<PlayerController>())
+			{
+				if (p != linkedPlayerController)
+				{
+					otherPlayer = p;
+				}
+			}
+			if (otherPlayer != null) 
+				ball.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayerController, passData);
+		}
+		else
+		{
+			ball.Shoot(handTransform.position, transform.forward, linkedPlayerController, passData);
+		}
 		ball = null;
 	}
 

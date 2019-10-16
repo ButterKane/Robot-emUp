@@ -15,7 +15,9 @@ public class PassDatas : ScriptableObject
 	[Header("FX")]
 	public GameObject Trail;
 	public GameObject DunkExplosion;
-	public GameObject EnemyHit;
 	public GameObject WallHit;
 	public GameObject ReceiveCore;
+
+	public GameObject LightExplosion;
+	public GameObject HeavyExplosion;
 }

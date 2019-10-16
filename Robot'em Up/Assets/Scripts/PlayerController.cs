@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("General settings")]
 	public PlayerIndex playerIndex;
+	public int maxHealth;
 
 	[Space(2)]
     [Header("Movement settings")]
@@ -39,6 +40,10 @@ public class PlayerController : MonoBehaviour
 	public float deadzone = 0.2f;
 	[Range(0.01f, 1f)] public float turnSpeed = .25f;
 
+	[Space(2)]
+	[Header("Input settings")]
+	public float triggerTreshold = 0.1f;
+
     [Space(2)]
     [Header("Debug")]
 	[SerializeField] private MoveState moveState;
@@ -52,6 +57,7 @@ public class PlayerController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	private float speed;
+	private int currentHealth;
 
 	//xInput refs
 	GamePadState state;
@@ -73,6 +79,8 @@ public class PlayerController : MonoBehaviour
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
+
+		currentHealth = maxHealth;
     }
 
     void Update()
@@ -115,14 +123,14 @@ public class PlayerController : MonoBehaviour
 		moveInput.y = 0;
         moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
 		lookInput = (state.ThumbSticks.Right.X * cam.transform.right) + (state.ThumbSticks.Right.Y * cam.transform.forward);
-		if (lookInput.magnitude > 0.1 && passController.CanShoot())
+		if (lookInput.magnitude > 0.1f && passController.CanShoot())
 		{
 			ChangeActionState(ActionState.Aiming);
 		} else if (actionState == ActionState.Aiming)
 		{
 			ChangeActionState(ActionState.None);
 		}
-		if (state.Buttons.RightShoulder == ButtonState.Pressed && actionState == ActionState.Aiming)
+		if (state.Triggers.Right > triggerTreshold)
 		{
 			ChangeActionState(ActionState.Shooting);
 		}
@@ -226,9 +234,9 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-	public void ChangeActionState(ActionState newState)
+	public void ChangeActionState(ActionState _newState)
 	{
-		switch (newState)
+		switch (_newState)
 		{
 			case ActionState.Aiming:
 				if (!passController.CanShoot()) { Debug.Log("Player can't shoot"); return; }
@@ -246,7 +254,7 @@ public class PlayerController : MonoBehaviour
 				passController.DisablePassPreview();
 				break;
 		}
-		actionState = newState;
+		actionState = _newState;
 	}
 
     #region Public functions
@@ -265,13 +273,22 @@ public class PlayerController : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void Push(Vector3 direction, float magnitude)
+    public void Push(Vector3 _direction, float _magnitude)
     {
 
-        direction = direction.normalized * magnitude;
+        _direction = _direction.normalized * _magnitude;
         rb.AddForce(Vector3.up * 2, ForceMode.Impulse);
-        rb.AddForce(direction, ForceMode.Impulse);
+        rb.AddForce(_direction, ForceMode.Impulse);
     }
+
+	public void DamagePlayer(int _amount)
+	{
+		currentHealth -= _amount;
+		if (_amount <= 0)
+		{
+			Destroy(this.gameObject);
+		}
+	}
 
     #endregion
 

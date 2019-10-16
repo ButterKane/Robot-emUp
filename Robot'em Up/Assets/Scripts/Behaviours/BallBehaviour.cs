@@ -20,7 +20,6 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private int currentBounceCount;
 	[SerializeField] private PlayerController currentThrower;
 
-
 	private Collider col;
 	private Rigidbody rb;
 	private int defaultLayer;
@@ -65,7 +64,14 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Attract(Vector3 _position, float attractionForce) //Attract the ball toward a specific point
 	{
+		_position.y = transform.position.y; //Ball will always stay in 2D plan
+		currentDirection = Vector3.Lerp(currentDirection, _position - transform.position, attractionForce * Time.deltaTime);
+		currentSpeed = 5f;
+	}
 
+	public void ChangeDirection(Vector3 _newDirection)
+	{
+		currentDirection = _newDirection;
 	}
 
 	public void GoToHands ( Transform _handTransform, float _travelDuration, PassDatas _passData )
@@ -79,6 +85,42 @@ public class BallBehaviour : MonoBehaviour
 	public void CancelMovement()
 	{
 		ChangeState(BallState.Grounded);
+	}
+
+	public void MultiplySpeed(float _coef)
+	{
+		currentSpeed *= _coef;
+	}
+
+	public void ChangeMaxDistance(int _newMaxDistance) //Changing the distance will cause the ball to stop after travelling a certain distance
+	{
+		currentMaxDistance = _newMaxDistance;
+	}
+
+	public void ChangeSpeed(float _newSpeed)
+	{
+		currentSpeed = _newSpeed;
+	}
+
+	public void Explode (bool _lightExplosion)
+	{
+		if (_lightExplosion)
+		{
+			FXManager.InstantiateFX(currentPassDatas.LightExplosion, transform.position, false, null);
+		} else
+		{
+			FXManager.InstantiateFX(currentPassDatas.HeavyExplosion, transform.position, false, null);
+		}
+	}
+
+	public float GetCurrentDistanceTravelled()
+	{
+		return currentDistanceTravelled;
+	}
+
+	public Vector3 GetCurrentDirection()
+	{
+		return currentDirection;
 	}
 
 	public void ChangeState(BallState newState)
@@ -134,7 +176,7 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					RaycastHit hit;
-					if (Physics.Raycast(transform.position, currentDirection, out hit, 5f))
+					if (Physics.Raycast(transform.position, currentDirection, out hit, 1.1f + currentSpeed * Time.deltaTime))
 					{
 						transform.position = hit.point;
 						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
@@ -172,15 +214,15 @@ public class BallBehaviour : MonoBehaviour
 
 	private void EnableCollisions ()
 	{
-		rb.isKinematic = false;
 		gameObject.layer = defaultLayer;
 		col.isTrigger = false;
+		rb.isKinematic = false;
 	}
 	private void DisableCollisions ()
 	{
-		rb.isKinematic = true;
 		gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 		col.isTrigger = true;
+		rb.isKinematic = true;
 	}
 
 	IEnumerator GoToPosition(Transform _transform, float _travelDuration)
