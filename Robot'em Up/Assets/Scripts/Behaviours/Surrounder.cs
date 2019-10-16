@@ -9,7 +9,7 @@ public class Surrounder : MonoBehaviour
     public float maxDistanceFromCenter = 10f;
     private Dictionary <int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
     
-    void Start()
+    void Awake()
     {
         for (int i = 0; i < points.Count; i++)
         {
@@ -37,7 +37,7 @@ public class Surrounder : MonoBehaviour
 
         Vector3 positionFromPoint = pointTransform.position + fromCenterToPoint * 8;
 
-        Debug.DrawLine(transform.position, positionFromPoint, Color.green, 5);
+        Debug.DrawLine(transform.position, positionFromPoint, Color.green, 3);
 
         return positionFromPoint;
     }
