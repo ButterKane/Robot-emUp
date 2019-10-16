@@ -20,6 +20,9 @@ public class EnemyBehaviour : MonoBehaviour
 
     public Animator animator;
 
+    //DEBUG
+    public GameObject surrounder;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -110,5 +113,46 @@ public class EnemyBehaviour : MonoBehaviour
     {
         Debug.Log("Damaging player");
         // TODO: deal damage to player
+    }
+
+    public IEnumerator SurroundPlayer(GameObject player)
+    {
+        Surrounder script = surrounder.GetComponent<Surrounder>();
+
+        // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
+        // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
+
+        Transform surroundingPoint = script.GetSurroundingPoint();
+        Vector3 p0 = self.position;
+        Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
+
+        int moveSens = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up) > 1 ? 1 : -1;
+
+        Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * 0.5f;
+        float distance = (p2 - p0).magnitude;
+
+        float t = 0;
+        do
+        {
+            p0 = self.position;
+            p2 = script.GetAPositionFromPoint(surroundingPoint);
+            p2 = new Vector3(p2.x, self.position.y, p2.z);
+            p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * 0.5f;
+
+            Vector3 pNow = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
+
+            self.position = pNow;
+
+            float newDistance = (p2 -p0).magnitude;
+
+            if (t < 1)
+            {
+                t += Time.deltaTime/(newDistance *25) ;
+            }
+            yield return null;
+        } while ((p0 - p2).magnitude > 0.1f);
+        
+
+        yield return null;
     }
 }
