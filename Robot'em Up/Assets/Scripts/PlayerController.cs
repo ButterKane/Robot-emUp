@@ -115,11 +115,14 @@ public class PlayerController : MonoBehaviour
 		moveInput.y = 0;
         moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
 		lookInput = (state.ThumbSticks.Right.X * cam.transform.right) + (state.ThumbSticks.Right.Y * cam.transform.forward);
-		if (lookInput.magnitude > 0.1)
+		if (lookInput.magnitude > 0.1 && passController.CanShoot())
 		{
 			ChangeActionState(ActionState.Aiming);
+		} else if (actionState == ActionState.Aiming)
+		{
+			ChangeActionState(ActionState.None);
 		}
-		if (state.Buttons.X == ButtonState.Pressed)
+		if (state.Buttons.RightShoulder == ButtonState.Pressed && actionState == ActionState.Aiming)
 		{
 			ChangeActionState(ActionState.Shooting);
 		}
@@ -228,17 +231,19 @@ public class PlayerController : MonoBehaviour
 		switch (newState)
 		{
 			case ActionState.Aiming:
-				passController.TogglePassPreviewDisplay();
+				if (!passController.CanShoot()) { Debug.Log("Player can't shoot"); return; }
+				passController.EnablePassPreview();
 				break;
 			case ActionState.Shooting:
 				if (!passController.CanShoot()) { Debug.Log("Player can't shoot");  return; }
 				passController.Shoot();
+				passController.DisablePassPreview();
 				ChangeActionState(ActionState.None);
-				break;
-			case ActionState.Receiving:
-				passController.Receive();
-				break;
+				return;
 			case ActionState.Magnet:
+				break;
+			case ActionState.None:
+				passController.DisablePassPreview();
 				break;
 		}
 		actionState = newState;

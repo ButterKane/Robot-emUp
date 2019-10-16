@@ -6,6 +6,7 @@ public enum BallState {
 	Grounded, //The ball is on the ground
 	Flying, //The ball is in the air
 	Aimed, //The ball is still in the hands of the thrower, who's aiming
+	Held //The ball is in the hands of a player
 }
 public class BallBehaviour : MonoBehaviour
 {
@@ -17,29 +18,40 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private BallState currentState;
 	[SerializeField] private PassDatas currentPassDatas;
 	[SerializeField] private int currentBounceCount;
+	[SerializeField] private PlayerController currentThrower;
 
 
+	private Collider col;
 	private Rigidbody rb;
 	private int defaultLayer;
+	private GameObject trailFX;
+	private List<IHitable> hitGameObjects;
 
 	private void Awake()
     {
 		rb = GetComponent<Rigidbody>();
         defaultLayer = gameObject.layer;
+		col = GetComponent<Collider>();
+		hitGameObjects = new List<IHitable>();
     }
 
-	private void Update ()
+	private void FixedUpdate ()
 	{
 		UpdateBallPosition();
 	}
 
-	public void Shoot(Vector3 _startPosition, Vector3 _direction, PassDatas _passDatas) //Shoot the ball toward a direction
+	public void Shoot(Vector3 _startPosition, Vector3 _direction, PlayerController _thrower, PassDatas _passDatas) //Shoot the ball toward a direction
 	{
+		transform.SetParent(null);
 		transform.position = _startPosition;
 		currentDirection = _direction;
+		currentThrower = _thrower;
 		currentSpeed = _passDatas.moveSpeed;
 		currentMaxDistance = _passDatas.maxDistance;
 		currentPassDatas = _passDatas;
+		currentBounceCount = 0;
+
+		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
 	}
 
@@ -48,11 +60,25 @@ public class BallBehaviour : MonoBehaviour
 		currentBounceCount++;
 		currentDirection = _newDirection;
 		currentSpeed = currentSpeed * _bounceSpeedMultiplier;
+		hitGameObjects.Clear();
 	}
 
 	public void Attract(Vector3 _position, float attractionForce) //Attract the ball toward a specific point
 	{
 
+	}
+
+	public void GoToHands ( Transform _handTransform, float _travelDuration, PassDatas _passData )
+	{
+		currentPassDatas = _passData;
+		ChangeState(BallState.Held);
+		StartCoroutine(GoToPosition(_handTransform, _travelDuration));
+		transform.SetParent(_handTransform);
+	}
+
+	public void CancelMovement()
+	{
+		ChangeState(BallState.Grounded);
 	}
 
 	public void ChangeState(BallState newState)
@@ -62,6 +88,7 @@ public class BallBehaviour : MonoBehaviour
 			case BallState.Grounded:
 				EnableGravity();
 				EnableCollisions();
+				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
 				break;
 			case BallState.Aimed:
 				DisableGravity();
@@ -71,9 +98,24 @@ public class BallBehaviour : MonoBehaviour
 				DisableGravity();
 				EnableCollisions();
 				currentDistanceTravelled = 0;
+				if (trailFX == null)
+				{
+					trailFX = FXManager.InstantiateFX(currentPassDatas.Trail, Vector3.zero, true, transform);
+				}
+				break;
+			case BallState.Held:
+				DisableGravity();
+				DisableCollisions();
+				FXManager.InstantiateFX(currentPassDatas.ReceiveCore, Vector3.zero, true, transform);
+				Destroy(trailFX);
 				break;
 		}
 		currentState = newState;
+	}
+
+	public BallState GetState()
+	{
+		return currentState;
 	}
 
 	private void UpdateBallPosition()
@@ -81,13 +123,9 @@ public class BallBehaviour : MonoBehaviour
 		switch (currentState)
 		{
 			case BallState.Flying:
-				if (currentSpeed <= 0)
-				{
-					ChangeState(BallState.Grounded);
-				}
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
 				currentDistanceTravelled += currentSpeed * Time.deltaTime;
-				if (currentDistanceTravelled >= currentMaxDistance)
+				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
 				{
 					//Ball has arrived to it's destination
 					ChangeState(BallState.Grounded);
@@ -96,10 +134,27 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					RaycastHit hit;
-					if (Physics.Raycast(transform.position, currentDirection, out hit, 1))
+					if (Physics.Raycast(transform.position, currentDirection, out hit, 5f))
 					{
-						Vector3 newDirection = Vector3.Reflect(currentDirection, hit.normal);
-						Bounce(newDirection, currentPassDatas.speedMultiplierOnBounce);
+						transform.position = hit.point;
+						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
+						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
+						{
+							hitGameObjects.Add(potentialHitableObjectFound);
+							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower);
+						}
+						if (hit.collider.isTrigger) { break; }
+						if (currentBounceCount < currentPassDatas.maxBounces)
+						{
+							Vector3 hitNormal = hit.normal;
+							hitNormal.y = 0;
+							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
+							Bounce(newDirection, currentPassDatas.speedMultiplierOnBounce);
+							FXManager.InstantiateFX(currentPassDatas.WallHit, transform.position, false, null);
+						} else
+						{
+							ChangeState(BallState.Grounded);
+						}
 					}
 				}
 				break;
@@ -119,10 +174,22 @@ public class BallBehaviour : MonoBehaviour
 	{
 		rb.isKinematic = false;
 		gameObject.layer = defaultLayer;
+		col.isTrigger = false;
 	}
 	private void DisableCollisions ()
 	{
 		rb.isKinematic = true;
 		gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+		col.isTrigger = true;
+	}
+
+	IEnumerator GoToPosition(Transform _transform, float _travelDuration)
+	{
+		for (float i = 0; i < _travelDuration; i+=Time.deltaTime)
+		{
+			transform.position = Vector3.Lerp(transform.position, _transform.position, i / _travelDuration);
+			yield return new WaitForEndOfFrame();
+		}
+		transform.position = _transform.position;
 	}
 }
