@@ -14,6 +14,7 @@ public class EnemyBehaviour : MonoBehaviour
     public int health;
 
     public float followSpeed = 100f;
+    public float pushForce = 2;
 
     public bool followPlayerOne;
     public bool followPlayerTwo;
@@ -97,7 +98,8 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            DealDamage();
+            // TODO: deal damage
+            collision.gameObject.GetComponent<PlayerController>().Push((collision.GetContact(0).point - self.position).normalized, pushForce);
         }
     }
 
@@ -109,16 +111,10 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    private void DealDamage()
-    {
-        Debug.Log("Damaging player");
-        // TODO: deal damage to player
-    }
-
     public IEnumerator SurroundPlayer(GameObject player)
     {
         Surrounder script = surrounder.GetComponent<Surrounder>();
-
+        surrounder.transform.position = player.transform.position;
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
         // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
 
@@ -152,7 +148,8 @@ public class EnemyBehaviour : MonoBehaviour
             yield return null;
         } while ((p0 - p2).magnitude > 0.1f);
         
-
         yield return null;
     }
+
+
 }
