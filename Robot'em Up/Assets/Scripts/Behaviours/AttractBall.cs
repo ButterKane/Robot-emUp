@@ -12,11 +12,23 @@ public class AttractBall : MonoBehaviour
 	public GameObject magnetFX;
 
 	private Vector3 ballInitialDirection;
+	private BallBehaviour ballInside;
+	private LineRenderer lineRenderer;
+	private PassController passController;
 
-
+	private void Awake ()
+	{
+		lineRenderer = GetComponent<LineRenderer>();
+		passController = GetComponentInParent<PassController>();
+	}
 	private void Update ()
 	{
 		UpdateRadius();
+		UpdateFX();
+		if (passController.GetBall() != null)
+		{
+			ballInside = null;
+		}
 	}
 	private void UpdateRadius()
 	{
@@ -29,8 +41,9 @@ public class AttractBall : MonoBehaviour
 		if (other.tag == "Ball")
 		{
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();
-			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 1) { return; }
+			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || ball.GetState() != BallState.Flying) { return; }
 
+			ballInside = ball;
 			ballInitialDirection = ball.GetCurrentDirection();
 		}
 	}
@@ -39,7 +52,7 @@ public class AttractBall : MonoBehaviour
         if (other.tag == "Ball")
         {
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();
-			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 1) { return; }
+			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || ball.GetState() != BallState.Flying) { return; }
 
 			float attractionForce = Vector3.Distance(other.transform.position, transform.position);
 			attractionForce = attractionForce / magnetRadius; //Normalize attractionForce
@@ -49,4 +62,33 @@ public class AttractBall : MonoBehaviour
 			ball.ChangeDirection(newDirection);
 		}
     }
+
+	private void OnTriggerExit ( Collider other )
+	{
+		if (other.tag == "Ball")
+		{
+			BallBehaviour ball = other.GetComponent<BallBehaviour>();
+			if (ballInside == ball)
+			{
+				ballInside = null;
+			}
+		}
+	}
+
+	private void UpdateFX()
+	{
+		if (ballInside != null && lineRenderer != null)
+		{
+			magnetFX.SetActive(true);
+			//Draw FX between ball and this
+
+			lineRenderer.positionCount = 2;
+			lineRenderer.SetPosition(0, transform.position);
+			lineRenderer.SetPosition(1, ballInside.transform.position);
+		} else
+		{
+			magnetFX.SetActive(false);
+			lineRenderer.positionCount = 0;
+		}
+	}
 }

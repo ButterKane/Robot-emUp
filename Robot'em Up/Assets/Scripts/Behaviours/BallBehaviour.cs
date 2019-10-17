@@ -25,6 +25,7 @@ public class BallBehaviour : MonoBehaviour
 	private int defaultLayer;
 	private GameObject trailFX;
 	private List<IHitable> hitGameObjects;
+	private Vector3 previousPosition;
 
 	private void Awake()
     {
@@ -175,10 +176,12 @@ public class BallBehaviour : MonoBehaviour
 				else
 				{
 					//Ball is going to it's destination, checking for collisions
+					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
 					RaycastHit hit;
-					if (Physics.Raycast(transform.position, currentDirection, out hit, 1.1f + currentSpeed * Time.deltaTime))
+					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
+					if (Physics.SphereCast(transform.position, 1f, currentDirection, out hit, currentSpeed * Time.deltaTime))
 					{
-						transform.position = hit.point;
+						//transform.position = hit.point;
 						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
 						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
 						{
@@ -199,6 +202,7 @@ public class BallBehaviour : MonoBehaviour
 						}
 					}
 				}
+				previousPosition = transform.position;
 				break;
 		}
 	}
