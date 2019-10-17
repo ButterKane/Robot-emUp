@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
 	[Header("Input settings")]
 	public float triggerTreshold = 0.1f;
 
-    [Space(2)]
+	[Space(2)]
     [Header("Debug")]
 	[SerializeField] private MoveState moveState;
 	[SerializeField] private ActionState actionState;
@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
 		{
 			ChangeActionState(ActionState.None);
 		}
-		if (state.Triggers.Right > triggerTreshold)
+		if (state.Triggers.Right > triggerTreshold && passController.CanShoot())
 		{
 			ChangeActionState(ActionState.Shooting);
 		}
@@ -145,9 +145,20 @@ public class PlayerController : MonoBehaviour
         moveInput.y = 0;
         moveInput.Normalize();
 		lookInput = MathHelper.GetMouseDirection(cam, transform.position);
+		if (Input.GetMouseButton(1) && passController.CanShoot())
+		{
+			ChangeActionState(ActionState.Aiming);
+		} else if (actionState == ActionState.Aiming)
+		{
+			ChangeActionState(ActionState.None);
+		}
 		if (Input.GetMouseButton(0))
 		{
 			ChangeActionState(ActionState.Shooting);
+		}
+		if (Input.GetMouseButton(2))
+		{
+			passController.Receive(FindObjectOfType<BallBehaviour>());
 		}
     }
 
@@ -239,11 +250,11 @@ public class PlayerController : MonoBehaviour
 		switch (_newState)
 		{
 			case ActionState.Aiming:
-				if (!passController.CanShoot()) { Debug.Log("Player can't shoot"); return; }
+				if (!passController.CanShoot()) { return; }
 				passController.EnablePassPreview();
 				break;
 			case ActionState.Shooting:
-				if (!passController.CanShoot()) { Debug.Log("Player can't shoot");  return; }
+				if (!passController.CanShoot()) { return; }
 				passController.Shoot();
 				passController.DisablePassPreview();
 				ChangeActionState(ActionState.None);

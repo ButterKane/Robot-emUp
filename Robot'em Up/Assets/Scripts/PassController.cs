@@ -19,6 +19,7 @@ public class PassController : MonoBehaviour
 	[Header("Pass settings")]
 	public Transform handTransform;
 	public PassDatas passData;
+	public float passCooldown;
 
 
 	private PlayerController linkedPlayerController;
@@ -26,6 +27,7 @@ public class PassController : MonoBehaviour
 	private LineRenderer lineRenderer;
 	private List<Vector3> pathCoordinates;
 	private bool passPreview;
+	private float currentPassCooldown;
 
 	private void Awake ()
 	{
@@ -34,6 +36,8 @@ public class PassController : MonoBehaviour
 	}
 	private void Update ()
 	{
+		UpdateCooldowns();
+
 		if (passData == null) { return; }
 		pathCoordinates = GetPathCoordinates(handTransform.position, transform.forward, passData.maxPreviewDistance);
 
@@ -77,6 +81,9 @@ public class PassController : MonoBehaviour
 
 	public void Shoot()
 	{
+		currentPassCooldown = passCooldown;
+		BallBehaviour shootedBall = ball;
+		ball = null;
 		if (!passPreview)
 		{
 			PlayerController otherPlayer = null;
@@ -87,14 +94,13 @@ public class PassController : MonoBehaviour
 					otherPlayer = p;
 				}
 			}
-			if (otherPlayer != null) 
-				ball.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayerController, passData);
+			if (otherPlayer != null)
+				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayerController, passData);
 		}
 		else
 		{
-			ball.Shoot(handTransform.position, transform.forward, linkedPlayerController, passData);
+			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayerController, passData);
 		}
-		ball = null;
 	}
 
 	public void Receive (BallBehaviour _ball)
@@ -116,7 +122,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (ball == null)
+		if (ball == null || currentPassCooldown >= 0)
 		{
 			return false;
 		} else
@@ -124,6 +130,12 @@ public class PassController : MonoBehaviour
 			return true;
 		}
 	}
+
+	public BallBehaviour GetBall()
+	{
+		return ball;
+	}
+
 	private void PreviewPathInEditor(List<Vector3> _pathCoordinates)
 	{
 		for (int i = 0; i < _pathCoordinates.Count - 1; i++)
@@ -151,5 +163,12 @@ public class PassController : MonoBehaviour
 			totalLength += Vector3.Distance(actualPosition, nextPosition);
 		}
 		return totalLength;
+	}
+	private void UpdateCooldowns ()
+	{
+		if (currentPassCooldown >= 0)
+		{
+			currentPassCooldown -= Time.deltaTime;
+		}
 	}
 }

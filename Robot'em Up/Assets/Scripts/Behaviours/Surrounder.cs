@@ -15,6 +15,7 @@ public class Surrounder : MonoBehaviour
         {
             pointsDic.Add(i, points[i]);
             pointsScripts[i] = pointsDic[i].GetComponent<SurroundingPoint>();
+            //Bidouille
         }
     }
     
