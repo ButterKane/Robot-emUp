@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 9193993411532067608}
   m_Layer: 8
   m_Name: Player1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118,7 +118,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2.01
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &514769572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,15 +242,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4540dcdc1bc90e944aab74208e4d6d50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dunkJumpHeight: 0
-  dunkJumpLength: 0
-  dunkJumpDuration: 0
-  dunkJumpFreezeDuration: 0
-  dunkDashSpeed: 0
-  dunkExplosionRadius: 0
-  dunkDamages: 0
-  dunkProjectionForce: 0
-  dunkCancelledFallSpeed: 0
+  dunkJumpHeight: 10
+  dunkJumpLength: 3
+  dunkJumpDuration: 0.2
+  dunkJumpFreezeDuration: 1.5
+  dunkDashSpeed: 50
+  dunkExplosionRadius: 10
+  dunkDamages: 10
+  dunkProjectionForce: 20
+  dunkCancelledFallSpeed: 20
+  dunkState: 0
 --- !u!1 &195533169622842252
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,7 +279,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195533169622842252}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.9999999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5825664154814933021}
@@ -531,7 +532,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2335411800969176194}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.9999999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 164450937343815701}
@@ -694,7 +695,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7929783768685538039}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.9999999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5825664154814933021}
@@ -825,7 +826,7 @@ PrefabInstance:
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
