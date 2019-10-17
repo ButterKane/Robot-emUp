@@ -31,7 +31,7 @@ public class PuzzleDoor : MonoBehaviour
     public void openTheDoor()
     {
         open = true;
-        FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, transform);
+        FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, transform);
         if (destroyWhenOpened != null)
         {
             Destroy(destroyWhenOpened);
