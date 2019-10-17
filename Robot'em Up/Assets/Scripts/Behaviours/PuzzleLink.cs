@@ -5,6 +5,7 @@ using UnityEngine;
 public class PuzzleLink : MonoBehaviour, IHitable
 {
     public PuzzleDatas puzzleData;
+    public GameObject FX_Activation;
     private int _hitCount;
     public int hitCount
     {
@@ -28,6 +29,7 @@ public class PuzzleLink : MonoBehaviour, IHitable
         if (MomentumManager.GetMomentum() > puzzleData.nbMomentumNeededToLink)
         {
             FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, transform);
+            FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1, true, transform);
             chargingTime = puzzleData.nbSecondsLinkMaintained;
             isActivated = true;
 
@@ -58,7 +60,10 @@ public class PuzzleLink : MonoBehaviour, IHitable
         {
             isActivated = false;
             FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, transform);
-
+            if (FX_Activation != null)
+            {
+                Destroy(FX_Activation);
+            }
         }
 
 

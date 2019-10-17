@@ -16,6 +16,7 @@ public class PuzzleDatas : ScriptableObject
     [Header("FX")]
 	public GameObject Charging;
     public GameObject Linked;
+    public GameObject Linking;
     public GameObject LinkEnd;
     public GameObject DoorOpening;
 }
