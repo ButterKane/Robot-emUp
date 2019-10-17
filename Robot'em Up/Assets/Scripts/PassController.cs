@@ -23,6 +23,7 @@ public class PassController : MonoBehaviour
 
 
 	private PlayerController linkedPlayerController;
+	private DunkController linkedDunkController;
 	private BallBehaviour ball;
 	private LineRenderer lineRenderer;
 	private List<Vector3> pathCoordinates;
@@ -33,6 +34,7 @@ public class PassController : MonoBehaviour
 	{
 		lineRenderer = GetComponent<LineRenderer>();
 		linkedPlayerController = GetComponent<PlayerController>();
+		linkedDunkController = GetComponent<DunkController>();
 	}
 	private void Update ()
 	{
@@ -107,6 +109,7 @@ public class PassController : MonoBehaviour
 	{
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,passData) ;
+		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 
 	public void EnablePassPreview()

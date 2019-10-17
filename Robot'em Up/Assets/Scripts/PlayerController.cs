@@ -16,7 +16,7 @@ public enum ActionState
 	Aiming,
 	Shooting,
 	Receiving,
-	Magnet
+	Dunking
 }
 
 public class PlayerController : MonoBehaviour
@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
     [Header("Debug")]
 	[SerializeField] private MoveState moveState;
 	[SerializeField] private ActionState actionState;
-	private PassController passController;
 	private float accelerationTimer;
     private Vector3 moveInput;
 	private Vector3 lookInput;
@@ -67,6 +66,8 @@ public class PlayerController : MonoBehaviour
 	private Camera cam;
 	private Rigidbody rb;
 	private Animator animator;
+	private PassController passController;
+	private DunkController dunkController;
 
 	//Events
 	private static System.Action onShootEnd;
@@ -79,6 +80,7 @@ public class PlayerController : MonoBehaviour
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
+		dunkController = GetComponent<DunkController>();
 
 		currentHealth = maxHealth;
     }
@@ -134,6 +136,10 @@ public class PlayerController : MonoBehaviour
 		{
 			ChangeActionState(ActionState.Shooting);
 		}
+		if (state.Buttons.Y == ButtonState.Pressed && passController.GetBall() != null)
+		{
+			dunkController.Dunk();
+		}
 	}
 
     void KeyboardInput()
@@ -159,6 +165,10 @@ public class PlayerController : MonoBehaviour
 		if (Input.GetMouseButton(2))
 		{
 			passController.Receive(FindObjectOfType<BallBehaviour>());
+		}
+		if (Input.GetKeyDown(KeyCode.Space) && passController.GetBall() == null)
+		{
+			dunkController.Dunk();
 		}
     }
 
@@ -259,9 +269,10 @@ public class PlayerController : MonoBehaviour
 				passController.DisablePassPreview();
 				ChangeActionState(ActionState.None);
 				return;
-			case ActionState.Magnet:
-				break;
 			case ActionState.None:
+				passController.DisablePassPreview();
+				break;
+			case ActionState.Dunking:
 				passController.DisablePassPreview();
 				break;
 		}
