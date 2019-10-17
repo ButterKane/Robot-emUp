@@ -25,12 +25,9 @@ public class PuzzleLink : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower)
     {
-        int tempMomentum = 1;
-        // if momentum < 1
-        if (tempMomentum > puzzleData.nbMomentumNeededToLink)
+        if (MomentumManager.GetMomentum() > puzzleData.nbMomentumNeededToLink)
         {
-
-            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, transform);
+            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, transform);
             chargingTime = puzzleData.nbSecondsLinkMaintained;
             isActivated = true;
 
@@ -60,7 +57,7 @@ public class PuzzleLink : MonoBehaviour, IHitable
         if (chargingTime <= 0 && isActivated)
         {
             isActivated = false;
-            FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 2, true, transform);
+            FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, transform);
 
         }
 
