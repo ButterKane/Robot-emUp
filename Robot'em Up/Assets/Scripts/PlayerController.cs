@@ -154,7 +154,6 @@ public class PlayerController : MonoBehaviour
 		}
 		if (Input.GetMouseButton(0))
 		{
-			Debug.Log("Shoot");
 			ChangeActionState(ActionState.Shooting);
 		}
 		if (Input.GetMouseButton(2))
@@ -251,11 +250,11 @@ public class PlayerController : MonoBehaviour
 		switch (_newState)
 		{
 			case ActionState.Aiming:
-				if (!passController.CanShoot()) { Debug.Log("Player can't shoot"); return; }
+				if (!passController.CanShoot()) { return; }
 				passController.EnablePassPreview();
 				break;
 			case ActionState.Shooting:
-				if (!passController.CanShoot()) { Debug.Log("Player can't shoot");  return; }
+				if (!passController.CanShoot()) { return; }
 				passController.Shoot();
 				passController.DisablePassPreview();
 				ChangeActionState(ActionState.None);
