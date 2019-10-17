@@ -136,7 +136,7 @@ public class PlayerController : MonoBehaviour
 		{
 			ChangeActionState(ActionState.Shooting);
 		}
-		if (state.Buttons.Y == ButtonState.Pressed && passController.GetBall() != null)
+		if (state.Buttons.Y == ButtonState.Pressed && passController.GetBall() == null)
 		{
 			dunkController.Dunk();
 		}
