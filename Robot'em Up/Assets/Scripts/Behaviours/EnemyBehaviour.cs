@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum EnemyState
+{
+    Idle,
+    Moving,
+    Following,
+    Attacking, 
+    Count
+}
 public class EnemyBehaviour : MonoBehaviour
 {
     public Transform self;
@@ -10,16 +19,23 @@ public class EnemyBehaviour : MonoBehaviour
     public Transform playerOne;
     public Transform playerTwo;
 
+    public Transform target;
+    public EnemyState state;
+
     public int maxHealth = 100;
     public int health;
+    public float attackDistance = 7f;
 
     public float followSpeed = 100f;
-    public float pushForce = 2;
+    public float pushForce = 300;
 
-    public bool followPlayerOne;
-    public bool followPlayerTwo;
+    public bool followPlayer;
 
     public Animator animator;
+
+
+    private float distanceToOne;
+    private float distanceToTwo;
 
     //DEBUG
     public GameObject surrounder;
@@ -33,33 +49,43 @@ public class EnemyBehaviour : MonoBehaviour
         playerTwo = GameManager.i.playerTwo.transform;
 
         health = maxHealth;
-        followPlayerOne = false;
-        followPlayerTwo = false;
+        followPlayer = false;
+        state = EnemyState.Idle;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.P))
+        GetTarget();
+
+        if (Input.GetKeyDown(KeyCode.P))
         {
             DamageTaken(10);
         }
 
-        if (followPlayerOne)
+        if (followPlayer)
         {
-            if(followPlayerTwo) { followPlayerOne = false; }
-            if (playerOne)
+            if (target)
             {
-                FollowPlayer(playerOne);
+                FollowPlayer(target);
             }
         }
 
-        if(followPlayerTwo)
+        if(state == EnemyState.Idle)
         {
-            if (followPlayerOne) { followPlayerTwo = false; }
-            if (playerTwo)
+            if ((target.position - self.position).magnitude < attackDistance)
             {
-                FollowPlayer(playerTwo);
+                if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
+                {
+                    Debug.Log("s");
+                    GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
+                    LaunchAttack(target);
+                }
+            }
+
+            else
+            {
+                FollowPlayer(target);
             }
         }
     }
@@ -79,27 +105,32 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    public void FollowPlayer(Transform playerToFollow)
+    public IEnumerator FollowPlayer(Transform playerToFollow)
     {
+        state = EnemyState.Following;
         animator.SetBool("FollowingPlayer", true);
-        Vector3 targetPosition = playerToFollow.position;
-        
-        self.LookAt(targetPosition);
 
-        float distanceToTarget = (targetPosition - self.position).magnitude;
+        while (state == EnemyState.Following)
+        {
+            Vector3 targetPosition = playerToFollow.position;
 
-        Vector3 moveDirection = Vector3.zero;
-        rb.velocity = Vector3.zero;
+            self.LookAt(targetPosition);
+            
+            rb.velocity = Vector3.zero;
 
-        rb.AddForce(self.forward * followSpeed * Time.deltaTime, ForceMode.VelocityChange);
+            rb.AddForce(self.forward * followSpeed * Time.deltaTime, ForceMode.VelocityChange);
+
+            yield return null;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            // TODO: deal damage
-            collision.gameObject.GetComponent<PlayerController>().Push((collision.GetContact(0).point - self.position).normalized, pushForce);
+            Debug.Log("Touching player");
+            Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
+            collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - self.position).normalized, pushForce);
         }
     }
 
@@ -113,6 +144,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     public IEnumerator SurroundPlayer(GameObject player)
     {
+        state = EnemyState.Moving;
         Surrounder script = surrounder.GetComponent<Surrounder>();
         surrounder.transform.position = player.transform.position;
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
@@ -149,7 +181,51 @@ public class EnemyBehaviour : MonoBehaviour
         } while ((p0 - p2).magnitude > 0.1f);
         
         yield return null;
+        state = EnemyState.Idle;
     }
 
+    public void GetTarget()
+    {
+        distanceToOne = (playerOne.position - transform.position).magnitude;
+        distanceToTwo = (playerTwo.position - transform.position).magnitude;
 
+        if (distanceToOne < distanceToTwo)
+        {
+            target = playerOne;
+        }
+        else
+        {
+            target = playerTwo;
+        }
+    }
+
+    public void LaunchAttack(Transform target)
+    {
+        StopAllCoroutines();
+        StartCoroutine(JumpAttack(target));
+    }
+
+    public IEnumerator JumpAttack(Transform target)
+    {
+        state = EnemyState.Attacking;
+        float preparePounceTime = 1.5f;
+        float pounceRecoveryTime = 1.5f;
+
+        animator.SetTrigger("PrepareAttack");
+
+        yield return new WaitForSeconds(preparePounceTime);
+
+        animator.SetTrigger("Pounce");
+        rb.AddForce(Vector3.up * 5 , ForceMode.Impulse);
+        rb.AddForce((target.position - self.position).normalized * 10, ForceMode.Impulse);
+
+        ResetAttackGlobals();
+        yield return new WaitForSeconds(pounceRecoveryTime);
+        state = EnemyState.Idle;
+    }
+
+    public void ResetAttackGlobals()
+    {
+        GameManager.i.enemyManager.enemyCurrentlyAttacking = null;
+    }
 }
