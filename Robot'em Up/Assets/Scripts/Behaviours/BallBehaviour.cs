@@ -194,6 +194,7 @@ public class BallBehaviour : MonoBehaviour
 							Vector3 hitNormal = hit.normal;
 							hitNormal.y = 0;
 							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
+							newDirection.y = -currentDirection.y;
 							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
 							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
 						} else

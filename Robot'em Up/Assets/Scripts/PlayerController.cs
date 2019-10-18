@@ -19,6 +19,26 @@ public enum ActionState
 	Dunking
 }
 
+public enum SlowReason
+{
+	Link,
+}
+
+public class SpeedCoef
+{
+	public SpeedCoef ( float _speedCoef, float _duration, SlowReason _reason, bool _stackable )
+	{
+		speedCoef = _speedCoef;
+		duration = _duration;
+		reason = _reason;
+		stackable = _stackable;
+	}
+	public float speedCoef;
+	public float duration;
+	public SlowReason reason;
+	public bool stackable;
+}
+
 public class PlayerController : MonoBehaviour
 {
     [Header("General settings")]
@@ -57,6 +77,7 @@ public class PlayerController : MonoBehaviour
 	private float customGravity;
 	private float speed;
 	private int currentHealth;
+	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 
 	//xInput refs
 	GamePadState state;
@@ -96,11 +117,12 @@ public class PlayerController : MonoBehaviour
         CheckMoveState();
         Rotate();
 		UpdateAcceleration();
-        Move();
+		Move();
         ApplyDrag();
         ApplyCustomGravity();
         UpdateAnimatorBlendTree();
-    }
+		UpdateSpeedCoef();
+	}
 
     #region Input
     void GetInput()
@@ -227,7 +249,7 @@ public class PlayerController : MonoBehaviour
 		{
 			accelerationTimer += Time.fixedDeltaTime;
 			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed) * maxAcceleration), ForceMode.Acceleration);
+			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed * GetSpeedCoef()) * maxAcceleration), ForceMode.Acceleration);
 			customDrag = movingDrag;
 		} else
 		{
@@ -235,12 +257,26 @@ public class PlayerController : MonoBehaviour
 		}
     }
 
+	void UpdateSpeedCoef()
+	{
+		List<SpeedCoef> newCoefList = new List<SpeedCoef>();
+		foreach (SpeedCoef coef in speedCoefs)
+		{
+			coef.duration -= Time.deltaTime;
+			if (coef.duration > 0)
+			{
+				newCoefList.Add(coef);
+			}
+		}
+		speedCoefs = newCoefList;
+	}
+
     void Move()
     {
         if (moveState == MoveState.Blocked) { speed = 0; return; }
         Vector3 myVel = rb.velocity;
         myVel.y = 0;
-        myVel = Vector3.ClampMagnitude(myVel, maxSpeed);
+        myVel = Vector3.ClampMagnitude(myVel, maxSpeed * GetSpeedCoef());
         myVel.y = rb.velocity.y;
         rb.velocity = myVel;
         speed = rb.velocity.magnitude;
@@ -294,6 +330,31 @@ public class PlayerController : MonoBehaviour
         inputDisabled = true;
     }
 
+	public float GetSpeedCoef()
+	{
+		float speedCoef = 1;
+		foreach (SpeedCoef coef in speedCoefs)
+		{
+			speedCoef *= coef.speedCoef;
+		}
+		return speedCoef;
+	}
+
+	public void AddSpeedCoef(SpeedCoef _speedCoef )
+	{
+		if (!_speedCoef.stackable)
+		{
+			foreach (SpeedCoef coef in speedCoefs)
+			{
+				if (coef.reason == _speedCoef.reason)
+				{
+					return;
+				}
+			}
+		}
+		speedCoefs.Add(_speedCoef);
+	}
+
     public void EnableInput()
     {
         inputDisabled = false;
@@ -324,6 +385,11 @@ public class PlayerController : MonoBehaviour
 	public Animator GetAnimator ()
 	{
 		return animator;
+	}
+
+	public Vector3 GetCenterPosition()
+	{
+		return transform.position + Vector3.up * 1;
 	}
 
 	#endregion
