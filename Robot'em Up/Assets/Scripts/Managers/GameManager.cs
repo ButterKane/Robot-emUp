@@ -29,8 +29,9 @@ public class GameManager : MonoBehaviour
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
+        if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
-        if (playerOne && playerTwo) { AssignPlayers(); }
+        //if (playerOne && playerTwo) { AssignPlayers(); }
 
     }
 
