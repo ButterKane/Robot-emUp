@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
+        if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
         if (playerOne && playerTwo) { AssignPlayers(); }
 
