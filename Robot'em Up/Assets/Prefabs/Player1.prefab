@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5419603750946610382}
   - component: {fileID: 514769572}
   - component: {fileID: 6326459203825042885}
-  - component: {fileID: 9193993411532067608}
+  - component: {fileID: 7078735977702430641}
   m_Layer: 8
   m_Name: Player1
   m_TagString: Player
@@ -134,7 +134,7 @@ MonoBehaviour:
   passPreviewInEditor: 1
   passMode: 0
   handTransform: {fileID: 4655006219135653576}
-  passData: {fileID: 11400000, guid: afa85b4919167fa4d9f33a5a9be1c256, type: 2}
+  ballDatas: {fileID: 0}
   passCooldown: 0.5
 --- !u!120 &6326459203825042885
 LineRenderer:
@@ -230,7 +230,7 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &9193993411532067608
+--- !u!114 &7078735977702430641
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -239,19 +239,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 69913409235962623}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4540dcdc1bc90e944aab74208e4d6d50, type: 3}
+  m_Script: {fileID: 11500000, guid: e2fd5f3b05d278e4ca364bc18b1b027a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dunkJumpHeight: 10
-  dunkJumpLength: 3
-  dunkJumpDuration: 0.2
-  dunkJumpFreezeDuration: 1.5
+  dunkJumpHeight: 7.5
+  dunkJumpLength: 2
+  dunkJumpDuration: 0.25
+  dunkJumpFreezeDuration: 1
   dunkDashSpeed: 50
   dunkExplosionRadius: 10
-  dunkDamages: 10
+  dunkDamages: 2
   dunkProjectionForce: 20
   dunkCancelledFallSpeed: 20
-  dunkState: 0
+  dunkDashDelay: 0.4
+  dunkState: 6
+  playerAnimator: {fileID: 1184472623027629320}
 --- !u!1 &195533169622842252
 GameObject:
   m_ObjectHideFlags: 0

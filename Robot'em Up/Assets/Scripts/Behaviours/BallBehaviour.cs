@@ -16,7 +16,7 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private float currentDistanceTravelled;
 	[SerializeField] private float currentSpeed;
 	[SerializeField] private BallState currentState;
-	[SerializeField] private PassDatas currentPassDatas;
+	[SerializeField] private BallDatas currentBallDatas;
 	[SerializeField] private int currentBounceCount;
 	[SerializeField] private PlayerController currentThrower;
 
@@ -40,7 +40,7 @@ public class BallBehaviour : MonoBehaviour
 		UpdateBallPosition();
 	}
 
-	public void Shoot(Vector3 _startPosition, Vector3 _direction, PlayerController _thrower, PassDatas _passDatas) //Shoot the ball toward a direction
+	public void Shoot(Vector3 _startPosition, Vector3 _direction, PlayerController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
 	{
 		transform.SetParent(null);
 		transform.position = _startPosition;
@@ -48,7 +48,7 @@ public class BallBehaviour : MonoBehaviour
 		currentThrower = _thrower;
 		currentSpeed = _passDatas.moveSpeed;
 		currentMaxDistance = _passDatas.maxDistance;
-		currentPassDatas = _passDatas;
+		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
 
 		hitGameObjects.Clear();
@@ -75,9 +75,9 @@ public class BallBehaviour : MonoBehaviour
 		currentDirection = _newDirection;
 	}
 
-	public void GoToHands ( Transform _handTransform, float _travelDuration, PassDatas _passData )
+	public void GoToHands ( Transform _handTransform, float _travelDuration, BallDatas _passData )
 	{
-		currentPassDatas = _passData;
+		currentBallDatas = _passData;
 		ChangeState(BallState.Held);
 		StartCoroutine(GoToPosition(_handTransform, _travelDuration));
 		transform.SetParent(_handTransform);
@@ -107,10 +107,10 @@ public class BallBehaviour : MonoBehaviour
 	{
 		if (_lightExplosion)
 		{
-			FXManager.InstantiateFX(currentPassDatas.LightExplosion, transform.position, false, null);
+			FXManager.InstantiateFX(currentBallDatas.LightExplosion, transform.position, false, Vector3.forward, Vector3.one, null);
 		} else
 		{
-			FXManager.InstantiateFX(currentPassDatas.HeavyExplosion, transform.position, false, null);
+			FXManager.InstantiateFX(currentBallDatas.HeavyExplosion, transform.position, false, Vector3.forward, Vector3.one, null);
 		}
 	}
 
@@ -143,13 +143,13 @@ public class BallBehaviour : MonoBehaviour
 				currentDistanceTravelled = 0;
 				if (trailFX == null)
 				{
-					trailFX = FXManager.InstantiateFX(currentPassDatas.Trail, Vector3.zero, true, transform);
+					trailFX = FXManager.InstantiateFX(currentBallDatas.Trail, Vector3.zero, true, Vector3.zero, Vector3.one, transform);
 				}
 				break;
 			case BallState.Held:
 				DisableGravity();
 				DisableCollisions();
-				FXManager.InstantiateFX(currentPassDatas.ReceiveCore, Vector3.zero, true, transform);
+				FXManager.InstantiateFX(currentBallDatas.ReceiveCore, Vector3.zero, true, Vector3.zero,Vector3.one, transform);
 				Destroy(trailFX);
 				break;
 		}
@@ -186,16 +186,16 @@ public class BallBehaviour : MonoBehaviour
 						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
 						{
 							hitGameObjects.Add(potentialHitableObjectFound);
-							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower);
+							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, currentBallDatas.damages, DamageSource.Ball);
 						}
 						if (hit.collider.isTrigger) { break; }
-						if (currentBounceCount < currentPassDatas.maxBounces)
+						if (currentBounceCount < currentBallDatas.maxBounces)
 						{
 							Vector3 hitNormal = hit.normal;
 							hitNormal.y = 0;
 							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
-							Bounce(newDirection, currentPassDatas.speedMultiplierOnBounce);
-							FXManager.InstantiateFX(currentPassDatas.WallHit, transform.position, false, null);
+							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
+							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
 						} else
 						{
 							ChangeState(BallState.Grounded);

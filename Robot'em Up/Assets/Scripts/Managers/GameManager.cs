@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum VibrationForce
+{
+	Heavy,
+	Medium,
+	Light
+}
+public enum DamageSource
+{
+	Ball,
+	Dunk,
+}
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager
@@ -29,9 +40,10 @@ public class GameManager : MonoBehaviour
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
+		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
-        //if (playerOne && playerTwo) { AssignPlayers(); }
+        if (playerOne && playerTwo) { AssignPlayers(); }
 
     }
 

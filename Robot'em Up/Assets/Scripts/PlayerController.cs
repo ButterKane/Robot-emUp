@@ -117,6 +117,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+	public void Vibrate(float _duration, VibrationForce _force)
+	{
+		StartCoroutine(Vibrate_C(_duration, _force));
+	}
+
     void GamepadInput()
     {
 		prevState = state;
@@ -136,7 +141,7 @@ public class PlayerController : MonoBehaviour
 		{
 			ChangeActionState(ActionState.Shooting);
 		}
-		if (state.Buttons.Y == ButtonState.Pressed && passController.GetBall() == null)
+		if (state.Buttons.Y == ButtonState.Pressed && dunkController.CanDunk())
 		{
 			dunkController.Dunk();
 		}
@@ -262,15 +267,19 @@ public class PlayerController : MonoBehaviour
 			case ActionState.Aiming:
 				if (!passController.CanShoot()) { return; }
 				passController.EnablePassPreview();
+				animator.SetTrigger("PrepareShootingTrigger");
 				break;
 			case ActionState.Shooting:
 				if (!passController.CanShoot()) { return; }
 				passController.Shoot();
 				passController.DisablePassPreview();
+				animator.SetTrigger("ShootingTrigger");
 				ChangeActionState(ActionState.None);
 				return;
 			case ActionState.None:
 				passController.DisablePassPreview();
+				animator.ResetTrigger("PrepareShootingTrigger");
+				animator.SetTrigger("ShootingMissedTrigger");
 				break;
 			case ActionState.Dunking:
 				passController.DisablePassPreview();
@@ -312,14 +321,40 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-    #endregion
+	public Animator GetAnimator ()
+	{
+		return animator;
+	}
 
-    #region Private functions
+	#endregion
 
-    private void UpdateAnimatorBlendTree()
+	#region Private functions
+
+	private void UpdateAnimatorBlendTree()
     {
         animator.SetFloat("IdleRunningBlend", speed / maxSpeed);
     }
+
+	IEnumerator Vibrate_C(float _duration, VibrationForce _force)
+	{
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			switch (_force)
+			{
+				case VibrationForce.Light:
+					GamePad.SetVibration(playerIndex, 0.1f, 0.1f);
+					break;
+				case VibrationForce.Medium:
+					GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
+					break;
+				case VibrationForce.Heavy:
+					GamePad.SetVibration(playerIndex, 1f, 1f);
+					break;
+			}
+			yield return new WaitForEndOfFrame();
+		}
+		GamePad.SetVibration(playerIndex, 0f, 0f);
+	}
 
 	#endregion
 }
