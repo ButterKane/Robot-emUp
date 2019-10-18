@@ -24,8 +24,10 @@ public class PlayerController : MonoBehaviour
     [Header("General settings")]
 	public PlayerIndex playerIndex;
 	public int maxHealth;
+    public bool isInvincible;
+    public float invicibilityTime = 1;
 
-	[Space(2)]
+    [Space(2)]
     [Header("Movement settings")]
     public AnimationCurve accelerationCurve;
 
@@ -74,6 +76,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
     {
+        isInvincible = false;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
 		cam = Camera.main;
@@ -356,5 +359,11 @@ public class PlayerController : MonoBehaviour
 		GamePad.SetVibration(playerIndex, 0f, 0f);
 	}
 
-	#endregion
+    private IEnumerator InvicibleFrame()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invicibilityTime);
+        isInvincible = false;
+    }
+    #endregion
 }
