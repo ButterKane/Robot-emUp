@@ -589,7 +589,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a27b677fa34bd15498b3a7169aac8a94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 5
+  maxHealth: 1
 --- !u!65 &451990845
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1208,6 +1208,35 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &782662519 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 69913409235962623, guid: 218a241db58f56849816014d9aa8d204,
+    type: 3}
+  m_PrefabInstance: {fileID: 1251166992}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &782662520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 782662519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49f07a2a6d6811e46a1e7b30edd09d4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dunkJumpHeight: 2
+  dunkJumpLength: 1
+  dunkJumpDuration: 1
+  dunkJumpFreezeDuration: 1
+  dunkDashSpeed: 1
+  dunkExplosionRadius: 1
+  dunkDamages: 1
+  dunkProjectionForce: 1
+  dunkCancelledFallSpeed: 1
+  dunkDashDelay: 1
+  dunkState: 6
 --- !u!1001 &930897977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1297,6 +1326,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4c92587a6469454490c543986c1af06, type: 3}
+--- !u!1 &959529374 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8588656495610394338, guid: db5a9d4f63dca3645833fdb540b88560,
+    type: 3}
+  m_PrefabInstance: {fileID: 1584707369}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &959529375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959529374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49f07a2a6d6811e46a1e7b30edd09d4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dunkJumpHeight: 2
+  dunkJumpLength: 1
+  dunkJumpDuration: 1
+  dunkJumpFreezeDuration: 1
+  dunkDashSpeed: 1
+  dunkExplosionRadius: 1
+  dunkDamages: 1
+  dunkProjectionForce: 1
+  dunkCancelledFallSpeed: 1
+  dunkDashDelay: 1
+  dunkState: 6
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -2340,6 +2398,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: ballDatas
+      value: 
+      objectReference: {fileID: 11400000, guid: 77de4e56259618049b0aa2c8b08f2f1b,
+        type: 2}
     - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_RootOrder
@@ -2794,6 +2857,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: ballDatas
+      value: 
+      objectReference: {fileID: 11400000, guid: 77de4e56259618049b0aa2c8b08f2f1b,
+        type: 2}
     - target: {fileID: 3988118354168185020, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
       propertyPath: m_RootOrder
@@ -3368,7 +3437,7 @@ MonoBehaviour:
   currentDistanceTravelled: 0
   currentSpeed: 0
   currentState: 0
-  currentBallDatas: {fileID: 0}
+  currentBallDatas: {fileID: 11400000, guid: 77de4e56259618049b0aa2c8b08f2f1b, type: 2}
   currentBounceCount: 0
   currentThrower: {fileID: 0}
 --- !u!135 &2146894339
