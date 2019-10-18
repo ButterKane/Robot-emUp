@@ -77,7 +77,6 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
                 {
-                    Debug.Log("s");
                     GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
                     LaunchAttack(target);
                 }
@@ -124,13 +123,16 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("Touching player");
-            Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
-            collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - self.position).normalized, pushForce);
+            if (collision.gameObject.GetComponent<PlayerController>().isInvincible == false)
+            {
+                Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
+                collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - self.position).normalized, pushForce, newCollisionPoint);
+                collision.gameObject.GetComponent<PlayerController>().DamagePlayer(10);
+            }
         }
     }
 

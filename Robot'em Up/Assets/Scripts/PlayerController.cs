@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	private float speed;
-	private int currentHealth;
+	public  int currentHealth;
 
 	//xInput refs
 	GamePadState state;
@@ -307,16 +307,19 @@ public class PlayerController : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void Push(Vector3 _direction, float _magnitude)
+    public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
     {
-
         _direction = _direction.normalized * _magnitude;
-        rb.AddForce(Vector3.up * 2, ForceMode.Impulse);
-        rb.AddForce(_direction, ForceMode.Impulse);
+        //rb.AddForce(Vector3.up * 50, ForceMode.Impulse);
+        //rb.AddForce(_direction, ForceMode.Impulse);
+        //rb.AddExplosionForce(0, new Vector3(transform.position.x, 0, transform.position.z), 0);
+        rb.AddExplosionForce(_magnitude, explosionPoint, 0);
+        Debug.Log("pushed back");
     }
 
 	public void DamagePlayer(int _amount)
 	{
+        StartCoroutine(InvicibleFrame());
 		currentHealth -= _amount;
 		if (_amount <= 0)
 		{

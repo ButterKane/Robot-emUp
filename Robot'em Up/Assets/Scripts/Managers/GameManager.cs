@@ -43,21 +43,21 @@ public class GameManager : MonoBehaviour
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
-        if (playerOne && playerTwo) { AssignPlayers(); }
+        //if (playerOne && playerTwo) { AssignPlayers(); }
 
     }
 
-    private void AssignPlayers()
-    {
-        if (playerTwo != null)
-        {
-            playerOne.GetComponent<PlayerControllerAlex>().otherPlayer = playerOne.GetComponent<PlayerControllerAlex>().ballTarget = playerTwo.transform;
-        }
-        if (playerOne != null)
-        {
-            playerTwo.GetComponent<PlayerControllerAlex>().otherPlayer = playerTwo.GetComponent<PlayerControllerAlex>().ballTarget = playerOne.transform;
-        }
-    }
+    //private void AssignPlayers()
+    //{
+    //    if (playerTwo != null)
+    //    {
+    //        playerOne.GetComponent<PlayerControllerAlex>().otherPlayer = playerOne.GetComponent<PlayerControllerAlex>().ballTarget = playerTwo.transform;
+    //    }
+    //    if (playerOne != null)
+    //    {
+    //        playerTwo.GetComponent<PlayerControllerAlex>().otherPlayer = playerTwo.GetComponent<PlayerControllerAlex>().ballTarget = playerOne.transform;
+    //    }
+    //}
 
     private void OnEnable()
     {
@@ -67,6 +67,6 @@ public class GameManager : MonoBehaviour
     void SpawnDummy()
     {
         playerTwo = Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
-        if (playerOne && playerTwo) { AssignPlayers(); }
+        //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 }
