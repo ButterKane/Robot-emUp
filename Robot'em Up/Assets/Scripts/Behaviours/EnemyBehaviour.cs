@@ -22,7 +22,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Transform target;
     public EnemyState state;
 
-    public int maxHealth = 100;
+	public ParticleSystem hitFXPrefab;
+	public ParticleSystem destroyedFXPrefab;
+
+
+	public int maxHealth = 100;
     public int health;
     public float attackDistance = 7f;
 
@@ -102,9 +106,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public void DamageTaken(int damage)
+	
+	public void DamageTaken(int damage)
     {
         animator.SetTrigger("Hit"); // play animation
+		Instantiate(hitFXPrefab, self.position, Quaternion.identity);
         health -= damage;
         CheckHealth();
     }
@@ -113,7 +119,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         if (health <= 0)
         {
-            // TODO Dead
+			Instantiate(destroyedFXPrefab, self.position, Quaternion.identity);
+			Destroy(self.gameObject);
         }
     }
 
