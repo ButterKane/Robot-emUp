@@ -28,12 +28,9 @@ public class PuzzleLink : MonoBehaviour, IHitable
     {
         if (MomentumManager.GetMomentum() > puzzleData.nbMomentumNeededToLink)
         {
-<<<<<<< HEAD
-            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, transform);
-            FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1, true, transform);
-=======
-            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, Vector3.forward,Vector3.one, transform);
->>>>>>> master
+            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, Vector3.forward, Vector3.one, transform);
+            FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1, true, Vector3.zero, Vector3.one, transform);
+            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, Vector3.zero,Vector3.one, transform);
             chargingTime = puzzleData.nbSecondsLinkMaintained;
             isActivated = true;
 
@@ -63,16 +60,13 @@ public class PuzzleLink : MonoBehaviour, IHitable
         if (chargingTime <= 0 && isActivated)
         {
             isActivated = false;
-<<<<<<< HEAD
-            FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, transform);
+            FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, Vector3.forward, Vector3.one, transform);
             if (FX_Activation != null)
             {
                 Destroy(FX_Activation);
             }
-=======
             FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, Vector3.forward,Vector3.one, transform);
-
->>>>>>> master
+            
         }
 
 
