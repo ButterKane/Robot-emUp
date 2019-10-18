@@ -20,10 +20,10 @@ public class PuzzleCharger : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source )
     {
+        FXManager.InstantiateFX(puzzleData.Charging, Vector3.up * 2, true, Vector3.forward, Vector3.one * 3, transform);
         if (MomentumManager.GetMomentum() < 1)
         {
             MomentumManager.IncreaseMomentum(puzzleData.nbMomentumChargedByCharger);
-            FXManager.InstantiateFX(puzzleData.Charging, Vector3.up * 2, true, Vector3.forward, Vector3.one, transform);
         }
         // if momentum < 1
         // Will charge  puuzzledata.nbMomentumChargedByCharger Momentum
