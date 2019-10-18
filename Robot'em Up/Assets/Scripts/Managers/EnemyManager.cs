@@ -10,6 +10,8 @@ public class EnemyManager : MonoBehaviour
 
     public List<EnemyBehaviour> enemies;
 
+    public List<Transform> enemySpawnPoints;
+
     public GameObject playerOne;
     public GameObject playerTwo;
 
@@ -39,6 +41,11 @@ public class EnemyManager : MonoBehaviour
 
             LaunchSurrounding(enemiesReadyToActOnOne);
             LaunchSurrounding(enemiesReadyToActOnTwo);
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            SpawnEnemies();
         }
     }
 
@@ -105,6 +112,15 @@ public class EnemyManager : MonoBehaviour
                 enemy.surrounder = surrounderInstance;
                 StartCoroutine(enemy.SurroundPlayer(target.gameObject));
             }
+        }
+    }
+
+    public void SpawnEnemies()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            var newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
+            enemies.Add(newEnemy.GetComponent<EnemyBehaviour>());
         }
     }
 }
