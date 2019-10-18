@@ -44,8 +44,10 @@ public class PlayerController : MonoBehaviour
     [Header("General settings")]
 	public PlayerIndex playerIndex;
 	public int maxHealth;
+    public bool isInvincible;
+    public float invicibilityTime = 1;
 
-	[Space(2)]
+    [Space(2)]
     [Header("Movement settings")]
     public AnimationCurve accelerationCurve;
 
@@ -76,8 +78,12 @@ public class PlayerController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	private float speed;
+<<<<<<< HEAD
 	private int currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
+=======
+	public  int currentHealth;
+>>>>>>> 0f6658b57eff85e1c1594555af9ece71bfcf3c20
 
 	//xInput refs
 	GamePadState state;
@@ -95,6 +101,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
     {
+        isInvincible = false;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
 		cam = Camera.main;
@@ -365,16 +372,19 @@ public class PlayerController : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void Push(Vector3 _direction, float _magnitude)
+    public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
     {
-
         _direction = _direction.normalized * _magnitude;
-        rb.AddForce(Vector3.up * 2, ForceMode.Impulse);
-        rb.AddForce(_direction, ForceMode.Impulse);
+        //rb.AddForce(Vector3.up * 50, ForceMode.Impulse);
+        //rb.AddForce(_direction, ForceMode.Impulse);
+        //rb.AddExplosionForce(0, new Vector3(transform.position.x, 0, transform.position.z), 0);
+        rb.AddExplosionForce(_magnitude, explosionPoint, 0);
+        Debug.Log("pushed back");
     }
 
 	public void DamagePlayer(int _amount)
 	{
+        StartCoroutine(InvicibleFrame());
 		currentHealth -= _amount;
 		if (_amount <= 0)
 		{
@@ -422,5 +432,11 @@ public class PlayerController : MonoBehaviour
 		GamePad.SetVibration(playerIndex, 0f, 0f);
 	}
 
-	#endregion
+    private IEnumerator InvicibleFrame()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invicibilityTime);
+        isInvincible = false;
+    }
+    #endregion
 }
