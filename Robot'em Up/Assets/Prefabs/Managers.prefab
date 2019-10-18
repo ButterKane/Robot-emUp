@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 5253247827333039778}
   - component: {fileID: 5253247827333039789}
   - component: {fileID: 5253247827333039777}
-  - component: {fileID: 6330210021759607896}
+  - component: {fileID: 1483543552}
+  - component: {fileID: 1483543558}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -54,7 +55,7 @@ MonoBehaviour:
   mainCameraGO: {fileID: 0}
   playerOne: {fileID: 0}
   playerTwo: {fileID: 0}
-  ball: {fileID: 0}
+  ball: {fileID: 312656209842447024, guid: c63abb872767c3a4e9746326834b2bd6, type: 3}
   ballBehaviour: {fileID: 0}
   ballDamage: 30
   enemies: []
@@ -98,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b6ba734565d97842995991bb4b12ac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6330210021759607896
+--- !u!114 &1483543552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,7 +108,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 5253247827333039788}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 174ee4ae2a2bc954694b9dc665aa4448, type: 3}
+  m_Script: {fileID: 11500000, guid: 66248d24fb8c5e34d8bbcc9c75c901dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nothingYet: 
+  enemyPrefab: {fileID: 7575868252087982004, guid: 63dfd4339d745ac4b8bbad8437d47466,
+    type: 3}
+  enemyCurrentlyAttacking: {fileID: 0}
+  enemies: []
+  enemySpawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  playerOne: {fileID: 0}
+  playerTwo: {fileID: 0}
+  surrounderPrefab: {fileID: 602022937994174095, guid: 435ebdfea89f14e4395bc9182ffa13f6,
+    type: 3}
+--- !u!114 &1483543558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aca77861444c3c64d96f6a07d20245ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

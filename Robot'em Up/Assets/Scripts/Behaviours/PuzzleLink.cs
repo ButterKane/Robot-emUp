@@ -34,6 +34,7 @@ public class PuzzleLink : MonoBehaviour, IHitable
             {
                 FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1, true, Vector3.zero, Vector3.one, transform);
             }
+			MomentumManager.DecreaseMomentum(0.2f);
             chargingTime = puzzleData.nbSecondsLinkMaintained;
             isActivated = true;
 
