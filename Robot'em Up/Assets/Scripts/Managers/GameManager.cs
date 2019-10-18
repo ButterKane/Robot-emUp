@@ -47,19 +47,27 @@ public class GameManager : MonoBehaviour
 
     }
 
-    //private void AssignPlayers()
-    //{
-    //    if (playerTwo != null)
-    //    {
-    //        playerOne.GetComponent<PlayerControllerAlex>().otherPlayer = playerOne.GetComponent<PlayerControllerAlex>().ballTarget = playerTwo.transform;
-    //    }
-    //    if (playerOne != null)
-    //    {
-    //        playerTwo.GetComponent<PlayerControllerAlex>().otherPlayer = playerTwo.GetComponent<PlayerControllerAlex>().ballTarget = playerOne.transform;
-    //    }
-    //}
+	private void Update ()
+	{
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			ResetBall();
+		}
+	}
 
-    private void OnEnable()
+	//private void AssignPlayers()
+	//{
+	//    if (playerTwo != null)
+	//    {
+	//        playerOne.GetComponent<PlayerControllerAlex>().otherPlayer = playerOne.GetComponent<PlayerControllerAlex>().ballTarget = playerTwo.transform;
+	//    }
+	//    if (playerOne != null)
+	//    {
+	//        playerTwo.GetComponent<PlayerControllerAlex>().otherPlayer = playerTwo.GetComponent<PlayerControllerAlex>().ballTarget = playerOne.transform;
+	//    }
+	//}
+
+	private void OnEnable()
     {
         EventManager.DummySpawn += SpawnDummy;
     }
@@ -69,4 +77,14 @@ public class GameManager : MonoBehaviour
         playerTwo = Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
+
+	public static void ResetBall()
+	{
+		foreach (BallBehaviour ball in FindObjectsOfType<BallBehaviour>())
+		{
+			Destroy(ball.gameObject);
+		}
+		GameObject newBall = Instantiate(i.ball, null);
+		newBall.transform.position = new Vector3(0, 1f, 0);
+	}
 }

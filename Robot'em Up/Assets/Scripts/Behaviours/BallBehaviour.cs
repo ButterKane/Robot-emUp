@@ -188,7 +188,7 @@ public class BallBehaviour : MonoBehaviour
 							hitGameObjects.Add(potentialHitableObjectFound);
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, currentBallDatas.damages, DamageSource.Ball);
 						}
-						if (hit.collider.isTrigger) { break; }
+						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) { break; }
 						if (currentBounceCount < currentBallDatas.maxBounces)
 						{
 							Vector3 hitNormal = hit.normal;
@@ -238,5 +238,6 @@ public class BallBehaviour : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 		}
 		transform.position = _transform.position;
+		transform.localScale = Vector3.one;
 	}
 }

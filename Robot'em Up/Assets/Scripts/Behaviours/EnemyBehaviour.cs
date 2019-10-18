@@ -11,7 +11,7 @@ public enum EnemyState
     Attacking, 
     Count
 }
-public class EnemyBehaviour : MonoBehaviour
+public class EnemyBehaviour : MonoBehaviour, IHitable
 {
     public Transform self;
     public Rigidbody rb;
@@ -40,8 +40,21 @@ public class EnemyBehaviour : MonoBehaviour
     //DEBUG
     public GameObject surrounder;
 
-    // Start is called before the first frame update
-    void Start()
+	private int _hitCount;
+	public int hitCount
+	{
+		get
+		{
+			return _hitCount;
+		}
+		set
+		{
+			_hitCount = value;
+		}
+	}
+
+	// Start is called before the first frame update
+	void Start()
     {
         self = transform;
 
@@ -230,4 +243,11 @@ public class EnemyBehaviour : MonoBehaviour
     {
         GameManager.i.enemyManager.enemyCurrentlyAttacking = null;
     }
+
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source )
+	{
+		Debug.Log("Damage taken " + _source);
+		DamageTaken(_damages);
+		MomentumManager.IncreaseMomentum(0.1f);
+	}
 }

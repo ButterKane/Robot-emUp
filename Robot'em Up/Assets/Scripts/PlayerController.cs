@@ -78,12 +78,8 @@ public class PlayerController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	private float speed;
-<<<<<<< HEAD
 	private int currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
-=======
-	public  int currentHealth;
->>>>>>> 0f6658b57eff85e1c1594555af9ece71bfcf3c20
 
 	//xInput refs
 	GamePadState state;
@@ -375,11 +371,7 @@ public class PlayerController : MonoBehaviour
     public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
     {
         _direction = _direction.normalized * _magnitude;
-        //rb.AddForce(Vector3.up * 50, ForceMode.Impulse);
-        //rb.AddForce(_direction, ForceMode.Impulse);
-        //rb.AddExplosionForce(0, new Vector3(transform.position.x, 0, transform.position.z), 0);
         rb.AddExplosionForce(_magnitude, explosionPoint, 0);
-        Debug.Log("pushed back");
     }
 
 	public void DamagePlayer(int _amount)
