@@ -6,6 +6,7 @@ using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
 	private int _hitCount;
+	private Vector3 initialScale;
 	public int hitCount { 
 		get { 
 			return _hitCount; 
@@ -16,11 +17,12 @@ public class Dummy : MonoBehaviour, IHitable
 	}
 
 	public int maxHealth;
-	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower )
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source )
 	{
-		transform.DOShakeScale(1f, 1f);
+		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount++;
 		_ball.Explode(true);
+		MomentumManager.IncreaseMomentum(0.1f);
 		if (_hitCount >= maxHealth) { Destroy(this.gameObject); }
 
 		//Fonctions utile
@@ -31,5 +33,15 @@ public class Dummy : MonoBehaviour, IHitable
 		//_ball.MultiplySpeed();   <- Multiply speed by a coef
 		//_ball.ChangeMaxDistance();  <- Changing max distance of ball by X will stop it after travelling X meters
 		//_ball.Explode();  <- Spawns an FX
+	}
+
+	private void Awake ()
+	{
+		initialScale = transform.localScale;
+	}
+
+	public void ResetScale()
+	{
+		transform.DOScale(initialScale, 0.1f);
 	}
 }

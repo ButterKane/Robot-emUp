@@ -18,7 +18,7 @@ public class PassController : MonoBehaviour
 
 	[Header("Pass settings")]
 	public Transform handTransform;
-	public PassDatas passData;
+	public BallDatas ballDatas;
 	public float passCooldown;
 
 
@@ -40,14 +40,14 @@ public class PassController : MonoBehaviour
 	{
 		UpdateCooldowns();
 
-		if (passData == null) { return; }
-		pathCoordinates = GetPathCoordinates(handTransform.position, transform.forward, passData.maxPreviewDistance);
+		if (ballDatas == null) { return; }
+		pathCoordinates = GetPathCoordinates(handTransform.position, transform.forward, ballDatas.maxPreviewDistance);
 
 		if (passPreviewInEditor)
 			PreviewPathInEditor(pathCoordinates);
 
 		if (passPreview)
-			PreviewPath(pathCoordinates, passData);
+			PreviewPath(pathCoordinates, ballDatas);
 	}
 	public List<Vector3> GetPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
 	{
@@ -80,9 +80,9 @@ public class PassController : MonoBehaviour
 
 		return pathCoordinates;
 	}
-
 	public void Shoot()
 	{
+		linkedPlayerController.Vibrate(0.15f, VibrationForce.Medium);
 		currentPassCooldown = passCooldown;
 		BallBehaviour shootedBall = ball;
 		ball = null;
@@ -97,18 +97,19 @@ public class PassController : MonoBehaviour
 				}
 			}
 			if (otherPlayer != null)
-				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayerController, passData);
+				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayerController, ballDatas);
 		}
 		else
 		{
-			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayerController, passData);
+			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayerController, ballDatas);
 		}
 	}
 
 	public void Receive (BallBehaviour _ball)
 	{
+		linkedPlayerController.Vibrate(0.15f, VibrationForce.Medium);
 		ball = _ball;
-		ball.GoToHands(handTransform, 0.2f,passData) ;
+		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 
@@ -125,7 +126,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (ball == null || currentPassCooldown >= 0)
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking())
 		{
 			return false;
 		} else
@@ -139,6 +140,16 @@ public class PassController : MonoBehaviour
 		return ball;
 	}
 
+	public BallDatas GetBallDatas()
+	{
+		return ballDatas;
+	}
+
+	public Transform GetHandTransform()
+	{
+		return handTransform;
+	}
+
 	private void PreviewPathInEditor(List<Vector3> _pathCoordinates)
 	{
 		for (int i = 0; i < _pathCoordinates.Count - 1; i++)
@@ -150,7 +161,7 @@ public class PassController : MonoBehaviour
 		}
 	}
 
-	private void PreviewPath(List<Vector3> _pathCoordinates, PassDatas _passDatas)
+	private void PreviewPath(List<Vector3> _pathCoordinates, BallDatas _passDatas)
 	{
 		lineRenderer.positionCount = _pathCoordinates.Count;
 		lineRenderer.SetPositions(_pathCoordinates.ToArray());
