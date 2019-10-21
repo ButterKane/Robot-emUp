@@ -32,6 +32,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Header("Variables")]
     public EnemyState state;
 
+    public bool isAttacking = false;
+
     public int maxHealth = 100;
     public int health;
 
@@ -40,7 +42,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public bool followPlayer;
     public float followSpeed = 100f;
-    
+
     private float distanceToOne;
     private float distanceToTwo;
 
@@ -94,11 +96,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (state == EnemyState.Attacking)
         {
-            if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
+            if (!isAttacking)
             {
-                GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
                 LaunchAttack(target);
+                isAttacking = true;
             }
+        }
+
+        if (state == EnemyState.Idle)
+        {
+            WhatShouldIDo();
         }
     }
 
@@ -106,7 +113,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         if ((target.position - self.position).magnitude < attackDistance)
         {
-            state = EnemyState.Attacking;
+            if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
+            {
+                GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
+                state = EnemyState.Attacking;
+            }
+            else
+            {
+                state = EnemyState.Idle;
+            }
         }
         else if (target != null)
         {
@@ -135,14 +150,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void FollowPlayer(Transform playerToFollow)
     {
         state = EnemyState.Following;
+
         animator.SetBool("FollowingPlayer", true);
 
-        self.LookAt(playerToFollow.position);
+        self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, self.position));
 
         rb.velocity = Vector3.zero;
 
         rb.AddForce(self.forward * followSpeed * Time.deltaTime, ForceMode.VelocityChange);
 
+        WhatShouldIDo();
     }
 
     private void OnCollisionStay(Collision collision)
