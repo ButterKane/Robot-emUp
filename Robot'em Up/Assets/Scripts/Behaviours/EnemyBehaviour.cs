@@ -9,6 +9,7 @@ public enum EnemyState
     Moving,
     Following,
     Attacking,
+    Surrounding,
     Count
 }
 public class EnemyBehaviour : MonoBehaviour, IHitable
@@ -86,10 +87,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (state == EnemyState.Following)
         {
-            Debug.Log("following");
             if (target)
             {
-                Debug.Log("really following");
                 FollowPlayer(target);
             }
         }
@@ -185,7 +184,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public IEnumerator SurroundPlayer(GameObject player)
     {
-        state = EnemyState.Moving;
+        Debug.Log("surrounding");
+        state = EnemyState.Surrounding;
         Surrounder script = surrounder.GetComponent<Surrounder>();
         surrounder.transform.position = player.transform.position;
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
