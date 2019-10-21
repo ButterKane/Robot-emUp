@@ -19,13 +19,35 @@ public enum ActionState
 	Dunking
 }
 
+public enum SlowReason
+{
+	Link,
+}
+
+public class SpeedCoef
+{
+	public SpeedCoef ( float _speedCoef, float _duration, SlowReason _reason, bool _stackable )
+	{
+		speedCoef = _speedCoef;
+		duration = _duration;
+		reason = _reason;
+		stackable = _stackable;
+	}
+	public float speedCoef;
+	public float duration;
+	public SlowReason reason;
+	public bool stackable;
+}
+
 public class PlayerController : MonoBehaviour
 {
     [Header("General settings")]
 	public PlayerIndex playerIndex;
 	public int maxHealth;
+    public bool isInvincible;
+    public float invicibilityTime = 1;
 
-	[Space(2)]
+    [Space(2)]
     [Header("Movement settings")]
     public AnimationCurve accelerationCurve;
 
@@ -57,6 +79,7 @@ public class PlayerController : MonoBehaviour
 	private float customGravity;
 	private float speed;
 	private int currentHealth;
+	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 
 	//xInput refs
 	GamePadState state;
@@ -74,6 +97,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
     {
+        isInvincible = false;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
 		cam = Camera.main;
@@ -96,11 +120,12 @@ public class PlayerController : MonoBehaviour
         CheckMoveState();
         Rotate();
 		UpdateAcceleration();
-        Move();
+		Move();
         ApplyDrag();
         ApplyCustomGravity();
         UpdateAnimatorBlendTree();
-    }
+		UpdateSpeedCoef();
+	}
 
     #region Input
     void GetInput()
@@ -227,7 +252,7 @@ public class PlayerController : MonoBehaviour
 		{
 			accelerationTimer += Time.fixedDeltaTime;
 			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed) * maxAcceleration), ForceMode.Acceleration);
+			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed * GetSpeedCoef()) * maxAcceleration), ForceMode.Acceleration);
 			customDrag = movingDrag;
 		} else
 		{
@@ -235,12 +260,26 @@ public class PlayerController : MonoBehaviour
 		}
     }
 
+	void UpdateSpeedCoef()
+	{
+		List<SpeedCoef> newCoefList = new List<SpeedCoef>();
+		foreach (SpeedCoef coef in speedCoefs)
+		{
+			coef.duration -= Time.deltaTime;
+			if (coef.duration > 0)
+			{
+				newCoefList.Add(coef);
+			}
+		}
+		speedCoefs = newCoefList;
+	}
+
     void Move()
     {
         if (moveState == MoveState.Blocked) { speed = 0; return; }
         Vector3 myVel = rb.velocity;
         myVel.y = 0;
-        myVel = Vector3.ClampMagnitude(myVel, maxSpeed);
+        myVel = Vector3.ClampMagnitude(myVel, maxSpeed * GetSpeedCoef());
         myVel.y = rb.velocity.y;
         rb.velocity = myVel;
         speed = rb.velocity.magnitude;
@@ -294,6 +333,31 @@ public class PlayerController : MonoBehaviour
         inputDisabled = true;
     }
 
+	public float GetSpeedCoef()
+	{
+		float speedCoef = 1;
+		foreach (SpeedCoef coef in speedCoefs)
+		{
+			speedCoef *= coef.speedCoef;
+		}
+		return speedCoef;
+	}
+
+	public void AddSpeedCoef(SpeedCoef _speedCoef )
+	{
+		if (!_speedCoef.stackable)
+		{
+			foreach (SpeedCoef coef in speedCoefs)
+			{
+				if (coef.reason == _speedCoef.reason)
+				{
+					return;
+				}
+			}
+		}
+		speedCoefs.Add(_speedCoef);
+	}
+
     public void EnableInput()
     {
         inputDisabled = false;
@@ -304,16 +368,15 @@ public class PlayerController : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void Push(Vector3 _direction, float _magnitude)
+    public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
     {
-
         _direction = _direction.normalized * _magnitude;
-        rb.AddForce(Vector3.up * 2, ForceMode.Impulse);
-        rb.AddForce(_direction, ForceMode.Impulse);
+        rb.AddExplosionForce(_magnitude, explosionPoint, 0);
     }
 
 	public void DamagePlayer(int _amount)
 	{
+        StartCoroutine(InvicibleFrame());
 		currentHealth -= _amount;
 		if (_amount <= 0)
 		{
@@ -324,6 +387,11 @@ public class PlayerController : MonoBehaviour
 	public Animator GetAnimator ()
 	{
 		return animator;
+	}
+
+	public Vector3 GetCenterPosition()
+	{
+		return transform.position + Vector3.up * 1;
 	}
 
 	#endregion
@@ -356,5 +424,11 @@ public class PlayerController : MonoBehaviour
 		GamePad.SetVibration(playerIndex, 0f, 0f);
 	}
 
-	#endregion
+    private IEnumerator InvicibleFrame()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invicibilityTime);
+        isInvincible = false;
+    }
+    #endregion
 }

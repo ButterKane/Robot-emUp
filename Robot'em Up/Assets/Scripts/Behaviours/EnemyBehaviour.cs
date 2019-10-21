@@ -11,7 +11,7 @@ public enum EnemyState
     Attacking, 
     Count
 }
-public class EnemyBehaviour : MonoBehaviour
+public class EnemyBehaviour : MonoBehaviour, IHitable
 {
     public Transform self;
     public Rigidbody rb;
@@ -22,7 +22,11 @@ public class EnemyBehaviour : MonoBehaviour
     public Transform target;
     public EnemyState state;
 
-    public int maxHealth = 100;
+	public ParticleSystem hitFXPrefab;
+	public ParticleSystem destroyedFXPrefab;
+
+
+	public int maxHealth = 100;
     public int health;
     public float attackDistance = 7f;
 
@@ -40,8 +44,21 @@ public class EnemyBehaviour : MonoBehaviour
     //DEBUG
     public GameObject surrounder;
 
-    // Start is called before the first frame update
-    void Start()
+	private int _hitCount;
+	public int hitCount
+	{
+		get
+		{
+			return _hitCount;
+		}
+		set
+		{
+			_hitCount = value;
+		}
+	}
+
+	// Start is called before the first frame update
+	void Start()
     {
         self = transform;
 
@@ -77,7 +94,6 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
                 {
-                    Debug.Log("s");
                     GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
                     LaunchAttack(target);
                 }
@@ -90,9 +106,11 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    public void DamageTaken(int damage)
+	
+	public void DamageTaken(int damage)
     {
         animator.SetTrigger("Hit"); // play animation
+		Instantiate(hitFXPrefab, self.position, Quaternion.identity);
         health -= damage;
         CheckHealth();
     }
@@ -101,7 +119,8 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (health <= 0)
         {
-            // TODO Dead
+			Instantiate(destroyedFXPrefab, self.position, Quaternion.identity);
+			Destroy(self.gameObject);
         }
     }
 
@@ -124,13 +143,16 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("Touching player");
-            Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
-            collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - self.position).normalized, pushForce);
+            if (collision.gameObject.GetComponent<PlayerController>().isInvincible == false)
+            {
+                Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
+                collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - self.position).normalized, pushForce, newCollisionPoint);
+                collision.gameObject.GetComponent<PlayerController>().DamagePlayer(10);
+            }
         }
     }
 
@@ -228,4 +250,11 @@ public class EnemyBehaviour : MonoBehaviour
     {
         GameManager.i.enemyManager.enemyCurrentlyAttacking = null;
     }
+
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source )
+	{
+		Debug.Log("Damage taken " + _source);
+		DamageTaken(_damages);
+		MomentumManager.IncreaseMomentum(0.1f);
+	}
 }

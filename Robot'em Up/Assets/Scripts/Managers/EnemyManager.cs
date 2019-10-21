@@ -10,6 +10,8 @@ public class EnemyManager : MonoBehaviour
 
     public List<EnemyBehaviour> enemies;
 
+    public List<Transform> enemySpawnPoints;
+
     public GameObject playerOne;
     public GameObject playerTwo;
 
@@ -31,7 +33,6 @@ public class EnemyManager : MonoBehaviour
     {
         if (!isSurroundCooldownRunning)
         {
-            Debug.Log("Big surrounding");
             StartCoroutine(TimeBetweenSurrounding());
             List<EnemyBehaviour> enemiesReadyToActOnOne = new List<EnemyBehaviour>();
             List<EnemyBehaviour> enemiesReadyToActOnTwo = new List<EnemyBehaviour>();
@@ -41,13 +42,17 @@ public class EnemyManager : MonoBehaviour
             LaunchSurrounding(enemiesReadyToActOnOne);
             LaunchSurrounding(enemiesReadyToActOnTwo);
         }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            SpawnEnemies();
+        }
     }
 
     private IEnumerator TimeBetweenSurrounding()
     {
         isSurroundCooldownRunning = true;
         yield return new WaitForSeconds(Random.Range(5, 10));
-        Debug.Log("TimeoOut");
         isSurroundCooldownRunning = false;
     }
 
@@ -97,13 +102,25 @@ public class EnemyManager : MonoBehaviour
     /// <param name="list"></param>
     private void LaunchSurrounding(List<EnemyBehaviour> list) 
     {
-        Transform target = list[0].target;
-        Debug.Log("target is " + target.gameObject.name);
-        surrounderInstance = Instantiate(surrounderPrefab, target.position, Quaternion.identity);
-        foreach (var enemy in list)
+        if (list.Count > 0)
         {
-            enemy.surrounder = surrounderInstance;
-            StartCoroutine(enemy.SurroundPlayer(target.gameObject));
+            Transform target = list[0].target;
+            Debug.Log("target is " + target.gameObject.name);
+            surrounderInstance = Instantiate(surrounderPrefab, target.position, Quaternion.identity);
+            foreach (var enemy in list)
+            {
+                enemy.surrounder = surrounderInstance;
+                StartCoroutine(enemy.SurroundPlayer(target.gameObject));
+            }
+        }
+    }
+
+    public void SpawnEnemies()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            var newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
+            enemies.Add(newEnemy.GetComponent<EnemyBehaviour>());
         }
     }
 }

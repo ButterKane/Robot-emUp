@@ -54,7 +54,7 @@ public class DunkController : MonoBehaviour
 		int i = 0;
 		while (i < hitColliders.Length)
 		{
-			IHitable potentialHitableObject = hitColliders[i].GetComponent<IHitable>();
+			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
 			if (potentialHitableObject != null)
 			{
 				potentialHitableObject.OnHit(ball, Vector3.zero, playerController, dunkDamages, DamageSource.Dunk);
