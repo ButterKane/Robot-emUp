@@ -186,7 +186,7 @@ public class PlayerController : MonoBehaviour
 		{
 			dunkController.Dunk();
 		}
-		if (state.Triggers.Right > triggerTreshold && dashController.CanDash())
+		if (state.Triggers.Left > triggerTreshold && dashController.CanDash())
 		{
 			dashController.Dash();
 		}

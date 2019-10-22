@@ -10,6 +10,8 @@ public class PuzzleDatas : ScriptableObject
     public float nbMomentumChargedByCharger;
     [Range(0, 1)]
     public float nbMomentumNeededToLink;
+    [Range(0, 1)]
+    public float nbMomentumLooseWhenLink;
     [Range(0, 20)]
     public float nbSecondsLinkMaintained;
 
