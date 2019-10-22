@@ -326,16 +326,16 @@ public class PlayerController : MonoBehaviour
 		Collider foundLedge = CheckForLedge();
 		if (foundLedge != null)
 		{
-			Debug.Log("Starting climb " + foundLedge);
+			//Debug.Log("Starting climb " + foundLedge);
 			climbingHoldTime += Time.deltaTime;
 		} else
 		{
 			climbingHoldTime = 0;
-			Debug.Log("Finished climb");
+			//Debug.Log("Finished climb");
 		}
-		if (climbingHoldTime >= timeBeforeClimb)
+		if (climbingHoldTime >= timeBeforeClimb && foundLedge != null)
 		{
-			Debug.Log("ClimbingLedge");
+			//Debug.Log("ClimbingLedge");
 			moveState = MoveState.Climbing;
 			StartCoroutine(ClimbLedge(foundLedge));
 		}
