@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6326459203825042885}
   - component: {fileID: 7078735977702430641}
   - component: {fileID: 550159195375358257}
+  - component: {fileID: 5564275353483555727}
   m_Layer: 8
   m_Name: Player1
   m_TagString: Player
@@ -54,9 +55,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIndex: 0
-  maxHealth: 0
+  maxHealth: 20
   isInvincible: 0
   invicibilityTime: 1
+  jumpForce: 800
   accelerationCurve:
     serializedVersion: 2
     m_Curve:
@@ -86,9 +88,14 @@ MonoBehaviour:
   maxAcceleration: 200
   movingDrag: 0.08
   idleDrag: 0.05
-  onGroundGravityMultiplyer: 2.5
+  onGroundGravityMultiplyer: 4
   deadzone: 0.2
   turnSpeed: 0.25
+  heightTreshold: 0.2
+  zAngleTolerance: 10
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
   triggerTreshold: 0.1
   moveState: 0
   actionState: 0
@@ -356,6 +363,35 @@ MonoBehaviour:
   linkMaterial: {fileID: 2100000, guid: e720cf03c3fc89e44b0a2e0a163c3005, type: 2}
   linkWidth: 0.12
   warningPanel: {fileID: 0}
+--- !u!114 &5564275353483555727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69913409235962623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f97c8609cfdb4644b853a8bebc2e95c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDistance: 1
+  maxDistance: 7.5
+  speed: 100
+  unstoppableDash: 0
+  invincibleDuringDash: 0
+  cooldown: 1
+  state: 0
+  visuals: {fileID: 4621407884147341700}
+  clonePerSec: 50
+  cloneDuration: 0.2
+  cloneMaterial: {fileID: 2100000, guid: 2ccfcedc2b941624b96276fac47eb6eb, type: 2}
+  dashTrail: {fileID: 8651325449361012943, guid: 5766bf46f958ddf498eea2f18e4c57ea,
+    type: 3}
+  startDashFX: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+    type: 3}
+  endDashFX: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
+    type: 3}
 --- !u!1 &195533169622842252
 GameObject:
   m_ObjectHideFlags: 0

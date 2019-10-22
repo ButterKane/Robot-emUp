@@ -44,7 +44,7 @@ public class EnemyManager : MonoBehaviour
             LaunchSurrounding(enemiesReadyToActOnTwo);
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             SpawnEnemies();
         }
