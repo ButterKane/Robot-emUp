@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
+    [Header("References")]
     public GameObject enemyPrefab;
-
-    public GameObject enemyCurrentlyAttacking = null;
-
-    public List<EnemyBehaviour> enemies;
-
     public List<Transform> enemySpawnPoints;
-
-    public GameObject playerOne;
-    public GameObject playerTwo;
-
     public GameObject surrounderPrefab;
 
-    private GameObject surrounderInstance;
+    [Space(2)]
+    [Header("Auto-assigned References")]
+    public GameObject playerOne;
+    public GameObject playerTwo;
+    public GameObject enemyCurrentlyAttacking = null;
+    public List<EnemyBehaviour> enemies;
 
+    private GameObject surrounderInstance;
     private bool isSurroundCooldownRunning;
 
     public void Start()

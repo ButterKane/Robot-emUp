@@ -73,6 +73,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         health = maxHealth;
         followPlayer = false;
         state = EnemyState.Idle;
+        GameManager.i.enemyManager.enemies.Add(this);
     }
 
     // Update is called once per frame
@@ -142,6 +143,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         if (health <= 0)
         {
             Instantiate(destroyedFXPrefab, self.position, Quaternion.identity);
+            GameManager.i.enemyManager.enemies.Remove(this);
             Destroy(self.gameObject);
         }
     }
