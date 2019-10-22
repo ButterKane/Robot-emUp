@@ -9,14 +9,15 @@ public enum MoveState
     Idle,
     Walk,
     Blocked,
+	Jumping,
+	Climbing
 }
 public enum ActionState
 {
 	None,
 	Aiming,
 	Shooting,
-	Receiving,
-	Dunking
+	Receiving
 }
 
 public enum SlowReason
@@ -47,8 +48,9 @@ public class PlayerController : MonoBehaviour
     public bool isInvincible;
     public float invicibilityTime = 1;
 
-    [Space(2)]
-    [Header("Movement settings")]
+	[Space(2)]
+	[Header("Movement settings")]
+	public float jumpForce;
     public AnimationCurve accelerationCurve;
 
 	[Tooltip("Minimum required speed to go to walking state")] public float minWalkSpeed = 0.1f;
@@ -61,6 +63,13 @@ public class PlayerController : MonoBehaviour
     public float onGroundGravityMultiplyer;
 	public float deadzone = 0.2f;
 	[Range(0.01f, 1f)] public float turnSpeed = .25f;
+
+	[Header("Climb settings")]
+	public float heightTreshold = 0.2f;
+	public float zAngleTolerance = 10f;
+	public float timeBeforeClimb = 0.2f;
+	public float minDistanceToClimb = 1f;
+	public float climbDuration = 0.5f;
 
 	[Space(2)]
 	[Header("Input settings")]
@@ -80,6 +89,9 @@ public class PlayerController : MonoBehaviour
 	private float speed;
 	private int currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
+	private bool grounded = false;
+	private float timeInAir;
+	private float climbingHoldTime;
 
 	//xInput refs
 	GamePadState state;
@@ -89,8 +101,10 @@ public class PlayerController : MonoBehaviour
 	private Camera cam;
 	private Rigidbody rb;
 	private Animator animator;
+
 	private PassController passController;
 	private DunkController dunkController;
+	private DashController dashController;
 
 	//Events
 	private static System.Action onShootEnd;
@@ -105,6 +119,7 @@ public class PlayerController : MonoBehaviour
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
 		dunkController = GetComponent<DunkController>();
+		dashController = GetComponent<DashController>();
 
 		currentHealth = maxHealth;
     }
@@ -125,6 +140,7 @@ public class PlayerController : MonoBehaviour
         ApplyCustomGravity();
         UpdateAnimatorBlendTree();
 		UpdateSpeedCoef();
+		CheckIfGrounded();
 	}
 
     #region Input
@@ -170,6 +186,18 @@ public class PlayerController : MonoBehaviour
 		{
 			dunkController.Dunk();
 		}
+		if (state.Triggers.Right > triggerTreshold && dashController.CanDash())
+		{
+			dashController.Dash();
+		}
+		if (state.Buttons.A == ButtonState.Pressed && CanJump())
+		{
+			Jump();
+		}
+		if (Mathf.Abs(state.ThumbSticks.Left.X) > 0.5f || Mathf.Abs(state.ThumbSticks.Left.Y) > 0.5f)
+		{
+			Climb();
+		}
 	}
 
     void KeyboardInput()
@@ -196,9 +224,17 @@ public class PlayerController : MonoBehaviour
 		{
 			passController.Receive(FindObjectOfType<BallBehaviour>());
 		}
-		if (Input.GetKeyDown(KeyCode.Space) && passController.GetBall() == null)
+		if (Input.GetKeyDown(KeyCode.Space) && dunkController.CanDunk())
 		{
 			dunkController.Dunk();
+		}
+		if (Input.GetKeyDown(KeyCode.E) && dashController.CanDash())
+		{
+			dashController.Dash();
+		}
+		if (Input.GetKeyDown(KeyCode.Space) && CanJump())
+		{
+			Jump();
 		}
     }
 
@@ -285,6 +321,67 @@ public class PlayerController : MonoBehaviour
         speed = rb.velocity.magnitude;
     }
 
+	void Climb()
+	{
+		Collider foundLedge = CheckForLedge();
+		if (foundLedge != null)
+		{
+			Debug.Log("Starting climb " + foundLedge);
+			climbingHoldTime += Time.deltaTime;
+		} else
+		{
+			climbingHoldTime = 0;
+			Debug.Log("Finished climb");
+		}
+		if (climbingHoldTime >= timeBeforeClimb)
+		{
+			Debug.Log("ClimbingLedge");
+			moveState = MoveState.Climbing;
+			StartCoroutine(ClimbLedge(foundLedge));
+		}
+	}
+
+	bool CanJump()
+	{
+		if (grounded && moveState != MoveState.Blocked) { return true; }
+		return false;
+	}
+
+	bool CanClimb()
+	{
+		if (moveState == MoveState.Blocked || moveState == MoveState.Climbing)
+		{
+			return false;
+		}
+		return true;
+	}
+	void Jump()
+	{
+		rb.AddForce(Vector3.up * jumpForce);
+		moveState = MoveState.Jumping;
+		grounded = false;
+	}
+
+	void CheckIfGrounded()
+	{
+		if (!grounded)
+		{
+			timeInAir += Time.deltaTime;
+			if (timeInAir >= 0.2f)
+			{
+				RaycastHit hit;
+				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
+				{
+					grounded = true;
+					timeInAir = 0;
+					if (moveState == MoveState.Jumping) { 
+						moveState = MoveState.Idle; 
+					}
+				}
+			}
+		}
+	}
+
     void ApplyDrag()
     {
         Vector3 myVel = rb.velocity;
@@ -319,9 +416,6 @@ public class PlayerController : MonoBehaviour
 				passController.DisablePassPreview();
 				animator.ResetTrigger("PrepareShootingTrigger");
 				animator.SetTrigger("ShootingMissedTrigger");
-				break;
-			case ActionState.Dunking:
-				passController.DisablePassPreview();
 				break;
 		}
 		actionState = _newState;
@@ -394,6 +488,11 @@ public class PlayerController : MonoBehaviour
 		return transform.position + Vector3.up * 1;
 	}
 
+	public Vector3 GetHeadPosition()
+	{
+		return transform.position + Vector3.up * 1.8f;
+	}
+
 	#endregion
 
 	#region Private functions
@@ -424,11 +523,48 @@ public class PlayerController : MonoBehaviour
 		GamePad.SetVibration(playerIndex, 0f, 0f);
 	}
 
+	Collider CheckForLedge()
+	{
+		if (!CanClimb()) { return null; }
+		RaycastHit hit;
+		if (Physics.Raycast(GetHeadPosition(), transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
+		{
+			if (hit.transform.tag == "Ledge")
+			{
+				return hit.collider;
+			}
+		}
+		return null;
+	}
+
+	public void SetInvincible(bool _state)
+	{
+		isInvincible = _state;
+	}
     private IEnumerator InvicibleFrame()
     {
         isInvincible = true;
         yield return new WaitForSeconds(invicibilityTime);
         isInvincible = false;
     }
+
+	private IEnumerator ClimbLedge(Collider _ledge)
+	{
+		Vector3 startPosition = transform.position;
+		//Vector3 endPosition = _ledge.ClosestPointOnBounds(startPosition);
+		Vector3 endPosition = startPosition;
+		endPosition.y = _ledge.transform.position.y + _ledge.bounds.extents.y + 1f;
+		GameObject endPosGuizmo = new GameObject();
+		endPosGuizmo.transform.position = endPosition;
+		//Go to the correct Y position
+		for (float i = 0; i < climbDuration; i+= Time.deltaTime)
+		{
+			transform.position = Vector3.Lerp(startPosition, endPosition, i / climbDuration);
+			yield return new WaitForEndOfFrame();
+		}
+		transform.position = endPosition;
+		rb.AddForce(Vector3.up * 450 + transform.forward * 450);
+		moveState = MoveState.Idle;
+	}
     #endregion
 }

@@ -33,6 +33,7 @@ public class EnemyManager : MonoBehaviour
     {
         if (!isSurroundCooldownRunning)
         {
+            Debug.Log("bidouille");
             StartCoroutine(TimeBetweenSurrounding());
             List<EnemyBehaviour> enemiesReadyToActOnOne = new List<EnemyBehaviour>();
             List<EnemyBehaviour> enemiesReadyToActOnTwo = new List<EnemyBehaviour>();
@@ -43,7 +44,7 @@ public class EnemyManager : MonoBehaviour
             LaunchSurrounding(enemiesReadyToActOnTwo);
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             SpawnEnemies();
         }
@@ -102,6 +103,7 @@ public class EnemyManager : MonoBehaviour
     /// <param name="list"></param>
     private void LaunchSurrounding(List<EnemyBehaviour> list) 
     {
+        Debug.Log("radouille");
         if (list.Count > 0)
         {
             Transform target = list[0].target;
