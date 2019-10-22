@@ -10,14 +10,14 @@ public enum DashState
 public class DashController : MonoBehaviour
 {
 	[Header("Settings")]
-	public float minDistance;
-	public float maxDistance;
-	public float speed;
+	public float minDistance = 2f;
+	public float maxDistance = 3f;
+	public float speed = 10f;
 
 	public bool unstoppableDash;
 	public bool invincibleDuringDash;
 
-	public float cooldown;
+	public float cooldown = 3f;
 
 	public DashState state;
 
@@ -27,8 +27,8 @@ public class DashController : MonoBehaviour
 	private float currentCooldown;
 	private GameObject currentDashFX;
 
-	public float clonePerSec;
-	public float cloneDuration;
+	public float clonePerSec = 10f;
+	public float cloneDuration = 0.5f;
 
 	public Material cloneMaterial;
 

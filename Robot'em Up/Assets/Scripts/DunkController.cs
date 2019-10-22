@@ -16,18 +16,18 @@ public enum DunkState
 public class DunkController : MonoBehaviour
 {
 	[Header("Settings")]
-	public float dunkJumpHeight;
-	public float dunkJumpLength;
-	public float dunkJumpDuration;
-	public float dunkJumpFreezeDuration;
+	public float dunkJumpHeight = 5f;
+	public float dunkJumpLength = 1f;
+	public float dunkJumpDuration = 2f;
+	public float dunkJumpFreezeDuration = 1f;
 
-	public float dunkDashSpeed;
-	public float dunkExplosionRadius;
-	public int dunkDamages;
-	public float dunkProjectionForce;
+	public float dunkDashSpeed = 5f;
+	public float dunkExplosionRadius = 10f;
+	public int dunkDamages = 30;
+	public float dunkProjectionForce = 10f;
 
-	public float dunkCancelledFallSpeed;
-	public float dunkDashDelay;
+	public float dunkCancelledFallSpeed = 2f;
+	public float dunkDashDelay = 1f;
 
 
 	private Rigidbody rb;
