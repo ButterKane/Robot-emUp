@@ -5,7 +5,9 @@ using UnityEngine;
 public class PuzzleLink : MonoBehaviour, IHitable
 {
     public PuzzleDatas puzzleData;
-    public GameObject FX_Activation;
+    private GameObject FX_Activation;
+    private GameObject FX_Linked;
+    private GameObject FX_LinkEnd;
     private int _hitCount;
     public int hitCount
     {
@@ -28,7 +30,19 @@ public class PuzzleLink : MonoBehaviour, IHitable
     {
         if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
         {
-            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, Vector3.forward, Vector3.one, transform);
+
+            if (FX_Linked != null)
+            {
+                Destroy(FX_Linked);
+            }
+
+            if (FX_LinkEnd != null)
+            {
+                Destroy(FX_LinkEnd);
+            }
+
+            FX_Linked = FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, _impactVector, Vector3.one, transform);
+            
 
             if (FX_Activation == null)
             {
@@ -64,12 +78,17 @@ public class PuzzleLink : MonoBehaviour, IHitable
         if (chargingTime <= 0 && isActivated)
         {
             isActivated = false;
-            FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, Vector3.forward, Vector3.one, transform);
+            FX_LinkEnd = FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, Vector3.forward, Vector3.one, transform);
             if (FX_Activation != null)
             {
                 Destroy(FX_Activation);
             }
-            FXManager.InstantiateFX(puzzleData.LinkEnd, Vector3.up * 1, true, Vector3.forward,Vector3.one, transform);
+            if (FX_Linked != null)
+            {
+                Destroy(FX_Linked);
+            }
+            
+                
             
         }
 
