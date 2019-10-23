@@ -186,6 +186,7 @@ public class BallBehaviour : MonoBehaviour
 						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
 						{
 							hitGameObjects.Add(potentialHitableObjectFound);
+                            Debug.Log(hit.transform.gameObject.name);
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, currentBallDatas.damages, DamageSource.Ball);
 						}
 						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) { break; }
