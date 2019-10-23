@@ -11,10 +11,20 @@ public class Surrounder : MonoBehaviour
     
     void Awake()
     {
+        RaycastHit hit;
         for (int i = 0; i < points.Count; i++)
         {
             pointsDic.Add(i, points[i]);
             pointsScripts[i] = pointsDic[i].GetComponent<SurroundingPoint>();
+        }
+        for (int j = 0; j < pointsDic.Count; j++)
+        {
+            int layerMask = 1 << 12; // Layer 12 = Environment
+            if (Physics.Raycast(transform.position, pointsDic[j].position - transform.position, out hit, (pointsDic[j].position - transform.position).magnitude, layerMask)) 
+            {
+                Debug.Log("deactivated at index " + j);
+                pointsDic[j].gameObject.SetActive(false);   // Deactivate points that spawn inside a wall or environment 
+            }
         }
     }
     
@@ -48,7 +58,7 @@ public class Surrounder : MonoBehaviour
 
         for (int i = 0; i < pointsScripts.Count; i++)
         {
-            if(! pointsScripts[i].isOccupied)
+            if(!pointsScripts[i].isOccupied && pointsScripts[i].gameObject.activeSelf)
             {
                 availablePoints.Add(points[i]);
             }
