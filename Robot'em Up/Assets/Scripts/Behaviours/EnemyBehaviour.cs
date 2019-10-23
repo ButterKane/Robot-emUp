@@ -273,6 +273,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Transform surroundingPoint = script.GetSurroundingPoint();
         Vector3 p0 = self.position;
         Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
+        p2 = SwissArmyKnife.GetFlattedDownPosition(p2, self.position);
 
         int moveSens = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up) > 1 ? 1 : -1;
 
@@ -283,14 +284,12 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         do
         {
             p0 = self.position;
-            p2 = script.GetAPositionFromPoint(surroundingPoint);
-            p2 = new Vector3(p2.x, self.position.y, p2.z);
             p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * 0.5f;
 
             Vector3 pNow = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
 
             self.position = pNow;
-
+            Debug.DrawRay(self.position, Vector3.up, Color.yellow, 1f);
             float newDistance = (p2 - p0).magnitude;
 
             if (t < 1)
