@@ -20,5 +20,6 @@ public class PuzzleDatas : ScriptableObject
     public GameObject Linked;
     public GameObject Linking;
     public GameObject LinkEnd;
+    public GameObject LinkStop;
     public GameObject DoorOpening;
 }
