@@ -15,7 +15,6 @@ public class Surrounder : MonoBehaviour
         {
             pointsDic.Add(i, points[i]);
             pointsScripts[i] = pointsDic[i].GetComponent<SurroundingPoint>();
-            //Bidouille
         }
     }
     
@@ -36,11 +35,11 @@ public class Surrounder : MonoBehaviour
     {
         Vector3 fromCenterToPoint = (pointTransform.position - transform.position).normalized;
 
-        Vector3 positionFromPoint = pointTransform.position + fromCenterToPoint * 8;
+        Vector3 positionFromCenter = transform.position + fromCenterToPoint * Random.Range(10, maxDistanceFromCenter);
 
-        Debug.DrawLine(transform.position, positionFromPoint, Color.green, 3);
+        Debug.DrawLine(transform.position, positionFromCenter, Color.green, 3);
 
-        return positionFromPoint;
+        return positionFromCenter;
     }
 
     public List<Transform> GetAvailablePoints()

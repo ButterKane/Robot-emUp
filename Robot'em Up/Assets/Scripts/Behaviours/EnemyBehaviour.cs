@@ -10,6 +10,7 @@ public enum EnemyState
     Following,
     Attacking,
     Surrounding,
+    Null,
     Count
 }
 public class EnemyBehaviour : MonoBehaviour, IHitable
@@ -25,7 +26,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Space(2)]
     [Header("Auto-assigned References")]
     public Transform target;
-
     public Transform playerOne;
     public Transform playerTwo;
 
@@ -43,6 +43,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public bool followPlayer;
     public float followSpeed = 100f;
+    public float timeBeforeSurround = 2f;
 
     private float distanceToOne;
     private float distanceToTwo;
@@ -74,68 +75,114 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         followPlayer = false;
         state = EnemyState.Idle;
         GameManager.i.enemyManager.enemies.Add(this);
+
+        WhatShouldIDo(EnemyState.Idle);
     }
 
-    // Update is called once per frame
-    void Update()
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //    GetTarget();
+
+    //    //if (Input.GetKeyDown(KeyCode.P))
+    //    //{
+    //    //    DamageTaken(10);
+    //    //}
+
+    //    if (state == EnemyState.Following)
+    //    {
+    //        if (target)
+    //        {
+    //            FollowPlayer(target);
+    //        }
+    //    }
+
+    //    if (state == EnemyState.Attacking)
+    //    {
+    //        if (!isAttacking)
+    //        {
+    //            LaunchAttack(target);
+    //            isAttacking = true;
+    //        }
+    //    }
+
+    //    if (state == EnemyState.Idle)
+    //    {
+    //        WhatShouldIDo();
+    //    }
+    //}
+
+
+
+    public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
     {
-        GetTarget();
-
-        //if (Input.GetKeyDown(KeyCode.P))
-        //{
-        //    DamageTaken(10);
-        //}
-
-        if (state == EnemyState.Following)
+        if (priorityState != EnemyState.Null)
         {
-            if (target)
+            state = priorityState;
+        }
+        else
+        {
+            GetTarget();
+
+            if ((target.position - self.position).magnitude < attackDistance)
             {
-                FollowPlayer(target);
+                if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
+                {
+                    GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
+                    state = EnemyState.Attacking;
+                }
+                else
+                {
+                    state = EnemyState.Idle;
+                }
+            }
+            else if (target != null)
+            {
+                state = EnemyState.Following;
             }
         }
-
-        if (state == EnemyState.Attacking)
+        
+        // Compute the choice according to the state
+        switch (state)
         {
-            if (!isAttacking)
-            {
+            case EnemyState.Idle:
+                StartCoroutine(WaitABit());
+                break;
+
+            case EnemyState.Moving:
+                // Simple move in an area, not following a player
+                break;
+
+            case EnemyState.Following:
+                StartCoroutine(FollowPlayer(target));
+                break;
+
+            case EnemyState.Attacking:
                 LaunchAttack(target);
-                isAttacking = true;
-            }
-        }
+                break;
 
-        if (state == EnemyState.Idle)
-        {
-            WhatShouldIDo();
-        }
-    }
+            case EnemyState.Surrounding:
+                LaunchSurrounding();
+                break;
 
-    public void WhatShouldIDo()
-    {
-        if ((target.position - self.position).magnitude < attackDistance)
-        {
-            if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
-            {
-                GameManager.i.enemyManager.enemyCurrentlyAttacking = self.gameObject;
-                state = EnemyState.Attacking;
-            }
-            else
-            {
-                state = EnemyState.Idle;
-            }
-        }
-        else if (target != null)
-        {
-            state = EnemyState.Following;
+            default:
+                state = EnemyState.Idle; // Making sure the enemy never "bugs" and ends up with no state
+                break;
         }
     }
 
 
     public void DamageTaken(int damage)
     {
+        StopEverythingMethod();
+        rb.velocity = Vector3.zero;
+
         animator.SetTrigger("Hit"); // play animation
         Instantiate(hitFXPrefab, self.position, Quaternion.identity);
         health -= damage;
         CheckHealth();
+
+        WhatShouldIDo();
     }
 
     public void CheckHealth()
@@ -148,22 +195,35 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public void FollowPlayer(Transform playerToFollow)
+    public IEnumerator FollowPlayer(Transform playerToFollow)
     {
-        state = EnemyState.Following;
-
         animator.SetBool("FollowingPlayer", true);
+        float followTime = 0;
 
-        self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, self.position));
+        while ((target.position - self.position).magnitude > attackDistance && followTime <= timeBeforeSurround) 
+        {
+            self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, self.position));
 
-        rb.velocity = Vector3.zero;
+            rb.velocity = Vector3.zero;
 
-        rb.AddForce(self.forward * followSpeed * Time.deltaTime, ForceMode.VelocityChange);
+            rb.AddForce(self.forward * followSpeed * Time.deltaTime, ForceMode.VelocityChange);
 
-        WhatShouldIDo();
+            followTime += Time.deltaTime;
+
+            yield return null;
+        }
+        
+        if (followTime >= timeBeforeSurround)
+        {
+            WhatShouldIDo(EnemyState.Surrounding);
+        }
+        else
+        {
+            WhatShouldIDo();
+        }
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
         {
@@ -173,6 +233,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - self.position).normalized, pushForce, newCollisionPoint);
                 collision.gameObject.GetComponent<PlayerController>().DamagePlayer(10);
             }
+            StopAllCoroutines();
+            WhatShouldIDo();
         }
     }
 
@@ -184,12 +246,27 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
+    public void LaunchSurrounding()
+    {
+        Debug.Log("target of " + self.name + " is " + target);
+
+        if (GameManager.i.enemyManager.surrounderInstance != null)
+        {
+            surrounder = GameManager.i.enemyManager.surrounderInstance;
+        }
+        else
+        {
+            surrounder = GameManager.i.enemyManager.SpawnSurrounderInstance(target.position);
+        }
+
+        StartCoroutine(SurroundPlayer(target.gameObject));
+    }
+
     public IEnumerator SurroundPlayer(GameObject player)
     {
-        Debug.Log("surrounding");
-        state = EnemyState.Surrounding;
         Surrounder script = surrounder.GetComponent<Surrounder>();
         surrounder.transform.position = player.transform.position;
+
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
         // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
 
@@ -224,7 +301,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         } while ((p0 - p2).magnitude > 0.1f);
 
         yield return null;
-        state = EnemyState.Idle;
+
+        WhatShouldIDo();
     }
 
     public void GetTarget()
@@ -244,9 +322,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void LaunchAttack(Transform target)
     {
-        StopAllCoroutines();
+        transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, self.position));
         StartCoroutine(attackScript.JumpAttack(target));
         animator.SetTrigger("PrepareAttack");
+    }
+
+    public IEnumerator WaitABit()
+    {
+        state = EnemyState.Idle;
+        yield return new WaitForSeconds(1.5f);
+        WhatShouldIDo();
     }
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source)
@@ -254,7 +339,17 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
         MomentumManager.IncreaseMomentum(0.1f);
-        StopAllCoroutines();
+
+        StopEverythingMethod();
+
         WhatShouldIDo();
+    }
+
+    public void StopEverythingMethod()
+    {
+        StopAllCoroutines();
+        if (GameManager.i.enemyManager.enemyCurrentlyAttacking == this.gameObject) { GameManager.i.enemyManager.enemyCurrentlyAttacking = null; }
+        animator.SetTrigger("Reset");
+
     }
 }

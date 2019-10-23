@@ -29,8 +29,10 @@ public class EnemyAttack : MonoBehaviour
 
         yield return new WaitForSeconds(pounceRecoveryTime);
 
-        behaviourScript.state = EnemyState.Idle;
+        
         behaviourScript.isAttacking = false;
+
+        behaviourScript.WhatShouldIDo();
     }
 
     public void ResetAttackGlobals()
