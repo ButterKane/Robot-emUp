@@ -207,6 +207,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public IEnumerator SurroundPlayer(GameObject player)
     {
+        float traveledDistance = 0f;
         Surrounder script = _surrounder.GetComponent<Surrounder>();
         _surrounder.transform.position = player.transform.position;
 
@@ -224,23 +225,36 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         float distance = (p2 - p0).magnitude;
 
         float t = 0;
+        float timeNotMovingMuch = 0f;
+
         do
         {
             p0 = _self.position;
             p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * 0.5f;
 
             Vector3 pNow = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
-
+            
             _self.position = pNow;
-            Debug.DrawRay(_self.position, Vector3.up, Color.yellow, 1f);
+
+            traveledDistance = (pNow - p0).magnitude;
+
             float newDistance = (p2 - p0).magnitude;
+
+            if (traveledDistance < 0.5f)    // Make sure the enemy isn't blocked
+            {
+                timeNotMovingMuch += Time.deltaTime;
+            }
+            else
+            {
+                timeNotMovingMuch = 0f;
+            }
 
             if (t < 1)
             {
                 t += Time.deltaTime / (newDistance * 25);
             }
             yield return null;
-        } while ((p0 - p2).magnitude > 0.1f);
+        } while ((p0 - p2).magnitude > 0.1f && timeNotMovingMuch < 0.5f);
 
         yield return null;
 
