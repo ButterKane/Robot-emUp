@@ -22,4 +22,14 @@ public class PuzzleDatas : ScriptableObject
     public GameObject LinkEnd;
     public GameObject LinkStop;
     public GameObject DoorOpening;
+
+
+    [Header("Materials")]
+
+    public Material M_Forcefield_Active;
+    public Material M_Forcefield_Desactivated;
+    public Material M_ForcefieldPlayers_Active;
+    public Material M_ForcefieldPlayers_Desactivated;
+
+
 }

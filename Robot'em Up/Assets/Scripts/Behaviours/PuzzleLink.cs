@@ -58,6 +58,18 @@ public class PuzzleLink : MonoBehaviour, IHitable
             {
                 item.checkIfValid();
             }
+
+
+            PuzzleForceField[] forcefields = FindObjectsOfType<PuzzleForceField>();
+            foreach (var item in forcefields)
+            {
+                if (item.LinkedPuzzleLink == this)
+                {
+                    item.ChangeState(false, item.alsoBlockPlayer);
+                }
+            }
+            
+
         }
 
     }
@@ -87,9 +99,17 @@ public class PuzzleLink : MonoBehaviour, IHitable
             {
                 Destroy(FX_Linked);
             }
-            
-                
-            
+
+            PuzzleForceField[] forcefields = FindObjectsOfType<PuzzleForceField>();
+            foreach (var item in forcefields)
+            {
+                if (item.LinkedPuzzleLink == this)
+                {
+                    item.ChangeState(true, item.alsoBlockPlayer);
+                }
+            }
+
+
         }
 
 
