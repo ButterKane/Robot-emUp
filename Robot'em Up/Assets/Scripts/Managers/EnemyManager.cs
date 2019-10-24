@@ -37,7 +37,14 @@ public class EnemyManager : MonoBehaviour
     public GameObject SpawnSurrounderInstance(Vector3 targetPosition)
     {
         surrounderInstance = Instantiate(surrounderPrefab, targetPosition, Quaternion.identity);
+        StartCoroutine(WaitBeforeDestroySurrounder());
         return surrounderInstance;
+    }
+
+    public IEnumerator WaitBeforeDestroySurrounder()
+    {
+        yield return new WaitForSeconds(1f);
+        Destroy(surrounderInstance);
     }
 
     public void SpawnEnemies()
