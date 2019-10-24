@@ -544,8 +544,10 @@ public class PlayerController : MonoBehaviour
     private IEnumerator InvicibleFrame()
     {
         isInvincible = true;
+        gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
         yield return new WaitForSeconds(invicibilityTime);
         isInvincible = false;
+        gameObject.layer = 8; // 8 = Player Layer
     }
 
 	private IEnumerator ClimbLedge(Collider _ledge)
