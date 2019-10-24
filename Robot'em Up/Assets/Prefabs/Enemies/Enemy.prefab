@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 7575868252087981992}
   - component: {fileID: 7575868252087981994}
   - component: {fileID: 7575868252087981993}
-  - component: {fileID: 5743556816505803441}
+  - component: {fileID: 2958752795699739273}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -301,28 +301,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8acf5c5c69febb4fa452fe332edb3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 7575868252087981995}
-  rb: {fileID: 7575868252087981992}
-  hitFXPrefab: {fileID: 2476377470677527115, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+  _self: {fileID: 7575868252087981995}
+  Rb: {fileID: 7575868252087981992}
+  _hitFXPrefab: {fileID: 4215827005417181150, guid: 7562ab785cbac0148b3fc240552d01ff,
     type: 3}
-  destroyedFXPrefab: {fileID: 3832623334209857440, guid: 235eb44efa78dd8488868d0efce15912,
+  _destroyedFXPrefab: {fileID: 3832623334209857440, guid: 235eb44efa78dd8488868d0efce15912,
     type: 3}
-  attackScript: {fileID: 5743556816505803441}
-  animator: {fileID: 7575868252087981994}
-  target: {fileID: 0}
-  playerOne: {fileID: 0}
-  playerTwo: {fileID: 0}
-  state: 0
-  isAttacking: 0
-  maxHealth: 100
-  health: 0
-  attackDistance: 7
-  pushForce: 700
-  followPlayer: 0
-  followSpeed: 300
-  surrounder: {fileID: 602022937994174095, guid: 435ebdfea89f14e4395bc9182ffa13f6,
-    type: 3}
---- !u!114 &5743556816505803441
+  _attackScript: {fileID: 0}
+  Animator: {fileID: 7575868252087981994}
+  Target: {fileID: 0}
+  _playerOne: {fileID: 0}
+  _playerTwo: {fileID: 0}
+  State: 0
+  IsAttacking: 0
+  MaxHealth: 100
+  Health: 0
+  AttackDistance: 7
+  PushForce: 300
+  IsFollowingPlayer: 0
+  FollowSpeed: 100
+  TimeBeforeSurround: 2
+  _surrounder: {fileID: 0}
+--- !u!114 &2958752795699739273
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -331,12 +331,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7575868252087982004}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 332070321c7e9e64cad1f730b75391f8, type: 3}
+  m_Script: {fileID: 11500000, guid: 03d194857a3a9ee4c8277fea15c382d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  behaviourScript: {fileID: 7575868252087981993}
-  buildUpPounceTime: 1.5
-  pounceRecoveryTime: 1.5
+  _behaviourScript: {fileID: 7575868252087981993}
+  BuildUpPounceTime: 1.5
+  PounceRecoveryTime: 1.5
 --- !u!1 &7575868252088872711
 GameObject:
   m_ObjectHideFlags: 0
