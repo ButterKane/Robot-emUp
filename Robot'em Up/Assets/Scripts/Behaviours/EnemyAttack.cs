@@ -5,34 +5,33 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     [Header("References")]
-    public EnemyBehaviour behaviourScript;
+    [SerializeField] private EnemyBehaviour _behaviourScript;
 
     [Space(2)]
     [Header("Variables")]
-    public float buildUpPounceTime = 1.5f;
-    public float pounceRecoveryTime = 1.5f;
+    public float BuildUpPounceTime = 1.5f;
+    public float PounceRecoveryTime = 1.5f;
 
 
     public IEnumerator JumpAttack(Transform target)
     {
-        behaviourScript.state = EnemyState.Attacking;
+        _behaviourScript.State = EnemyState.Attacking;
 
-        behaviourScript.animator.SetTrigger("PrepareAttack");
+        _behaviourScript.Animator.SetTrigger("PrepareAttack");
 
-        yield return new WaitForSeconds(buildUpPounceTime);
+        yield return new WaitForSeconds(BuildUpPounceTime);
 
-        behaviourScript.animator.SetTrigger("Pounce");
-        behaviourScript.rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
-        behaviourScript.rb.AddForce((target.position - transform.position).normalized * 10, ForceMode.Impulse);
+        _behaviourScript.Animator.SetTrigger("Pounce");
+        _behaviourScript.Rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        _behaviourScript.Rb.AddForce((target.position - transform.position).normalized * 10, ForceMode.Impulse);
 
         ResetAttackGlobals();
 
-        yield return new WaitForSeconds(pounceRecoveryTime);
-
+        yield return new WaitForSeconds(PounceRecoveryTime);
         
-        behaviourScript.isAttacking = false;
+        _behaviourScript.IsAttacking = false;
 
-        behaviourScript.WhatShouldIDo();
+        _behaviourScript.WhatShouldIDo();
     }
 
     public void ResetAttackGlobals()
