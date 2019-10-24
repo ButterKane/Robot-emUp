@@ -77,6 +77,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         GameManager.i.enemyManager.enemies.Add(this);
 
         WhatShouldIDo(EnemyState.Idle);
+        _self = transform;
     }
 
     public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
