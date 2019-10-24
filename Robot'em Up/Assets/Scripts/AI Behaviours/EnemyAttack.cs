@@ -5,15 +5,14 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private EnemyBehaviour _behaviourScript;
+    [SerializeField] protected EnemyBehaviour _behaviourScript;
 
     [Space(2)]
     [Header("Variables")]
     public float BuildUpPounceTime = 1.5f;
     public float PounceRecoveryTime = 1.5f;
-
-
-    public IEnumerator JumpAttack(Transform target)
+    
+    public virtual IEnumerator Attack(Transform target)
     {
         _behaviourScript.State = EnemyState.Attacking;
 
@@ -28,7 +27,7 @@ public class EnemyAttack : MonoBehaviour
         ResetAttackGlobals();
 
         yield return new WaitForSeconds(PounceRecoveryTime);
-        
+
         _behaviourScript.IsAttacking = false;
 
         _behaviourScript.WhatShouldIDo();

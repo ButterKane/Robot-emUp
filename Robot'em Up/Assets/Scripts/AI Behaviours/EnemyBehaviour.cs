@@ -25,7 +25,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Auto-assigned References")]
-    [SerializeField] private Transform _target;
+    public Transform Target;
     [SerializeField] private Transform _playerOne;
     [SerializeField] private Transform _playerTwo;
 
@@ -89,7 +89,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         {
             GetTarget();
 
-            if ((_target.position - _self.position).magnitude < AttackDistance)
+            if ((Target.position - _self.position).magnitude < AttackDistance)
             {
                 if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
                 {
@@ -101,7 +101,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     State = EnemyState.Idle;
                 }
             }
-            else if (_target != null)
+            else if (Target != null)
             {
                 State = EnemyState.Following;
             }
@@ -119,11 +119,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 break;
 
             case EnemyState.Following:
-                StartCoroutine(FollowPlayer(_target));
+                StartCoroutine(FollowPlayer(Target));
                 break;
 
             case EnemyState.Attacking:
-                LaunchAttack(_target);
+                LaunchAttack(Target);
                 break;
 
             case EnemyState.Surrounding:
@@ -183,16 +183,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
         else
         {
-            _surrounder = GameManager.i.enemyManager.SpawnSurrounderInstance(_target.position);
+            _surrounder = GameManager.i.enemyManager.SpawnSurrounderInstance(Target.position);
         }
 
-        StartCoroutine(SurroundPlayer(_target.gameObject));
+        StartCoroutine(SurroundPlayer(Target.gameObject));
     }
 
     public void LaunchAttack(Transform target)
     {
         transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, _self.position));
-        StartCoroutine(_attackScript.JumpAttack(target));
+        StartCoroutine(_attackScript.Attack(target));
         Animator.SetTrigger("PrepareAttack");
     }
     #endregion
@@ -252,7 +252,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Animator.SetBool("FollowingPlayer", true);
         float followTime = 0;
 
-        while ((_target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
+        while ((Target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
         {
             _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, _self.position));
 
@@ -285,16 +285,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (_distanceToOne < _distanceToTwo)
         {
-            _target = _playerOne;
+            Target = _playerOne;
         }
         else
         {
-            _target = _playerTwo;
+            Target = _playerTwo;
         }
     }
-
-    
-
 
     private void DamageTaken(int damage)
     {
