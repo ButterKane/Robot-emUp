@@ -14,6 +14,12 @@ public class PlayerController : PawnController
 	private Camera cam;
 	private bool inputDisabled;
 
+	public bool enableDash;
+	public bool enableJump;
+	public bool enableDunk;
+	public bool enablePickOwnBall;
+	public bool enableMagnet;
+
 	private DunkController dunkController;
 	private DashController dashController;
 
@@ -64,15 +70,15 @@ public class PlayerController : PawnController
 		{
 			passController.Shoot();
 		}
-		if (state.Buttons.Y == ButtonState.Pressed)
+		if (state.Buttons.Y == ButtonState.Pressed && enableDunk)
 		{
 			dunkController.Dunk();
 		}
-		if (state.Triggers.Left > triggerTreshold)
+		if (state.Triggers.Left > triggerTreshold && enableDash)
 		{
 			dashController.Dash();
 		}
-		if (state.Buttons.A == ButtonState.Pressed && CanJump())
+		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
 			Jump();
 		}
@@ -107,15 +113,15 @@ public class PlayerController : PawnController
 		{
 			passController.Receive(FindObjectOfType<BallBehaviour>());
 		}
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space) && enableDunk)
 		{
 			dunkController.Dunk();
 		}
-		if (Input.GetKeyDown(KeyCode.E))
+		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
 			dashController.Dash();
 		}
-		if (Input.GetKeyDown(KeyCode.Space) && CanJump())
+		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{
 			Jump();
 		}
