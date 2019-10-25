@@ -65,11 +65,12 @@ public class PlayerController : MonoBehaviour
 	[Range(0.01f, 1f)] public float turnSpeed = .25f;
 
 	[Header("Climb settings")]
-	public float heightTreshold = 0.2f;
-	public float zAngleTolerance = 10f;
 	public float timeBeforeClimb = 0.2f;
 	public float minDistanceToClimb = 1f;
 	public float climbDuration = 0.5f;
+
+	public float climbForwardPushForce = 450f;
+	public float climbUpwardPushForce = 450f;
 
 	[Space(2)]
 	[Header("Input settings")]
@@ -87,7 +88,7 @@ public class PlayerController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	private float speed;
-	private int currentHealth;
+	public int currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
@@ -236,7 +237,12 @@ public class PlayerController : MonoBehaviour
 		{
 			Jump();
 		}
-    }
+		if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.5f || Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0.5f)
+		{
+			Climb();
+		}
+
+	}
 
     bool HasGamepad()
     {
@@ -326,17 +332,15 @@ public class PlayerController : MonoBehaviour
 		Collider foundLedge = CheckForLedge();
 		if (foundLedge != null)
 		{
-			//Debug.Log("Starting climb " + foundLedge);
 			climbingHoldTime += Time.deltaTime;
 		} else
 		{
 			climbingHoldTime = 0;
-			//Debug.Log("Finished climb");
 		}
 		if (climbingHoldTime >= timeBeforeClimb && foundLedge != null)
 		{
-			//Debug.Log("ClimbingLedge");
 			moveState = MoveState.Climbing;
+			animator.SetTrigger("ClimbTrigger");
 			StartCoroutine(ClimbLedge(foundLedge));
 		}
 	}
@@ -369,7 +373,6 @@ public class PlayerController : MonoBehaviour
 			timeInAir += Time.deltaTime;
 			if (timeInAir >= 0.2f)
 			{
-				RaycastHit hit;
 				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
 				{
 					grounded = true;
@@ -435,6 +438,16 @@ public class PlayerController : MonoBehaviour
 			speedCoef *= coef.speedCoef;
 		}
 		return speedCoef;
+	}
+
+	public int GetHealth()
+	{
+		return currentHealth;
+	}
+
+	public int GetMaxHealth()
+	{
+		return maxHealth;
 	}
 
 	public void AddSpeedCoef(SpeedCoef _speedCoef )
@@ -553,7 +566,6 @@ public class PlayerController : MonoBehaviour
 	private IEnumerator ClimbLedge(Collider _ledge)
 	{
 		Vector3 startPosition = transform.position;
-		//Vector3 endPosition = _ledge.ClosestPointOnBounds(startPosition);
 		Vector3 endPosition = startPosition;
 		endPosition.y = _ledge.transform.position.y + _ledge.bounds.extents.y + 1f;
 		GameObject endPosGuizmo = new GameObject();
@@ -565,8 +577,9 @@ public class PlayerController : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 		}
 		transform.position = endPosition;
-		rb.AddForce(Vector3.up * 450 + transform.forward * 450);
+		rb.AddForce(Vector3.up * climbUpwardPushForce + transform.forward * climbForwardPushForce);
 		moveState = MoveState.Idle;
+		animator.ResetTrigger("ClimbTrigger");
 	}
     #endregion
 }
