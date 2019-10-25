@@ -6,7 +6,6 @@ using UnityEditor;
 public class PuzzleForceField : PuzzleActivable, IHitable
 {
     private int _hitCount;
-    public PuzzleDatas puzzleData;
     public bool active = true;
     public bool alsoBlockPlayer = false;
     private MeshRenderer meshRenderer;
