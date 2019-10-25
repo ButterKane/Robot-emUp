@@ -22,6 +22,8 @@ public class PuzzleDatas : ScriptableObject
     public GameObject LinkEnd;
     public GameObject LinkStop;
     public GameObject DoorOpening;
+    public GameObject ElectricPlateActivate;
+    public GameObject ElectricPlateDamage;
 
 
     [Header("Materials")]
