@@ -41,9 +41,9 @@ public class HealthPanel : MonoBehaviour
 		{
 			float playerHealth = (float)linkedPawn.GetHealth() / (float)linkedPawn.GetMaxHealth() * (float)barCount;
 			int filledBarCount = Mathf.CeilToInt(playerHealth);
-			for (int i = 0; i < barCount; i++)
+			for (int i = barCount-1; i >= 0; i--)
 			{
-				if (i < filledBarCount)
+				if (i >= barCount - filledBarCount)
 				{
 					healthBars[i].sprite = filledBar;
 				} else
