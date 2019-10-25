@@ -1,0 +1,115 @@
+// Toony Colors Pro+Mobile 2
+// (c) 2014-2019 Jean Moreno
+
+// Shader Generator Module: Vertical Fog
+
+#FEATURES
+sngl	lbl="Vertical Fog"					kw=VERTICAL_FOG															nohelp				tt="Vertical Fog support based on the world position"
+mult	lbl="Color Interpolation"				kw=Linear|,Smooth|VERTICAL_FOG_SMOOTHSTEP		needs=VERTICAL_FOG		nohelp	indent		tt="How to interpolate between colors according to the min-max values"
+sngl	lbl="Use Lighting Settings Color"		kw=VERTICAL_FOG_COLOR	needs=VERTICAL_FOG								nohelp	indent		tt="Use the global fog color from the Lighting Settings window"
+sngl	lbl="Relative to Camera"				kw=VERTICAL_FOG_CAM		needs=VERTICAL_FOG								nohelp	indent		tt="Position threshold will be relative to the camera's Y world position"
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#PROPERTIES_NEW
+/// IF SUBSURFACE_SCATTERING
+	header			Subsurface Scattering
+	color			Subsurface Color			lighting, imp(color, label = "Color", default = (0.5, 0.5, 0.5, 1))
+	color			Subsurface Ambient Color	lighting, imp(color, label = "Ambient Color", default = (0.5, 0.5, 0.5, 1))
+	float			Subsurface Distortion		lighting, imp(range, label = "Distortion", default = 0.2, min = 0, max = 2)
+	float			Subsurface Power			lighting, imp(range, label = "Power", default = 3.0, min = 0.1, max = 16)
+	float			Subsurface Scale			lighting, imp(float, label = "Scale", default = 1.0)
+	float			Subsurface Thickness		lighting, imp(constant, default = 1.0)
+	/// IF SS_SCREEN_INFLUENCE && (SS_DIR_LIGHTS || SS_ALL_LIGHTS)
+		float		Subsurface Screen Space Influence		lighting, imp(range, label = Screen-space Influence, default = 0.5, min = 0, max = 10)
+	///
+///
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#KEYWORDS
+/// IF SUBSURFACE_SCATTERING
+	feature_on		USE_VIEW_DIRECTION_FRAGMENT
+///
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#PROPERTIES_BLOCK
+/// IF SUBSURFACE_SCATTERING
+
+		[TCP2HeaderHelp(Subsurface Scattering)]
+		[[PROP:Subsurface Distortion]]
+		[[PROP:Subsurface Power]]
+		[[PROP:Subsurface Scale]]
+		[[PROP:Subsurface Color]]
+	/// IF SUBSURFACE_AMB_COLOR
+		[[PROP:Subsurface Ambient Color]]
+	///
+		[TCP2Separator]
+///
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#VARIABLES
+/// IF SUBSURFACE_SCATTERING && SS_SCREEN_INFLUENCE && (SS_DIR_LIGHTS || SS_ALL_LIGHTS)
+
+		//Subsurface Scattering directional light screen-space influence
+        half subsurfaceScreenInfluence(half3 lightDir, half3 viewDir, half size)
+        {
+            half3 delta = lightDir + viewDir;
+            half dist = length(delta);
+            half spot = 1.0 - smoothstep(0.0, size, dist);
+            return spot * spot;
+        }
+///
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#INPUT
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#VERTEX
+#END
+
+//================================================================================================================================================================================================================================================================
+
+#LIGHTING(float4 color, float3 normal, float3 viewDir, float3 albedo, float3 lightColor, float3 lightDir, float atten)
+/// IF SUBSURFACE_SCATTERING
+
+		//Subsurface Scattering
+	/// IF SS_DIR_LIGHTS
+	#if !(POINT) && !(SPOT)
+	/// ELIF !SS_ALL_LIGHTS
+	#if (POINT || SPOT)
+	///
+		half3 ssLight = lightDir + normal * [[VALUE:Subsurface Distortion]];
+		half ssDot = pow(saturate(dot(viewDir, -ssLight)), [[VALUE:Subsurface Power]]) * [[VALUE:Subsurface Scale]];
+	/// IF SUBSURFACE_AMB_COLOR
+		half3 ssColor = ((ssDot * [[VALUE:Subsurface Color]]) + [[VALUE:Subsurface Ambient Color]]) * [[VALUE:Subsurface Thickness]];
+	/// ELSE
+		half3 ssColor = (ssDot * [[VALUE:Subsurface Color]]);
+	///
+	#if !defined(UNITY_PASS_FORWARDBASE)
+		ssColor *= atten;
+	/// IF SS_SCREEN_INFLUENCE && (SS_DIR_LIGHTS || SS_ALL_LIGHTS)
+	#else
+		ssColor *= subsurfaceScreenInfluence(lightDir, viewDir, [[VALUE:Subsurface Screen Space Influence]]);
+	///
+	#endif
+	/// IF SS_MULTIPLICATIVE
+		color.rgb *= albedo * ssColor * lightColor;
+	/// ELSE
+		color.rgb += albedo * ssColor * lightColor;
+	///
+	/// IF !SS_ALL_LIGHTS
+	#endif
+	///
+///
+#END
