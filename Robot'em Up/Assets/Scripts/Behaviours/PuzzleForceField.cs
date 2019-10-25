@@ -6,7 +6,6 @@ using UnityEditor;
 public class PuzzleForceField : PuzzleActivable, IHitable
 {
     private int _hitCount;
-    public bool active = true;
     public bool alsoBlockPlayer = false;
     private MeshRenderer meshRenderer;
     private BoxCollider boxCollider;
@@ -15,7 +14,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
     {
         meshRenderer = GetComponent<MeshRenderer>();
         boxCollider = GetComponent<BoxCollider>();
-        ChangeState(active, alsoBlockPlayer);
+        ChangeState(isActivated, alsoBlockPlayer);
     }
 
     public int hitCount
@@ -32,13 +31,13 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source)
     {
-        if (active)
+        if (isActivated)
         {
             _ball.ChangeSpeed(0);
         }
     }
 
-    public void ChangeState (bool _Active = true, bool _alsoBlockPlayer = false)
+    public void ChangeState (bool _alsoBlockPlayer = false)
     {
         if (boxCollider == null)
         {
@@ -48,11 +47,10 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         {
             meshRenderer = GetComponent<MeshRenderer>();
         }
-        active = _Active;
         alsoBlockPlayer = _alsoBlockPlayer;
         if (alsoBlockPlayer)
         {
-            if (active)
+            if (isActivated)
             {
                 boxCollider.isTrigger = false;
                 meshRenderer.material = puzzleData.M_ForcefieldPlayers_Active;
@@ -67,7 +65,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         else
         {
             boxCollider.isTrigger = true;
-            if (active)
+            if (isActivated)
             {
                 meshRenderer.material = puzzleData.M_Forcefield_Active;
             }
@@ -80,14 +78,16 @@ public class PuzzleForceField : PuzzleActivable, IHitable
     }
 
 
-    override public void WhenDesactivate()
+    public override void WhenDesactivate()
     {
-        ChangeState(false, alsoBlockPlayer);
+        isActivated = false;
+        ChangeState(alsoBlockPlayer);
     }
     
-    override public void WhenActivate()
+    public override void WhenActivate()
     {
-        ChangeState(true, alsoBlockPlayer);
+        isActivated = true;
+        ChangeState(alsoBlockPlayer);
     }
 
 

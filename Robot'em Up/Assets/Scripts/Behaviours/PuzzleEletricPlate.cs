@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PuzzleEletricPlate : PuzzleActivable
 {
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +20,6 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenDesactivate()
     {
-
     }
 
 

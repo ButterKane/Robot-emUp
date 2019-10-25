@@ -6,8 +6,6 @@ public class PuzzleActivator : MonoBehaviour
 {
     public bool isActivated;
     public PuzzleDatas puzzleData;
-    public float signalPower;
-    public bool unlimitedTime;
     // Update is called once per frame
     public virtual void ActivateLinkedObjects()
     {
