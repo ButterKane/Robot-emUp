@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class PuzzleForceField : MonoBehaviour, IHitable
+public class PuzzleForceField : PuzzleActivable, IHitable
 {
     private int _hitCount;
     public PuzzleDatas puzzleData;
-    public PuzzleLink LinkedPuzzleLink;
     public bool active = true;
     public bool alsoBlockPlayer = false;
     private MeshRenderer meshRenderer;
@@ -41,17 +41,26 @@ public class PuzzleForceField : MonoBehaviour, IHitable
 
     public void ChangeState (bool _Active = true, bool _alsoBlockPlayer = false)
     {
+        if (boxCollider == null)
+        {
+            boxCollider = GetComponent<BoxCollider>();
+        }
+        if (meshRenderer == null)
+        {
+            meshRenderer = GetComponent<MeshRenderer>();
+        }
         active = _Active;
         alsoBlockPlayer = _alsoBlockPlayer;
         if (alsoBlockPlayer)
         {
-            boxCollider.isTrigger = false;
             if (active)
             {
+                boxCollider.isTrigger = false;
                 meshRenderer.material = puzzleData.M_ForcefieldPlayers_Active;
             }
             else
             {
+                boxCollider.isTrigger = true;
                 meshRenderer.material = puzzleData.M_ForcefieldPlayers_Desactivated;
 
             }
@@ -70,5 +79,18 @@ public class PuzzleForceField : MonoBehaviour, IHitable
             }
         }
     }
+
+
+    override public void WhenDesactivate()
+    {
+        ChangeState(false, alsoBlockPlayer);
+    }
     
+    override public void WhenActivate()
+    {
+        ChangeState(true, alsoBlockPlayer);
+    }
+
+
+
 }
