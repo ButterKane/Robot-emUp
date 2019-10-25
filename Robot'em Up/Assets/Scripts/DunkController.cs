@@ -34,7 +34,7 @@ public class DunkController : MonoBehaviour
 	[SerializeField] private DunkState dunkState;
 	private Coroutine jumpCoroutine;
 	private PassController passController;
-	private PlayerController playerController;
+	private PawnController pawnController;
 
 	private GameObject waitingFX;
 	private GameObject dashFX;
@@ -45,7 +45,7 @@ public class DunkController : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
 		passController = GetComponent<PassController>();
-		playerController = GetComponent<PlayerController>();
+		pawnController = GetComponent<PawnController>();
 	}
 
 	public void Explode ()
@@ -59,7 +59,7 @@ public class DunkController : MonoBehaviour
 			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
 			if (potentialHitableObject != null)
 			{
-				potentialHitableObject.OnHit(ball, Vector3.zero, playerController, dunkDamages, DamageSource.Dunk);
+				potentialHitableObject.OnHit(ball, Vector3.zero, pawnController, dunkDamages, DamageSource.Dunk);
 			}
 			i++;
 		}
@@ -77,6 +77,7 @@ public class DunkController : MonoBehaviour
 
 	public void Dunk ()
 	{
+		if (!CanDunk()) { return; }
 		jumpCoroutine = StartCoroutine(Dunk_C());
 	}
 	public bool CanDunk ()
@@ -185,7 +186,7 @@ public class DunkController : MonoBehaviour
 		BallDatas ballDatas = passController.GetBallDatas();
 		BallBehaviour ball = passController.GetBall();
 		Transform handTransform = passController.GetHandTransform();
-		Animator playerAnimator = playerController.GetAnimator();
+		Animator playerAnimator = pawnController.GetAnimator();
 
 		switch (_newState)
 		{

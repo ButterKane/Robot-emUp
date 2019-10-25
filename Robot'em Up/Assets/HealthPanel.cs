@@ -3,20 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using XInputDotNetPure;
 
 public class HealthPanel : MonoBehaviour
 {
-	public PlayerController linkedPlayer;
+	public PlayerIndex playerIndex;
 	public Sprite unfilledBar;
 	public Sprite filledBar;
 	public int barCount;
 
 
+
 	public Transform healthBarHolder;
 	private List<Image> healthBars;
 	private bool healthBarInited = false;
+	private PawnController linkedPawn;
 	private void Awake ()
 	{
+		foreach (PlayerController player in FindObjectsOfType<PlayerController>())
+		{
+			if (player.playerIndex == playerIndex)
+			{
+				linkedPawn = player;
+			}
+		}
 		StartCoroutine(GenerateHealthBars_C());
 	}
 
@@ -27,9 +37,9 @@ public class HealthPanel : MonoBehaviour
 
 	void UpdateHealthBars()
 	{
-		if (linkedPlayer != null && healthBarInited)
+		if (linkedPawn != null && healthBarInited)
 		{
-			float playerHealth = (float)linkedPlayer.GetHealth() / (float)linkedPlayer.GetMaxHealth() * (float)barCount;
+			float playerHealth = (float)linkedPawn.GetHealth() / (float)linkedPawn.GetMaxHealth() * (float)barCount;
 			int filledBarCount = Mathf.CeilToInt(playerHealth);
 			for (int i = 0; i < barCount; i++)
 			{

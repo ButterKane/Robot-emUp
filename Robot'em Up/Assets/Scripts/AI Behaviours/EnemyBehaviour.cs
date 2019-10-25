@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#pragma warning disable 0649
 
 
 public enum EnemyState
@@ -137,7 +138,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
     
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
@@ -153,11 +154,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (collision.gameObject.GetComponent<PlayerController>().isInvincible == false)
+            if (collision.gameObject.GetComponent<PawnController>().isInvincible == false)
             {
                 Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
-                collision.gameObject.GetComponent<PlayerController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);
-                collision.gameObject.GetComponent<PlayerController>().DamagePlayer(10);
+                collision.gameObject.GetComponent<PawnController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);
+                collision.gameObject.GetComponent<PawnController>().Damage(10);
             }
             StopAllCoroutines();
             WhatShouldIDo();

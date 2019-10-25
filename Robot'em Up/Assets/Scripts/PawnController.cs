@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using XInputDotNetPure;
 
 public enum MoveState
 {
@@ -11,13 +10,6 @@ public enum MoveState
     Blocked,
 	Jumping,
 	Climbing
-}
-public enum ActionState
-{
-	None,
-	Aiming,
-	Shooting,
-	Receiving
 }
 
 public enum SlowReason
@@ -40,10 +32,9 @@ public class SpeedCoef
 	public bool stackable;
 }
 
-public class PlayerController : MonoBehaviour
+public class PawnController : MonoBehaviour
 {
     [Header("General settings")]
-	public PlayerIndex playerIndex;
 	public int maxHealth;
     public bool isInvincible;
     public float invicibilityTime = 1;
@@ -73,18 +64,12 @@ public class PlayerController : MonoBehaviour
 	public float climbUpwardPushForce = 450f;
 
 	[Space(2)]
-	[Header("Input settings")]
-	public float triggerTreshold = 0.1f;
-
-	[Space(2)]
-    [Header("Debug")]
+    [Header("Debug (Don't change)")]
 	[SerializeField] private MoveState moveState;
-	[SerializeField] private ActionState actionState;
 	private float accelerationTimer;
-    private Vector3 moveInput;
-	private Vector3 lookInput;
+    protected Vector3 moveInput;
+	protected Vector3 lookInput;
     private Quaternion turnRotation;
-    private bool inputDisabled;
 	private float customDrag;
 	private float customGravity;
 	private float speed;
@@ -93,42 +78,23 @@ public class PlayerController : MonoBehaviour
 	private bool grounded = false;
 	private float timeInAir;
 	private float climbingHoldTime;
-
-	//xInput refs
-	GamePadState state;
-	GamePadState prevState;
-
-	//Automatically found references
-	private Camera cam;
 	private Rigidbody rb;
 	private Animator animator;
 
-	private PassController passController;
-	private DunkController dunkController;
-	private DashController dashController;
+	protected PassController passController;
 
 	//Events
 	private static System.Action onShootEnd;
 
-	private void Awake()
+	public virtual void Awake()
     {
         isInvincible = false;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
-		cam = Camera.main;
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
-		dunkController = GetComponent<DunkController>();
-		dashController = GetComponent<DashController>();
-
 		currentHealth = maxHealth;
-    }
-
-    void Update()
-    {
-		if (inputDisabled) { return; }
-		GetInput();
     }
 
     private void FixedUpdate()
@@ -143,120 +109,6 @@ public class PlayerController : MonoBehaviour
 		UpdateSpeedCoef();
 		CheckIfGrounded();
 	}
-
-    #region Input
-    void GetInput()
-    {
-        if (inputDisabled) { moveInput = Vector3.zero; return; }
-
-        if (HasGamepad())
-        {
-            GamepadInput();
-        }
-        else
-        {
-            KeyboardInput();
-        }
-    }
-
-	public void Vibrate(float _duration, VibrationForce _force)
-	{
-		StartCoroutine(Vibrate_C(_duration, _force));
-	}
-
-    void GamepadInput()
-    {
-		prevState = state;
-		state = GamePad.GetState(playerIndex);
-		moveInput = (state.ThumbSticks.Left.X * cam.transform.right) + (state.ThumbSticks.Left.Y * cam.transform.forward) ;
-		moveInput.y = 0;
-        moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-		lookInput = (state.ThumbSticks.Right.X * cam.transform.right) + (state.ThumbSticks.Right.Y * cam.transform.forward);
-		if (lookInput.magnitude > 0.1f && passController.CanShoot())
-		{
-			ChangeActionState(ActionState.Aiming);
-		} else if (actionState == ActionState.Aiming)
-		{
-			ChangeActionState(ActionState.None);
-		}
-		if (state.Triggers.Right > triggerTreshold && passController.CanShoot())
-		{
-			ChangeActionState(ActionState.Shooting);
-		}
-		if (state.Buttons.Y == ButtonState.Pressed && dunkController.CanDunk())
-		{
-			dunkController.Dunk();
-		}
-		if (state.Triggers.Left > triggerTreshold && dashController.CanDash())
-		{
-			dashController.Dash();
-		}
-		if (state.Buttons.A == ButtonState.Pressed && CanJump())
-		{
-			Jump();
-		}
-		if (Mathf.Abs(state.ThumbSticks.Left.X) > 0.5f || Mathf.Abs(state.ThumbSticks.Left.Y) > 0.5f)
-		{
-			Climb();
-		}
-	}
-
-    void KeyboardInput()
-    {
-		if (playerIndex != PlayerIndex.One) { return; }
-		Vector3 _inputX = Input.GetAxisRaw("Horizontal") * cam.transform.right;
-        Vector3 _inputZ = Input.GetAxisRaw("Vertical") * cam.transform.forward;
-        moveInput = _inputX + _inputZ;
-        moveInput.y = 0;
-        moveInput.Normalize();
-		lookInput = MathHelper.GetMouseDirection(cam, transform.position);
-		if (Input.GetMouseButton(1) && passController.CanShoot())
-		{
-			ChangeActionState(ActionState.Aiming);
-		} else if (actionState == ActionState.Aiming)
-		{
-			ChangeActionState(ActionState.None);
-		}
-		if (Input.GetMouseButton(0))
-		{
-			ChangeActionState(ActionState.Shooting);
-		}
-		if (Input.GetMouseButton(2))
-		{
-			passController.Receive(FindObjectOfType<BallBehaviour>());
-		}
-		if (Input.GetKeyDown(KeyCode.Space) && dunkController.CanDunk())
-		{
-			dunkController.Dunk();
-		}
-		if (Input.GetKeyDown(KeyCode.E) && dashController.CanDash())
-		{
-			dashController.Dash();
-		}
-		if (Input.GetKeyDown(KeyCode.Space) && CanJump())
-		{
-			Jump();
-		}
-		if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.5f || Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0.5f)
-		{
-			Climb();
-		}
-
-	}
-
-    bool HasGamepad()
-    {
-        string[] names = Input.GetJoystickNames();
-        for (int i = 0; i < names.Length; i++)
-        {
-            if (names[i].Length > 0)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    #endregion
 
     #region Movement
 
@@ -282,8 +134,11 @@ public class PlayerController : MonoBehaviour
             turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
 
 		//Rotation while aiming or shooting
-		if (lookInput.magnitude >= 0.1f && actionState == ActionState.Aiming || actionState == ActionState.Shooting)
-			turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
+		if (passController != null)
+		{
+			if (lookInput.magnitude >= 0.1f && passController.passState == PassState.Aiming || passController.passState == PassState.Shooting)
+				turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
+		}
 
 		transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
 	}
@@ -327,7 +182,7 @@ public class PlayerController : MonoBehaviour
         speed = rb.velocity.magnitude;
     }
 
-	void Climb()
+	public void Climb()
 	{
 		Collider foundLedge = CheckForLedge();
 		if (foundLedge != null)
@@ -340,18 +195,18 @@ public class PlayerController : MonoBehaviour
 		if (climbingHoldTime >= timeBeforeClimb && foundLedge != null)
 		{
 			moveState = MoveState.Climbing;
-			animator.SetTrigger("ClimbTrigger");
+			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
 			StartCoroutine(ClimbLedge(foundLedge));
 		}
 	}
 
-	bool CanJump()
+	public bool CanJump()
 	{
 		if (grounded && moveState != MoveState.Blocked) { return true; }
 		return false;
 	}
 
-	bool CanClimb()
+	public bool CanClimb()
 	{
 		if (moveState == MoveState.Blocked || moveState == MoveState.Climbing)
 		{
@@ -359,7 +214,7 @@ public class PlayerController : MonoBehaviour
 		}
 		return true;
 	}
-	void Jump()
+	public void Jump()
 	{
 		rb.AddForce(Vector3.up * jumpForce);
 		moveState = MoveState.Jumping;
@@ -398,37 +253,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(new Vector3(0, -9.81f* customGravity, 0));
     }
     #endregion
-
-	public void ChangeActionState(ActionState _newState)
-	{
-		switch (_newState)
-		{
-			case ActionState.Aiming:
-				if (!passController.CanShoot()) { return; }
-				passController.EnablePassPreview();
-				animator.SetTrigger("PrepareShootingTrigger");
-				break;
-			case ActionState.Shooting:
-				if (!passController.CanShoot()) { return; }
-				passController.Shoot();
-				passController.DisablePassPreview();
-				animator.SetTrigger("ShootingTrigger");
-				ChangeActionState(ActionState.None);
-				return;
-			case ActionState.None:
-				passController.DisablePassPreview();
-				animator.ResetTrigger("PrepareShootingTrigger");
-				animator.SetTrigger("ShootingMissedTrigger");
-				break;
-		}
-		actionState = _newState;
-	}
-
     #region Public functions
-    public void DisableInput()
-    {
-        inputDisabled = true;
-    }
 
 	public float GetSpeedCoef()
 	{
@@ -465,11 +290,6 @@ public class PlayerController : MonoBehaviour
 		speedCoefs.Add(_speedCoef);
 	}
 
-    public void EnableInput()
-    {
-        inputDisabled = false;
-    }
-
     public void Kill()
     {
         Destroy(this.gameObject);
@@ -481,7 +301,7 @@ public class PlayerController : MonoBehaviour
         rb.AddExplosionForce(_magnitude, explosionPoint, 0);
     }
 
-	public void DamagePlayer(int _amount)
+	public void Damage(int _amount)
 	{
         StartCoroutine(InvicibleFrame());
 		currentHealth -= _amount;
@@ -512,29 +332,11 @@ public class PlayerController : MonoBehaviour
 
 	private void UpdateAnimatorBlendTree()
     {
-        animator.SetFloat("IdleRunningBlend", speed / maxSpeed);
-    }
-
-	IEnumerator Vibrate_C(float _duration, VibrationForce _force)
-	{
-		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		if (animator != null)
 		{
-			switch (_force)
-			{
-				case VibrationForce.Light:
-					GamePad.SetVibration(playerIndex, 0.1f, 0.1f);
-					break;
-				case VibrationForce.Medium:
-					GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
-					break;
-				case VibrationForce.Heavy:
-					GamePad.SetVibration(playerIndex, 1f, 1f);
-					break;
-			}
-			yield return new WaitForEndOfFrame();
+			animator.SetFloat("IdleRunningBlend", speed / maxSpeed);
 		}
-		GamePad.SetVibration(playerIndex, 0f, 0f);
-	}
+    }
 
 	Collider CheckForLedge()
 	{
@@ -579,7 +381,10 @@ public class PlayerController : MonoBehaviour
 		transform.position = endPosition;
 		rb.AddForce(Vector3.up * climbUpwardPushForce + transform.forward * climbForwardPushForce);
 		moveState = MoveState.Idle;
-		animator.ResetTrigger("ClimbTrigger");
+		if (animator != null)
+		{
+			animator.ResetTrigger("ClimbTrigger");
+		}
 	}
     #endregion
 }
