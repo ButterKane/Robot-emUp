@@ -45,7 +45,7 @@ public class Surrounder : MonoBehaviour
     {
         Vector3 fromCenterToPoint = (pointTransform.position - transform.position).normalized;
 
-        Vector3 positionFromCenter = transform.position + fromCenterToPoint * Random.Range(10, maxDistanceFromCenter);
+        Vector3 positionFromCenter = transform.position + fromCenterToPoint * Random.Range(5, maxDistanceFromCenter);
 
         Debug.DrawLine(transform.position, positionFromCenter, Color.green, 3);
 
