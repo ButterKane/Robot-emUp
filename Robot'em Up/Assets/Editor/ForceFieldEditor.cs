@@ -12,7 +12,7 @@ public class ObjectBuilderEditor : Editor
         PuzzleForceField myScript = (PuzzleForceField)target;
         if (GUILayout.Button("Refresh Material"))
         {
-            myScript.ChangeState(myScript.isActivated, myScript.alsoBlockPlayer);
+            myScript.ChangeState(myScript.alsoBlockPlayer);
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PuzzleLink : PuzzleActivator, IHitable
 {
-    public PuzzleDatas puzzleData;
     private GameObject FX_Activation;
     private GameObject FX_Linked;
     private GameObject FX_LinkEnd;
@@ -22,7 +21,6 @@ public class PuzzleLink : PuzzleActivator, IHitable
     }
 
 
-    public bool isActivated;
     public float chargingTime;
 
 
@@ -52,13 +50,6 @@ public class PuzzleLink : PuzzleActivator, IHitable
             chargingTime = puzzleData.nbSecondsLinkMaintained;
             isActivated = true;
 
-            //When a link is activate we need to check if a door would open
-            PuzzleDoor[] doors = FindObjectsOfType<PuzzleDoor>();
-            foreach (var item in doors)
-            {
-                item.checkIfValid();
-            }
-
             ActivateLinkedObjects();
 
 
@@ -75,7 +66,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
     // Update is called once per frame
     void Update()
     {
-        if (chargingTime>0 && isActivated)
+        if (chargingTime > 0 && isActivated)
         {
             chargingTime -= Time.deltaTime;
         }

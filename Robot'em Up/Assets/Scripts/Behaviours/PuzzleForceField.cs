@@ -14,7 +14,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
     {
         meshRenderer = GetComponent<MeshRenderer>();
         boxCollider = GetComponent<BoxCollider>();
-        ChangeState(isActivated, alsoBlockPlayer);
+        ChangeState(alsoBlockPlayer);
     }
 
     public int hitCount
