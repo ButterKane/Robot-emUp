@@ -46,13 +46,14 @@ public class PuzzleForceField : MonoBehaviour, IHitable
         alsoBlockPlayer = _alsoBlockPlayer;
         if (alsoBlockPlayer)
         {
-            boxCollider.isTrigger = false;
             if (active)
             {
+                boxCollider.isTrigger = false;
                 meshRenderer.material = puzzleData.M_ForcefieldPlayers_Active;
             }
             else
             {
+                boxCollider.isTrigger = true;
                 meshRenderer.material = puzzleData.M_ForcefieldPlayers_Desactivated;
 
             }
