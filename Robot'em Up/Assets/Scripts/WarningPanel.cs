@@ -5,24 +5,29 @@ using UnityEngine;
 public class WarningPanel : MonoBehaviour
 {
 	private Animator animator;
+	private static WarningPanel instance;
+	private GameObject go;
 	private void Awake ()
 	{
+		instance = this;
 		animator = GetComponent<Animator>();
+		go = gameObject;
+		gameObject.SetActive(false);
 	}
 
 	public void DisablePanel()
 	{
-		gameObject.SetActive(false);
+		instance.go.SetActive(false);
 	}
 
-	public void OpenPanel()
+	public static void OpenPanel()
 	{
-		gameObject.SetActive(true);
-		animator.SetTrigger("Init");
+		instance.go.SetActive(true);
+		instance.animator.SetTrigger("Init");
 	}
 
-	public void ClosePanel()
+	public static void ClosePanel()
 	{
-		animator.SetTrigger("Close");
+		instance.animator.SetTrigger("Close");
 	}
 }

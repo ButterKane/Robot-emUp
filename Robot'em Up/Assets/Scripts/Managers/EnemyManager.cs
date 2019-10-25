@@ -16,103 +16,35 @@ public class EnemyManager : MonoBehaviour
     public GameObject enemyCurrentlyAttacking = null;
     public List<EnemyBehaviour> enemies;
 
-    private GameObject surrounderInstance;
+    public GameObject surrounderInstance;
     private bool isSurroundCooldownRunning;
 
     public void Start()
     {
         playerOne = GameManager.i.playerOne;
         playerTwo = GameManager.i.playerTwo;
-        StartCoroutine(TimeBetweenSurrounding());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isSurroundCooldownRunning)
-        {
-            Debug.Log("bidouille");
-            StartCoroutine(TimeBetweenSurrounding());
-            List<EnemyBehaviour> enemiesReadyToActOnOne = new List<EnemyBehaviour>();
-            List<EnemyBehaviour> enemiesReadyToActOnTwo = new List<EnemyBehaviour>();
-
-            CheckIfMultipleCloseEnemies(out enemiesReadyToActOnOne, out enemiesReadyToActOnTwo);
-
-            LaunchSurrounding(enemiesReadyToActOnOne);
-            LaunchSurrounding(enemiesReadyToActOnTwo);
-        }
-
         if (Input.GetKeyDown(KeyCode.F))
         {
             SpawnEnemies();
         }
     }
 
-    private IEnumerator TimeBetweenSurrounding()
+    public GameObject SpawnSurrounderInstance(Vector3 targetPosition)
     {
-        isSurroundCooldownRunning = true;
-        yield return new WaitForSeconds(Random.Range(5, 10));
-        isSurroundCooldownRunning = false;
+        surrounderInstance = Instantiate(surrounderPrefab, targetPosition, Quaternion.identity);
+        StartCoroutine(WaitBeforeDestroySurrounder());
+        return surrounderInstance;
     }
 
-    private void CheckIfMultipleCloseEnemies(out List<EnemyBehaviour> enemiesReadyToActOnOne, out List<EnemyBehaviour> enemiesReadyToActOnTwo)
+    public IEnumerator WaitBeforeDestroySurrounder()
     {
-        List<EnemyBehaviour> enemiesOnPlayerOne =  new List<EnemyBehaviour>();
-        List<EnemyBehaviour> enemiesOnPlayerTwo = new List<EnemyBehaviour>();
-
-        var p1 = playerOne.transform.position;
-        var p2 = playerTwo.transform.position;
-        
-        foreach (var enemy in enemies)
-        {
-            float distanceToOne = (p1 - enemy.gameObject.transform.position).magnitude;
-            float distanceToTwo = (p2 - enemy.gameObject.transform.position).magnitude;
-
-            if (distanceToOne < distanceToTwo && distanceToTwo < enemy.attackDistance * 2.5f)
-            {
-                enemiesOnPlayerTwo.Add(enemy);
-            }
-            else if (distanceToTwo < distanceToOne && distanceToOne < enemy.attackDistance * 2.5f)
-            {
-                enemiesOnPlayerOne.Add(enemy);
-            }
-        }
-
-        enemiesReadyToActOnOne = CheckIfEnemiesAreBusy(enemiesOnPlayerOne);
-        enemiesReadyToActOnTwo = CheckIfEnemiesAreBusy(enemiesOnPlayerTwo);
-    }
-
-    private List<EnemyBehaviour> CheckIfEnemiesAreBusy(List<EnemyBehaviour> list)
-    {
-        List<EnemyBehaviour> availableEnemies = new List<EnemyBehaviour>();
-        foreach(var enemy in list)
-        {
-            if (enemy.state != EnemyState.Attacking)
-            {
-                availableEnemies.Add(enemy);
-            }
-        }
-        return availableEnemies;
-    }
-
-    /// <summary>
-    /// Will order all enemies in the list to surround the player, if possible
-    /// </summary>
-    /// <param name="list"></param>
-    private void LaunchSurrounding(List<EnemyBehaviour> list) 
-    {
-        Debug.Log("radouille");
-        if (list.Count > 0)
-        {
-            Transform target = list[0].target;
-            Debug.Log("target is " + target.gameObject.name);
-            surrounderInstance = Instantiate(surrounderPrefab, target.position, Quaternion.identity);
-            foreach (var enemy in list)
-            {
-                enemy.surrounder = surrounderInstance;
-                StartCoroutine(enemy.SurroundPlayer(target.gameObject));
-            }
-        }
+        yield return new WaitForSeconds(1f);
+        Destroy(surrounderInstance);
     }
 
     public void SpawnEnemies()

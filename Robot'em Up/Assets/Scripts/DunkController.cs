@@ -41,7 +41,9 @@ public class DunkController : MonoBehaviour
 
 	private void Awake ()
 	{
-		rb = GetComponent<Rigidbody>();
+        dunkState = DunkState.None;
+
+        rb = GetComponent<Rigidbody>();
 		passController = GetComponent<PassController>();
 		playerController = GetComponent<PlayerController>();
 	}

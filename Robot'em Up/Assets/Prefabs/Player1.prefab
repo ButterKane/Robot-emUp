@@ -91,14 +91,15 @@ MonoBehaviour:
   onGroundGravityMultiplyer: 4
   deadzone: 0.2
   turnSpeed: 0.25
-  heightTreshold: 0.2
-  zAngleTolerance: 10
   timeBeforeClimb: 0
   minDistanceToClimb: 1
   climbDuration: 0.18
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
   triggerTreshold: 0.1
   moveState: 0
   actionState: 0
+  currentHealth: 20
 --- !u!54 &8666635390815151469
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -262,7 +263,7 @@ MonoBehaviour:
   dunkProjectionForce: 10
   dunkCancelledFallSpeed: 2
   dunkDashDelay: 1
-  dunkState: 0
+  dunkState: 6
 --- !u!114 &5564275353483555727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,11 +277,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firstController: {fileID: 2543657012422248503}
-  secondController: {fileID: 0}
-  maxDistanceBeforeShowing: 10
-  maxDistanceBeforeSlowing: 12
-  maxDistanceBeforeBreaking: 14
-  distanceBeforeRebuilding: 10
+  secondController: {fileID: 2543657012422248503}
+  maxDistanceBeforeShowing: 20
+  maxDistanceBeforeSlowing: 24
+  maxDistanceBeforeBreaking: 28
+  distanceBeforeRebuilding: 20
   linkColor:
     serializedVersion: 2
     key0: {r: 0, g: 0.94729495, b: 1, a: 1}
@@ -310,23 +311,58 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  maxSlowCoef: 0.2
+  maxSlowCoef: 0.1
   damagesPerSecWithoutLink: 1
   slowCoefCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   opacityFadeCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  linkMaterial: {fileID: 0}
-  linkWidth: 0
-  warningPanel: {fileID: 0}
+  linkMaterial: {fileID: 2100000, guid: e720cf03c3fc89e44b0a2e0a163c3005, type: 2}
+  linkWidth: 0.2
 --- !u!114 &-6964692673919125295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,8 +388,10 @@ MonoBehaviour:
   cloneMaterial: {fileID: 2100000, guid: 9085d16098a735b4b81fdcfd4139e48e, type: 2}
   dashTrail: {fileID: 8651325449361012943, guid: 8ebb4c678bbe08b479176d5701dcab4b,
     type: 3}
-  startDashFX: {fileID: 0}
-  endDashFX: {fileID: 0}
+  startDashFX: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+    type: 3}
+  endDashFX: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
+    type: 3}
 --- !u!1 &195533169622842252
 GameObject:
   m_ObjectHideFlags: 0
