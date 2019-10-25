@@ -42,6 +42,14 @@ public class PuzzleForceField : MonoBehaviour, IHitable
 
     public void ChangeState (bool _Active = true, bool _alsoBlockPlayer = false)
     {
+        if (boxCollider == null)
+        {
+            boxCollider = GetComponent<BoxCollider>();
+        }
+        if (meshRenderer == null)
+        {
+            meshRenderer = GetComponent<MeshRenderer>();
+        }
         active = _Active;
         alsoBlockPlayer = _alsoBlockPlayer;
         if (alsoBlockPlayer)
