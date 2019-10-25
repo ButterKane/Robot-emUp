@@ -20,10 +20,11 @@ public class PuzzleLink : PuzzleActivator, IHitable
         }
     }
 
+
     public float chargingTime;
 
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
     {
         if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
         {
@@ -39,13 +40,13 @@ public class PuzzleLink : PuzzleActivator, IHitable
             }
 
             FX_Linked = FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, _impactVector, Vector3.one, transform);
-
+            
 
             if (FX_Activation == null)
             {
                 FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1, true, Vector3.zero, Vector3.one, transform);
             }
-            MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
+			MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
             chargingTime = puzzleData.nbSecondsLinkMaintained;
             isActivated = true;
 

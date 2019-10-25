@@ -23,7 +23,7 @@ public class DashController : MonoBehaviour
 
 	public Transform visuals;
 
-	private PlayerController linkedPlayer;
+	private PawnController linkedPawn;
 	private float currentCooldown;
 	private GameObject currentDashFX;
 
@@ -37,7 +37,7 @@ public class DashController : MonoBehaviour
 	public GameObject endDashFX;
 	private void Awake ()
 	{
-		linkedPlayer = GetComponent<PlayerController>();
+		linkedPawn = GetComponent<PawnController>();
 	}
 
 	private void Update ()
@@ -46,6 +46,7 @@ public class DashController : MonoBehaviour
 	}
 	public void Dash()
 	{
+		if (!CanDash()) { return; }
 		Vector3 startPosition = transform.position;
 		Vector3 endPosition = transform.position + transform.forward * maxDistance;
 		//Check for min distance & maxDistance
@@ -138,7 +139,7 @@ public class DashController : MonoBehaviour
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )
 	{
 		ChangeState(DashState.Dashing);
-		if (invincibleDuringDash) { linkedPlayer.SetInvincible(true); }
+		if (invincibleDuringDash) { linkedPawn.SetInvincible(true); }
 		float cloneCounter = 0;
 		for (float i = 0; i < Vector3.Distance(_startPosition, _endPosition); i += Time.deltaTime * speed)
 		{
@@ -157,8 +158,9 @@ public class DashController : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 		}
 		transform.position = _endPosition;
+		GenerateClone();
 		ChangeState(DashState.None);
-		linkedPlayer.SetInvincible(false);
+		linkedPawn.SetInvincible(false);
 	}
 
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+#pragma warning disable 0649
 
 public class MomentumGauge : MonoBehaviour
 {
