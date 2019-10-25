@@ -449,8 +449,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   puzzleData: {fileID: 11400000, guid: e9f432b5da852ac4b93510aa9c804d6d, type: 2}
-  linksNeededToOpen:
+  puzzleActivators:
   - {fileID: 939071755}
+  puzzleDesactivator: []
+  needAllConditions: 0
   open: 0
   destroyWhenOpened: {fileID: 137948419}
 --- !u!4 &153632743 stripped
@@ -1834,8 +1836,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   puzzleData: {fileID: 11400000, guid: e9f432b5da852ac4b93510aa9c804d6d, type: 2}
-  linksNeededToOpen:
+  puzzleActivators:
   - {fileID: 627207763}
+  puzzleDesactivator: []
+  needAllConditions: 0
   open: 0
   destroyWhenOpened: {fileID: 412219239}
 --- !u!1 &451990843
@@ -4270,6 +4274,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1579355950922201767, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
         type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1579355950922201767, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
+        type: 3}
       propertyPath: linksNeededToOpen.Array.data[0]
       value: 
       objectReference: {fileID: 481058895}
@@ -4278,6 +4287,11 @@ PrefabInstance:
       propertyPath: linksNeededToOpen.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1579355950922201767, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 481058895}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29e870ef81ed72141a54fe6a5e5ce2a0, type: 3}
 --- !u!1 &1070001301
@@ -6426,6 +6440,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1805461609}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1435286072 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8514554789312714056, guid: be0f4b09ba1a2964596b41f1040e7e16,
+    type: 3}
+  m_PrefabInstance: {fileID: 8142414350841941937}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3c314624ba2993419b4e6ed49f22fd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1438136375 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 312656209842447024, guid: 739fbb2b237f4614580ae2925bc3cbc4,
@@ -7613,13 +7639,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   puzzleData: {fileID: 11400000, guid: e9f432b5da852ac4b93510aa9c804d6d, type: 2}
-  linksNeededToOpen:
+  puzzleActivators:
   - {fileID: 1683609302}
   - {fileID: 2037537460}
   - {fileID: 1031986560}
   - {fileID: 1231879254}
   - {fileID: 166405488}
   - {fileID: 21406535}
+  puzzleDesactivator: []
+  needAllConditions: 1
   open: 0
   destroyWhenOpened: {fileID: 1753339901}
 --- !u!65 &1753339904
@@ -9251,5 +9279,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2216660547716487763, guid: be0f4b09ba1a2964596b41f1040e7e16,
+        type: 3}
+      propertyPath: _attackScript
+      value: 
+      objectReference: {fileID: 1435286072}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be0f4b09ba1a2964596b41f1040e7e16, type: 3}
