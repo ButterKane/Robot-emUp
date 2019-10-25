@@ -36,8 +36,6 @@ public class LinkController : MonoBehaviour
 	public Material linkMaterial;
 	public float linkWidth;
 
-	public WarningPanel warningPanel;
-
 	private GameObject linkGameObject;
 	private LineRenderer lineRenderer;
 
@@ -50,7 +48,7 @@ public class LinkController : MonoBehaviour
 	{
 		linkGameObject = GenerateLinkHolder();
 		ChangeLinkState(LinkState.Hidden);
-		if (warningPanel.gameObject != null) { warningPanel.gameObject.SetActive(false); }
+
 	}
 
 	GameObject GenerateLinkHolder()
@@ -77,11 +75,10 @@ public class LinkController : MonoBehaviour
 		switch (_newState)
 		{
 			case LinkState.Broken:
-				warningPanel.gameObject.SetActive(true);
-				warningPanel.OpenPanel();
+				WarningPanel.OpenPanel();
 				break;
 			case LinkState.Rebuilt:
-				warningPanel.ClosePanel();
+				WarningPanel.ClosePanel();
 				break;
 			case LinkState.Showing:
 				break;
