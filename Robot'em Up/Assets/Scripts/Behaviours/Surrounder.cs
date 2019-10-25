@@ -6,6 +6,7 @@ public class Surrounder : MonoBehaviour
 {
     public List<Transform> points;
     public Dictionary <int, Transform> pointsDic =  new Dictionary<int, Transform>();
+    public float minDistanceFromCenter = 5f;
     public float maxDistanceFromCenter = 10f;
     private Dictionary <int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
     
@@ -45,7 +46,7 @@ public class Surrounder : MonoBehaviour
     {
         Vector3 fromCenterToPoint = (pointTransform.position - transform.position).normalized;
 
-        Vector3 positionFromCenter = transform.position + fromCenterToPoint * Random.Range(5, maxDistanceFromCenter);
+        Vector3 positionFromCenter = transform.position + fromCenterToPoint * Random.Range(minDistanceFromCenter, maxDistanceFromCenter);
 
         Debug.DrawLine(transform.position, positionFromCenter, Color.green, 3);
 
