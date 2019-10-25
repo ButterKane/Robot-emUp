@@ -4,47 +4,103 @@ using UnityEngine;
 
 public class PuzzleActivator : MonoBehaviour
 {
+    public bool isActivated;
+    public PuzzleDatas puzzleData;
     public float signalPower;
     public bool unlimitedTime;
     // Update is called once per frame
     public virtual void ActivateLinkedObjects()
     {
         PuzzleActivable[] activables = FindObjectsOfType<PuzzleActivable>();
-        foreach (var item in activables)
-        {
-            if (item.puzzleActivators.Contains(this))
-            {
-                item.WhenActivate();
-            }
-        }
 
         foreach (var item in activables)
         {
-            if (item.puzzleDesactivator.Contains(this))
+            if (item.needAllConditions == false)
             {
-                item.WhenDesactivate();
+                if (item.puzzleActivators.Contains(this))
+                {
+                    item.WhenActivate();
+                }
+                if (item.puzzleDesactivator.Contains(this))
+                {
+                    item.WhenDesactivate();
+                }
+            }
+            else
+            {
+                bool temp_Activated = true;
+                foreach (var puzzleActivator in item.puzzleActivators)
+                {
+                    if (!isActivated)
+                    {
+                        temp_Activated = false;
+                    }
+                }
+
+                foreach (var puzzleActivator in item.puzzleDesactivator)
+                {
+                    if (isActivated)
+                    {
+                        temp_Activated = false;
+                    }
+                }
+                if (temp_Activated)
+                {
+                    item.WhenActivate();
+                }
+
+
             }
         }
     }
 
 
+
     public virtual void DesactiveLinkedObjects()
     {
         PuzzleActivable[] activables = FindObjectsOfType<PuzzleActivable>();
-        foreach (var item in activables)
-        {
-            if (item.puzzleActivators.Contains(this))
-            {
-                item.WhenDesactivate();
-            }
-        }
+
 
         foreach (var item in activables)
         {
-            if (item.puzzleDesactivator.Contains(this))
+            if (item.needAllConditions == false)
             {
-                item.WhenActivate();
+                if (item.puzzleActivators.Contains(this))
+                {
+                    item.WhenDesactivate();
+                }
+                if (item.puzzleDesactivator.Contains(this))
+                {
+                    item.WhenActivate();
+                }
             }
+            else
+            {
+                bool temp_Activated = true;
+                foreach (var puzzleActivator in item.puzzleActivators)
+                {
+                    if (isActivated)
+                    {
+                        temp_Activated = false;
+                    }
+                }
+
+                foreach (var puzzleActivator in item.puzzleDesactivator)
+                {
+                    if (!isActivated)
+                    {
+                        temp_Activated = false;
+                    }
+                }
+                if (temp_Activated)
+                {
+                    item.WhenDesactivate();
+                }
+
+
+            }
+
         }
+
     }
 }

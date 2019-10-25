@@ -2,36 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PuzzleDoor : MonoBehaviour
+public class PuzzleDoor : PuzzleActivable
 {
-    public PuzzleDatas puzzleData;
-    public List<PuzzleLink> linksNeededToOpen;
     public bool open;
     public GameObject destroyWhenOpened;
 
-   
-    public void checkIfValid()
+
+    override public void WhenActivate()
     {
-        bool tempValid = true;
-        foreach (PuzzleLink link in linksNeededToOpen)
-        {
-            if (!link.isActivated)
-            {
-                tempValid = false;
-            }
-        }
-        if (tempValid)
-        {
-            openTheDoor();
-        }
-        
+        DestroyTheDoor();
     }
 
 
-    public void openTheDoor()
+    public void DestroyTheDoor()
     {
         open = true;
-        FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero ,Vector3.one, transform);
+        FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero, Vector3.one, transform);
         if (destroyWhenOpened != null)
         {
             Destroy(destroyWhenOpened);
