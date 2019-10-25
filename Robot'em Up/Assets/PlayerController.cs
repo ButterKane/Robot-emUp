@@ -159,10 +159,10 @@ public class PlayerController : PawnController
 					GamePad.SetVibration(playerIndex, 0.1f, 0.1f);
 					break;
 				case VibrationForce.Medium:
-					GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
+					GamePad.SetVibration(playerIndex, 0.2f, 0.2f);
 					break;
 				case VibrationForce.Heavy:
-					GamePad.SetVibration(playerIndex, 1f, 1f);
+					GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
 					break;
 			}
 			yield return new WaitForEndOfFrame();
