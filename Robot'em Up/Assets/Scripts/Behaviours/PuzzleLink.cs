@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PuzzleLink : MonoBehaviour, IHitable
+public class PuzzleLink : PuzzleActivator, IHitable
 {
     public PuzzleDatas puzzleData;
     private GameObject FX_Activation;
@@ -59,16 +59,9 @@ public class PuzzleLink : MonoBehaviour, IHitable
                 item.checkIfValid();
             }
 
+            ActivateLinkedObjects();
 
-            PuzzleForceField[] forcefields = FindObjectsOfType<PuzzleForceField>();
-            foreach (var item in forcefields)
-            {
-                if (item.LinkedPuzzleLink == this)
-                {
-                    item.ChangeState(false, item.alsoBlockPlayer);
-                }
-            }
-            
+
 
         }
 
@@ -100,14 +93,7 @@ public class PuzzleLink : MonoBehaviour, IHitable
                 Destroy(FX_Linked);
             }
 
-            PuzzleForceField[] forcefields = FindObjectsOfType<PuzzleForceField>();
-            foreach (var item in forcefields)
-            {
-                if (item.LinkedPuzzleLink == this)
-                {
-                    item.ChangeState(true, item.alsoBlockPlayer);
-                }
-            }
+            DesactiveLinkedObjects();
 
 
         }
