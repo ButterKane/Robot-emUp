@@ -7,7 +7,7 @@ using DG.Tweening;
 public class MomentumGauge : MonoBehaviour
 {
 	[SerializeField] private Image gaugeFillInstant;
-	[SerializeField] private Image gaugeFIllLerped;
+	[SerializeField] private Image gaugeFillLerped;
 
 	float previousValue;
 	private Vector3 initialScale;
@@ -19,7 +19,7 @@ public class MomentumGauge : MonoBehaviour
 	public void UpdateGauge()
 	{
 		gaugeFillInstant.fillAmount = MomentumManager.GetMomentum();
-		gaugeFIllLerped.fillAmount = Mathf.Lerp(gaugeFIllLerped.fillAmount, MomentumManager.GetMomentum(), Time.deltaTime * 2f);
+		gaugeFillLerped.fillAmount = Mathf.Lerp(gaugeFillLerped.fillAmount, MomentumManager.GetMomentum(), Time.deltaTime * 2f);
 		float currentValue = gaugeFillInstant.fillAmount;
 
 		if (Mathf.Abs(currentValue - previousValue) >= 0.1f)
