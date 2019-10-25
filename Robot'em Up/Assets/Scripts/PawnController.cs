@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using DG.Tweening;
 public enum MoveState
 {
     Idle,
@@ -80,6 +80,7 @@ public class PawnController : MonoBehaviour
 	private float climbingHoldTime;
 	private Rigidbody rb;
 	private Animator animator;
+	private Vector3 initialScale;
 
 	protected PassController passController;
 
@@ -88,6 +89,7 @@ public class PawnController : MonoBehaviour
 
 	public virtual void Awake()
     {
+		initialScale = transform.localScale;
         isInvincible = false;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
@@ -309,8 +311,15 @@ public class PawnController : MonoBehaviour
 		{
 			Destroy(this.gameObject);
 		}
+		float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
+		scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
+		transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
 	}
 
+	private void ResetScale()
+	{
+		transform.DOScale(initialScale, 0.1f);
+	}
 	public Animator GetAnimator ()
 	{
 		return animator;
