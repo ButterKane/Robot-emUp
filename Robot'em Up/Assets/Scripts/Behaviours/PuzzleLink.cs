@@ -58,7 +58,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     }
 
-    void Start()
+    void Awake()
     {
         chargingTime = 0;
     }
