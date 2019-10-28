@@ -14,6 +14,8 @@ public class PuzzleDatas : ScriptableObject
     public float nbMomentumLooseWhenLink;
     [Range(0, 20)]
     public float nbSecondsLinkMaintained;
+    [Range(0, 100)]
+    public int DamageEletricPlate;
 
     [Header("FX")]
 	public GameObject Charging;

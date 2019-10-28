@@ -1202,7 +1202,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77c31b73508ced343894a40394372141, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vignetteIntensity: {x: 0, y: 0}
+  vignetteIntensity:
+    Min: 0
+    Max: 0
   vignetteColor: {r: 0, g: 0, b: 0, a: 0}
   flashSpeed: 1
 --- !u!95 &302848535
@@ -2000,19 +2002,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
       propertyPath: puzzleActivators.Array.data[0]
       value: 
       objectReference: {fileID: 481058895}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8988fa4423b901448c6dd647fc2fadc, type: 3}
 --- !u!1 &451990843
@@ -7292,19 +7284,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
       propertyPath: puzzleActivators.Array.data[0]
       value: 
       objectReference: {fileID: 481058895}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8988fa4423b901448c6dd647fc2fadc, type: 3}
 --- !u!1 &1608357513
