@@ -144,7 +144,6 @@ public class PlayerController : PawnController
 		}
 		return false;
 	}
-
 	public void DisableInput ()
 	{
 		inputDisabled = true;

@@ -28,6 +28,8 @@ public class PassController : MonoBehaviour
 	public BallDatas ballDatas;
 	public float passCooldown;
 
+	public Color previewDefaultColor;
+	public Color previewSnappedColor;
 	private PlayerController linkedPlayer;
 	private DunkController linkedDunkController;
 	private BallBehaviour ball;
@@ -37,6 +39,7 @@ public class PassController : MonoBehaviour
 	public PassState passState;
 	private float currentPassCooldown;
 	private Animator animator;
+	private bool canReceive;
 
 	private void Awake ()
 	{
@@ -44,20 +47,30 @@ public class PassController : MonoBehaviour
 		linkedPlayer = GetComponent<PlayerController>();
 		linkedDunkController = GetComponent<DunkController>();
 		animator = GetComponentInChildren<Animator>();
+
+		canReceive = true;
+		lineRenderer.startColor = previewDefaultColor;
+		lineRenderer.endColor = previewDefaultColor;
 	}
 	private void Update ()
 	{
 		UpdateCooldowns();
 
 		if (ballDatas == null) { return; }
-		pathCoordinates = GetPathCoordinates(handTransform.position, transform.forward, ballDatas.maxPreviewDistance);
-
-		if (passPreviewInEditor)
-			PreviewPathInEditor(pathCoordinates);
 
 		if (passPreview)
+		{
+			bool snapped;
+			pathCoordinates = GetPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
+			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
 			PreviewPath(pathCoordinates, ballDatas);
+			if (passPreviewInEditor)
+				PreviewPathInEditor(pathCoordinates);
+		}
+
 	}
+
+	//Used for generating the preview
 	public List<Vector3> GetPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
 	{
 		RaycastHit hit;
@@ -125,28 +138,32 @@ public class PassController : MonoBehaviour
                 shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
             }
         }
-		if (!passPreview)
+		if (passMode == PassMode.Bounce)
 		{
-			PlayerController otherPlayer = null;
-			foreach (PlayerController p in FindObjectsOfType<PlayerController>())
+			if (!passPreview)
 			{
-				if (p != linkedPlayer)
+				PlayerController otherPlayer = null;
+				foreach (PlayerController p in FindObjectsOfType<PlayerController>())
 				{
-					otherPlayer = p;
+					if (p != linkedPlayer)
+					{
+						otherPlayer = p;
+					}
 				}
+				if (otherPlayer != null)
+					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
 			}
-			if (otherPlayer != null)
-				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
-		}
-		else // if aiming with right joystick
-		{
-			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayer, ballDatas);
+			else // if aiming with right joystick
+			{
+				shootedBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas);
+			}
 		}
 		ChangePassState(PassState.None);
 	}
 
 	public void Receive (BallBehaviour _ball)
 	{
+		if (!canReceive) { return; }
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
@@ -156,6 +173,33 @@ public class PassController : MonoBehaviour
 	public void EnablePassPreview()
 	{
 		passPreview = true;
+	}
+
+	public void EnableBallReception()
+	{
+		canReceive = true;
+	}
+
+	public void DisableBallReception()
+	{
+		canReceive = false;
+	}
+
+	public bool CanReceive()
+	{
+		return canReceive;
+	}
+
+	public void ChangeColor(Color _newColor)
+	{
+		lineRenderer.startColor = _newColor;
+		lineRenderer.endColor = _newColor;
+	}
+
+	public void ResetPreviewColor()
+	{
+		lineRenderer.startColor = previewDefaultColor;
+		lineRenderer.endColor = previewDefaultColor;
 	}
 
 	public void DisablePassPreview()
