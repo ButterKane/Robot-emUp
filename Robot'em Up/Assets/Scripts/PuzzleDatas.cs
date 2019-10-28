@@ -27,7 +27,6 @@ public class PuzzleDatas : ScriptableObject
 
 
     [Header("Materials")]
-
     public Material M_Forcefield_Active;
     public Material M_Forcefield_Desactivated;
     public Material M_ForcefieldPlayers_Active;
