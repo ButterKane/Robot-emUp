@@ -41,7 +41,18 @@ public class BallBehaviour : MonoBehaviour
 		UpdateBallPosition();
 	}
 
-	public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
+    public void CurveShoot(Vector3 _startPosition, Vector3 _endPosition, float _angle, PawnController _thrower, BallDatas _passDatas) //Shoot a curve ball to reach a point
+    {
+        transform.SetParent(null);
+        transform.position = _startPosition;
+
+        // Find the equation to only make one impulse on the ball and make it bend
+        // This will surely be parabolic equation in my notebook
+    }
+
+
+
+    public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
 	{
 		transform.SetParent(null);
 		transform.position = _startPosition;
