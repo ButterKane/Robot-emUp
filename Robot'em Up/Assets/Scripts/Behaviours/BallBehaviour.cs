@@ -136,6 +136,11 @@ public class BallBehaviour : MonoBehaviour
 		return currentDirection;
 	}
 
+	public PawnController GetCurrentThrower()
+	{
+		return currentThrower;
+	}
+
 	public void ChangeState(BallState newState)
 	{
 		switch (newState)
@@ -200,7 +205,7 @@ public class BallBehaviour : MonoBehaviour
 							hitGameObjects.Add(potentialHitableObjectFound);
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, currentBallDatas.damages, DamageSource.Ball);
 						}
-						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) { break; }
+						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
 						if (currentBounceCount < currentBallDatas.maxBounces)
 						{
 							Vector3 hitNormal = hit.normal;
