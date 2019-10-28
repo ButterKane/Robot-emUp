@@ -31,6 +31,17 @@ public class PuzzleEletricPlate : PuzzleActivable
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.GetComponent<PawnController>() && isActivated)
+        {
+            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            pawn.Damage(puzzleData.DamageEletricPlate);
+        }
+
+    }
+
+
     override public void WhenActivate()
     {
         isActivated = true;
