@@ -6699,12 +6699,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055c45c6e504fc7498f0ca676f7d5ac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1383507468 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
-    type: 3}
-  m_PrefabInstance: {fileID: 1805461609}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1393929847 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -6808,43 +6802,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4247227084850040722, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: secondController
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4247227084850040722, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: warningPanel
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4247227084850040722, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: linkMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: 3be8ddfefd82d4c46aacf35c0e709d9d, type: 2}
-    - target: {fileID: 4247227084850040722, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: firstController
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7534830701497435340, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: startDashFX
-      value: 
-      objectReference: {fileID: 8313852026362512909, guid: ca613f4173ff2774f955187ec86658ec,
-        type: 3}
-    - target: {fileID: 7534830701497435340, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: endDashFX
-      value: 
-      objectReference: {fileID: 7273610593968899248, guid: 4172e95cdcb374d4386dc1cc3ff0836f,
-        type: 3}
-    - target: {fileID: 7534830701497435340, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: visuals
-      value: 
-      objectReference: {fileID: 2041279997}
     - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
       propertyPath: ballDatas
@@ -6853,11 +6810,15 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 7194597108492952852, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
+      propertyPath: enableMagnet
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7194597108492952852, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
       propertyPath: enablePickOwnBall
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4247227084850040722, guid: db5a9d4f63dca3645833fdb540b88560, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db5a9d4f63dca3645833fdb540b88560, type: 3}
 --- !u!1 &1445787202
 GameObject:
@@ -8085,6 +8046,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
+      propertyPath: enableMagnet
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
       propertyPath: enablePickOwnBall
       value: 1
       objectReference: {fileID: 0}
@@ -8148,53 +8114,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7078735977702430641, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: dunkState
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: warningPanel
-      value: 
-      objectReference: {fileID: 302848534}
-    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: linkMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: d85e59baa6fff034a8557b9a4df53ca0, type: 2}
-    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: firstController
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: secondController
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
       propertyPath: ballDatas
       value: 
       objectReference: {fileID: 11400000, guid: a5a0c9c7a10ad104f9fca72d91764161,
         type: 2}
-    - target: {fileID: -6964692673919125295, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: startDashFX
-      value: 
-      objectReference: {fileID: 8313852026362512909, guid: ca613f4173ff2774f955187ec86658ec,
-        type: 3}
-    - target: {fileID: -6964692673919125295, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: endDashFX
-      value: 
-      objectReference: {fileID: 7273610593968899248, guid: 4172e95cdcb374d4386dc1cc3ff0836f,
-        type: 3}
-    - target: {fileID: -6964692673919125295, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: visuals
-      value: 
-      objectReference: {fileID: 1383507468}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
 --- !u!1001 &1818015721
@@ -8988,12 +8912,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055c45c6e504fc7498f0ca676f7d5ac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &2041279997 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
-    type: 3}
-  m_PrefabInstance: {fileID: 1443378791}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2093109988
 GameObject:
   m_ObjectHideFlags: 0
