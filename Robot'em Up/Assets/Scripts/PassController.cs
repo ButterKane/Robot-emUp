@@ -108,6 +108,23 @@ public class PassController : MonoBehaviour
 		currentPassCooldown = passCooldown;
 		BallBehaviour shootedBall = ball;
 		ball = null;
+        if (passMode == PassMode.Curve)
+        {
+            // Throw a curve pass
+            PlayerController otherPlayer = null;
+            foreach (PlayerController p in FindObjectsOfType<PlayerController>())
+            {
+                if (p != linkedPlayer)
+                {
+                    otherPlayer = p;
+                }
+            }
+            if (otherPlayer != null)
+            {
+                float _angle = Vector3.SignedAngle(otherPlayer.transform.position - transform.position, transform.forward, Vector3.up);
+                shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
+            }
+        }
 		if (!passPreview)
 		{
 			PlayerController otherPlayer = null;
@@ -119,9 +136,9 @@ public class PassController : MonoBehaviour
 				}
 			}
 			if (otherPlayer != null)
-				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
+				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
 		}
-		else
+		else // if aiming with right joystick
 		{
 			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayer, ballDatas);
 		}
