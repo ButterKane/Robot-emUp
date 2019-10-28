@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1579355950922201771}
   - component: {fileID: 1579355950922201767}
   m_Layer: 0
-  m_Name: Door
+  m_Name: Puzzle_Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,8 +106,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   puzzleData: {fileID: 11400000, guid: e9f432b5da852ac4b93510aa9c804d6d, type: 2}
-  linksNeededToOpen:
-  - {fileID: 0}
-  - {fileID: 0}
+  puzzleActivators: []
+  puzzleDesactivator: []
+  needAllConditions: 0
+  isActivated: 0
   open: 0
   destroyWhenOpened: {fileID: 1579355950922201770}

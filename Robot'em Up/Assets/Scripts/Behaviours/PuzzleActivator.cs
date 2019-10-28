@@ -7,6 +7,17 @@ public class PuzzleActivator : MonoBehaviour
     public bool isActivated;
     public PuzzleDatas puzzleData;
     // Update is called once per frame
+
+
+    public virtual void Start()
+    {
+        if (isActivated)
+        {
+            ActivateLinkedObjects();
+        }
+    }
+
+
     public virtual void ActivateLinkedObjects()
     {
         PuzzleActivable[] activables = FindObjectsOfType<PuzzleActivable>();
