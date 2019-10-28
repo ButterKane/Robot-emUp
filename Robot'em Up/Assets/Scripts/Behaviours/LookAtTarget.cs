@@ -9,6 +9,6 @@ public class LookAtTarget : MonoBehaviour
     
     void Update()
     {
-        head.transform.LookAt(parentScript.target);
+        head.transform.LookAt(parentScript.Target);
     }
 }

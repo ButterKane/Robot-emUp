@@ -15,14 +15,20 @@ public class AttractBall : MonoBehaviour
 	private BallBehaviour ballInside;
 	private LineRenderer lineRenderer;
 	private PassController passController;
+	private PlayerController playerController;
 
 	private void Awake ()
 	{
+		playerController = GetComponentInParent<PlayerController>();
 		lineRenderer = GetComponent<LineRenderer>();
 		passController = GetComponentInParent<PassController>();
 	}
 	private void Update ()
 	{
+		if (!playerController.enableMagnet)
+		{
+			return;
+		}
 		UpdateRadius();
 		UpdateFX();
 		if (passController.GetBall() != null)
@@ -38,10 +44,15 @@ public class AttractBall : MonoBehaviour
 
 	private void OnTriggerEnter ( Collider other )
 	{
+		if (!playerController.enableMagnet)
+		{
+			return;
+		}
 		if (other.tag == "Ball")
 		{
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();
 			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || ball.GetState() != BallState.Flying) { return; }
+			if (!playerController.enablePickOwnBall && ball.GetCurrentThrower() == playerController) { return; }
 
 			ballInside = ball;
 			ballInitialDirection = ball.GetCurrentDirection();
@@ -49,10 +60,15 @@ public class AttractBall : MonoBehaviour
 	}
 	private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Ball")
+		if (!playerController.enableMagnet)
+		{
+			return;
+		}
+		if (other.tag == "Ball")
         {
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();
 			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || ball.GetState() != BallState.Flying) { return; }
+			if (!playerController.enablePickOwnBall && ball.GetCurrentThrower() == playerController) { return; }
 
 			float attractionForce = Vector3.Distance(other.transform.position, transform.position);
 			attractionForce = attractionForce / magnetRadius; //Normalize attractionForce
@@ -65,6 +81,10 @@ public class AttractBall : MonoBehaviour
 
 	private void OnTriggerExit ( Collider other )
 	{
+		if (!playerController.enableMagnet)
+		{
+			return;
+		}
 		if (other.tag == "Ball")
 		{
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();

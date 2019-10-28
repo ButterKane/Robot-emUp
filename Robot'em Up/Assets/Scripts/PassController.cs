@@ -10,6 +10,13 @@ public enum PassMode
     Straight,
     Count
 }
+public enum PassState
+{
+	None,
+	Aiming,
+	Shooting,
+	Receiving
+}
 public class PassController : MonoBehaviour
 {
 	[Header("Global Settings")]
@@ -21,20 +28,22 @@ public class PassController : MonoBehaviour
 	public BallDatas ballDatas;
 	public float passCooldown;
 
-
-	private PlayerController linkedPlayerController;
+	private PlayerController linkedPlayer;
 	private DunkController linkedDunkController;
 	private BallBehaviour ball;
 	private LineRenderer lineRenderer;
 	private List<Vector3> pathCoordinates;
 	private bool passPreview;
+	public PassState passState;
 	private float currentPassCooldown;
+	private Animator animator;
 
 	private void Awake ()
 	{
 		lineRenderer = GetComponent<LineRenderer>();
-		linkedPlayerController = GetComponent<PlayerController>();
+		linkedPlayer = GetComponent<PlayerController>();
 		linkedDunkController = GetComponent<DunkController>();
+		animator = GetComponentInChildren<Animator>();
 	}
 	private void Update ()
 	{
@@ -80,9 +89,22 @@ public class PassController : MonoBehaviour
 
 		return pathCoordinates;
 	}
+
+	public void Aim()
+	{
+		ChangePassState(PassState.Aiming);
+	}
+
+	public void StopAim()
+	{
+		ChangePassState(PassState.None);
+	}
+
 	public void Shoot()
 	{
-		linkedPlayerController.Vibrate(0.15f, VibrationForce.Medium);
+		if (!CanShoot()) { return; }
+		ChangePassState(PassState.Shooting);
+		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		currentPassCooldown = passCooldown;
 		BallBehaviour shootedBall = ball;
 		ball = null;
@@ -91,23 +113,24 @@ public class PassController : MonoBehaviour
 			PlayerController otherPlayer = null;
 			foreach (PlayerController p in FindObjectsOfType<PlayerController>())
 			{
-				if (p != linkedPlayerController)
+				if (p != linkedPlayer)
 				{
 					otherPlayer = p;
 				}
 			}
 			if (otherPlayer != null)
-				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayerController, ballDatas);
+				shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
 		}
 		else
 		{
-			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayerController, ballDatas);
+			shootedBall.Shoot(handTransform.position, transform.forward, linkedPlayer, ballDatas);
 		}
+		ChangePassState(PassState.None);
 	}
 
 	public void Receive (BallBehaviour _ball)
 	{
-		linkedPlayerController.Vibrate(0.15f, VibrationForce.Medium);
+		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
@@ -184,5 +207,27 @@ public class PassController : MonoBehaviour
 		{
 			currentPassCooldown -= Time.deltaTime;
 		}
+	}
+
+	public void ChangePassState ( PassState _newState )
+	{
+		switch (_newState)
+		{
+			case PassState.Aiming:
+				if (!CanShoot()) { return; }
+				EnablePassPreview();
+				animator.SetTrigger("PrepareShootingTrigger");
+				break;
+			case PassState.Shooting:
+				if (!CanShoot()) { return; }
+				animator.SetTrigger("ShootingTrigger");
+				return;
+			case PassState.None:
+				DisablePassPreview();
+				animator.ResetTrigger("PrepareShootingTrigger");
+				animator.SetTrigger("ShootingMissedTrigger");
+				break;
+		}
+		passState = _newState;
 	}
 }

@@ -16,34 +16,36 @@ public enum DunkState
 public class DunkController : MonoBehaviour
 {
 	[Header("Settings")]
-	public float dunkJumpHeight;
-	public float dunkJumpLength;
-	public float dunkJumpDuration;
-	public float dunkJumpFreezeDuration;
+	public float dunkJumpHeight = 5f;
+	public float dunkJumpLength = 1f;
+	public float dunkJumpDuration = 2f;
+	public float dunkJumpFreezeDuration = 1f;
 
-	public float dunkDashSpeed;
-	public float dunkExplosionRadius;
-	public int dunkDamages;
-	public float dunkProjectionForce;
+	public float dunkDashSpeed = 5f;
+	public float dunkExplosionRadius = 10f;
+	public int dunkDamages = 30;
+	public float dunkProjectionForce = 10f;
 
-	public float dunkCancelledFallSpeed;
-	public float dunkDashDelay;
+	public float dunkCancelledFallSpeed = 2f;
+	public float dunkDashDelay = 1f;
 
 
 	private Rigidbody rb;
 	[SerializeField] private DunkState dunkState;
 	private Coroutine jumpCoroutine;
 	private PassController passController;
-	private PlayerController playerController;
+	private PawnController pawnController;
 
 	private GameObject waitingFX;
 	private GameObject dashFX;
 
 	private void Awake ()
 	{
-		rb = GetComponent<Rigidbody>();
+        dunkState = DunkState.None;
+
+        rb = GetComponent<Rigidbody>();
 		passController = GetComponent<PassController>();
-		playerController = GetComponent<PlayerController>();
+		pawnController = GetComponent<PawnController>();
 	}
 
 	public void Explode ()
@@ -57,7 +59,7 @@ public class DunkController : MonoBehaviour
 			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
 			if (potentialHitableObject != null)
 			{
-				potentialHitableObject.OnHit(ball, Vector3.zero, playerController, dunkDamages, DamageSource.Dunk);
+				potentialHitableObject.OnHit(ball, Vector3.zero, pawnController, dunkDamages, DamageSource.Dunk);
 			}
 			i++;
 		}
@@ -75,6 +77,7 @@ public class DunkController : MonoBehaviour
 
 	public void Dunk ()
 	{
+		if (!CanDunk()) { return; }
 		jumpCoroutine = StartCoroutine(Dunk_C());
 	}
 	public bool CanDunk ()
@@ -183,7 +186,7 @@ public class DunkController : MonoBehaviour
 		BallDatas ballDatas = passController.GetBallDatas();
 		BallBehaviour ball = passController.GetBall();
 		Transform handTransform = passController.GetHandTransform();
-		Animator playerAnimator = playerController.GetAnimator();
+		Animator playerAnimator = pawnController.GetAnimator();
 
 		switch (_newState)
 		{

@@ -17,7 +17,7 @@ public class Dummy : MonoBehaviour, IHitable
 	}
 
 	public int maxHealth;
-	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PlayerController _thrower, int _damages, DamageSource _source )
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount++;

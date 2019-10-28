@@ -6,16 +6,26 @@ public class Surrounder : MonoBehaviour
 {
     public List<Transform> points;
     public Dictionary <int, Transform> pointsDic =  new Dictionary<int, Transform>();
+    public float minDistanceFromCenter = 5f;
     public float maxDistanceFromCenter = 10f;
     private Dictionary <int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
     
     void Awake()
     {
+        RaycastHit hit;
         for (int i = 0; i < points.Count; i++)
         {
             pointsDic.Add(i, points[i]);
             pointsScripts[i] = pointsDic[i].GetComponent<SurroundingPoint>();
-            //Bidouille
+        }
+        for (int j = 0; j < pointsDic.Count; j++)
+        {
+            int layerMask = 1 << 12; // Layer 12 = Environment
+            if (Physics.Raycast(transform.position, pointsDic[j].position - transform.position, out hit, (pointsDic[j].position - transform.position).magnitude, layerMask)) 
+            {
+                Debug.Log("deactivated at index " + j);
+                pointsDic[j].gameObject.SetActive(false);   // Deactivate points that spawn inside a wall or environment 
+            }
         }
     }
     
@@ -36,11 +46,11 @@ public class Surrounder : MonoBehaviour
     {
         Vector3 fromCenterToPoint = (pointTransform.position - transform.position).normalized;
 
-        Vector3 positionFromPoint = pointTransform.position + fromCenterToPoint * 8;
+        Vector3 positionFromCenter = transform.position + fromCenterToPoint * Random.Range(minDistanceFromCenter, maxDistanceFromCenter);
 
-        Debug.DrawLine(transform.position, positionFromPoint, Color.green, 3);
+        Debug.DrawLine(transform.position, positionFromCenter, Color.green, 3);
 
-        return positionFromPoint;
+        return positionFromCenter;
     }
 
     public List<Transform> GetAvailablePoints()
@@ -49,7 +59,7 @@ public class Surrounder : MonoBehaviour
 
         for (int i = 0; i < pointsScripts.Count; i++)
         {
-            if(! pointsScripts[i].isOccupied)
+            if(!pointsScripts[i].isOccupied && pointsScripts[i].gameObject.activeSelf)
             {
                 availablePoints.Add(points[i]);
             }

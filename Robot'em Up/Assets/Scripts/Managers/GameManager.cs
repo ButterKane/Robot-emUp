@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#pragma warning disable 0649
 
 public enum VibrationForce
 {
@@ -32,6 +33,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     GameObject dummyPrefab;
+    [SerializeField]
+    GameObject ballPrefab;
 
 
     private void Awake()
@@ -42,6 +45,7 @@ public class GameManager : MonoBehaviour
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
+
 
         //if (playerOne && playerTwo) { AssignPlayers(); }
 
@@ -84,7 +88,8 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(ball.gameObject);
 		}
-		GameObject newBall = Instantiate(i.ball, null);
+		GameObject newBall = Instantiate(i.ballPrefab, null);
+        i.ball = newBall;
 		newBall.transform.position = new Vector3(0, 1f, 0);
 	}
 }

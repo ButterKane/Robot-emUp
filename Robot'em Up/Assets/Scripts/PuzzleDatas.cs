@@ -10,6 +10,8 @@ public class PuzzleDatas : ScriptableObject
     public float nbMomentumChargedByCharger;
     [Range(0, 1)]
     public float nbMomentumNeededToLink;
+    [Range(0, 1)]
+    public float nbMomentumLooseWhenLink;
     [Range(0, 20)]
     public float nbSecondsLinkMaintained;
 
@@ -18,5 +20,18 @@ public class PuzzleDatas : ScriptableObject
     public GameObject Linked;
     public GameObject Linking;
     public GameObject LinkEnd;
+    public GameObject LinkStop;
     public GameObject DoorOpening;
+    public GameObject ElectricPlateActivate;
+    public GameObject ElectricPlateDamage;
+
+
+    [Header("Materials")]
+
+    public Material M_Forcefield_Active;
+    public Material M_Forcefield_Desactivated;
+    public Material M_ForcefieldPlayers_Active;
+    public Material M_ForcefieldPlayers_Desactivated;
+
+
 }

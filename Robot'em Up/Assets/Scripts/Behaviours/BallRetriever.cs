@@ -6,11 +6,13 @@ public class BallRetriever : MonoBehaviour
 {
     private Transform parent;
 	private PassController passController;
+	private PlayerController playerController;
     // Start is called before the first frame update
     void Awake()
     {
         parent = transform.parent;
 		passController = GetComponentInParent<PassController>();
+		playerController = GetComponentInParent<PlayerController>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -20,7 +22,20 @@ public class BallRetriever : MonoBehaviour
 			BallBehaviour ballBehaviour = other.GetComponent<BallBehaviour>();
 			if (ballBehaviour.GetState() == BallState.Grounded || ballBehaviour.GetState() == BallState.Flying)
 			{
-				passController.Receive(ballBehaviour);
+				if (ballBehaviour.GetState() == BallState.Flying)
+				{
+					if (!playerController.enablePickOwnBall && ballBehaviour.GetCurrentThrower() == playerController)
+					{
+						return;
+					} else
+					{
+						passController.Receive(ballBehaviour);
+					}
+				}
+				else
+				{
+					passController.Receive(ballBehaviour);
+				}
 			}
         }
     }
