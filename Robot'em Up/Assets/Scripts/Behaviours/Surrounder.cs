@@ -9,6 +9,7 @@ public class Surrounder : MonoBehaviour
     public float minDistanceFromCenter = 5f;
     public float maxDistanceFromCenter = 10f;
     private Dictionary <int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
+    public Transform playerTransform;
     
     void Awake()
     {
@@ -28,16 +29,36 @@ public class Surrounder : MonoBehaviour
             }
         }
     }
-    
-    public Transform GetSurroundingPoint()
+
+    private void Update()
+    {
+        StayOnPlayerPos();
+        FaceEnemyMiddlePoint();
+    }
+
+    public Transform GetSurroundingPoint(Transform enemy)
     {
         List<Transform> availablePoints = GetAvailablePoints(); // Get all the points that are not occupied
 
-        int selectedAvailableIndex = Random.Range(0, availablePoints.Count);
+        if (availablePoints.Count <= 0) // check if there's no point available
+        {
+            return null;
+        }
 
-        Transform selectedPoint = availablePoints[selectedAvailableIndex];
+        Transform selectedPoint = null;
+        float closestDistance = 1000;
 
-        pointsScripts[KeyByValue(pointsDic, selectedPoint)].isOccupied = true; // "activate" the selected point
+        foreach (var point in availablePoints)
+        {
+            if ((point.transform.position - enemy.position).magnitude < closestDistance)
+            {
+                closestDistance = (point.transform.position - enemy.position).magnitude;
+                selectedPoint = point;
+            }
+        }
+
+        if (selectedPoint != null)
+            pointsScripts[KeyByValue(pointsDic, selectedPoint)].isOccupied = true; // "activate" the selected point
 
         return selectedPoint;
     }
@@ -81,4 +102,27 @@ public class Surrounder : MonoBehaviour
         }
         return key;
     }
+
+    public void StayOnPlayerPos()
+    {
+        if (playerTransform)
+        transform.position = playerTransform.position;
+    }
+
+    public void FaceEnemyMiddlePoint()
+    {
+        Vector3 pointToFace = new Vector3();
+
+        if (playerTransform == GameManager.i.playerOne.transform)
+        {
+            pointToFace = GameManager.i.enemyManager.groupOneMiddlePoint;
+        }
+        else if (playerTransform == GameManager.i.playerTwo.transform)
+        {
+            pointToFace = GameManager.i.enemyManager.groupTwoMiddlePoint;
+        }
+
+        transform.LookAt(pointToFace);
+    }
+
 }
