@@ -69,9 +69,6 @@ public class EnemyManager : MonoBehaviour
 
         groupOneMiddlePoint = new Vector3(groupOneMiddlePoint.x / groupOne.Count, groupOneMiddlePoint.y / groupOne.Count, groupOneMiddlePoint.z / groupOne.Count);
         groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / groupTwo.Count, groupTwoMiddlePoint.y / groupTwo.Count, groupTwoMiddlePoint.z / groupTwo.Count);
-
-        Debug.DrawRay(groupOneMiddlePoint, Vector3.up, Color.yellow);
-        Debug.DrawRay(groupTwoMiddlePoint, Vector3.up, Color.green);
     }
     public void SetGroupsOfEnemies(out List<EnemyBehaviour> groupOne, out List<EnemyBehaviour> groupTwo)
     {
@@ -91,30 +88,15 @@ public class EnemyManager : MonoBehaviour
             else { Debug.Log("The enemy " + enemy.name + " doesn't have a target"); }
         }
 
-        Debug.Log("group One 1 : " + groupOne.Count);
-        Debug.Log("group Two 1 : " + groupTwo.Count);
-
         groupOne = GetClosestEnemies(groupOne);
         groupTwo = GetClosestEnemies(groupTwo);
-
-        Debug.Log("group One 2 : " + groupOne.Count);
-        Debug.Log("group Two 2 : " + groupTwo.Count);
-
-        foreach (var enemy in groupOne)
-        {
-            Debug.DrawRay(enemy.transform.position, Vector3.up, Color.magenta, 3f);
-        }
-        foreach (var enemy in groupTwo)
-        {
-            Debug.DrawRay(enemy.transform.position, Vector3.up, Color.black, 3f);
-        }
     }
 
     public List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> enemies)
     {
         List<EnemyBehaviour> closeEnemies = new List<EnemyBehaviour>();
 
-        if (enemies.Count == 0) { return enemies; }
+        Debug.Assert(enemies.Count > 0, "The groupe of enemy is empty");
 
         enemies.Sort(SortByDistance);
 
@@ -123,6 +105,8 @@ public class EnemyManager : MonoBehaviour
             if (enemies[i] != null)
                 closeEnemies.Add(enemies[i]);
         }
+
+        Debug.Assert(closeEnemies.Count > 0, "There isn't any ennemy recognized as close");
 
         return closeEnemies;
     }

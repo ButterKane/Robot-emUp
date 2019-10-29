@@ -50,10 +50,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private float _distanceToOne;
     private float _distanceToTwo;
 
-    [Space(2)]
-    [Header("Debug")]
-    [SerializeField] private GameObject _surrounder;
-
     private int _hitCount;
     public int hitCount
     {
@@ -202,17 +198,18 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public IEnumerator SurroundPlayer(GameObject player)
     {
         float distanceToNextPoint = 0f;
+        GameObject surrounder = null;
 
         if (player = GameManager.i.playerOne)
         {
-            _surrounder = GameManager.i.surrounderPlayerOne;
+            surrounder = GameManager.i.surrounderPlayerOne;
         }
         else if (player = GameManager.i.playerTwo)
         {
-            _surrounder = GameManager.i.surrounderPlayerTwo;
+            surrounder = GameManager.i.surrounderPlayerTwo;
         }
 
-        Surrounder script = _surrounder.GetComponent<Surrounder>();
+        Surrounder script = surrounder.GetComponent<Surrounder>();
 
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
         // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
