@@ -15,6 +15,7 @@ public enum MoveState
 public enum SlowReason
 {
 	Link,
+	Freeze,
 }
 
 public class SpeedCoef
@@ -81,6 +82,7 @@ public class PawnController : MonoBehaviour
 	private Rigidbody rb;
 	private Animator animator;
 	private Vector3 initialScale;
+	private bool frozen;
 
 	protected PassController passController;
 
@@ -101,6 +103,7 @@ public class PawnController : MonoBehaviour
 
     private void FixedUpdate()
     {
+		if (frozen) { return; }
         CheckMoveState();
         Rotate();
 		UpdateAcceleration();
@@ -183,6 +186,11 @@ public class PawnController : MonoBehaviour
         rb.velocity = myVel;
         speed = rb.velocity.magnitude;
     }
+
+	public void SetLookInput(Vector3 _direction)
+	{
+		lookInput = _direction;
+	}
 
 	public void Climb()
 	{
@@ -323,6 +331,20 @@ public class PawnController : MonoBehaviour
 	public Animator GetAnimator ()
 	{
 		return animator;
+	}
+
+	public void Freeze()
+	{
+		rb.isKinematic = true;
+		rb.useGravity = false;
+		frozen = true;
+	}
+
+	public void UnFreeze()
+	{
+		rb.isKinematic = false;
+		rb.useGravity = true;
+		frozen = false;
 	}
 
 	public Vector3 GetCenterPosition()
