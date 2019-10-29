@@ -40,7 +40,7 @@ public class PuzzleActivator : MonoBehaviour
                 bool temp_Activated = true;
                 foreach (var puzzleActivator in item.puzzleActivators)
                 {
-                    if (!isActivated)
+                    if (!puzzleActivator.isActivated)
                     {
                         temp_Activated = false;
                     }
@@ -48,7 +48,7 @@ public class PuzzleActivator : MonoBehaviour
 
                 foreach (var puzzleActivator in item.puzzleDesactivator)
                 {
-                    if (isActivated)
+                    if (puzzleActivator.isActivated)
                     {
                         temp_Activated = false;
                     }

@@ -50,6 +50,13 @@ public class PuzzleEletricPlate : PuzzleActivable
     override public void WhenDesactivate()
     {
         isActivated = false;
+        while (IdleFx.Count > 0)
+        {
+
+            Destroy(IdleFx[0]);
+            IdleFx.RemoveAt(0);
+        }
+
     }
 
 
