@@ -162,24 +162,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firstPawn: {fileID: 1446006776330246409}
-  secondPawn: {fileID: 1446006776330246409}
-  maxDistanceBeforeShowing: 20
-  maxDistanceBeforeSlowing: 24
-  maxDistanceBeforeBreaking: 28
-  distanceBeforeRebuilding: 20
+  secondPawn: {fileID: 0}
+  maxDistanceBeforeShowing: 40
+  maxDistanceBeforeSlowing: 48
+  maxDistanceBeforeBreaking: 56
+  distanceBeforeRebuilding: 35
   linkColor:
     serializedVersion: 2
     key0: {r: 0, g: 0.94729495, b: 1, a: 1}
-    key1: {r: 1, g: 0, b: 0, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key1: {r: 1, g: 0.60382056, b: 0, a: 1}
+    key2: {r: 1, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 65535
-    ctime2: 0
+    ctime1: 29298
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -194,7 +194,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 2
+    m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   maxSlowCoef: 0.1
   damagesPerSecWithoutLink: 1
@@ -286,7 +286,7 @@ Rigidbody:
   m_GameObject: {fileID: 69913409235962623}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -417,6 +417,7 @@ MonoBehaviour:
   startTransform: {fileID: 4655006219135653576}
   armTransform: {fileID: 509570522770558410}
   forwardSpeed: 50
+  retractionSpeed: 100
   maxDistance: 22
   freezeDuration: 0.15
   dragSpeed: 30
