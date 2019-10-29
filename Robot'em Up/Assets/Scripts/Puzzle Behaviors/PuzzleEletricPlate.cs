@@ -19,7 +19,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         waitTimeBeforeNextFx -= Time.deltaTime;
         if (waitTimeBeforeNextFx < 0 && isActivated)
         {
-            waitTimeBeforeNextFx = 0.1f;
+            waitTimeBeforeNextFx = 0.1f / transform.lossyScale.magnitude;
             if (IdleFx.Count > 6)
             {
                 Destroy(IdleFx[0]);
