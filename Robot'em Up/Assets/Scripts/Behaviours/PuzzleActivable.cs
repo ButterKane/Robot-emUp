@@ -9,6 +9,17 @@ public class PuzzleActivable : MonoBehaviour
     [SerializeField] public List<PuzzleActivator> puzzleDesactivator;
     [SerializeField] public bool needAllConditions = false;
     public bool isActivated = true;
+
+
+    public virtual void Start()
+    {
+        if (isActivated)
+        {
+            WhenActivate();
+        }
+    }
+
+
     public virtual void WhenActivate()
     {
         isActivated = true;

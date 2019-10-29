@@ -121,6 +121,8 @@ MonoBehaviour:
   handTransform: {fileID: 4655006219135653576}
   ballDatas: {fileID: 11400000, guid: bcbf07fa2f27e044885056ff5ff74b7c, type: 2}
   passCooldown: 0.5
+  previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
+  previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
   passState: 0
 --- !u!114 &7078735977702430641
 MonoBehaviour:
@@ -136,14 +138,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dunkJumpHeight: 5
   dunkJumpLength: 1
-  dunkJumpDuration: 2
+  dunkJumpDuration: 0.2
   dunkJumpFreezeDuration: 1
-  dunkDashSpeed: 5
+  dunkDashSpeed: 20
   dunkExplosionRadius: 10
   dunkDamages: 30
-  dunkProjectionForce: 10
-  dunkCancelledFallSpeed: 2
-  dunkDashDelay: 1
+  dunkProjectionForce: 30
+  dunkCancelledFallSpeed: 10
+  dunkDashDelay: 0.2
+  dunkSnapTreshold: 30
   dunkState: 6
 --- !u!114 &5564275353483555727
 MonoBehaviour:

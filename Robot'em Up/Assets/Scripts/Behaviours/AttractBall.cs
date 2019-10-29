@@ -44,7 +44,7 @@ public class AttractBall : MonoBehaviour
 
 	private void OnTriggerEnter ( Collider other )
 	{
-		if (!playerController.enableMagnet)
+		if (!playerController.enableMagnet || !passController.CanReceive())
 		{
 			return;
 		}
@@ -60,7 +60,7 @@ public class AttractBall : MonoBehaviour
 	}
 	private void OnTriggerStay(Collider other)
     {
-		if (!playerController.enableMagnet)
+		if (!playerController.enableMagnet || !passController.CanReceive())
 		{
 			return;
 		}

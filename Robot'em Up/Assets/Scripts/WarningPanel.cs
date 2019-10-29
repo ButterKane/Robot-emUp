@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
@@ -8,7 +9,7 @@ public class WarningPanel : MonoBehaviour
 	private Animator animator;
 	private static WarningPanel instance;
 	private GameObject go;
-	[MinMaxSlider] public Vector2 vignetteIntensity;
+	[MinMaxRange(0, 1)] public RangedFloat vignetteIntensity;
 	public Color vignetteColor;
 	public float flashSpeed = 1f;
 
@@ -51,7 +52,7 @@ public class WarningPanel : MonoBehaviour
 
 	private void Update ()
 	{
-		vignette.intensity.value = Mathf.Lerp(vignetteIntensity.x, vignetteIntensity.y, Mathf.PingPong(Time.time * flashSpeed, 1f));
+		vignette.intensity.value = Mathf.Lerp(vignetteIntensity.Min, vignetteIntensity.Max, Mathf.PingPong(Time.time * flashSpeed, 1f));
 	}
 
 	IEnumerator DisableVignette_C(float _disableDuration)

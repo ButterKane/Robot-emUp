@@ -96,7 +96,7 @@ public class PlayerController : PawnController
 		moveInput = _inputX + _inputZ;
 		moveInput.y = 0;
 		moveInput.Normalize();
-		lookInput = MathHelper.GetMouseDirection(cam, transform.position);
+		lookInput = SwissArmyKnife.GetMouseDirection(cam, transform.position);
 		if (Input.GetMouseButton(1))
 		{
 			passController.Aim();
@@ -144,7 +144,6 @@ public class PlayerController : PawnController
 		}
 		return false;
 	}
-
 	public void DisableInput ()
 	{
 		inputDisabled = true;
