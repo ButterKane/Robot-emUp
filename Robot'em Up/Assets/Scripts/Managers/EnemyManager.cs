@@ -100,7 +100,7 @@ public class EnemyManager : MonoBehaviour
 
         enemies.Sort(SortByDistance);
 
-        for (int i = 0; i < GameManager.i.SurrounderPrefab.transform.childCount; i++)
+        for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, enemies.Count); i++)
         {
             if (enemies[i] != null)
                 closeEnemies.Add(enemies[i]);
