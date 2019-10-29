@@ -27,6 +27,9 @@ public class PuzzleDatas : ScriptableObject
     public GameObject ElectricPlateActivate;
     public GameObject ElectricPlateDamage;
 
+    [Header("Colors")]
+    public Color RepeaterActivate;
+    public Color RepeaterDesactivate;
 
     [Header("Materials")]
     public Material M_Forcefield_Active;
