@@ -29,6 +29,8 @@ public class DunkController : MonoBehaviour
 	public float dunkCancelledFallSpeed = 2f;
 	public float dunkDashDelay = 1f;
 
+	public float dunkSnapTreshold = 30f;
+
 
 	private Rigidbody rb;
 	[SerializeField] private DunkState dunkState;
@@ -111,6 +113,7 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator DunkJump_C ()
 	{
+		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		rb.isKinematic = true;
 		rb.useGravity = false;
@@ -129,7 +132,9 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator DunkWait_C ()
 	{
+		passController.EnableBallReception();
 		ChangeState(DunkState.Waiting);
+		SnapController.SetSnappable(SnapType.Pass, this.gameObject, dunkSnapTreshold, dunkJumpFreezeDuration);
 		for (float i = 0; i < dunkJumpFreezeDuration; i += Time.deltaTime)
 		{
 			yield return new WaitForEndOfFrame();
