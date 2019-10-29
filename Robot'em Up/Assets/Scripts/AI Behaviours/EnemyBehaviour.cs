@@ -224,9 +224,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         {
             Vector3 p0 = _self.position;
 
-            Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
+            //Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
 
-            p2 = SwissArmyKnife.GetFlattedDownPosition(p2, _self.position);
+            Vector3 p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
 
             int moveSens = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up) > 1 ? 1 : -1;
 
@@ -240,6 +240,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             do
             {
                 p0 = _self.position;
+                
+                p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
+
+                Debug.DrawRay(p2, Vector3.up * 3, Color.green);
+
                 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight;
 
                 Vector3 pNow = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
