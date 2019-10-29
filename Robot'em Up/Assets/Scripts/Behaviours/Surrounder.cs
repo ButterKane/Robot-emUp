@@ -8,6 +8,7 @@ public class Surrounder : MonoBehaviour
     public Dictionary <int, Transform> pointsDic =  new Dictionary<int, Transform>();
     public float minDistanceFromCenter = 5f;
     public float maxDistanceFromCenter = 10f;
+    public float minimalDistanceToFollow = 3f;
     private Dictionary <int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
     public Transform playerTransform;
     
@@ -122,7 +123,11 @@ public class Surrounder : MonoBehaviour
             pointToFace = GameManager.i.enemyManager.groupTwoMiddlePoint;
         }
 
-        transform.LookAt(pointToFace);
+        if ((pointToFace - transform.position).magnitude > minimalDistanceToFollow)
+        {
+            transform.LookAt(pointToFace);
+        }
+        
     }
 
 }
