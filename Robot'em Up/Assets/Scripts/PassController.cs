@@ -113,6 +113,19 @@ public class PassController : MonoBehaviour
 		ChangePassState(PassState.None);
 	}
 
+
+	PlayerController GetOtherPlayer ()
+	{
+		foreach (PlayerController p in FindObjectsOfType<PlayerController>())
+		{
+			if (p != linkedPlayer)
+			{
+				return p;
+			}
+		}
+		return null;
+	}
+
 	public void Shoot()
 	{
 		if (!CanShoot()) { return; }
@@ -121,35 +134,26 @@ public class PassController : MonoBehaviour
 		currentPassCooldown = passCooldown;
 		BallBehaviour shootedBall = ball;
 		ball = null;
-        if (passMode == PassMode.Curve)
+		PlayerController otherPlayer = GetOtherPlayer();
+		if (passMode == PassMode.Curve)
         {
             // Throw a curve pass
-            PlayerController otherPlayer = null;
-            foreach (PlayerController p in FindObjectsOfType<PlayerController>())
-            {
-                if (p != linkedPlayer)
-                {
-                    otherPlayer = p;
-                }
-            }
             if (otherPlayer != null)
             {
-                float _angle = Vector3.SignedAngle(otherPlayer.transform.position - transform.position, transform.forward, Vector3.up);
-                shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
+				if (passPreview)
+				{
+					float _angle = Vector3.SignedAngle(otherPlayer.transform.position - transform.position, transform.forward, Vector3.up);
+					shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
+				} else
+				{
+					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
+				}
             }
         }
 		if (passMode == PassMode.Bounce)
 		{
 			if (!passPreview)
 			{
-				PlayerController otherPlayer = null;
-				foreach (PlayerController p in FindObjectsOfType<PlayerController>())
-				{
-					if (p != linkedPlayer)
-					{
-						otherPlayer = p;
-					}
-				}
 				if (otherPlayer != null)
 					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
 			}
