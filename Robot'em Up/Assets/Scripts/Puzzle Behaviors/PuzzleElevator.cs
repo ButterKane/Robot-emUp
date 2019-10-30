@@ -36,6 +36,11 @@ public class PuzzleElevator : PuzzleActivable
             if (fractionOfJourney > 0.99f)
             {
                 state = ElevatorState.Up;
+                if (!isActivated)
+                {
+                    state = ElevatorState.MovingDown;
+                    startTime = Time.time;
+                }
             }
         }
 
@@ -48,6 +53,11 @@ public class PuzzleElevator : PuzzleActivable
             if (fractionOfJourney > 0.99f)
             {
                 state = ElevatorState.Down;
+                if (isActivated)
+                {
+                    state = ElevatorState.MovingUp;
+                    startTime = Time.time;
+                }
             }
         }
 
