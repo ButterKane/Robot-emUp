@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 #pragma warning disable 0649
@@ -16,7 +17,7 @@ public enum EnemyState
 }
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
-    [Header("References")]
+    [Separator("References")]
     [SerializeField] private Transform _self;
     public Rigidbody Rb;
     [SerializeField] private ParticleSystem _hitFXPrefab;
@@ -25,15 +26,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Animator Animator;
 
     [Space(2)]
-    [Header("Auto-assigned References")]
+    [Separator("Auto-assigned References")]
     public Transform Target;
     [SerializeField] private Transform _playerOne;
     [SerializeField] private Transform _playerTwo;
 
     [Space(2)]
-    [Header("Variables")]
+    [Separator("Variables")]
     public EnemyState State;
-
     public bool IsAttacking = false;
 
     public int MaxHealth = 100;
@@ -44,14 +44,19 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public bool IsFollowingPlayer;
     public float FollowSpeed = 100f;
+    
+
+    [Space(2)]
+    [Separator("Surrounding Variables")]
     public float TimeBeforeSurround = 2f;
+
+    [Range(0, 1)]
+    public float BezierCurveHeight = 0.5f;
+
+    public float DistanceToDestinationTolerance = 0.2f;
 
     private float _distanceToOne;
     private float _distanceToTwo;
-
-    [Space(2)]
-    [Header("Debug")]
-    [SerializeField] private GameObject _surrounder;
 
     private int _hitCount;
     public int hitCount
@@ -83,14 +88,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
     {
+        GetTarget();
+
         if (priorityState != EnemyState.Null)
         {
             State = priorityState;
         }
         else
         {
-            GetTarget();
-
             if ((Target.position - _self.position).magnitude < AttackDistance)
             {
                 if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
@@ -178,16 +183,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void LaunchSurrounding()
     {
         //Debug.Log("target of " + self.name + " is " + target);
-
-        if (GameManager.i.enemyManager.surrounderInstance != null)
-        {
-            _surrounder = GameManager.i.enemyManager.surrounderInstance;
-        }
-        else
-        {
-            _surrounder = GameManager.i.enemyManager.SpawnSurrounderInstance(Target.position);
-        }
-
+        
         StartCoroutine(SurroundPlayer(Target.gameObject));
     }
 
@@ -209,62 +205,106 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public IEnumerator SurroundPlayer(GameObject player)
     {
-        float distanceToNextPoint = 0f;
-        Surrounder script = _surrounder.GetComponent<Surrounder>();
-        _surrounder.transform.position = player.transform.position;
+        float distanceFromStartToNow = 0f;
+        GameObject surrounder = null;
+
+        if (player = GameManager.i.playerOne)
+        {
+            surrounder = GameManager.i.surrounderPlayerOne;
+        }
+        else if (player = GameManager.i.playerTwo)
+        {
+            surrounder = GameManager.i.surrounderPlayerTwo;
+        }
+
+        Surrounder script = surrounder.GetComponent<Surrounder>();
 
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
         // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
 
-        Transform surroundingPoint = script.GetSurroundingPoint();
-        Vector3 p0 = _self.position;
-        Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
-        p2 = SwissArmyKnife.GetFlattedDownPosition(p2, _self.position);
+        Transform surroundingPoint = script.GetSurroundingPoint(_self); // Get the closest surrounding point
 
-        int moveSens = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up) > 1 ? 1 : -1;
-
-        Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * 0.5f;
-        float distance = (p2 - p0).magnitude;
-
-        float t = 0;
-        float timeNotMovingMuch = 0f;
-
-        do
+        if (surroundingPoint == null) // If there's no point tu use to surround, abort
         {
-            p0 = _self.position;
-            p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * 0.5f;
+            WhatShouldIDo();
+        }
+        else
+        {
+            Vector3 p0 = _self.position;
 
-            Vector3 pNow = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
-            
-            _self.position = pNow;
+            //Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
 
-            distanceToNextPoint = (pNow - p0).magnitude;
+            Vector3 p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
 
-            float newDistance = (p2 - p0).magnitude;
+            int moveSens = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up) > 1 ? 1 : -1;
 
-            if ((_self.position- p0).magnitude < distanceToNextPoint)    // Comparing the traveled distance and the supposed distance to see if blocked
+            Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight;
+
+            float distanceToEnd1 = (p2 - p0).magnitude;
+            float distanceToEnd2 = (p2 - p0).magnitude;
+
+            float t = 0f;                    // movement avancement on the curve
+            float timeNotMovingMuch = 0f;   // checks if blocked by somethign during the movement
+
+            do
             {
-                timeNotMovingMuch += Time.deltaTime;
-            }
-            else
-            {
-                timeNotMovingMuch = 0f;
-            }
+                // Getting base infos
+                p0 = _self.position;
+                distanceToEnd1 = (p2 - p0).magnitude;   // distance from enemy to target
+                p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
+                distanceToEnd2 = (p2 - p0).magnitude;   // distance from enemy to target after recalculating target position
+                
+                Debug.DrawRay(p2, Vector3.up * 3, Color.green);
 
-            if (t < 1)
+                // Getting third point of bezier curve
+                p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight;
+
+                // Calculating position on bezier curve, following start point, end point and avancement
+                Vector3 positionOnBezierCurve = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
+
+
+                _self.position = positionOnBezierCurve;
+                
+
+                // Adapting the avancement with the distance to travel
+                float distanceTraveled = distanceToEnd1 * t;    // traveled distance in units
+
+                if (distanceToEnd1 != distanceToEnd2)
+                {
+                    float distanceTraveledTransfered = distanceTraveled / distanceToEnd2;   // traveled distance transfered on new distance
+                    t = distanceTraveledTransfered;    // sets the current avancement according to new distance
+                }
+
+                // Stopping the enemy if it's blocked
+                distanceFromStartToNow = (positionOnBezierCurve - p0).magnitude;
+                
+                if ((_self.position - p0).magnitude < distanceFromStartToNow)    // Comparing the traveled distance and the supposed distance to see if blocked
+                {
+                    timeNotMovingMuch += Time.deltaTime ;
+                }
+                else
+                {
+                    timeNotMovingMuch = 0f;
+                }
+
+                //Incrementing the avancement
+                if (t < 1)
+                {
+                    t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed/10));   
+                }
+
+                Debug.Log("speed is " + (_self.position - p0).magnitude);
+                yield return null;
+            } while ((p0 - p2).magnitude > DistanceToDestinationTolerance && timeNotMovingMuch < 0.5f);
+
+            if (timeNotMovingMuch > 0.5f)
             {
-                t += Time.deltaTime / (newDistance * 25);
+                Debug.Log("stopped because not moving enough");
             }
             yield return null;
-        } while ((p0 - p2).magnitude > 0.1f && timeNotMovingMuch < 0.5f);
 
-        if (timeNotMovingMuch > 0.5f)
-        {
-            Debug.Log("stopped because not moving enough");
+            WhatShouldIDo();
         }
-        yield return null;
-
-        WhatShouldIDo();
     }
 
     public IEnumerator FollowPlayer(Transform playerToFollow)
@@ -287,7 +327,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (followTime >= TimeBeforeSurround)
         {
-            WhatShouldIDo(EnemyState.Surrounding);
+            if ((Target.gameObject == GameManager.i.playerOne && EnemyManager.i.enemyGroupOne.Contains(this))
+                || (Target.gameObject == GameManager.i.playerTwo && EnemyManager.i.enemyGroupTwo.Contains(this)))
+            {
+                WhatShouldIDo(EnemyState.Surrounding);
+            }
+            else
+            {
+                WhatShouldIDo();
+            }
         }
         else
         {

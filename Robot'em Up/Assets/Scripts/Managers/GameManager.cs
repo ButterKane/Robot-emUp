@@ -29,7 +29,12 @@ public class GameManager : MonoBehaviour
     public GameObject ball;
     public BallBehaviour ballBehaviour;
     public int ballDamage = 30;
-    public List<GameObject> enemies; 
+    public List<GameObject> enemies;
+
+
+    [HideInInspector] public GameObject surrounderPlayerOne;
+    [HideInInspector] public GameObject surrounderPlayerTwo;
+    public GameObject SurrounderPrefab;
 
     [SerializeField]
     GameObject dummyPrefab;
@@ -46,9 +51,15 @@ public class GameManager : MonoBehaviour
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
+        if (surrounderPlayerOne!= null) { Destroy(surrounderPlayerOne); }
+        surrounderPlayerOne = Instantiate(SurrounderPrefab, playerOne.transform.position, Quaternion.identity);
+        surrounderPlayerOne.GetComponent<Surrounder>().playerTransform = playerOne.transform;
+
+        if (surrounderPlayerTwo != null) { Destroy(surrounderPlayerTwo); }
+        surrounderPlayerTwo = Instantiate(SurrounderPrefab, playerTwo.transform.position, Quaternion.identity);
+        surrounderPlayerTwo.GetComponent<Surrounder>().playerTransform = playerTwo.transform;
 
         //if (playerOne && playerTwo) { AssignPlayers(); }
-
     }
 
 	private void Update ()
