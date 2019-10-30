@@ -1,11 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 public class PuzzlePressurePlate : PuzzleActivator
 {
-    private bool PlayerHere;
+    [ReadOnly]
+    public bool PawnHere;
+    [ReadOnly]
+    public bool noPlayerHere;
     private BoxCollider boxCollider;
+    public List<PawnController> ListPawnsHere;
+
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -19,30 +26,36 @@ public class PuzzlePressurePlate : PuzzleActivator
     }
 
 
+
     private void OnTriggerEnter(Collider other)
     {
-        if (!PlayerHere)
+        if (other.gameObject.GetComponent<PawnController>())
         {
-            if (other.GetComponent<PlayerController>())
-            {
-                PlayerHere = true;
-                ActivateLinkedObjects();
-                transform.localScale = new Vector3(transform.localScale.x, 0.1f, transform.localScale.z);
-            }
+            PawnHere = true;
+            transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
+            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            //pawn.Damage(puzzleData.DamageEletricPlate);
+            ListPawnsHere.Add(pawn);
+            ActivateLinkedObjects();
         }
+
     }
+
 
     private void OnTriggerExit(Collider other)
     {
-
-        if (PlayerHere)
+        if (other.gameObject.GetComponent<PawnController>())
         {
-            if (other.GetComponent<PlayerController>())
+            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            ListPawnsHere.Remove(pawn);
+            if (ListPawnsHere.Count < 1)
             {
                 DesactiveLinkedObjects();
-                PlayerHere = false;
+                PawnHere = false;
                 transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
             }
         }
+
     }
+    
 }
