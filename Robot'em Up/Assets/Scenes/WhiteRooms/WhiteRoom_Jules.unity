@@ -2387,7 +2387,7 @@ PrefabInstance:
     - target: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.39
+      value: -7.28
       objectReference: {fileID: 0}
     - target: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
@@ -2428,6 +2428,81 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: passMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: maxLateralDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: maxPlayerDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: maxAngle
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: raycastIteration
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: CurvemaxLateralDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveMaxLateralDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveMaxPlayerDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8631545008032349881, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[0].outSlope
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db5a9d4f63dca3645833fdb540b88560, type: 3}
@@ -3684,7 +3759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1232679987
 Transform:
   m_ObjectHideFlags: 0
@@ -3853,8 +3928,104 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 839975549}
     - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
       propertyPath: passMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[0].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[0].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[0].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[1].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[1].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[1].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxDistance.m_Curve.Array.data[1].inWeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxAngle
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxLateralDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: maxPlayerDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: raycastIteration
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: CurvemaxLateralDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveMaxLateralDistance
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveMaxPlayerDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[1].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: curveYOLO_MDR.m_Curve.Array.data[0].outSlope
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
