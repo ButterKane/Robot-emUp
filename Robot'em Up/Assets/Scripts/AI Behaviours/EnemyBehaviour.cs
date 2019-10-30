@@ -290,7 +290,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 //Incrementing the avancement
                 if (t < 1)
                 {
-                    t += Time.deltaTime / (distanceToEnd2 * FollowSpeed);   
+                    t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed/10));   
                 }
 
                 Debug.Log("speed is " + (_self.position - p0).magnitude);
