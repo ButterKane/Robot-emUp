@@ -416,6 +416,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClimbableWall (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1007,13 +1012,13 @@ GameObject:
   - component: {fileID: 350655166}
   - component: {fileID: 350655165}
   - component: {fileID: 350655164}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &350655163
 Transform:
   m_ObjectHideFlags: 0
@@ -1042,7 +1047,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: -5, y: 0, z: 0}
   secondPos: {x: 5, y: 0, z: 0}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &350655165
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2369,11 +2374,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player2
       objectReference: {fileID: 0}
-    - target: {fileID: 8588656495610394338, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2894,6 +2894,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClimbableWall (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2969,13 +2974,13 @@ GameObject:
   - component: {fileID: 1070120223}
   - component: {fileID: 1070120222}
   - component: {fileID: 1070120221}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1070120221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2990,7 +2995,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: -5, y: 0, z: 0}
   secondPos: {x: 5, y: 0, z: 0}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &1070120222
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3076,6 +3081,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ClimbableWall (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}
@@ -3336,6 +3346,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClimbableWall (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3407,13 +3422,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1187072326}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Arena
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1187072326
 Transform:
   m_ObjectHideFlags: 0
@@ -3554,13 +3569,13 @@ GameObject:
   - component: {fileID: 1213364039}
   - component: {fileID: 1213364038}
   - component: {fileID: 1213364037}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1213364036
 Transform:
   m_ObjectHideFlags: 0
@@ -3589,7 +3604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: -5, y: 0, z: 0}
   secondPos: {x: 5, y: 0, z: 0}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &1213364038
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3663,7 +3678,7 @@ GameObject:
   - component: {fileID: 1232679990}
   - component: {fileID: 1232679989}
   - component: {fileID: 1232679988}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3698,7 +3713,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: 0, y: 0, z: -15}
   secondPos: {x: 0, y: 0, z: 15}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &1232679989
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3779,7 +3794,7 @@ PrefabInstance:
     - target: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
@@ -3826,47 +3841,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -6964692673919125295, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: state
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666635390815151469, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_Drag
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 13400000, guid: 02d8489c5c81d1f4e81341a5737aaec8,
         type: 2}
-    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 19.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 19.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685530694934457600, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_Radius
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: firstPawn
-      value: 
-      objectReference: {fileID: 1404840595}
     - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: secondPawn
       value: 
       objectReference: {fileID: 839975549}
+    - target: {fileID: 514769572, guid: 218a241db58f56849816014d9aa8d204, type: 3}
+      propertyPath: passMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
 --- !u!1 &1337428200
@@ -3933,18 +3922,6 @@ Transform:
   m_Father: {fileID: 23395611}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1404840595 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
-    type: 3}
-  m_PrefabInstance: {fileID: 1251166992}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1102769675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 055c45c6e504fc7498f0ca676f7d5ac3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1445787202
 GameObject:
   m_ObjectHideFlags: 0
@@ -4160,13 +4137,13 @@ GameObject:
   - component: {fileID: 1473325300}
   - component: {fileID: 1473325299}
   - component: {fileID: 1473325298}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1473325297
 Transform:
   m_ObjectHideFlags: 0
@@ -4195,7 +4172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: -5, y: 0, z: 0}
   secondPos: {x: 5, y: 0, z: 0}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &1473325299
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5039,13 +5016,13 @@ GameObject:
   - component: {fileID: 1984889783}
   - component: {fileID: 1984889782}
   - component: {fileID: 1984889781}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1984889780
 Transform:
   m_ObjectHideFlags: 0
@@ -5074,7 +5051,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: 0, y: 0, z: -15}
   secondPos: {x: 0, y: 0, z: 15}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &1984889782
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5146,6 +5123,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ClimbableWall (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}
@@ -5232,13 +5214,13 @@ GameObject:
   - component: {fileID: 2093109992}
   - component: {fileID: 2093109991}
   - component: {fileID: 2093109990}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2093109989
 Transform:
   m_ObjectHideFlags: 0
@@ -5267,7 +5249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPos: {x: -5, y: 0, z: 0}
   secondPos: {x: 5, y: 0, z: 0}
-  speedMultiplier: 1
+  speedMultiplier: 0.2
 --- !u!136 &2093109991
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5445,6 +5427,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ClimbableWall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}
@@ -5876,6 +5863,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ClimbableWall
+      objectReference: {fileID: 0}
+    - target: {fileID: 6167279515250857295, guid: fdc3e804ffaff544084a8056c866f15b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6167279515250857283, guid: fdc3e804ffaff544084a8056c866f15b,
         type: 3}

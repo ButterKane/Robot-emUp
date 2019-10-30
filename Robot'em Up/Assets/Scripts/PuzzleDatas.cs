@@ -16,6 +16,8 @@ public class PuzzleDatas : ScriptableObject
     public float nbSecondsLinkMaintained;
     [Range(0, 100)]
     public int DamageEletricPlate;
+    [Range(0.01f, 0.5f)]
+    public float timeCheckingDamageEletricPlate;
 
     [Header("FX")]
 	public GameObject Charging;
@@ -36,6 +38,8 @@ public class PuzzleDatas : ScriptableObject
     public Material M_Forcefield_Desactivated;
     public Material M_ForcefieldPlayers_Active;
     public Material M_ForcefieldPlayers_Desactivated;
+    public Material M_SwitchActivate;
+    public Material M_SwitchDesactivate;
 
 
 }

@@ -22,6 +22,7 @@ public class PlayerController : PawnController
 
 	private DunkController dunkController;
 	private DashController dashController;
+	private ExtendingArmsController extendingArmsController;
 
 	public override void Awake ()
 	{
@@ -29,6 +30,7 @@ public class PlayerController : PawnController
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
+		extendingArmsController = GetComponent<ExtendingArmsController>();
 	}
 	private void Update ()
 	{
@@ -66,6 +68,17 @@ public class PlayerController : PawnController
 		{
 			passController.StopAim();
 		}
+
+		if (extendingArmsController != null)
+		{
+			if (lookInput.magnitude > 0.1f)
+			{
+				extendingArmsController.SetThrowDirection(lookInput);
+			} else
+			{
+				extendingArmsController.DisableThrowDirectionIndicator();
+			}
+		}
 		if (state.Triggers.Right > triggerTreshold)
 		{
 			passController.Shoot();
@@ -76,7 +89,8 @@ public class PlayerController : PawnController
 		}
 		if (state.Triggers.Left > triggerTreshold && enableDash)
 		{
-			dashController.Dash();
+			extendingArmsController.ExtendArm();
+			//dashController.Dash();
 		}
 		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
@@ -97,6 +111,16 @@ public class PlayerController : PawnController
 		moveInput.y = 0;
 		moveInput.Normalize();
 		lookInput = SwissArmyKnife.GetMouseDirection(cam, transform.position);
+		if (extendingArmsController != null)
+		{
+			if (lookInput.magnitude > 0.1f)
+			{
+				extendingArmsController.SetThrowDirection(lookInput);
+			} else
+			{
+				extendingArmsController.DisableThrowDirectionIndicator();
+			}
+		}
 		if (Input.GetMouseButton(1))
 		{
 			passController.Aim();
@@ -119,7 +143,8 @@ public class PlayerController : PawnController
 		}
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
-			dashController.Dash();
+			extendingArmsController.ExtendArm();
+			//dashController.Dash();
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{
