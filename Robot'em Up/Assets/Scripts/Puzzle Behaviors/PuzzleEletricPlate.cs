@@ -1,22 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 public class PuzzleEletricPlate : PuzzleActivable
 {
-    private float waitTimeBeforeNextFx;
+    [ReadOnly]
+    public float waitTimeBeforeNextFx;
+    [ReadOnly]
+    public float waitTimeBeforeNextDamage;
+    [ReadOnly]
+    public List<PawnController> PawnTrapped;
+
     public List<GameObject> IdleFx;
+    private BoxCollider boxCollider;
 
     // Update is called once per frame
     void Awake()
     {
         waitTimeBeforeNextFx = 0;
         IdleFx = new List<GameObject>();
+        boxCollider = GetComponent<BoxCollider>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        
+        waitTimeBeforeNextDamage -= Time.deltaTime;
         waitTimeBeforeNextFx -= Time.deltaTime;
+
+        if (waitTimeBeforeNextDamage < 0 && isActivated)
+        {
+            waitTimeBeforeNextDamage = puzzleData.timeCheckingDamageEletricPlate;
+            foreach (PawnController item in PawnTrapped)
+            {
+                item.Damage(puzzleData.DamageEletricPlate);
+            }
+        }
+
         if (waitTimeBeforeNextFx < 0 && isActivated)
         {
             waitTimeBeforeNextFx = 0.1f / transform.lossyScale.magnitude;
@@ -33,10 +54,23 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<PawnController>() && isActivated)
+        if (other.gameObject.GetComponent<PawnController>())
+        {
+            
+            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            //pawn.Damage(puzzleData.DamageEletricPlate);
+            PawnTrapped.Add(pawn);
+        }
+
+    }
+
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.GetComponent<PawnController>())
         {
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            pawn.Damage(puzzleData.DamageEletricPlate);
+            PawnTrapped.Remove(pawn);
         }
 
     }
