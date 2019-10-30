@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 
 public enum PassMode
@@ -27,10 +28,17 @@ public class PassController : MonoBehaviour
 	public Transform handTransform;
 	public BallDatas ballDatas;
 	public float passCooldown;
-
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
+
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveRaycastIteration = 50;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMinAngle = 10;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public AnimationCurve curveYOLO_MDR;
+
 	private PlayerController linkedPlayer;
+	private PlayerController otherPlayer;
 	private DunkController linkedDunkController;
 	private BallBehaviour ball;
 	private LineRenderer lineRenderer;
@@ -51,6 +59,8 @@ public class PassController : MonoBehaviour
 		canReceive = true;
 		lineRenderer.startColor = previewDefaultColor;
 		lineRenderer.endColor = previewDefaultColor;
+
+		otherPlayer = GetOtherPlayer();
 	}
 	private void Update ()
 	{
@@ -60,10 +70,18 @@ public class PassController : MonoBehaviour
 
 		if (passPreview)
 		{
-			bool snapped;
-			pathCoordinates = GetPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
+			bool snapped = false;
+			switch (passMode)
+			{
+				case PassMode.Bounce:
+					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
+					break;
+				case PassMode.Curve:
+					pathCoordinates = GetCurvedPathCoordinates(otherPlayer);
+					break;
+			}
 			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
-			PreviewPath(pathCoordinates, ballDatas);
+			PreviewPath(pathCoordinates);
 			if (passPreviewInEditor)
 				PreviewPathInEditor(pathCoordinates);
 		}
@@ -71,7 +89,7 @@ public class PassController : MonoBehaviour
 	}
 
 	//Used for generating the preview
-	public List<Vector3> GetPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
+	public List<Vector3> GetBouncingPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
 	{
 		RaycastHit hit;
 		float remainingLength = _maxLength;
@@ -101,6 +119,77 @@ public class PassController : MonoBehaviour
 		}
 
 		return pathCoordinates;
+	}
+
+	public List<Vector3> GetCurvedPathCoordinates(PawnController _target)
+	{
+		//Get the middle position for the curve
+		Vector3 startPosition = handTransform.position;
+		Vector3 endPosition = _target.transform.position;
+		Vector3 lookDirection = linkedPlayer.GetLookInput();
+		Vector3 direction = endPosition - startPosition;
+		Vector3 lateralDirection = Quaternion.AngleAxis(90, Vector3.up) * direction.normalized;
+		Vector3 upDirection = Quaternion.AngleAxis(-90, lateralDirection) * direction.normalized;
+		float normalizedPlayerDistance = direction.magnitude / curveMaxPlayerDistance;
+		float lateralDistance = Mathf.Lerp(0, curveMaxLateralDistance, normalizedPlayerDistance);
+		Vector3 perp = Vector3.Cross(direction, lookDirection);
+		float dir = Vector3.Dot(perp, upDirection);
+		float lateralSign = Mathf.Sign(dir);
+		float lookDirectionAngle = Vector3.SignedAngle(new Vector3(direction.x, 0, direction.z), new Vector3(lookDirection.x, 0, lookDirection.z), Vector3.up);
+		float magnitude = (Mathf.Tan(lookDirectionAngle * Mathf.Deg2Rad) * (direction/2)).magnitude;
+		if (Mathf.Abs(lookDirectionAngle) < 90)
+		{
+			lateralDistance = Mathf.Clamp(lateralDistance, 0, magnitude);
+		}
+		Vector3 middlePosition = startPosition + (direction / 2f) + lateralDirection.normalized * lateralDistance * lateralSign;
+		Debug.DrawRay(startPosition, new Vector3(lookDirection.x, 0, lookDirection.z) * direction.magnitude, Color.red);
+		Debug.DrawRay(startPosition + (direction / 2f), upDirection.normalized * 2, Color.green);
+		Debug.DrawRay(startPosition, direction, Color.blue);
+		Debug.DrawRay(startPosition + (direction/2f), lateralDirection.normalized * lateralDistance * lateralSign, Color.blue);
+
+		List<Vector3> coordinates = new List<Vector3>();
+		lookDirection.y = 0;
+
+		//Get the first part of the curve
+		Vector3 firstPoint = startPosition;
+		Vector3 firstHandle = startPosition + lookDirection.normalized * 0.85f * direction.magnitude * (Mathf.Abs(lookDirectionAngle / 180));
+		Vector3 secondPoint = middlePosition;
+		Vector3 secondHandle = middlePosition - direction.normalized * 0.5f * direction.magnitude * curveYOLO_MDR.Evaluate(Mathf.Abs(lookDirectionAngle/180));
+		Debug.DrawRay(firstPoint, firstHandle - firstPoint, Color.cyan);
+		Debug.DrawRay(secondPoint, secondHandle - secondPoint, Color.cyan);
+		for (float i = 0; i < curveRaycastIteration; i++)
+		{
+			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
+			{
+				coordinates.Add(SwissArmyKnife.CubicBezierCurve(firstPoint, firstHandle, secondHandle, secondPoint, i / curveRaycastIteration));
+			} else
+			{
+				coordinates.Add(Vector3.Lerp(firstPoint, firstPoint + (direction / 2), i / curveRaycastIteration));
+			}
+		}
+
+		//Get the second part of the curve
+		Vector3 N = lateralDirection.normalized;
+		Vector3 perpendicular = new Vector3(-N.z, 0, N.x);
+
+		Vector3 thirdPoint = middlePosition;
+	    Vector3 thirdHandle = secondHandle - 2 * Vector3.Dot((secondHandle - middlePosition), perpendicular) * perpendicular;
+		Vector3 fourthHandle = firstHandle - 2 * Vector3.Dot((firstHandle - middlePosition), perpendicular) * perpendicular;
+		Vector3 fourthPoint = endPosition;
+		Debug.DrawRay(thirdPoint, thirdHandle - thirdPoint, Color.cyan);
+		Debug.DrawRay(fourthPoint, fourthHandle - fourthPoint, Color.cyan);
+		for (float i = 0; i < curveRaycastIteration; i++)
+		{
+			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
+			{
+				coordinates.Add(SwissArmyKnife.CubicBezierCurve(thirdPoint, thirdHandle, fourthHandle, fourthPoint, i / curveRaycastIteration));
+			}
+			else
+			{
+				coordinates.Add(Vector3.Lerp(firstPoint + (direction / 2),endPosition, i / curveRaycastIteration));
+			}
+		}
+		return coordinates;
 	}
 
 	public void Aim()
@@ -134,7 +223,6 @@ public class PassController : MonoBehaviour
 		currentPassCooldown = passCooldown;
 		BallBehaviour shootedBall = ball;
 		ball = null;
-		PlayerController otherPlayer = GetOtherPlayer();
 		if (passMode == PassMode.Curve)
         {
             // Throw a curve pass
@@ -249,7 +337,7 @@ public class PassController : MonoBehaviour
 		}
 	}
 
-	private void PreviewPath(List<Vector3> _pathCoordinates, BallDatas _passDatas)
+	private void PreviewPath(List<Vector3> _pathCoordinates)
 	{
 		lineRenderer.positionCount = _pathCoordinates.Count;
 		lineRenderer.SetPositions(_pathCoordinates.ToArray());
