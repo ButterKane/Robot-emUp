@@ -5,13 +5,13 @@ using UnityEngine;
 public class Surrounder : MonoBehaviour
 {
     public List<Transform> points;
-    public Dictionary <int, Transform> pointsDic =  new Dictionary<int, Transform>();
+    public Dictionary<int, Transform> pointsDic = new Dictionary<int, Transform>();
     public float minDistanceFromCenter = 5f;
     public float maxDistanceFromCenter = 10f;
     public float minimalDistanceToFollow = 3f;
-    private Dictionary <int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
+    private Dictionary<int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
     public Transform playerTransform;
-    
+
     void Awake()
     {
         for (int i = 0; i < points.Count; i++)
@@ -69,20 +69,31 @@ public class Surrounder : MonoBehaviour
     {
         List<Transform> availablePoints = new List<Transform>();
         
+        for (int i = 0; i < pointsScripts.Count; i++)
+        {
+            if (!pointsScripts[i].isOccupied && pointsScripts[i].gameObject.activeSelf)
+                availablePoints.Add(points[i]);
+        }
+
+        return availablePoints;
+    }
+
+    public void DeactivateUnreachablePoints()
+    {
         RaycastHit hit;
         int layerMask = 1 << 12; // Layer 12 = Environment
 
         for (int i = 0; i < pointsScripts.Count; i++)
         {
-            if(!pointsScripts[i].isOccupied && 
-                pointsScripts[i].gameObject.activeSelf && 
-                Physics.Raycast(transform.position, pointsScripts[i].transform.position - transform.position, out hit, (pointsScripts[i].transform.position - transform.position).magnitude, layerMask))
+            if (Physics.Raycast(transform.position, pointsScripts[i].transform.position - transform.position, out hit, (pointsScripts[i].transform.position - transform.position).magnitude, layerMask))
             {
-                availablePoints.Add(points[i]);
+                pointsScripts[i].gameObject.SetActive(false);
+            }
+            else
+            {
+                pointsScripts[i].gameObject.SetActive(true);
             }
         }
-
-        return availablePoints;
     }
 
     public int KeyByValue(Dictionary<int, Transform> dict, Transform val)
@@ -102,7 +113,7 @@ public class Surrounder : MonoBehaviour
     public void StayOnPlayerPos()
     {
         if (playerTransform)
-        transform.position = playerTransform.position;
+            transform.position = playerTransform.position;
     }
 
     public void FaceEnemyMiddlePoint()
@@ -122,7 +133,7 @@ public class Surrounder : MonoBehaviour
         {
             transform.LookAt(pointToFace);
         }
-        
+
     }
 
 }

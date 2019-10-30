@@ -87,7 +87,7 @@ public class EnemyManager : MonoBehaviour
             }
             else { Debug.Log("The enemy " + enemy.name + " doesn't have a target"); }
         }
-
+        
         groupOne = GetClosestEnemies(groupOne);
         groupTwo = GetClosestEnemies(groupTwo);
     }
