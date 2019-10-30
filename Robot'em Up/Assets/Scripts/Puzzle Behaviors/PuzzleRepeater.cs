@@ -26,13 +26,13 @@ public class PuzzleRepeater : PuzzleActivator
             timeSpeedChange = speedChange;
             if (isActivated)
             {
-                ActivateLinkedObjects();
+                DesactiveLinkedObjects();
                 isActivated = false;
                 myLight.color = puzzleData.RepeaterDesactivate;
             }
             else
             {
-                DesactiveLinkedObjects();
+                ActivateLinkedObjects();
                 isActivated = true;
                 myLight.color = puzzleData.RepeaterActivate;
             }
