@@ -60,7 +60,7 @@ public class PassController : MonoBehaviour
 		lineRenderer.startColor = previewDefaultColor;
 		lineRenderer.endColor = previewDefaultColor;
 
-		otherPlayer = GetOtherPlayer();
+		otherPlayer = GetTarget();
 	}
 	private void Update ()
 	{
@@ -77,7 +77,7 @@ public class PassController : MonoBehaviour
 					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
-					pathCoordinates = GetCurvedPathCoordinates(otherPlayer);
+					pathCoordinates = GetCurvedPathCoordinates(otherPlayer.transform, linkedPlayer.GetLookInput());
 					break;
 			}
 			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
@@ -121,40 +121,39 @@ public class PassController : MonoBehaviour
 		return pathCoordinates;
 	}
 
-	public List<Vector3> GetCurvedPathCoordinates(PawnController _target)
+	public List<Vector3> GetCurvedPathCoordinates(Transform _target, Vector3 _lookDirection)
 	{
 		//Get the middle position for the curve
 		Vector3 startPosition = handTransform.position;
 		Vector3 endPosition = _target.transform.position;
-		Vector3 lookDirection = linkedPlayer.GetLookInput();
 		Vector3 direction = endPosition - startPosition;
 		Vector3 lateralDirection = Quaternion.AngleAxis(90, Vector3.up) * direction.normalized;
 		Vector3 upDirection = Quaternion.AngleAxis(-90, lateralDirection) * direction.normalized;
 		float normalizedPlayerDistance = direction.magnitude / curveMaxPlayerDistance;
 		float lateralDistance = Mathf.Lerp(0, curveMaxLateralDistance, normalizedPlayerDistance);
-		Vector3 perp = Vector3.Cross(direction, lookDirection);
+		Vector3 perp = Vector3.Cross(direction, _lookDirection);
 		float dir = Vector3.Dot(perp, upDirection);
 		float lateralSign = Mathf.Sign(dir);
-		float lookDirectionAngle = Vector3.SignedAngle(new Vector3(direction.x, 0, direction.z), new Vector3(lookDirection.x, 0, lookDirection.z), Vector3.up);
+		float lookDirectionAngle = Vector3.SignedAngle(new Vector3(direction.x, 0, direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
 		float magnitude = (Mathf.Tan(lookDirectionAngle * Mathf.Deg2Rad) * (direction/2)).magnitude;
 		if (Mathf.Abs(lookDirectionAngle) < 90)
 		{
 			lateralDistance = Mathf.Clamp(lateralDistance, 0, magnitude);
 		}
 		Vector3 middlePosition = startPosition + (direction / 2f) + lateralDirection.normalized * lateralDistance * lateralSign;
-		Debug.DrawRay(startPosition, new Vector3(lookDirection.x, 0, lookDirection.z) * direction.magnitude, Color.red);
+		Debug.DrawRay(startPosition, new Vector3(_lookDirection.x, 0, _lookDirection.z) * direction.magnitude, Color.red);
 		Debug.DrawRay(startPosition + (direction / 2f), upDirection.normalized * 2, Color.green);
 		Debug.DrawRay(startPosition, direction, Color.blue);
 		Debug.DrawRay(startPosition + (direction/2f), lateralDirection.normalized * lateralDistance * lateralSign, Color.blue);
 
 		List<Vector3> coordinates = new List<Vector3>();
-		lookDirection.y = 0;
+		_lookDirection.y = 0;
 
 		//Get the first part of the curve
 		Vector3 firstPoint = startPosition;
-		Vector3 firstHandle = startPosition + lookDirection.normalized * 0.85f * direction.magnitude * (Mathf.Abs(lookDirectionAngle / 180));
+		Vector3 firstHandle = startPosition + _lookDirection.normalized * 0.85f * direction.magnitude * (Mathf.Abs(lookDirectionAngle / 180));
 		Vector3 secondPoint = middlePosition;
-		Vector3 secondHandle = middlePosition - direction.normalized * 0.5f * direction.magnitude * curveYOLO_MDR.Evaluate(Mathf.Abs(lookDirectionAngle/180));
+		Vector3 secondHandle = middlePosition - direction.normalized * 0.7f * direction.magnitude * curveYOLO_MDR.Evaluate(Mathf.Abs(lookDirectionAngle/180));
 		Debug.DrawRay(firstPoint, firstHandle - firstPoint, Color.cyan);
 		Debug.DrawRay(secondPoint, secondHandle - secondPoint, Color.cyan);
 		for (float i = 0; i < curveRaycastIteration; i++)
@@ -203,7 +202,7 @@ public class PassController : MonoBehaviour
 	}
 
 
-	PlayerController GetOtherPlayer ()
+	public PlayerController GetTarget ()
 	{
 		foreach (PlayerController p in FindObjectsOfType<PlayerController>())
 		{
@@ -221,7 +220,7 @@ public class PassController : MonoBehaviour
 		ChangePassState(PassState.Shooting);
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		currentPassCooldown = passCooldown;
-		BallBehaviour shootedBall = ball;
+		BallBehaviour shotBall = ball;
 		ball = null;
 		if (passMode == PassMode.Curve)
         {
@@ -230,11 +229,10 @@ public class PassController : MonoBehaviour
             {
 				if (passPreview)
 				{
-					float _angle = Vector3.SignedAngle(otherPlayer.transform.position - transform.position, transform.forward, Vector3.up);
-					shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
+					shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
 				} else
 				{
-					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
+					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
 				}
             }
         }
@@ -243,11 +241,11 @@ public class PassController : MonoBehaviour
 			if (!passPreview)
 			{
 				if (otherPlayer != null)
-					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
+					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
 			}
 			else // if aiming with right joystick
 			{
-				shootedBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas);
+				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas);
 			}
 		}
 		ChangePassState(PassState.None);
