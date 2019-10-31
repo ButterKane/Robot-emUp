@@ -10,6 +10,7 @@ public class PuzzleDoor : PuzzleActivable
 
     override public void WhenActivate()
     {
+        Debug.Log("Activate a door");
         DestroyTheDoor();
     }
 
@@ -17,10 +18,12 @@ public class PuzzleDoor : PuzzleActivable
     public void DestroyTheDoor()
     {
         open = true;
-        FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero, Vector3.one, transform);
         if (destroyWhenOpened != null)
         {
+            Debug.Log("Destroy a door");
             Destroy(destroyWhenOpened);
+
+            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
         }
     }
 
