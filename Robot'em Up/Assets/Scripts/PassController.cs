@@ -77,7 +77,7 @@ public class PassController : MonoBehaviour
 					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
-					pathCoordinates = GetCurvedPathCoordinates(otherPlayer);
+					pathCoordinates = GetCurvedPathCoordinates(otherPlayer.transform);
 					break;
 			}
 			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
@@ -121,7 +121,7 @@ public class PassController : MonoBehaviour
 		return pathCoordinates;
 	}
 
-	public List<Vector3> GetCurvedPathCoordinates(PawnController _target)
+	public List<Vector3> GetCurvedPathCoordinates(Transform _target)
 	{
 		//Get the middle position for the curve
 		Vector3 startPosition = handTransform.position;
@@ -154,7 +154,7 @@ public class PassController : MonoBehaviour
 		Vector3 firstPoint = startPosition;
 		Vector3 firstHandle = startPosition + lookDirection.normalized * 0.85f * direction.magnitude * (Mathf.Abs(lookDirectionAngle / 180));
 		Vector3 secondPoint = middlePosition;
-		Vector3 secondHandle = middlePosition - direction.normalized * 0.5f * direction.magnitude * curveYOLO_MDR.Evaluate(Mathf.Abs(lookDirectionAngle/180));
+		Vector3 secondHandle = middlePosition - direction.normalized * 0.7f * direction.magnitude * curveYOLO_MDR.Evaluate(Mathf.Abs(lookDirectionAngle/180));
 		Debug.DrawRay(firstPoint, firstHandle - firstPoint, Color.cyan);
 		Debug.DrawRay(secondPoint, secondHandle - secondPoint, Color.cyan);
 		for (float i = 0; i < curveRaycastIteration; i++)
@@ -231,7 +231,7 @@ public class PassController : MonoBehaviour
 				if (passPreview)
 				{
 					float _angle = Vector3.SignedAngle(otherPlayer.transform.position - transform.position, transform.forward, Vector3.up);
-					shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
+					shootedBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas);
 				} else
 				{
 					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);

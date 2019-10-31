@@ -27,6 +27,7 @@ public class BallBehaviour : MonoBehaviour
 	private GameObject trailFX;
 	private List<IHitable> hitGameObjects;
 	private Vector3 previousPosition;
+	private Coroutine ballCoroutine;
 
 	private void Awake()
     {
@@ -41,15 +42,19 @@ public class BallBehaviour : MonoBehaviour
 		UpdateBallPosition();
 	}
 
-    public void CurveShoot(Vector3 _startPosition, Vector3 _endPosition, float _angle, PawnController _thrower, BallDatas _passDatas) //Shoot a curve ball to reach a point
+    public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas) //Shoot a curve ball to reach a point
     {
         transform.SetParent(null);
-        transform.position = _startPosition;
+		currentThrower = _thrower;
+		currentSpeed = _passDatas.moveSpeed;
+		currentMaxDistance = Mathf.Infinity;
+		currentBallDatas = _passDatas;
+		currentBounceCount = 0;
+		ballCoroutine = StartCoroutine(ShootBallAlongCurve_C(_passController, _target));
 
-        // Find the equation to only make one impulse on the ball and make it bend
-        // This will surely be parabolic equation in my notebook
+		hitGameObjects.Clear();
+		ChangeState(BallState.Flying);
     }
-
 
 
     public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
@@ -91,7 +96,7 @@ public class BallBehaviour : MonoBehaviour
 	{
 		currentBallDatas = _passData;
 		ChangeState(BallState.Held);
-		StartCoroutine(GoToPosition(_handTransform, _travelDuration));
+		ballCoroutine = StartCoroutine(GoToPosition(_handTransform, _travelDuration));
 		transform.SetParent(_handTransform);
 	}
 
@@ -183,7 +188,10 @@ public class BallBehaviour : MonoBehaviour
 		switch (currentState)
 		{
 			case BallState.Flying:
-				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
+				if (ballCoroutine == null) //If ball is curently moved by a coroutine, we don't want to update it's position here
+				{
+					transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
+				}
 				currentDistanceTravelled += currentSpeed * Time.deltaTime;
 				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
 				{
@@ -256,5 +264,18 @@ public class BallBehaviour : MonoBehaviour
 		}
 		transform.position = _transform.position;
 		transform.localScale = Vector3.one;
+	}
+	IEnumerator ShootBallAlongCurve_C ( PassController _passController, Transform _target )
+	{
+		List<Vector3> curveCoordinates = _passController.GetCurvedPathCoordinates(_target);
+		for (int i = 0; i < curveCoordinates.Count - 1; i++)
+		{
+			for (float y = 0; y < Vector3.Distance(curveCoordinates[i], curveCoordinates[i + 1]); y += Time.deltaTime * currentSpeed)
+			{
+				transform.position = Vector3.Lerp(curveCoordinates[i], curveCoordinates[i + 1], y / Vector3.Distance(curveCoordinates[i], curveCoordinates[i + 1]));
+				currentDirection = curveCoordinates[i + 1] - curveCoordinates[i];
+				yield return new WaitForEndOfFrame();
+			}
+		}
 	}
 }
