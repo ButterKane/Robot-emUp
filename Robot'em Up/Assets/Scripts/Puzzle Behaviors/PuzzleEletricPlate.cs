@@ -11,16 +11,18 @@ public class PuzzleEletricPlate : PuzzleActivable
     public float waitTimeBeforeNextDamage;
     [ReadOnly]
     public List<PawnController> PawnTrapped;
-
     public List<GameObject> IdleFx;
     private BoxCollider boxCollider;
-
+    private MeshRenderer meshRenderer;
+    
     // Update is called once per frame
     void Awake()
     {
         waitTimeBeforeNextFx = 0;
         IdleFx = new List<GameObject>();
         boxCollider = GetComponent<BoxCollider>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
     }
 
     void FixedUpdate()
@@ -40,8 +42,8 @@ public class PuzzleEletricPlate : PuzzleActivable
 
         if (waitTimeBeforeNextFx < 0 && isActivated)
         {
-            waitTimeBeforeNextFx = 0.1f / transform.lossyScale.magnitude;
-            if (IdleFx.Count > 6)
+            waitTimeBeforeNextFx = 0.18f ;
+            if (IdleFx.Count > 4)
             {
                 Destroy(IdleFx[0]);
                 IdleFx.RemoveAt(0);
@@ -79,10 +81,13 @@ public class PuzzleEletricPlate : PuzzleActivable
     override public void WhenActivate()
     {
         isActivated = true;
+        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
+
     }
 
     override public void WhenDesactivate()
     {
+        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
         isActivated = false;
         while (IdleFx.Count > 0)
         {
