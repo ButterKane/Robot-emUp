@@ -54,8 +54,7 @@ public class PuzzleActivator : MonoBehaviour
                         temp_Activated = false;
                     }
                 }
-
-                Debug.Log("temp_Activated " + temp_Activated.ToString());
+                
                 if (temp_Activated)
                 {
                     item.WhenActivate();
