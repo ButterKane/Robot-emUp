@@ -37,6 +37,7 @@ public class PuzzlePressurePlate : PuzzleActivator
             //pawn.Damage(puzzleData.DamageEletricPlate);
             ListPawnsHere.Add(pawn);
             ActivateLinkedObjects();
+            isActivated = true;
         }
 
     }
@@ -53,6 +54,7 @@ public class PuzzlePressurePlate : PuzzleActivator
                 DesactiveLinkedObjects();
                 PawnHere = false;
                 transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
+                isActivated = false;
             }
         }
 
