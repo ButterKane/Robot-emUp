@@ -36,8 +36,8 @@ public class PuzzlePressurePlate : PuzzleActivator
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
             ListPawnsHere.Add(pawn);
-            ActivateLinkedObjects();
             isActivated = true;
+            ActivateLinkedObjects();
         }
 
     }

@@ -21,6 +21,7 @@ public class PuzzleActivator : MonoBehaviour
     public virtual void ActivateLinkedObjects()
     {
         PuzzleActivable[] activables = FindObjectsOfType<PuzzleActivable>();
+        //Debug.Log("Find call ");
 
         foreach (var item in activables)
         {
@@ -38,21 +39,23 @@ public class PuzzleActivator : MonoBehaviour
             else
             {
                 bool temp_Activated = true;
-                foreach (var puzzleActivator in item.puzzleActivators)
+                foreach (PuzzleActivator puzzleActivator in item.puzzleActivators)
                 {
                     if (!puzzleActivator.isActivated)
                     {
                         temp_Activated = false;
                     }
                 }
-
-                foreach (var puzzleActivator in item.puzzleDesactivator)
+                
+                foreach (PuzzleActivator puzzleActivator in item.puzzleDesactivator)
                 {
                     if (puzzleActivator.isActivated)
                     {
                         temp_Activated = false;
                     }
                 }
+
+                Debug.Log("temp_Activated " + temp_Activated.ToString());
                 if (temp_Activated)
                 {
                     item.WhenActivate();
