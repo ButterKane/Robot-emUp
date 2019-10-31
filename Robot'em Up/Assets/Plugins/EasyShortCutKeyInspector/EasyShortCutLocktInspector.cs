@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+#if UNITY_EDITOR
 public class EasyShortCutLockInspector : MonoBehaviour {
 	
 	[MenuItem("Edit/Lock2 %l")]
@@ -16,3 +17,4 @@ public class EasyShortCutLockInspector : MonoBehaviour {
 		return ActiveEditorTracker.sharedTracker.activeEditors.Length != 0;
 	}
 }
+#endif

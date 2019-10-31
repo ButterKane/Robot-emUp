@@ -111,6 +111,7 @@ public class ExtendingArmsController : MonoBehaviour
 			default:
 				break;
 		}
+		SetThrowDirection(throwDirection);
 		armExtensionCoroutine = StartCoroutine(ExtendArm_C(throwDirection));
 	}
 

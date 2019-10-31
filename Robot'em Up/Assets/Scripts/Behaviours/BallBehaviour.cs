@@ -56,8 +56,8 @@ public class BallBehaviour : MonoBehaviour
 		currentMaxDistance = Mathf.Infinity;
 		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
-		canBounce = false;
-		canHitWalls = false;
+		canBounce = true;
+		canHitWalls = true;
 		currentCurve = _passController.GetCurvedPathCoordinates(_target, _lookDirection);
 		initialLookDirection = _lookDirection;
 
