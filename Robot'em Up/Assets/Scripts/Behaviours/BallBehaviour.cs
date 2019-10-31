@@ -20,6 +20,10 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private BallDatas currentBallDatas;
 	[SerializeField] private int currentBounceCount;
 	[SerializeField] private PawnController currentThrower;
+	[SerializeField] private bool canBounce;
+	[SerializeField] private bool canHitWalls;
+	[SerializeField] private List<Vector3> currentCurve;
+	[SerializeField] private Vector3 initialLookDirection;
 
 	private Collider col;
 	private Rigidbody rb;
@@ -28,6 +32,8 @@ public class BallBehaviour : MonoBehaviour
 	private List<IHitable> hitGameObjects;
 	private Vector3 previousPosition;
 	private Coroutine ballCoroutine;
+
+	private Vector3 currentPosition;
 
 	private void Awake()
     {
@@ -42,7 +48,7 @@ public class BallBehaviour : MonoBehaviour
 		UpdateBallPosition();
 	}
 
-    public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas) //Shoot a curve ball to reach a point
+    public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
     {
         transform.SetParent(null);
 		currentThrower = _thrower;
@@ -50,7 +56,10 @@ public class BallBehaviour : MonoBehaviour
 		currentMaxDistance = Mathf.Infinity;
 		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
-		ballCoroutine = StartCoroutine(ShootBallAlongCurve_C(_passController, _target));
+		canBounce = false;
+		canHitWalls = false;
+		currentCurve = _passController.GetCurvedPathCoordinates(_target, _lookDirection);
+		initialLookDirection = _lookDirection;
 
 		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
@@ -67,6 +76,8 @@ public class BallBehaviour : MonoBehaviour
 		currentMaxDistance = _passDatas.maxDistance;
 		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
+		canBounce = true;
+		canHitWalls = true;
 
 		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
@@ -95,6 +106,7 @@ public class BallBehaviour : MonoBehaviour
 	public void GoToHands ( Transform _handTransform, float _travelDuration, BallDatas _passData )
 	{
 		currentBallDatas = _passData;
+		currentCurve = null;
 		ChangeState(BallState.Held);
 		ballCoroutine = StartCoroutine(GoToPosition(_handTransform, _travelDuration));
 		transform.SetParent(_handTransform);
@@ -188,14 +200,27 @@ public class BallBehaviour : MonoBehaviour
 		switch (currentState)
 		{
 			case BallState.Flying:
-				if (ballCoroutine == null) //If ball is curently moved by a coroutine, we don't want to update it's position here
+				if (currentCurve != null)
 				{
-					transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
+					AnimationCurve curveX;
+					AnimationCurve curveY;
+					AnimationCurve curveZ;
+					float curveLength;
+					PassController currentPassController = GetCurrentThrower().GetComponent<PassController>();
+					if (currentPassController == null) { return; }
+					ConvertCoordinatesToCurve(currentPassController.GetCurvedPathCoordinates(currentPassController.GetTarget().transform, initialLookDirection), out curveX, out curveY, out curveZ, out curveLength);
+					currentMaxDistance = curveLength;
+					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
+					//transform.position = Vector3.Lerp(transform.position, new Vector3(curveX.Evaluate(positionOnCurve), curveY.Evaluate(positionOnCurve), curveZ.Evaluate(positionOnCurve)), Time.deltaTime * currentSpeed);
+					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
+					currentDirection = nextPosition - transform.position;
 				}
+				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
 				currentDistanceTravelled += currentSpeed * Time.deltaTime;
 				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
 				{
 					//Ball has arrived to it's destination
+					currentCurve = null;
 					ChangeState(BallState.Grounded);
 				}
 				else
@@ -206,7 +231,6 @@ public class BallBehaviour : MonoBehaviour
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
 					if (Physics.SphereCast(transform.position, 1f, currentDirection, out hit, currentSpeed * Time.deltaTime))
 					{
-						//transform.position = hit.point;
 						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
 						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
 						{
@@ -214,7 +238,7 @@ public class BallBehaviour : MonoBehaviour
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, currentBallDatas.damages, DamageSource.Ball);
 						}
 						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
-						if (currentBounceCount < currentBallDatas.maxBounces)
+						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
 							Vector3 hitNormal = hit.normal;
 							hitNormal.y = 0;
@@ -222,7 +246,7 @@ public class BallBehaviour : MonoBehaviour
 							newDirection.y = -currentDirection.y;
 							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
 							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
-						} else
+						} else if (canHitWalls)
 						{
 							ChangeState(BallState.Grounded);
 						}
@@ -264,18 +288,41 @@ public class BallBehaviour : MonoBehaviour
 		}
 		transform.position = _transform.position;
 		transform.localScale = Vector3.one;
+		ballCoroutine = null;
 	}
-	IEnumerator ShootBallAlongCurve_C ( PassController _passController, Transform _target )
+
+	public void ConvertCoordinatesToCurve(List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength)
 	{
-		List<Vector3> curveCoordinates = _passController.GetCurvedPathCoordinates(_target);
-		for (int i = 0; i < curveCoordinates.Count - 1; i++)
+		AnimationCurve curveX = new AnimationCurve();
+		AnimationCurve curveY = new AnimationCurve();
+		AnimationCurve curveZ = new AnimationCurve();
+		float curveLength = 0;
+		for (int i = 0; i < _coordinates.Count; i++)
 		{
-			for (float y = 0; y < Vector3.Distance(curveCoordinates[i], curveCoordinates[i + 1]); y += Time.deltaTime * currentSpeed)
+			float time = (float)i / (float)_coordinates.Count;
+			Keyframe keyX = new Keyframe();
+			keyX.value = _coordinates[i].x;
+			keyX.time = time;
+			curveX.AddKey(keyX);
+
+			Keyframe keyY = new Keyframe();
+			keyY.value = _coordinates[i].y;
+			keyY.time = time;
+			curveY.AddKey(keyY);
+
+			Keyframe keyZ = new Keyframe();
+			keyZ.value = _coordinates[i].z;
+			keyZ.time = time;
+			curveZ.AddKey(keyZ);
+
+			if (i < _coordinates.Count - 1)
 			{
-				transform.position = Vector3.Lerp(curveCoordinates[i], curveCoordinates[i + 1], y / Vector3.Distance(curveCoordinates[i], curveCoordinates[i + 1]));
-				currentDirection = curveCoordinates[i + 1] - curveCoordinates[i];
-				yield return new WaitForEndOfFrame();
+				curveLength += Vector3.Distance(_coordinates[i], _coordinates[i + 1]);
 			}
 		}
+		_curveX = curveX;
+		_curveY = curveY;
+		_curveZ = curveZ;
+		_curveLength = curveLength;
 	}
 }
