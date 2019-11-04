@@ -89,8 +89,8 @@ public class PlayerController : PawnController
 		}
 		if (state.Triggers.Left > triggerTreshold && enableDash)
 		{
-			extendingArmsController.ExtendArm();
-			//dashController.Dash();
+			//extendingArmsController.ExtendArm();
+			dashController.Dash();
 		}
 		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
@@ -143,8 +143,8 @@ public class PlayerController : PawnController
 		}
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
-			extendingArmsController.ExtendArm();
-			//dashController.Dash();
+			//extendingArmsController.ExtendArm();
+			dashController.Dash();
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{
