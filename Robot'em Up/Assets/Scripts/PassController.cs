@@ -36,6 +36,7 @@ public class PassController : MonoBehaviour
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveRaycastIteration = 50;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMinAngle = 10;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public AnimationCurve curveYOLO_MDR;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float hanseLength;
 
 	private PlayerController linkedPlayer;
 	private PlayerController otherPlayer;
@@ -125,7 +126,7 @@ public class PassController : MonoBehaviour
 	{
 		//Get the middle position for the curve
 		Vector3 startPosition = handTransform.position;
-		Vector3 endPosition = _target.transform.position;
+		Vector3 endPosition = _target.transform.position + Vector3.up;
 		Vector3 direction = endPosition - startPosition;
 		Vector3 lateralDirection = Quaternion.AngleAxis(90, Vector3.up) * direction.normalized;
 		Vector3 upDirection = Quaternion.AngleAxis(-90, lateralDirection) * direction.normalized;
@@ -151,7 +152,7 @@ public class PassController : MonoBehaviour
 
 		//Get the first part of the curve
 		Vector3 firstPoint = startPosition;
-		Vector3 firstHandle = startPosition + _lookDirection.normalized * 0.85f * direction.magnitude * (Mathf.Abs(lookDirectionAngle / 180));
+		Vector3 firstHandle = startPosition + _lookDirection.normalized * hanseLength;
 		Vector3 secondPoint = middlePosition;
 		Vector3 secondHandle = middlePosition - direction.normalized * 0.7f * direction.magnitude * curveYOLO_MDR.Evaluate(Mathf.Abs(lookDirectionAngle/180));
 		Debug.DrawRay(firstPoint, firstHandle - firstPoint, Color.cyan);
@@ -160,10 +161,10 @@ public class PassController : MonoBehaviour
 		{
 			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
 			{
-				coordinates.Add(SwissArmyKnife.CubicBezierCurve(firstPoint, firstHandle, secondHandle, secondPoint, i / curveRaycastIteration));
+				//coordinates.Add(SwissArmyKnife.CubicBezierCurve(firstPoint, firstHandle, secondHandle, secondPoint, i / curveRaycastIteration));
 			} else
 			{
-				coordinates.Add(Vector3.Lerp(firstPoint, firstPoint + (direction / 2), i / curveRaycastIteration));
+				//coordinates.Add(Vector3.Lerp(firstPoint, firstPoint + (direction / 2), i / curveRaycastIteration));
 			}
 		}
 
@@ -181,7 +182,8 @@ public class PassController : MonoBehaviour
 		{
 			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
 			{
-				coordinates.Add(SwissArmyKnife.CubicBezierCurve(thirdPoint, thirdHandle, fourthHandle, fourthPoint, i / curveRaycastIteration));
+				//coordinates.Add(SwissArmyKnife.CubicBezierCurve(thirdPoint, thirdHandle, fourthHandle, fourthPoint, i / curveRaycastIteration));
+				coordinates.Add(SwissArmyKnife.CubicBezierCurve(firstPoint, firstHandle, fourthPoint, fourthPoint, i / curveRaycastIteration));
 			}
 			else
 			{

@@ -240,6 +240,7 @@ public class BallBehaviour : MonoBehaviour
 						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
+							currentCurve = null;
 							Vector3 hitNormal = hit.normal;
 							hitNormal.y = 0;
 							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
