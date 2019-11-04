@@ -5,8 +5,8 @@ using MyBox;
 
 public class PuzzleEletricPlate : PuzzleActivable
 {
-    [ReadOnly]
-    public float waitTimeBeforeNextFx;
+   // [ReadOnly]
+   // public float waitTimeBeforeNextFx;
     [ReadOnly]
     public float waitTimeBeforeNextDamage;
     [ReadOnly]
@@ -14,11 +14,12 @@ public class PuzzleEletricPlate : PuzzleActivable
     public List<GameObject> IdleFx;
     private BoxCollider boxCollider;
     private MeshRenderer meshRenderer;
-    
+    private GameObject myFx;
+
     // Update is called once per frame
     void Awake()
     {
-        waitTimeBeforeNextFx = 0;
+        // waitTimeBeforeNextFx = 0;
         IdleFx = new List<GameObject>();
         boxCollider = GetComponent<BoxCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
@@ -29,7 +30,7 @@ public class PuzzleEletricPlate : PuzzleActivable
     {
         
         waitTimeBeforeNextDamage -= Time.deltaTime;
-        waitTimeBeforeNextFx -= Time.deltaTime;
+        //waitTimeBeforeNextFx -= Time.deltaTime;
 
         if (waitTimeBeforeNextDamage < 0 && isActivated)
         {
@@ -39,7 +40,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                 item.Damage(puzzleData.DamageEletricPlate);
             }
         }
-
+        /*
         if (waitTimeBeforeNextFx < 0 && isActivated)
         {
             waitTimeBeforeNextFx = 0.18f ;
@@ -52,6 +53,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             Vector3 pos_Fx = new Vector3(transform.position.x + Random.Range(-transform.lossyScale.x, transform.lossyScale.x) / 2, transform.position.y + transform.lossyScale.y * 0.3f, transform.position.z + Random.Range(-transform.lossyScale.z, transform.lossyScale.z) /2);
             IdleFx.Add(FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, pos_Fx, false, Vector3.zero, Vector3.one * 0.7f));
         }
+        */
     }
 
     private void OnTriggerEnter(Collider other)
@@ -82,19 +84,19 @@ public class PuzzleEletricPlate : PuzzleActivable
     {
         isActivated = true;
         meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
-
+        if (myFx != null)
+        {
+            Destroy(myFx);
+        }
+        myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
     }
 
     override public void WhenDesactivate()
     {
         meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
         isActivated = false;
-        while (IdleFx.Count > 0)
-        {
 
-            Destroy(IdleFx[0]);
-            IdleFx.RemoveAt(0);
-        }
+        Destroy(myFx);
 
     }
 
