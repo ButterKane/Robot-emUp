@@ -17,6 +17,8 @@ public class SurroundingPoint : MonoBehaviour
         }
     }
 
+    public EnemyBehaviour closestEnemy;
+
     private bool _isOccupied;
 
     void Start()

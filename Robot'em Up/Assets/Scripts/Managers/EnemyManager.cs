@@ -54,8 +54,8 @@ public class EnemyManager : MonoBehaviour
 
         SetGroupsOfEnemies(out groupOne, out groupTwo);
 
-        enemyGroupOne = groupOne;
-        enemyGroupTwo = groupTwo;
+        enemyGroupOne = groupOne;   // list of enemies targeting player one, sorted from closest to farthest to player
+        enemyGroupTwo = groupTwo;   // same, but with the player two
 
         for (int i = 0; i < groupOne.Count; i++)
         {
@@ -70,6 +70,7 @@ public class EnemyManager : MonoBehaviour
         groupOneMiddlePoint = new Vector3(groupOneMiddlePoint.x / groupOne.Count, groupOneMiddlePoint.y / groupOne.Count, groupOneMiddlePoint.z / groupOne.Count);
         groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / groupTwo.Count, groupTwoMiddlePoint.y / groupTwo.Count, groupTwoMiddlePoint.z / groupTwo.Count);
     }
+
     public void SetGroupsOfEnemies(out List<EnemyBehaviour> groupOne, out List<EnemyBehaviour> groupTwo)
     {
         groupOne = new List<EnemyBehaviour>();
@@ -96,32 +97,33 @@ public class EnemyManager : MonoBehaviour
     {
         List<EnemyBehaviour> closeEnemies = new List<EnemyBehaviour>();
 
-        Debug.Assert(enemies.Count > 0, "The groupe of enemy is empty");
+        if (enemies.Count < 0)
+        {
+            Debug.LogWarning("The groupe of enemy is empty");
+            return null;
+        }
 
-        enemies.Sort(SortByDistance);
+        enemies.Sort((a, b) => {
+            var target = a.Target;
+            var dstToA = (target.transform.position - a.transform.position).magnitude;
+            var dstToB = (target.transform.position - b.transform.position).magnitude;
+
+            if (dstToA > dstToB) return 1;
+            else if (dstToA < dstToB) return -1;
+            else return 0;
+        });
 
         for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, enemies.Count); i++)
         {
             if (enemies[i] != null)
-                closeEnemies.Add(enemies[i]);
+            {
+                Debug.DrawRay(enemies[i].transform.position, Vector3.up * 3, Color.yellow);
+                closeEnemies.Add(enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
+            }
         }
-
-        Debug.Assert(closeEnemies.Count > 0, "There isn't any ennemy recognized as close");
-
+        
         return closeEnemies;
     }
-
-    public int SortByDistance(EnemyBehaviour a, EnemyBehaviour b)
-    {
-        var target = a.Target;  // Get the concerned player
-
-        var dstToA = (target.transform.position - a.transform.position).magnitude;
-        var dstToB = (target.transform.position - b.transform.position).magnitude;
-
-        return dstToA.CompareTo(dstToB);
-    }
-
-
 
     public void SpawnEnemies()
     {

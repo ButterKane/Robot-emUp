@@ -58,6 +58,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private float _distanceToOne;
     private float _distanceToTwo;
 
+    private Surrounder _surrounder;
+    public Transform ClosestSurroundPoint;
+
     private int _hitCount;
     public int hitCount
     {
@@ -182,8 +185,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     #region Launcher Functions
     public void LaunchSurrounding()
     {
-        //Debug.Log("target of " + self.name + " is " + target);
-        
         StartCoroutine(SurroundPlayer(Target.gameObject));
     }
 
@@ -206,25 +207,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public IEnumerator SurroundPlayer(GameObject player)
     {
         float distanceFromStartToNow = 0f;
-        GameObject surrounder = null;
+        
+        Transform surroundingPoint = ClosestSurroundPoint;
 
-        if (player = GameManager.i.playerOne)
-        {
-            surrounder = GameManager.i.surrounderPlayerOne;
-        }
-        else if (player = GameManager.i.playerTwo)
-        {
-            surrounder = GameManager.i.surrounderPlayerTwo;
-        }
-
-        Surrounder script = surrounder.GetComponent<Surrounder>();
+        float distanceToPointRatio = (1 + (_self.position-surroundingPoint.position).magnitude / 100);  // widens the arc of surrounding the farther the surroundingPoint is
 
         // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
         // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
 
-        Transform surroundingPoint = script.GetSurroundingPoint(_self); // Get the closest surrounding point
-
-        if (surroundingPoint == null) // If there's no point tu use to surround, abort
+        if (surroundingPoint == null) // If there's no point to use to surround, abort
         {
             WhatShouldIDo();
         }
@@ -236,9 +227,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
             Vector3 p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
 
-            int moveSens = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up) > 1 ? 1 : -1;
+            float angle = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up);
 
-            Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight;
+            int moveSens = angle > 1 ? 1 : -1;
+
+            Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight * distanceToPointRatio;
 
             float distanceToEnd1 = (p2 - p0).magnitude;
             float distanceToEnd2 = (p2 - p0).magnitude;
@@ -293,7 +286,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed/10));   
                 }
 
-                Debug.Log("speed is " + (_self.position - p0).magnitude);
                 yield return null;
             } while ((p0 - p2).magnitude > DistanceToDestinationTolerance && timeNotMovingMuch < 0.5f);
 

@@ -11,6 +11,10 @@ public class Surrounder : MonoBehaviour
     public float minimalDistanceToFollow = 3f;
     private Dictionary<int, SurroundingPoint> pointsScripts = new Dictionary<int, SurroundingPoint>();
     public Transform playerTransform;
+    public List<EnemyBehaviour> closestEnemies;
+
+    private bool attributing = false;
+
 
     void Awake()
     {
@@ -19,6 +23,7 @@ public class Surrounder : MonoBehaviour
             pointsDic.Add(i, points[i]);
             pointsScripts[i] = pointsDic[i].GetComponent<SurroundingPoint>();
         }
+        StartCoroutine(SequenceEnemiesAttribution());
     }
 
     private void Update()
@@ -26,6 +31,58 @@ public class Surrounder : MonoBehaviour
         StayOnPlayerPos();
         FaceEnemyMiddlePoint();
     }
+
+    public IEnumerator SequenceEnemiesAttribution()
+    {
+        attributing = true;
+        do
+        {
+            AttributeClosestEnemies();
+            yield return new WaitForSeconds(1f);
+        } while (attributing == true);
+    }
+
+    public void AttributeClosestEnemies()
+    {
+        for (int i = 0; i < pointsScripts.Count; i++)
+        {
+            pointsScripts[i].closestEnemy = null;
+        }
+
+        foreach (var enemy in closestEnemies)
+        {
+            enemy.ClosestSurroundPoint = null;
+
+            float closestDistance = Mathf.Infinity;
+
+            for (int i = 0; i < pointsDic.Count; i++)
+            {
+                if (pointsScripts[i].closestEnemy == null)
+                {
+                    if ((enemy.transform.position - pointsDic[i].position).magnitude < closestDistance)
+                    {
+                        closestDistance = (enemy.transform.position - pointsDic[i].position).magnitude; // We keep the distance in memory
+
+                        if (enemy.ClosestSurroundPoint)
+                        {
+                            pointsScripts[KeyByValue(pointsDic, enemy.ClosestSurroundPoint)].closestEnemy = null;
+                        }
+
+                        pointsScripts[i].closestEnemy = enemy;
+
+                        enemy.ClosestSurroundPoint = pointsDic[i]; // attribute the closest surround point to the enemy
+                    }
+                }
+
+            }
+
+            if (enemy.ClosestSurroundPoint)
+            {
+                Debug.DrawLine(enemy.transform.position, enemy.ClosestSurroundPoint.transform.position, Color.blue, 1f) ;
+            }
+        }
+    }
+
 
     public Transform GetSurroundingPoint(Transform enemy)
     {
@@ -37,13 +94,16 @@ public class Surrounder : MonoBehaviour
         }
 
         Transform selectedPoint = null;
-        float closestDistance = 1000;
+        float closestDistance = 1000000;
 
         foreach (var point in availablePoints)
         {
+            Debug.Log("enemy is " + enemy.name + " and distance is " + (point.transform.position - enemy.position).magnitude);
+
             if ((point.transform.position - enemy.position).magnitude < closestDistance)
             {
                 closestDistance = (point.transform.position - enemy.position).magnitude;
+                Debug.Log("enemy is " + enemy.name + " and closest distance is " + closestDistance);
                 selectedPoint = point;
             }
         }
@@ -68,7 +128,7 @@ public class Surrounder : MonoBehaviour
     public List<Transform> GetAvailablePoints()
     {
         List<Transform> availablePoints = new List<Transform>();
-        
+
         for (int i = 0; i < pointsScripts.Count; i++)
         {
             if (!pointsScripts[i].isOccupied && pointsScripts[i].gameObject.activeSelf)
@@ -123,16 +183,20 @@ public class Surrounder : MonoBehaviour
         if (playerTransform == GameManager.i.playerOne.transform)
         {
             pointToFace = GameManager.i.enemyManager.groupOneMiddlePoint;
+            closestEnemies = GameManager.i.enemyManager.enemyGroupOne;
         }
         else if (playerTransform == GameManager.i.playerTwo.transform)
         {
             pointToFace = GameManager.i.enemyManager.groupTwoMiddlePoint;
+            closestEnemies = GameManager.i.enemyManager.enemyGroupTwo;
         }
 
         if ((pointToFace - transform.position).magnitude > minimalDistanceToFollow)
         {
-            transform.LookAt(pointToFace);
+            transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(pointToFace, transform.position));
         }
+
+
 
     }
 
