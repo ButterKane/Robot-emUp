@@ -7,16 +7,15 @@ public class PuzzlePressurePlate : PuzzleActivator
 {
     [ReadOnly]
     public bool PawnHere;
-    [ReadOnly]
-    public bool noPlayerHere;
     private BoxCollider boxCollider;
-    public List<PawnController> ListPawnsHere;
+    private List<PawnController> ListPawnsHere;
 
 
     // Start is called before the first frame update
     void Awake()
     {
         boxCollider = GetComponent<BoxCollider>();
+        ListPawnsHere = new List<PawnController>();
     }
 
     // Update is called once per frame
@@ -29,6 +28,7 @@ public class PuzzlePressurePlate : PuzzleActivator
 
     private void OnTriggerEnter(Collider other)
     {
+     
         if (other.gameObject.GetComponent<PawnController>())
         {
             PawnHere = true;
@@ -40,6 +40,7 @@ public class PuzzlePressurePlate : PuzzleActivator
             ActivateLinkedObjects();
         }
 
+        UpdateLight();
     }
 
 
@@ -57,6 +58,8 @@ public class PuzzlePressurePlate : PuzzleActivator
                 isActivated = false;
             }
         }
+
+        UpdateLight();
 
     }
     
