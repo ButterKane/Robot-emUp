@@ -48,17 +48,17 @@ public class DashController : MonoBehaviour
 	{
 		if (!CanDash()) { return; }
 		Vector3 startPosition = transform.position;
-		Vector3 endPosition = transform.position + transform.forward * maxDistance;
+		Vector3 endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance
 		RaycastHit hit;
-		if (Physics.Raycast(transform.position, transform.forward, out hit, maxDistance, LayerMask.GetMask("Environment")))
+		if (Physics.Raycast(transform.position, transform.forward, out hit, maxDistance))
 		{
 			if (Vector3.Distance(transform.position, hit.point) <= minDistance)
 			{
 				return; //Cancel dash
 			} else
 			{
-				endPosition = hit.point - (transform.forward * 0.2f);
+				endPosition = hit.point - (transform.forward * 0.5f);
 			}
 		}
 		endPosition.y = startPosition.y;
@@ -150,7 +150,7 @@ public class DashController : MonoBehaviour
 				cloneCounter = 0;
 			}
 			RaycastHit hit;
-			if (Physics.Raycast(transform.position, transform.forward, out hit, 0.1f, LayerMask.GetMask("Environment")))
+			if (Physics.Raycast(transform.position, transform.forward, out hit, 0.1f))
 			{
 				StopAllCoroutines();
 			}

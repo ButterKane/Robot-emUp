@@ -147,6 +147,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
+		_ball.Explode(true);
         MomentumManager.IncreaseMomentum(0.1f);
 
         StopEverythingMethod();
@@ -293,7 +294,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed/10));   
                 }
 
-                Debug.Log("speed is " + (_self.position - p0).magnitude);
                 yield return null;
             } while ((p0 - p2).magnitude > DistanceToDestinationTolerance && timeNotMovingMuch < 0.5f);
 
