@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 
 public enum PassMode
@@ -27,10 +28,18 @@ public class PassController : MonoBehaviour
 	public Transform handTransform;
 	public BallDatas ballDatas;
 	public float passCooldown;
-
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
+
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveRaycastIteration = 50;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMinAngle = 10;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public AnimationCurve curveYOLO_MDR;
+	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float hanseLength;
+
 	private PlayerController linkedPlayer;
+	private PlayerController otherPlayer;
 	private DunkController linkedDunkController;
 	private BallBehaviour ball;
 	private LineRenderer lineRenderer;
@@ -51,6 +60,8 @@ public class PassController : MonoBehaviour
 		canReceive = true;
 		lineRenderer.startColor = previewDefaultColor;
 		lineRenderer.endColor = previewDefaultColor;
+
+		otherPlayer = GetTarget();
 	}
 	private void Update ()
 	{
@@ -60,10 +71,18 @@ public class PassController : MonoBehaviour
 
 		if (passPreview)
 		{
-			bool snapped;
-			pathCoordinates = GetPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
+			bool snapped = false;
+			switch (passMode)
+			{
+				case PassMode.Bounce:
+					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
+					break;
+				case PassMode.Curve:
+					pathCoordinates = GetCurvedPathCoordinates(otherPlayer.transform, linkedPlayer.GetLookInput());
+					break;
+			}
 			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
-			PreviewPath(pathCoordinates, ballDatas);
+			PreviewPath(pathCoordinates);
 			if (passPreviewInEditor)
 				PreviewPathInEditor(pathCoordinates);
 		}
@@ -71,7 +90,7 @@ public class PassController : MonoBehaviour
 	}
 
 	//Used for generating the preview
-	public List<Vector3> GetPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
+	public List<Vector3> GetBouncingPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
 	{
 		RaycastHit hit;
 		float remainingLength = _maxLength;
@@ -103,6 +122,33 @@ public class PassController : MonoBehaviour
 		return pathCoordinates;
 	}
 
+	public List<Vector3> GetCurvedPathCoordinates(Transform _target, Vector3 _lookDirection)
+	{
+		//Get the middle position for the curve
+		Vector3 startPosition = handTransform.position;
+		Vector3 endPosition = _target.transform.position + Vector3.up;
+		Vector3 direction = endPosition - startPosition;
+		float lookDirectionAngle = Vector3.SignedAngle(new Vector3(direction.x, 0, direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
+		List<Vector3> coordinates = new List<Vector3>();
+		_lookDirection.y = 0;
+
+		Vector3 firstPoint = startPosition;
+		Vector3 firstHandle = startPosition + _lookDirection.normalized * hanseLength;
+		Vector3 secondPoint = endPosition;
+		for (float i = 0; i < curveRaycastIteration; i++)
+		{
+			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
+			{
+				coordinates.Add(SwissArmyKnife.CubicBezierCurve(firstPoint, firstHandle, secondPoint, secondPoint, i / curveRaycastIteration));
+			}
+			else
+			{
+				coordinates.Add(Vector3.Lerp(firstPoint ,endPosition, i / curveRaycastIteration));
+			}
+		}
+		return coordinates;
+	}
+
 	public void Aim()
 	{
 		ChangePassState(PassState.Aiming);
@@ -114,7 +160,7 @@ public class PassController : MonoBehaviour
 	}
 
 
-	PlayerController GetOtherPlayer ()
+	public PlayerController GetTarget ()
 	{
 		foreach (PlayerController p in FindObjectsOfType<PlayerController>())
 		{
@@ -132,9 +178,8 @@ public class PassController : MonoBehaviour
 		ChangePassState(PassState.Shooting);
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		currentPassCooldown = passCooldown;
-		BallBehaviour shootedBall = ball;
+		BallBehaviour shotBall = ball;
 		ball = null;
-		PlayerController otherPlayer = GetOtherPlayer();
 		if (passMode == PassMode.Curve)
         {
             // Throw a curve pass
@@ -142,11 +187,10 @@ public class PassController : MonoBehaviour
             {
 				if (passPreview)
 				{
-					float _angle = Vector3.SignedAngle(otherPlayer.transform.position - transform.position, transform.forward, Vector3.up);
-					shootedBall.CurveShoot(handTransform.position, otherPlayer.transform.position, _angle, linkedPlayer, ballDatas);
+					shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
 				} else
 				{
-					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
+					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
 				}
             }
         }
@@ -155,11 +199,11 @@ public class PassController : MonoBehaviour
 			if (!passPreview)
 			{
 				if (otherPlayer != null)
-					shootedBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
+					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
 			}
 			else // if aiming with right joystick
 			{
-				shootedBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas);
+				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas);
 			}
 		}
 		ChangePassState(PassState.None);
@@ -249,7 +293,7 @@ public class PassController : MonoBehaviour
 		}
 	}
 
-	private void PreviewPath(List<Vector3> _pathCoordinates, BallDatas _passDatas)
+	private void PreviewPath(List<Vector3> _pathCoordinates)
 	{
 		lineRenderer.positionCount = _pathCoordinates.Count;
 		lineRenderer.SetPositions(_pathCoordinates.ToArray());

@@ -20,6 +20,10 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private BallDatas currentBallDatas;
 	[SerializeField] private int currentBounceCount;
 	[SerializeField] private PawnController currentThrower;
+	[SerializeField] private bool canBounce;
+	[SerializeField] private bool canHitWalls;
+	[SerializeField] private List<Vector3> currentCurve;
+	[SerializeField] private Vector3 initialLookDirection;
 
 	private Collider col;
 	private Rigidbody rb;
@@ -27,6 +31,9 @@ public class BallBehaviour : MonoBehaviour
 	private GameObject trailFX;
 	private List<IHitable> hitGameObjects;
 	private Vector3 previousPosition;
+	private Coroutine ballCoroutine;
+
+	private Vector3 currentPosition;
 
 	private void Awake()
     {
@@ -41,15 +48,22 @@ public class BallBehaviour : MonoBehaviour
 		UpdateBallPosition();
 	}
 
-    public void CurveShoot(Vector3 _startPosition, Vector3 _endPosition, float _angle, PawnController _thrower, BallDatas _passDatas) //Shoot a curve ball to reach a point
+    public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
     {
         transform.SetParent(null);
-        transform.position = _startPosition;
+		currentThrower = _thrower;
+		currentSpeed = _passDatas.moveSpeed;
+		currentMaxDistance = Mathf.Infinity;
+		currentBallDatas = _passDatas;
+		currentBounceCount = 0;
+		canBounce = true;
+		canHitWalls = true;
+		currentCurve = _passController.GetCurvedPathCoordinates(_target, _lookDirection);
+		initialLookDirection = _lookDirection;
 
-        // Find the equation to only make one impulse on the ball and make it bend
-        // This will surely be parabolic equation in my notebook
+		hitGameObjects.Clear();
+		ChangeState(BallState.Flying);
     }
-
 
 
     public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
@@ -62,6 +76,8 @@ public class BallBehaviour : MonoBehaviour
 		currentMaxDistance = _passDatas.maxDistance;
 		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
+		canBounce = true;
+		canHitWalls = true;
 
 		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
@@ -90,9 +106,10 @@ public class BallBehaviour : MonoBehaviour
 	public void GoToHands ( Transform _handTransform, float _travelDuration, BallDatas _passData )
 	{
 		currentBallDatas = _passData;
+		currentCurve = null;
 		ChangeState(BallState.Held);
-		StartCoroutine(GoToPosition(_handTransform, _travelDuration));
-		transform.SetParent(_handTransform);
+		ballCoroutine = StartCoroutine(GoToPosition(_handTransform, _travelDuration));
+		transform.SetParent(_handTransform, true);
 	}
 
 	public void CancelMovement()
@@ -183,11 +200,28 @@ public class BallBehaviour : MonoBehaviour
 		switch (currentState)
 		{
 			case BallState.Flying:
+				if (currentCurve != null)
+				{
+					AnimationCurve curveX;
+					AnimationCurve curveY;
+					AnimationCurve curveZ;
+					float curveLength;
+					PassController currentPassController = GetCurrentThrower().GetComponent<PassController>();
+					if (currentPassController == null) { return; }
+					ConvertCoordinatesToCurve(currentPassController.GetCurvedPathCoordinates(currentPassController.GetTarget().transform, initialLookDirection), out curveX, out curveY, out curveZ, out curveLength);
+					currentMaxDistance = curveLength;
+					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
+					//transform.position = Vector3.Lerp(transform.position, new Vector3(curveX.Evaluate(positionOnCurve), curveY.Evaluate(positionOnCurve), curveZ.Evaluate(positionOnCurve)), Time.deltaTime * currentSpeed);
+					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
+					currentDirection = nextPosition - transform.position;
+				}
+				currentDirection.y = 0;
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
 				currentDistanceTravelled += currentSpeed * Time.deltaTime;
 				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
 				{
 					//Ball has arrived to it's destination
+					currentCurve = null;
 					ChangeState(BallState.Grounded);
 				}
 				else
@@ -198,7 +232,6 @@ public class BallBehaviour : MonoBehaviour
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
 					if (Physics.SphereCast(transform.position, 1f, currentDirection, out hit, currentSpeed * Time.deltaTime))
 					{
-						//transform.position = hit.point;
 						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
 						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
 						{
@@ -206,15 +239,21 @@ public class BallBehaviour : MonoBehaviour
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, currentBallDatas.damages, DamageSource.Ball);
 						}
 						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
-						if (currentBounceCount < currentBallDatas.maxBounces)
+						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
+							if (currentCurve != null)
+							{
+								currentCurve = null;
+								currentDistanceTravelled = 0;
+								currentMaxDistance = currentBallDatas.maxDistance;
+							}
 							Vector3 hitNormal = hit.normal;
 							hitNormal.y = 0;
 							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
 							newDirection.y = -currentDirection.y;
 							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
 							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
-						} else
+						} else if (canHitWalls)
 						{
 							ChangeState(BallState.Grounded);
 						}
@@ -256,5 +295,41 @@ public class BallBehaviour : MonoBehaviour
 		}
 		transform.position = _transform.position;
 		transform.localScale = Vector3.one;
+		ballCoroutine = null;
+	}
+
+	public void ConvertCoordinatesToCurve(List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength)
+	{
+		AnimationCurve curveX = new AnimationCurve();
+		AnimationCurve curveY = new AnimationCurve();
+		AnimationCurve curveZ = new AnimationCurve();
+		float curveLength = 0;
+		for (int i = 0; i < _coordinates.Count; i++)
+		{
+			float time = (float)i / (float)_coordinates.Count;
+			Keyframe keyX = new Keyframe();
+			keyX.value = _coordinates[i].x;
+			keyX.time = time;
+			curveX.AddKey(keyX);
+
+			Keyframe keyY = new Keyframe();
+			keyY.value = _coordinates[i].y;
+			keyY.time = time;
+			curveY.AddKey(keyY);
+
+			Keyframe keyZ = new Keyframe();
+			keyZ.value = _coordinates[i].z;
+			keyZ.time = time;
+			curveZ.AddKey(keyZ);
+
+			if (i < _coordinates.Count - 1)
+			{
+				curveLength += Vector3.Distance(_coordinates[i], _coordinates[i + 1]);
+			}
+		}
+		_curveX = curveX;
+		_curveY = curveY;
+		_curveZ = curveZ;
+		_curveLength = curveLength;
 	}
 }

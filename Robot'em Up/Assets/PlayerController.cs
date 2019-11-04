@@ -179,6 +179,11 @@ public class PlayerController : PawnController
 		inputDisabled = false;
 	}
 
+	public Vector3 GetLookInput()
+	{
+		return lookInput;
+	}
+
 	IEnumerator Vibrate_C ( float _duration, VibrationForce _force )
 	{
 		for (float i = 0; i < _duration; i += Time.deltaTime)

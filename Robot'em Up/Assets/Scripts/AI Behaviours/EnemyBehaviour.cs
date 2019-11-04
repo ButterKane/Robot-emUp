@@ -150,6 +150,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
+		_ball.Explode(true);
         MomentumManager.IncreaseMomentum(0.1f);
 
         StopEverythingMethod();
