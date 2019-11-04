@@ -6,15 +6,34 @@ public class PuzzleActivator : MonoBehaviour
 {
     public bool isActivated;
     public PuzzleDatas puzzleData;
+    public Light indictatorLight;
     // Update is called once per frame
 
 
     public virtual void Start()
     {
+        UpdateLight();
         if (isActivated)
         {
             ActivateLinkedObjects();
         }
+    }
+
+
+    public virtual void UpdateLight()
+    {
+        if (indictatorLight != null)
+        {
+            if (isActivated)
+            {
+                indictatorLight.color = Color.green;
+            }
+            else
+            {
+                indictatorLight.color = Color.red;
+            }
+        }
+       
     }
 
 
@@ -61,6 +80,7 @@ public class PuzzleActivator : MonoBehaviour
                 }
 
 
+                item.UpdateLights();
             }
         }
     }
@@ -111,6 +131,7 @@ public class PuzzleActivator : MonoBehaviour
 
             }
 
+            item.UpdateLights();
         }
 
     }

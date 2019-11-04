@@ -9,7 +9,6 @@ public class PuzzleRepeater : PuzzleActivator
     public float speedChange;
     [ReadOnly]
     public float timeSpeedChange;
-    public Light myLight;
 
 
     void Awake()
@@ -28,13 +27,13 @@ public class PuzzleRepeater : PuzzleActivator
             {
                 DesactiveLinkedObjects();
                 isActivated = false;
-                myLight.color = puzzleData.RepeaterDesactivate;
+                UpdateLight();
             }
             else
             {
                 ActivateLinkedObjects();
                 isActivated = true;
-                myLight.color = puzzleData.RepeaterActivate;
+                UpdateLight();
             }
         }
     }

@@ -10,7 +10,7 @@ public class PuzzleSwitch : PuzzleActivator
     private BoxCollider boxCollider;
     private bool PlayerHere;
     public GameObject InteractionHelper;
-    public Light light;
+    private List<PawnController> ListPawnsHere;
 
 
     [ReadOnly]
@@ -34,6 +34,7 @@ public class PuzzleSwitch : PuzzleActivator
         playerIndex2 = PlayerIndex.Two;
         state = GamePad.GetState(playerIndex);
         state2 = GamePad.GetState(playerIndex2);
+        ListPawnsHere = new List<PawnController>();
     }
     
     void Update()
@@ -80,14 +81,13 @@ public class PuzzleSwitch : PuzzleActivator
 
     private void UpdateMaterial()
     {
+        UpdateLight();
         if (isActivated)
         {
-            light.gameObject.SetActive(true);
             meshRenderer.material = puzzleData.M_SwitchActivate;
         }
         else
         {
-            light.gameObject.SetActive(false);
             meshRenderer.material = puzzleData.M_SwitchDesactivate;
         }
     }
@@ -97,6 +97,8 @@ public class PuzzleSwitch : PuzzleActivator
     {
         if (other.GetComponent<PlayerController>())
         {
+            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            ListPawnsHere.Add(pawn);
             PlayerHere = true;
             InteractionHelper.SetActive(true);
         }
@@ -106,8 +108,13 @@ public class PuzzleSwitch : PuzzleActivator
     {
         if (other.GetComponent<PlayerController>())
         {
-            PlayerHere = false;
-            InteractionHelper.SetActive(false);
+            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            ListPawnsHere.Remove(pawn);
+            if (ListPawnsHere.Count < 1)
+            {
+                PlayerHere = false;
+                InteractionHelper.SetActive(false);
+            }
         }
     }
 }

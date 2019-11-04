@@ -10,8 +10,11 @@ public class PuzzleDoor : PuzzleActivable
 
     override public void WhenActivate()
     {
+        isActivated = true;
+        UpdateLights();
         Debug.Log("Activate a door");
         DestroyTheDoor();
+
     }
 
 
