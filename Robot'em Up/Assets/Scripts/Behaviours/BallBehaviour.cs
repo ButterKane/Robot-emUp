@@ -109,7 +109,7 @@ public class BallBehaviour : MonoBehaviour
 		currentCurve = null;
 		ChangeState(BallState.Held);
 		ballCoroutine = StartCoroutine(GoToPosition(_handTransform, _travelDuration));
-		transform.SetParent(_handTransform);
+		transform.SetParent(_handTransform, true);
 	}
 
 	public void CancelMovement()
@@ -215,6 +215,7 @@ public class BallBehaviour : MonoBehaviour
 					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
 					currentDirection = nextPosition - transform.position;
 				}
+				currentDirection.y = 0;
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
 				currentDistanceTravelled += currentSpeed * Time.deltaTime;
 				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
@@ -240,6 +241,12 @@ public class BallBehaviour : MonoBehaviour
 						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
+							if (currentCurve != null)
+							{
+								currentCurve = null;
+								currentDistanceTravelled = 0;
+								currentMaxDistance = currentBallDatas.maxDistance;
+							}
 							Vector3 hitNormal = hit.normal;
 							hitNormal.y = 0;
 							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);

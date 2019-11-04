@@ -29,6 +29,7 @@ public class ExtendingArmsController : MonoBehaviour
 	public float dragSpeed;
 	public float maxDistanceFromWall;
 	public float armRadius;
+	public float cooldown = 0.1f;
 	[ConditionalField(nameof(aimType), false, ExtendingArmsAimType.TwinStick)] public GameObject directionIndicator;
 
 	[Separator("Renderer Settings")]
@@ -49,6 +50,7 @@ public class ExtendingArmsController : MonoBehaviour
 	private Vector3 currentEndPosition;
 	private Transform secondDirectionIndicator;
 	private SpriteRenderer secondDirectionIndicatorSprite;
+	private float currentCD;
 
 	private ArmState armState;
 
@@ -66,12 +68,16 @@ public class ExtendingArmsController : MonoBehaviour
 	private void Update ()
 	{
 		UpdateArm();
+		if (currentCD > 0 && armState == ArmState.Retracted)
+		{
+			currentCD -= Time.deltaTime;
+		}
 	}
 
 	public void SetThrowDirection(Vector3 _direction)
 	{
 		RaycastHit hit;
-		if (Physics.Raycast(startTransform.position, throwDirection, out hit, maxDistance, LayerMask.GetMask("Environment")))
+		if (Physics.Raycast(startTransform.position, throwDirection, out hit, maxDistance))
 		{
 			currentEndPosition = hit.point;
 			secondDirectionIndicatorSprite.color = Color.green;
@@ -97,7 +103,7 @@ public class ExtendingArmsController : MonoBehaviour
 
 	public void ExtendArm()
 	{
-		if (armState != ArmState.Retracted) { return; }
+		if (armState != ArmState.Retracted || currentCD > 0) { return; }
 		switch (aimType)
 		{
 			case ExtendingArmsAimType.ForwardAiming:
@@ -218,16 +224,23 @@ public class ExtendingArmsController : MonoBehaviour
 
 		if (armTransform.parent != null) //Something got grabbed
 		{
-			yield return new WaitForSeconds(freezeDuration);
-			pawnController.Freeze();
 			Vector3 direction = (armTransform.position - pawnController.transform.position).normalized;
 			Vector3 startPosition = pawnController.transform.position;
 			Vector3 endPosition = armTransform.position - (direction * maxDistanceFromWall);
+			if (Vector3.Distance(startPosition, endPosition) <= 3) { CancelRetraction(); StopAllCoroutines(); }
+			yield return new WaitForSeconds(freezeDuration);
+			pawnController.Freeze();
 
 			for (float i = 0; i < 1f; i+= Time.deltaTime * dragSpeed / Vector3.Distance(startPosition, endPosition))
 			{
 				yield return new WaitForEndOfFrame();
 				pawnController.transform.position = Vector3.Lerp(startPosition, endPosition, i / 1f);
+				if (Physics.Raycast(pawnController.transform.position, direction.normalized, 1f, LayerMask.GetMask("Environment")))
+				{
+					Debug.Log("Cancelled grab");
+					CancelRetraction();
+					StopAllCoroutines();
+				}
 			}
 			pawnController.UnFreeze();
 			pawnController.transform.position = endPosition;
@@ -241,11 +254,17 @@ public class ExtendingArmsController : MonoBehaviour
 				armTransform.transform.forward = startTransform.position - startPosition;
 			}
 		}
+		CancelRetraction();
+	}
 
+	void CancelRetraction()
+	{
+		pawnController.UnFreeze();
 		armTransform.SetParent(startTransform, true);
 		armTransform.localPosition = Vector3.zero;
 		armTransform.localRotation = Quaternion.identity;
 		armTransform.localScale = Vector3.one;
+		currentCD = cooldown;
 		ChangeState(ArmState.Retracted);
 	}
 }
