@@ -83,37 +83,6 @@ public class Surrounder : MonoBehaviour
         }
     }
 
-
-    public Transform GetSurroundingPoint(Transform enemy)
-    {
-        List<Transform> availablePoints = GetAvailablePoints(); // Get all the points that are not occupied
-
-        if (availablePoints.Count <= 0) // check if there's no point available
-        {
-            return null;
-        }
-
-        Transform selectedPoint = null;
-        float closestDistance = 1000000;
-
-        foreach (var point in availablePoints)
-        {
-            Debug.Log("enemy is " + enemy.name + " and distance is " + (point.transform.position - enemy.position).magnitude);
-
-            if ((point.transform.position - enemy.position).magnitude < closestDistance)
-            {
-                closestDistance = (point.transform.position - enemy.position).magnitude;
-                Debug.Log("enemy is " + enemy.name + " and closest distance is " + closestDistance);
-                selectedPoint = point;
-            }
-        }
-
-        if (selectedPoint != null)
-            pointsScripts[KeyByValue(pointsDic, selectedPoint)].isOccupied = true; // "activate" the selected point
-
-        return selectedPoint;
-    }
-
     public Vector3 GetAPositionFromPoint(Transform pointTransform)
     {
         Vector3 fromCenterToPoint = (pointTransform.position - transform.position).normalized;

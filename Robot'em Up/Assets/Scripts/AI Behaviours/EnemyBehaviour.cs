@@ -52,6 +52,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Range(0, 1)]
     public float BezierCurveHeight = 0.5f;
+    public float BezierDistanceToHeightRatio = 100f;
 
     public float DistanceToDestinationTolerance = 0.2f;
 
@@ -210,11 +211,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         float distanceFromStartToNow = 0f;
         
         Transform surroundingPoint = ClosestSurroundPoint;
-
-        float distanceToPointRatio = (1 + (_self.position-surroundingPoint.position).magnitude / 100);  // widens the arc of surrounding the farther the surroundingPoint is
-
-        // Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
-        // With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
+        
+        /// Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
+        /// With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
 
         if (surroundingPoint == null) // If there's no point to use to surround, abort
         {
@@ -222,6 +221,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
         else
         {
+            float distanceToPointRatio = (1 + (_self.position - surroundingPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+            
             Vector3 p0 = _self.position;
 
             //Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
