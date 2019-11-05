@@ -6,6 +6,7 @@ using UnityEngine;
 public class PuzzleDatas : ScriptableObject
 {
 	[Header("Global settings")]
+    public bool showTuto;
     [Range(0, 1)]
     public float nbMomentumChargedByCharger;
     [Range(0, 1)]
