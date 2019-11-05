@@ -39,7 +39,7 @@ public class PuzzleActivable : MonoBehaviour
         }
         else
         {
-            //If the activaable don't have needallcontions, we need only one light
+            //If the activable don't have needallcontions, we need only one light
             for (int i = 1; i < indictatorLightsList.Count; i++)
             {
                 if (indictatorLightsList[i] != null)
@@ -107,6 +107,7 @@ public class PuzzleActivable : MonoBehaviour
     public string InitializeIndicatorLight()
     {
         Start();
+
         return "Lights updated";
     }
 }
