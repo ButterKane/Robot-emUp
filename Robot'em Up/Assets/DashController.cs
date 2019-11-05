@@ -42,7 +42,7 @@ public class DashController : MonoBehaviour
 	private void Awake ()
 	{
 		linkedPawn = GetComponent<PawnController>();
-		currentStackAmount = 3;
+		currentStackAmount = maxStackAmount;
 	}
 
 	private void Update ()

@@ -145,7 +145,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
-        Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
 		_ball.Explode(true);
         MomentumManager.IncreaseMomentum(0.1f);

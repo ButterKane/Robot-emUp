@@ -81,6 +81,7 @@ public class PlayerController : PawnController
 		}
 		if (state.Triggers.Right > triggerTreshold)
 		{
+			passController.TryReception();
 			passController.Shoot();
 		}
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk)
@@ -131,6 +132,7 @@ public class PlayerController : PawnController
 		}
 		if (Input.GetMouseButton(0))
 		{
+			passController.TryReception();
 			passController.Shoot();
 		}
 		if (Input.GetMouseButton(2))

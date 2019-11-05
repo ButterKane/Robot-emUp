@@ -14,10 +14,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxDistance: 5000
   maxPreviewDistance: 50
-  moveSpeed: 10
+  moveSpeed: 80
   maxBounces: 20
   speedMultiplierOnBounce: 1
+  damageModifierOnReception: 1.2
+  maxDamageModifier: 5
+  momentumGainOnReception: 2
   damages: 1
+  colorOverDamage:
+    serializedVersion: 2
+    key0: {r: 0.3443396, g: 1, b: 0.9611214, a: 1}
+    key1: {r: 1, g: 0.95554936, b: 0, a: 1}
+    key2: {r: 1, g: 0.4937994, b: 0, a: 0}
+    key3: {r: 1, g: 0, b: 0, a: 0}
+    key4: {r: 1, g: 0, b: 0, a: 0}
+    key5: {r: 1, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 21627
+    ctime2: 43253
+    ctime3: 65535
+    ctime4: 65535
+    ctime5: 65535
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
   Trail: {fileID: 8070202648864887483, guid: f0a61493435af3f40a62bd2ab386d6ce, type: 3}
   WallHit: {fileID: 3832623334191775734, guid: 235eb44efa78dd8488868d0efce15912, type: 3}
   ReceiveCore: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
@@ -35,4 +67,6 @@ MonoBehaviour:
   DunkDash: {fileID: 7273610593968899248, guid: 4172e95cdcb374d4386dc1cc3ff0836f,
     type: 3}
   DunkReceiving: {fileID: 4215827005432492844, guid: 7562ab785cbac0148b3fc240552d01ff,
+    type: 3}
+  PerfectReception: {fileID: 1911461834216105247, guid: a5e001f70de21fb4da19f2fc140ed5ea,
     type: 3}
