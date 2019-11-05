@@ -47,7 +47,7 @@ public class PuzzleSwitch : PuzzleActivator
             // Detect if a button was pressed this frame
             if (state.Buttons.A == ButtonState.Released && prevState.Buttons.A == ButtonState.Pressed)
             {
-                Debug.Log("ActionOnSwitch 1");
+                //Debug.Log("ActionOnSwitch 1");
                 ActionOnSwitch();
             }
             prevState2 = state2;
@@ -56,7 +56,7 @@ public class PuzzleSwitch : PuzzleActivator
             // Detect if a button was pressed this frame
             if (state2.Buttons.A == ButtonState.Released && prevState2.Buttons.A == ButtonState.Pressed)
             {
-                Debug.Log("ActionOnSwitch 2");
+                //Debug.Log("ActionOnSwitch 2");
                 ActionOnSwitch();
             }
         }
