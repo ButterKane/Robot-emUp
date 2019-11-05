@@ -39,6 +39,8 @@ public class PuzzleDatas : ScriptableObject
     public Material M_Forcefield_Desactivated;
     public Material M_ForcefieldPlayers_Active;
     public Material M_ForcefieldPlayers_Desactivated;
+    public Material M_Forcefield_Flipper_Active;
+    public Material M_Forcefield_Flipper_Desactivated;
     public Material M_SwitchActivate;
     public Material M_SwitchDesactivate;
     public Material M_PuzzleElectreticPlate;

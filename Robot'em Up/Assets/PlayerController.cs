@@ -81,6 +81,7 @@ public class PlayerController : PawnController
 		}
 		if (state.Triggers.Right > triggerTreshold)
 		{
+			passController.TryReception();
 			passController.Shoot();
 		}
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk)
@@ -89,8 +90,8 @@ public class PlayerController : PawnController
 		}
 		if (state.Triggers.Left > triggerTreshold && enableDash)
 		{
-			extendingArmsController.ExtendArm();
-			//dashController.Dash();
+			//extendingArmsController.ExtendArm();
+			dashController.Dash();
 		}
 		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
@@ -131,6 +132,7 @@ public class PlayerController : PawnController
 		}
 		if (Input.GetMouseButton(0))
 		{
+			passController.TryReception();
 			passController.Shoot();
 		}
 		if (Input.GetMouseButton(2))
@@ -143,8 +145,8 @@ public class PlayerController : PawnController
 		}
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
-			extendingArmsController.ExtendArm();
-			//dashController.Dash();
+			//extendingArmsController.ExtendArm();
+			dashController.Dash();
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{

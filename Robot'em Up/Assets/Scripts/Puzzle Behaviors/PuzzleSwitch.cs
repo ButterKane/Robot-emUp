@@ -65,7 +65,7 @@ public class PuzzleSwitch : PuzzleActivator
 
     private void ActionOnSwitch()
     {
-        Debug.Log("Action on switch fct");
+      //  Debug.Log("Action on switch fct");
         isActivated = !isActivated;
         if (isActivated)
         {
