@@ -117,7 +117,14 @@ public class BallBehaviour : MonoBehaviour
 		ChangeState(BallState.Grounded);
 	}
 
-	public void MultiplySpeed(float _coef)
+
+    public void ResetBounds()
+    {
+        currentBounceCount = 0;
+    }
+    
+
+    public void MultiplySpeed(float _coef)
 	{
 		currentSpeed *= _coef;
 	}
