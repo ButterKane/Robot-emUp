@@ -100,7 +100,10 @@ public class PuzzleSwitch : PuzzleActivator
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
             ListPawnsHere.Add(pawn);
             PlayerHere = true;
-            InteractionHelper.SetActive(true);
+            if (puzzleData.showTuto)
+            {
+                InteractionHelper.SetActive(true);
+            }
         }
     }
 
