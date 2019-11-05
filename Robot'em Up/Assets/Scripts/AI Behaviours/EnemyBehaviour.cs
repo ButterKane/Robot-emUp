@@ -34,46 +34,30 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Space(2)]
     [Separator("Variables")]
     public EnemyState State;
-    public bool IsAttacking = false;
-
+    [Header("Health")]
     public int MaxHealth = 100;
     public int Health;
-
+    [Header("Attack parameters")]
     public float AttackDistance = 7f;
     public float PushForce = 300;
-
+    [Header("Follow parameters")]
     public bool IsFollowingPlayer;
     public float FollowSpeed = 100f;
-    
 
     [Space(2)]
     [Separator("Surrounding Variables")]
     public float TimeBeforeSurround = 2f;
-
     [Range(0, 1)]
     public float BezierCurveHeight = 0.5f;
     public float BezierDistanceToHeightRatio = 100f;
+    public float DistanceToDestinationTolerance = 0.2f; // the estimated distance where it's considered the enemy is close enough to the surrounding point
+    [HideInInspector] public Transform ClosestSurroundPoint;
 
-    public float DistanceToDestinationTolerance = 0.2f;
-
+    // Private variables 
     private float _distanceToOne;
     private float _distanceToTwo;
-
     private Surrounder _surrounder;
-    public Transform ClosestSurroundPoint;
 
-    private int _hitCount;
-    public int hitCount
-    {
-        get
-        {
-            return _hitCount;
-        }
-        set
-        {
-            _hitCount = value;
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -146,12 +130,12 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 break;
         }
     }
-    
+
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
-		_ball.Explode(true);
+        _ball.Explode(true);
         MomentumManager.IncreaseMomentum(0.1f);
 
         StopEverythingMethod();
@@ -209,9 +193,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public IEnumerator SurroundPlayer(GameObject player)
     {
         float distanceFromStartToNow = 0f;
-        
+
         Transform surroundingPoint = ClosestSurroundPoint;
-        
+
         /// Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
         /// With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
 
@@ -222,7 +206,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         else
         {
             float distanceToPointRatio = (1 + (_self.position - surroundingPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
-            
+
             Vector3 p0 = _self.position;
 
             //Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
@@ -248,7 +232,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 distanceToEnd1 = (p2 - p0).magnitude;   // distance from enemy to target
                 p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
                 distanceToEnd2 = (p2 - p0).magnitude;   // distance from enemy to target after recalculating target position
-                
+
                 Debug.DrawRay(p2, Vector3.up * 3, Color.green);
 
                 // Getting third point of bezier curve
@@ -259,7 +243,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
 
                 _self.position = positionOnBezierCurve;
-                
+
 
                 // Adapting the avancement with the distance to travel
                 float distanceTraveled = distanceToEnd1 * t;    // traveled distance in units
@@ -272,10 +256,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
                 // Stopping the enemy if it's blocked
                 distanceFromStartToNow = (positionOnBezierCurve - p0).magnitude;
-                
+
                 if ((_self.position - p0).magnitude < distanceFromStartToNow)    // Comparing the traveled distance and the supposed distance to see if blocked
                 {
-                    timeNotMovingMuch += Time.deltaTime ;
+                    timeNotMovingMuch += Time.deltaTime;
                 }
                 else
                 {
@@ -285,7 +269,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 //Incrementing the avancement
                 if (t < 1)
                 {
-                    t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed/10));   
+                    t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed / 10));
                 }
 
                 yield return null;
@@ -386,5 +370,5 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     }
     #endregion
-    
+
 }

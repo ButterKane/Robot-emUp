@@ -28,8 +28,6 @@ public class EnemyAttack : MonoBehaviour
 
         yield return new WaitForSeconds(PounceRecoveryTime);
 
-        _behaviourScript.IsAttacking = false;
-
         _behaviourScript.WhatShouldIDo();
     }
 
