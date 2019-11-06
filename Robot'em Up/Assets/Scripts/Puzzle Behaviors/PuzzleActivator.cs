@@ -80,6 +80,12 @@ public class PuzzleActivator : MonoBehaviour
                 }
 
 
+                if (!temp_Activated)
+                {
+                    item.WhenDesactivate();
+                }
+
+
                 item.UpdateLights();
             }
         }
