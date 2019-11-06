@@ -5,28 +5,22 @@ using UnityEngine.UI;
 using DG.Tweening;
 using XInputDotNetPure;
 
+[RequireComponent(typeof(PlayerPanel))]
 public class HealthPanel : MonoBehaviour
 {
-	public PlayerIndex playerIndex;
 	public Sprite unfilledBar;
 	public Sprite filledBar;
 	public int barCount;
-
-
 
 	public Transform healthBarHolder;
 	private List<Image> healthBars;
 	private bool healthBarInited = false;
 	private PawnController linkedPawn;
-	private void Awake ()
+	private PlayerPanel playerPanel;
+	private void Start ()
 	{
-		foreach (PlayerController player in FindObjectsOfType<PlayerController>())
-		{
-			if (player.playerIndex == playerIndex)
-			{
-				linkedPawn = player;
-			}
-		}
+		playerPanel = GetComponent<PlayerPanel>();
+		linkedPawn = playerPanel.linkedPlayer;
 		StartCoroutine(GenerateHealthBars_C());
 	}
 

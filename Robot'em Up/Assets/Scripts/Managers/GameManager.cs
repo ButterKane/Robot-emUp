@@ -14,6 +14,25 @@ public enum DamageSource
 	Ball,
 	Dunk,
 }
+
+public enum DamageModifierSource
+{
+	PerfectReception
+}
+
+public class DamageModifier {
+
+	public DamageModifier ( float _multiplyCoef, float _duration, DamageModifierSource _source)
+	{
+		multiplyCoef = _multiplyCoef;
+		duration = _duration;
+		source = _source;
+	}
+	public float multiplyCoef;
+	public float duration;
+	public DamageModifierSource source;
+}
+
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager

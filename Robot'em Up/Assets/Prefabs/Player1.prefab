@@ -118,41 +118,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   passPreviewInEditor: 1
-  passMode: 0
+  passMode: 1
   handTransform: {fileID: 4655006219135653576}
   ballDatas: {fileID: 11400000, guid: bcbf07fa2f27e044885056ff5ff74b7c, type: 2}
   passCooldown: 0.5
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
+  receptionMinDistance: 3
+  receptionMinDelay: 0.5
   curveMaxLateralDistance: 15
   curveMaxPlayerDistance: 20
   curveRaycastIteration: 50
   curveMinAngle: 10
-  curveYOLO_MDR:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  hanseLength: 0
+  hanseLength: 50
   passState: 0
 --- !u!114 &7078735977702430641
 MonoBehaviour:
@@ -292,9 +270,11 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 8
   speed: 100
+  maxStackAmount: 10
   unstoppableDash: 0
   invincibleDuringDash: 0
-  cooldown: 1
+  useCooldown: 0.5
+  stackCooldown: 4
   state: 1
   visuals: {fileID: 4621407884147341700}
   clonePerSec: 200
@@ -442,7 +422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55f159eef03d1448acab6d2ae2628d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimType: 0
+  aimType: 1
   startTransform: {fileID: 4655006219135653576}
   armTransform: {fileID: 509570522770558410}
   forwardSpeed: 50

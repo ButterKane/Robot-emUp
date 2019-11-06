@@ -12,7 +12,7 @@ public class PuzzleDoor : PuzzleActivable
     {
         isActivated = true;
         UpdateLights();
-        Debug.Log("Activate a door");
+        //Debug.Log("Activate a door");
         DestroyTheDoor();
 
     }
@@ -23,7 +23,7 @@ public class PuzzleDoor : PuzzleActivable
         open = true;
         if (destroyWhenOpened != null)
         {
-            Debug.Log("Destroy a door");
+            //Debug.Log("Destroy a door");
             Destroy(destroyWhenOpened);
 
             FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
