@@ -15,6 +15,15 @@ public enum EnemyState
     Null,
     Count
 }
+
+public enum WhatBumps
+{
+    Pass,
+    Dunk,
+    Environment,
+    Count
+}
+
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
     [Separator("References")]
@@ -39,12 +48,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public int MaxHealth = 100;
     public int Health;
 
+    public float Speed = 100;
+
     public float AttackDistance = 7f;
     public float PushForce = 300;
 
     public bool IsFollowingPlayer;
-    public float FollowSpeed = 100f;
-    
+    public float MoveSpeed = 100f;
+    public AnimationCurve blendSpeedCurve;
+    public float TimeToReachMaxBlendSpeed = 0.5f;
+
 
     [Space(2)]
     [Separator("Surrounding Variables")]
@@ -62,7 +75,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private Surrounder _surrounder;
     public Transform ClosestSurroundPoint;
 
+    [Space(2)]
+    [Separator("Bump/Stagger Variables")]
+    public float moveMultiplicator;
+    public float normalMoveMultiplicator;
+    public AnimationCurve speedRecoverCurve;
+    private bool isBumped;
+
     private int _hitCount;
+    
+
     public int hitCount
     {
         get
@@ -90,8 +112,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _self = transform;
     }
 
+    void Update()
+    {
+        Speed = MoveSpeed * moveMultiplicator;
+    }
+
     public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
     {
+        Animator.SetFloat("IdleRunBlend", 0);
         GetTarget();
 
         if (priorityState != EnemyState.Null)
@@ -152,18 +180,25 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
 		_ball.Explode(true);
+        
         MomentumManager.IncreaseMomentum(0.1f);
 
         StopEverythingMethod();
 
-        WhatShouldIDo();
+        LaunchBumpSequence(6, -transform.forward * 7, 2);  // default values, tweak with ball?
+
+        
     }
+
 
     #region Collisions managing
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Player")
         {
+            Debug.Log("In collision enter");
+            _attackScript.hitSomething = true;
+
             if (collision.gameObject.GetComponent<PawnController>().isInvincible == false)
             {
                 Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
@@ -185,6 +220,57 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     #endregion
 
     #region Launcher Functions
+    public void LaunchBumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
+    {
+        isBumped = false;
+
+        StartCoroutine(BumpSequence(upForce, pushForce, bumpedKoTime));
+    }
+
+    public IEnumerator BumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
+    {
+        Animator.SetTrigger("BumpTrigger");
+
+        Vector3 propulsionForce = Vector3.zero;
+        propulsionForce += SwissArmyKnife.GetFlattedDownDirection(pushForce);
+        propulsionForce += new Vector3(0, upForce, 0);
+
+        Rb.AddForce(propulsionForce, ForceMode.Impulse);
+
+        yield return null;
+
+        float initialSpeed = Rb.velocity.magnitude;
+
+        float projectionAngle = Vector3.Angle(pushForce, propulsionForce);
+
+        // Calculate how much time the enemy is supposed to spend in air
+        float airDuration = SwissArmyKnife.GetBallisticThrowLength(initialSpeed, projectionAngle, 0);
+
+        float timeToWait = SwissArmyKnife.GetBallisticThrowDuration(initialSpeed, projectionAngle,airDuration );
+
+        yield return new WaitForSeconds(timeToWait); // wait for the pushing back to have finished
+        
+        StartCoroutine(FallSequence(bumpedKoTime));
+    }
+
+    public IEnumerator FallSequence(float waitTime)
+    {
+        Animator.SetTrigger("FallingTrigger");
+
+        yield return new WaitForSeconds(waitTime);
+
+        Animator.SetTrigger("StandingUpTrigger");
+
+        LaunchHinderMovementSpeed();
+
+        WhatShouldIDo();
+    }
+
+    public void LaunchHinderMovementSpeed()
+    {
+        StartCoroutine(HinderMovementSpeed());
+    }
+
     public void LaunchSurrounding()
     {
         StartCoroutine(SurroundPlayer(Target.gameObject));
@@ -193,8 +279,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void LaunchAttack(Transform target)
     {
         transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, _self.position));
-        StartCoroutine(_attackScript.Attack(target));
-        Animator.SetTrigger("PrepareAttack");
+        _attackScript.LaunchAttack(target);
+        
     }
     #endregion
 
@@ -285,7 +371,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 //Incrementing the avancement
                 if (t < 1)
                 {
-                    t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed/10));   
+                    t += Time.deltaTime / (distanceToEnd2 * (MoveSpeed/10));   
                 }
 
                 yield return null;
@@ -301,10 +387,40 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
+    public IEnumerator HinderMovementSpeed(WhatBumps? cause = default)
+    {
+        switch (cause)
+        {
+            case WhatBumps.Pass:
+                // Fetch ball datas => speed reduction on pass
+                break;
+            case WhatBumps.Dunk:
+                // Fetch ball datas => speed reduction on dunk
+                break;
+            case WhatBumps.Environment:
+                // Fetch environment datas => speed reduction
+                break;
+            default:
+                moveMultiplicator -= 0.5f;
+                Debug.Log("Default case: New speed multiplicator = 0.5");
+                break;
+        }
+        
+        float t = moveMultiplicator;
+        
+        while (moveMultiplicator < normalMoveMultiplicator)
+        {
+            moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
+            t += Time.deltaTime;
+            yield return null;
+        }
+    }
+
     public IEnumerator FollowPlayer(Transform playerToFollow)
     {
-        Animator.SetBool("FollowingPlayer", true);
+        //Animator.SetBool("FollowingPlayer", true);
         float followTime = 0;
+        float t = 0;
 
         while ((Target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
         {
@@ -312,10 +428,18 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
             Rb.velocity = Vector3.zero;
 
-            Rb.AddForce(_self.forward * FollowSpeed * Time.deltaTime, ForceMode.VelocityChange);
+            Rb.AddForce(_self.forward * Speed * (blendSpeedCurve.Evaluate(t))* Time.deltaTime, ForceMode.VelocityChange);
 
-            followTime += Time.deltaTime;
+            if (t < 1)
+            {
+                t += Time.deltaTime / TimeToReachMaxBlendSpeed;
+            }
+            else // wait until max speed is reached, then start counting
+            {
+                followTime += Time.deltaTime;
+            }
 
+            Animator.SetFloat("IdleRunBlend", Mathf.Min(t, 1));
             yield return null;
         }
 
@@ -357,10 +481,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     private void DamageTaken(int damage)
     {
-        StopEverythingMethod();
+        //StopEverythingMethod();
         Rb.velocity = Vector3.zero;
 
-        Animator.SetTrigger("Hit"); // play animation
+        //Animator.SetTrigger("Hit"); // play animation
         Instantiate(_hitFXPrefab, _self.position, Quaternion.identity);
         Health -= damage;
         CheckHealth();
