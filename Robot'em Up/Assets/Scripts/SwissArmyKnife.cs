@@ -8,8 +8,13 @@ public static class SwissArmyKnife
     {
         return new Vector3(vector.x, self.y, vector.z);
     }
+    public static Vector3 GetFlattedDownDirection(Vector3 vector)
+    {
+        return new Vector3(vector.x, 0, vector.z);
+    }
 
-    public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
+
+        public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
     {
         Vector2 dir = initial - target;
         float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
@@ -72,4 +77,53 @@ public static class SwissArmyKnife
 		float f3 = t * t * t;
 		return f0 * p0 + f1 * p1 + f2 * p2 + f3 * p3;
 	}
+
+    /// <summary>
+    /// Returns the distance traveled by an object following ballistic equation
+    /// </summary>
+    /// <param name="initialSpeed"></param>
+    /// <param name="angle"></param>
+    /// <param name="initialHeight"></param>
+    /// <returns></returns>
+    public static float GetBallisticThrowLength(float initialSpeed, float angle, float initialHeight)
+    {
+        float g = 9.81f; // gravity
+
+        float radAngle = angle * Mathf.Deg2Rad; // converts the angle in degree to an angle in radians
+
+        if (initialHeight == 0)
+        {
+            return (Mathf.Pow(initialSpeed, 2) / g) * Mathf.Sin(2 * radAngle);  // if initialHieght = 0, use the simplified equation
+        }
+
+        //  initial speed X cos(angle)
+        //  __________________________
+        //              g
+
+        float equationPart1 = (initialSpeed * Mathf.Cos(radAngle)) / g;
+
+
+        //                                 _______________________________________________________
+        //  initial speed X sin(angle) + \/ (initial speed X sin(angle))² + 2 X g X initial height    
+
+        float equationPart2 = initialSpeed * Mathf.Sin(radAngle) + Mathf.Sqrt(Mathf.Pow((initialSpeed * Mathf.Sin(radAngle)), 2) + (2 * g * initialHeight));
+
+        return equationPart1 * equationPart2;
+    }
+
+    /// <summary>
+    /// Returns the time taken by an object to travel a given distance with ballistic equation
+    /// </summary>
+    /// <param name="initialSpeed"></param>
+    /// <param name="angle"></param>
+    /// <param name="throwLength"></param>
+    /// <returns></returns>
+    public static float GetBallisticThrowDuration(float initialSpeed, float angle, float throwLength)
+    {
+        float radAngle = angle * Mathf.Deg2Rad; // converts the angle in degree to an angle in radians
+
+        return throwLength / (initialSpeed * Mathf.Cos(radAngle));
+    }
+
+    
 }
