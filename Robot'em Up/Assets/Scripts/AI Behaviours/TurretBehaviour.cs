@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+#pragma warning disable 0649
 
 public enum TurretState
 {
     Hidden,
-    ChangingMode,
+    Hiding,
+    PrepareToAttack,
     Attacking,
     Dying,
 }
@@ -16,6 +18,7 @@ public class TurretBehaviour : MonoBehaviour
     [Separator("References")]
     [SerializeField] private Transform _self;
     public Rigidbody Rb;
+    public Animator Animator;
 
     [Space(2)]
     [Separator("Auto-assigned References")]
@@ -29,6 +32,7 @@ public class TurretBehaviour : MonoBehaviour
     public float focusDistance;
     public float unfocusDistance;
     public float timeBetweenCheck;
+    public float distanceBeforeChangingPriority;
 
     public int MaxHealth = 100;
     public int Health;
@@ -54,6 +58,7 @@ public class TurretBehaviour : MonoBehaviour
     void Update()
     {
         UpdateDistancesToPlayers();
+        UpdateState();
     }
 
     void UpdateDistancesToPlayers()
@@ -72,6 +77,72 @@ public class TurretBehaviour : MonoBehaviour
         {
             return _playerOne;
         }
+    }
+
+    public void ChangingState(TurretState _newState)
+    {
+        ExitState();
+        State = _newState;
+        EnterState();
+    }
+
+    void UpdateState()
+    {
+        print(State);
+        switch (State)
+        {
+            case TurretState.Attacking:
+                Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position - _self.position);
+                wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
+                _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, 0.2f);
+                break;
+            case TurretState.PrepareToAttack:
+                break;
+            case TurretState.Hiding:
+                break;
+            case TurretState.Hidden:
+                break;
+            case TurretState.Dying:
+                break;
+        }
+    }
+
+    void ExitState()
+    {
+
+    }
+
+    void EnterState()
+    {
+        switch (State)
+        {
+            case TurretState.Hiding:
+                Animator.SetTrigger("HidingTrigger");
+                break;
+            case TurretState.PrepareToAttack:
+                Animator.SetTrigger("PrepareToAttackTrigger");
+                break;
+            case TurretState.Hidden:
+                break;
+            case TurretState.Dying:
+                break;
+            case TurretState.Attacking:
+                break;
+        }
+    }
+
+    void ChangingFocus(Transform _newFocus)
+    {
+        if(focusedPlayer == null && _newFocus!=null)
+        {
+            ChangingState(TurretState.PrepareToAttack);
+        }
+        else if(focusedPlayer != null && _newFocus == null)
+        {
+            ChangingState(TurretState.Hiding);
+        }
+
+        focusedPlayer = _newFocus;
     }
 
     IEnumerator CheckDistance()
@@ -99,14 +170,26 @@ public class TurretBehaviour : MonoBehaviour
         {
             if((focusedPlayer == _playerOne && distanceWithPlayerOne>unfocusDistance) || (focusedPlayer == _playerTwo && distanceWithPlayerTwo > unfocusDistance))
             {
-                focusedPlayer = null;
+                ChangingFocus(null);
+            }
+        }
+
+        if(playerOneInRange && playerTwoInRange && focusedPlayer != null)
+        {
+            if(focusedPlayer == _playerOne && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            {
+                ChangingFocus(_playerTwo);
+            }
+            else if (focusedPlayer == _playerTwo && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            {
+                ChangingFocus(_playerOne);
             }
         }
 
         //no focused yet ? Choose one
         if((playerOneInRange || playerTwoInRange) && focusedPlayer == null)
         {
-            focusedPlayer = GetClosestPlayer();
+            ChangingFocus(GetClosestPlayer());
         }
 
         yield return new WaitForSeconds(timeBetweenCheck);
