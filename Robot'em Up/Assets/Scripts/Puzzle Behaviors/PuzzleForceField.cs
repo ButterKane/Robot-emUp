@@ -6,7 +6,8 @@ using UnityEditor;
 public class PuzzleForceField : PuzzleActivable, IHitable
 {
     private int _hitCount;
-    public bool alsoBlockPlayer = false;
+    public typeForceField type = typeForceField.blockTheBall;
+    public enum typeForceField { blockTheBall, blockBallAndPlayer, Flipper }
     private MeshRenderer meshRenderer;
     private BoxCollider boxCollider;
 
@@ -14,7 +15,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
     {
         meshRenderer = GetComponent<MeshRenderer>();
         boxCollider = GetComponent<BoxCollider>();
-        ChangeState(alsoBlockPlayer);
+        ChangeState();
     }
 
     public int hitCount
@@ -31,13 +32,20 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
-        if (isActivated)
+        if (isActivated && ( type == typeForceField.blockTheBall | type == typeForceField.blockBallAndPlayer ))
         {
             _ball.ChangeSpeed(0);
         }
+
+
+        if (isActivated && type == typeForceField.Flipper )
+        {
+            _ball.ResetBounds();
+            _ball.MultiplySpeed(2f);
+        }
     }
 
-    public void ChangeState (bool _alsoBlockPlayer = false)
+    public void ChangeState()
     {
         if (boxCollider == null)
         {
@@ -47,47 +55,63 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         {
             meshRenderer = GetComponent<MeshRenderer>();
         }
-        alsoBlockPlayer = _alsoBlockPlayer;
-        if (alsoBlockPlayer)
+
+        switch (type)
         {
-            if (isActivated)
-            {
-                boxCollider.isTrigger = false;
-                meshRenderer.material = puzzleData.M_ForcefieldPlayers_Active;
-            }
-            else
-            {
+            case typeForceField.blockTheBall:
                 boxCollider.isTrigger = true;
-                meshRenderer.material = puzzleData.M_ForcefieldPlayers_Desactivated;
+                if (isActivated)
+                {
+                    meshRenderer.material = puzzleData.M_Forcefield_Active;
+                }
+                else
+                {
+                    meshRenderer.material = puzzleData.M_Forcefield_Desactivated;
+                }
 
-            }
-        }
-        else
-        {
-            boxCollider.isTrigger = true;
-            if (isActivated)
-            {
-                meshRenderer.material = puzzleData.M_Forcefield_Active;
-            }
-            else
-            {
-                meshRenderer.material = puzzleData.M_Forcefield_Desactivated;
+                    break;
+            case typeForceField.blockBallAndPlayer:
+                if (isActivated)
+                {
+                    boxCollider.isTrigger = false;
+                    meshRenderer.material = puzzleData.M_ForcefieldPlayers_Active;
+                }
+                else
+                {
+                    boxCollider.isTrigger = true;
+                    meshRenderer.material = puzzleData.M_ForcefieldPlayers_Desactivated;
 
-            }
+                }
+                break;
+            case typeForceField.Flipper:
+                boxCollider.isTrigger = true;
+                if (isActivated)
+                {
+                    meshRenderer.material = puzzleData.M_Forcefield_Flipper_Active;
+                }
+                else
+                {
+                    meshRenderer.material = puzzleData.M_Forcefield_Flipper_Desactivated;
+
+                }
+                break;
+            default:
+                break;
         }
+        
     }
 
 
     public override void WhenDesactivate()
     {
         isActivated = false;
-        ChangeState(alsoBlockPlayer);
+        ChangeState();
     }
     
     public override void WhenActivate()
     {
         isActivated = true;
-        ChangeState(alsoBlockPlayer);
+        ChangeState();
     }
 
 
