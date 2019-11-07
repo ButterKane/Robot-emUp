@@ -55,7 +55,7 @@ public class DashController : MonoBehaviour
 	{
 		if (currentStackAmount < maxStackAmount)
 		{
-			currentStackCooldown += Time.deltaTime;
+			currentStackCooldown += Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.dashRecoverSpeedMultiplier);
 			if (currentStackCooldown >= stackCooldown)
 			{
 				currentStackCooldown = 0;

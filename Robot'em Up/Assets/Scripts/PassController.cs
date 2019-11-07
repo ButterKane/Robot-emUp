@@ -113,7 +113,7 @@ public class PassController : MonoBehaviour
 		didPerfectReception = true;
 		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
 		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
-		MomentumManager.IncreaseMomentum(ballDatas.momentumGainOnReception);
+		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 	}
 
 	//Used for generating the preview
@@ -209,6 +209,8 @@ public class PassController : MonoBehaviour
 		BallBehaviour shotBall = ball;
 		ball = null;
 		didPerfectReception = false;
+		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
+		MomentumManager.DisableMomentumExpontentialLoss();
 		if (passMode == PassMode.Curve)
         {
             // Throw a curve pass
@@ -245,6 +247,7 @@ public class PassController : MonoBehaviour
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		ballTimeInHand = 0;
+		MomentumManager.EnableMomentumExponentialLoss(MomentumManager.datas.minPassDelayBeforeMomentumLoss, MomentumManager.datas.momentumLossSpeedIfNoPass);
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 

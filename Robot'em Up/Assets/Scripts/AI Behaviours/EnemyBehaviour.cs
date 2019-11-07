@@ -151,9 +151,17 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         DamageTaken(_damages);
 		_ball.Explode(true);
-        MomentumManager.IncreaseMomentum(0.1f);
+		switch (_source)
+		{
+			case DamageSource.Ball:
+				MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnHit);
+				break;
+			case DamageSource.Dunk:
+				MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnDunk);
+				break;
+		}
 
-        StopEverythingMethod();
+		StopEverythingMethod();
 
         WhatShouldIDo();
     }

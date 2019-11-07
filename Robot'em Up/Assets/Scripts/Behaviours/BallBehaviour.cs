@@ -308,8 +308,8 @@ public class BallBehaviour : MonoBehaviour
 					currentDirection = nextPosition - transform.position;
 				}
 				currentDirection.y = 0;
-				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime;
-				currentDistanceTravelled += currentSpeed * Time.deltaTime;
+				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
+				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
 				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
 				{
 					//Ball has arrived to it's destination
@@ -322,7 +322,7 @@ public class BallBehaviour : MonoBehaviour
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
 					RaycastHit hit;
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
-					if (Physics.SphereCast(transform.position, 1f, currentDirection, out hit, currentSpeed * Time.deltaTime))
+					if (Physics.SphereCast(transform.position, 1f, currentDirection, out hit, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier)))
 					{
 						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
 						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
@@ -348,6 +348,7 @@ public class BallBehaviour : MonoBehaviour
 						} else if (canHitWalls)
 						{
 							ChangeState(BallState.Grounded);
+							MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
 						}
 					}
 				}
