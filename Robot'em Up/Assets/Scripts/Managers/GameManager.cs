@@ -70,6 +70,8 @@ public class GameManager : MonoBehaviour
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
+		LoadMomentumManager();
+
         if (surrounderPlayerOne!= null) { Destroy(surrounderPlayerOne); }
         surrounderPlayerOne = Instantiate(SurrounderPrefab, playerOne.transform.position, Quaternion.identity);
         surrounderPlayerOne.GetComponent<Surrounder>().playerTransform = playerOne.transform;
@@ -121,5 +123,11 @@ public class GameManager : MonoBehaviour
 		GameObject newBall = Instantiate(i.ballPrefab, null);
         i.ball = newBall;
 		newBall.transform.position = new Vector3(0, 1f, 0);
+	}
+
+	void LoadMomentumManager()
+	{
+		MomentumManager mm = gameObject.AddComponent<MomentumManager>();
+		MomentumManager.datas = (MomentumData)Resources.Load("MomentumData");
 	}
 }
