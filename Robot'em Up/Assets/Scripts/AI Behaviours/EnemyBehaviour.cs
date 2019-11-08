@@ -58,6 +58,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public AnimationCurve blendSpeedCurve;
     public float TimeToReachMaxBlendSpeed = 0.5f;
 
+    public float focusChangeDifferencialReference = 2f; // marge to apply when comparing distances to both players
+    public float focusChangeWaitTime = 0.5f;
+    public float focusChangeSpeed = 2f;
+    public AnimationCurve ChangeFocusSpeedCurve;
+
 
     [Space(2)]
     [Separator("Surrounding Variables")]
@@ -115,11 +120,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     void Update()
     {
         Speed = MoveSpeed * moveMultiplicator;
+
     }
 
     public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
     {
+        Debug.Log("WhatShouldIDo?");
         Animator.SetFloat("IdleRunBlend", 0);
+
         GetTarget();
 
         if (priorityState != EnemyState.Null)
@@ -237,6 +245,64 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         StartCoroutine(BumpSequence(upForce, pushForce, bumpedKoTime));
     }
 
+    public void LaunchHinderMovementSpeed()
+    {
+        StartCoroutine(HinderMovementSpeed());
+    }
+
+    public void LaunchSurrounding()
+    {
+        StartCoroutine(SurroundPlayer(Target.gameObject));
+    }
+
+    public void LaunchAttack(Transform target)
+    {
+        transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, _self.position));
+        _attackScript.LaunchAttack(target);
+        
+    }
+
+    public void LaunchChangeFocusSequence()
+    {
+        StopEverythingMethod();
+        StartCoroutine(ChangeFocusSequence());
+    }
+
+    public IEnumerator ChangeFocusSequence()
+    {
+        Animator.SetBool("ChangingFocus", true);
+        _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(Target.position, _self.position));
+
+        // TODO: add a progressive turn
+
+
+        yield return new WaitForSeconds(focusChangeWaitTime);
+        Animator.SetBool("ChangingFocus", false);
+        WhatShouldIDo();
+    }
+        #endregion
+
+        #region Coroutines
+        public IEnumerator WaitABit()
+    {
+        State = EnemyState.Idle;
+        yield return new WaitForSeconds(1.5f);
+        WhatShouldIDo();
+    }
+    
+    public IEnumerator FallSequence(float waitTime)
+    {
+        Animator.SetTrigger("FallingTrigger");
+
+        yield return new WaitForSeconds(waitTime);
+
+        Animator.SetTrigger("StandingUpTrigger");
+
+        LaunchHinderMovementSpeed();
+
+        WhatShouldIDo();
+    }
+
     public IEnumerator BumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
     {
         Animator.SetTrigger("BumpTrigger");
@@ -256,50 +322,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         // Calculate how much time the enemy is supposed to spend in air
         float airDuration = SwissArmyKnife.GetBallisticThrowLength(initialSpeed, projectionAngle, 0);
 
-        float timeToWait = SwissArmyKnife.GetBallisticThrowDuration(initialSpeed, projectionAngle,airDuration );
+        float timeToWait = SwissArmyKnife.GetBallisticThrowDuration(initialSpeed, projectionAngle, airDuration);
 
         yield return new WaitForSeconds(timeToWait); // wait for the pushing back to have finished
-        
+
         StartCoroutine(FallSequence(bumpedKoTime));
-    }
-
-    public void LaunchHinderMovementSpeed()
-    {
-        StartCoroutine(HinderMovementSpeed());
-    }
-
-    public void LaunchSurrounding()
-    {
-        StartCoroutine(SurroundPlayer(Target.gameObject));
-    }
-
-    public void LaunchAttack(Transform target)
-    {
-        transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, _self.position));
-        _attackScript.LaunchAttack(target);
-        
-    }
-    #endregion
-
-    #region Coroutines
-    public IEnumerator WaitABit()
-    {
-        State = EnemyState.Idle;
-        yield return new WaitForSeconds(1.5f);
-        WhatShouldIDo();
-    }
-    
-    public IEnumerator FallSequence(float waitTime)
-    {
-        Animator.SetTrigger("FallingTrigger");
-
-        yield return new WaitForSeconds(waitTime);
-
-        Animator.SetTrigger("StandingUpTrigger");
-
-        LaunchHinderMovementSpeed();
-
-        WhatShouldIDo();
     }
 
     public IEnumerator SurroundPlayer(GameObject player)
@@ -490,13 +517,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _distanceToOne = (_playerOne.position - transform.position).magnitude;
         _distanceToTwo = (_playerTwo.position - transform.position).magnitude;
 
-        if (_distanceToOne < _distanceToTwo)
+        if (_distanceToOne < _distanceToTwo - focusChangeDifferencialReference && Target != _playerOne)
         {
             Target = _playerOne;
+            LaunchChangeFocusSequence();
         }
-        else
+        else if (_distanceToTwo < _distanceToOne - focusChangeDifferencialReference && Target != _playerTwo)
         {
             Target = _playerTwo;
+            LaunchChangeFocusSequence();
         }
     }
 
@@ -524,9 +553,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private void StopEverythingMethod()
     {
         StopAllCoroutines();
-        if (GameManager.i.enemyManager.enemyCurrentlyAttacking == this.gameObject) { GameManager.i.enemyManager.enemyCurrentlyAttacking = null; }
-        Animator.SetTrigger("Reset");
-
+        Rb.velocity = Vector3.zero;
     }
     #endregion
     
