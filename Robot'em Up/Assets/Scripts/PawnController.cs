@@ -83,6 +83,7 @@ public class PawnController : MonoBehaviour
 	private Animator animator;
 	private Vector3 initialScale;
 	private bool frozen;
+	private bool isPlayer;
 
 	protected PassController passController;
 
@@ -99,6 +100,10 @@ public class PawnController : MonoBehaviour
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
 		currentHealth = maxHealth;
+		if (GetComponent<PlayerController>() != null)
+		{
+			isPlayer = true;
+		}
     }
 
     private void FixedUpdate()
@@ -272,6 +277,13 @@ public class PawnController : MonoBehaviour
 		{
 			speedCoef *= coef.speedCoef;
 		}
+		if (isPlayer)
+		{
+			speedCoef *= MomentumManager.GetValue(MomentumManager.datas.playerSpeedMultiplier);
+		} else
+		{
+			speedCoef *= MomentumManager.GetValue(MomentumManager.datas.enemySpeedMultiplier);
+		}
 		return speedCoef;
 	}
 
@@ -322,6 +334,10 @@ public class PawnController : MonoBehaviour
 		float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
 		scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
 		transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
+		if (GetComponent<PlayerController>() != null)
+		{
+			MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
+		}
 	}
 
 	private void ResetScale()

@@ -13,7 +13,6 @@ public class BallDatas : ScriptableObject
 	public float speedMultiplierOnBounce;
 	public float damageModifierOnReception;
 	public float maxDamageModifier;
-	public float momentumGainOnReception;
 	public int damages;
 	public Gradient colorOverDamage;
 
