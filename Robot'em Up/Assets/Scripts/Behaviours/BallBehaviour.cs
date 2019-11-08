@@ -231,8 +231,8 @@ public class BallBehaviour : MonoBehaviour
 
 	void SetColor(Color _newColor)
 	{
-		ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
-		currentColor = _newColor;
+        // ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
+        currentColor = _newColor;
 	}
 
 	public DamageModifier AddNewDamageModifier(DamageModifier _newModifier)
