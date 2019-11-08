@@ -26,23 +26,19 @@ public class EnemyClassicAttack : EnemyAttack
         float waitTime = _behaviourScript.Animator.runtimeAnimatorController.animationClips.First(x => x.name == "Anticipation").length;    
 
         yield return new WaitForSeconds(waitTime);  // wait for the animation to end
-
-        Debug.Log("Wesh");
+        
         float t = 0;
         while(t < ChargeTimeLength)
         {
             // Must stop if hitting something, a wall of a player
             if (hitSomething)
             {
-                Debug.Log("hit something");
-
                 t = ChargeTimeLength;
             }
             _behaviourScript.Rb.AddForce(attackDirection * ChargeForce, ForceMode.VelocityChange);
             t += Time.deltaTime;
             yield return null;
         }
-        Debug.Log("end of attack1");
 
         _behaviourScript.Animator.SetTrigger("EndOfAttackTrigger");
 

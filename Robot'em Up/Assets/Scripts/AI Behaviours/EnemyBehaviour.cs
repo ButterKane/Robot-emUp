@@ -184,9 +184,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         StopEverythingMethod();
 
-        LaunchBumpSequence(6, -transform.forward * 7, 2);  // default values, tweak with ball?
-
+        //LaunchBumpSequence(6, -transform.forward * 7, 2);  // default values, tweak with ball?
         
+        if (State != EnemyState.Attacking)
+        {
+            Animator.SetTrigger("HitTrigger");
+            LaunchStaggerSequence();
+        }
+
+        WhatShouldIDo();
     }
 
 
@@ -219,6 +225,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     #endregion
 
     #region Launcher Functions
+    public void LaunchStaggerSequence()
+    {
+        StartCoroutine(HinderMovementSpeed());
+    }
+    
     public void LaunchBumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
     {
         isBumped = false;
@@ -252,19 +263,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         StartCoroutine(FallSequence(bumpedKoTime));
     }
 
-    public IEnumerator FallSequence(float waitTime)
-    {
-        Animator.SetTrigger("FallingTrigger");
-
-        yield return new WaitForSeconds(waitTime);
-
-        Animator.SetTrigger("StandingUpTrigger");
-
-        LaunchHinderMovementSpeed();
-
-        WhatShouldIDo();
-    }
-
     public void LaunchHinderMovementSpeed()
     {
         StartCoroutine(HinderMovementSpeed());
@@ -288,6 +286,19 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         State = EnemyState.Idle;
         yield return new WaitForSeconds(1.5f);
+        WhatShouldIDo();
+    }
+    
+    public IEnumerator FallSequence(float waitTime)
+    {
+        Animator.SetTrigger("FallingTrigger");
+
+        yield return new WaitForSeconds(waitTime);
+
+        Animator.SetTrigger("StandingUpTrigger");
+
+        LaunchHinderMovementSpeed();
+
         WhatShouldIDo();
     }
 
@@ -460,6 +471,17 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
+    public IEnumerator DyingCoroutine()
+    {
+        Animator.SetTrigger("DeathTrigger");
+
+        yield return new WaitForSeconds(Animator.GetCurrentAnimatorStateInfo(0).length);
+
+        Instantiate(_destroyedFXPrefab, _self.position, Quaternion.identity);
+        GameManager.i.enemyManager.enemies.Remove(this);
+        Destroy(_self.gameObject);
+    }
+
     #endregion
 
     #region Private methods
@@ -495,9 +517,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         if (Health <= 0)
         {
-            Instantiate(_destroyedFXPrefab, _self.position, Quaternion.identity);
-            GameManager.i.enemyManager.enemies.Remove(this);
-            Destroy(_self.gameObject);
+            StartCoroutine(DyingCoroutine());
         }
     }
 
