@@ -1,31 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
-[CreateAssetMenu(fileName = "MomentumData", menuName = "GlobalDatas/Momentum", order = 1)]
-public class MomentumData: ScriptableObject
-{
-	public float momentumLerpSpeed;
-
-	public Vector2 playerSpeedMultiplier;
-	public Vector2 dashRecoverSpeedMultiplier;
-	public Vector2 ballSpeedMultiplier;
-	public Vector2 energyGainMultiplier;
-	public Vector2 ballDamageMultiplier;
-	public Vector2 enemySpeedMultiplier;
-	public Vector2 enemySpawnRateMultiplier;
-
-	[Range(0f, 1f)] public float momentumGainedOnPass;
-	[Range(0f, 1f)] public float momentumGainedOnHit;
-	[Range(0f, 1f)] public float momentumGainedOnDunk;
-	[Range(0f, 1f)] public float momentumGainedOnPerfectReception;
-
-	public float minPassDelayBeforeMomentumLoss;
-	public float momentumLossSpeedIfNoPass;
-	[Range(0f, 1f)] public float momentumLossOnFightEnd;
-	[Range(0f, 1f)] public float momentumLossOnDamage;
-	[Range(0f, 1f)] public float momentumLossWhenBallHitTheGround;
-}
 public class MomentumManager: MonoBehaviour
 {
 	[Header("Settings")]
@@ -105,9 +82,9 @@ public class MomentumManager: MonoBehaviour
 		return Mathf.Clamp(_momentum, 0f, 1f);
 	}
 
-	public static float GetValue( Vector2 _value )
+	public static float GetValue( RangedFloat _value )
 	{
-		return Mathf.Lerp(_value.x, _value.y, currentMomentum);
+		return Mathf.Lerp(_value.Min, _value.Max, currentMomentum);
 	}
 
 	IEnumerator EnableMomentumContinuousLossAfterDelay(float _delay)
