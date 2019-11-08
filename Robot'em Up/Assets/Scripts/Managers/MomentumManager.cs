@@ -50,7 +50,6 @@ public class MomentumManager: MonoBehaviour
 	}
 	private void Update ()
 	{
-		Debug.Log("Current momentum: " + GetMomentum());
 		currentMomentum = Mathf.Lerp(currentMomentum, wantedMomentum, Time.deltaTime * datas.momentumLerpSpeed);
 		if (instance.exponentialLossEnabled)
 		{
@@ -79,7 +78,6 @@ public class MomentumManager: MonoBehaviour
 
 	public static float IncreaseMomentum(float _amount)
 	{
-		Debug.Log("Increasing momentum by " + _amount);
 		wantedMomentum += _amount;
 		wantedMomentum = ClampMomentum(wantedMomentum);
 		return wantedMomentum;
