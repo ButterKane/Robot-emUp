@@ -32,7 +32,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         waitTimeBeforeNextDamage -= Time.deltaTime;
         //waitTimeBeforeNextFx -= Time.deltaTime;
 
-        if (waitTimeBeforeNextDamage < 0 && isActivated)
+        if (waitTimeBeforeNextDamage < 0 && !isActivated)
         {
             waitTimeBeforeNextDamage = puzzleData.timeCheckingDamageEletricPlate;
             foreach (PawnController item in PawnTrapped)
@@ -83,21 +83,32 @@ public class PuzzleEletricPlate : PuzzleActivable
     override public void WhenActivate()
     {
         isActivated = true;
+
+        UpdateLights();
+        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
+
+
+        if (myFx != null)
+        {
+            Destroy(myFx);
+        }
+
+    }
+
+    override public void WhenDesactivate()
+    {
+        isActivated = false;
+        UpdateLights();
         meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
+
+        Destroy(myFx);
+
         if (myFx != null)
         {
             Destroy(myFx);
         }
         myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
-    }
-
-    override public void WhenDesactivate()
-    {
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
-        isActivated = false;
-
-        Destroy(myFx);
-
+        
     }
 
 
