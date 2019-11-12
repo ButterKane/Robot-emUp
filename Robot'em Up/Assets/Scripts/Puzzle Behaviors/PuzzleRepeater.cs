@@ -10,6 +10,8 @@ public class PuzzleRepeater : PuzzleActivator
     [ReadOnly]
     public float timeSpeedChange;
 
+    public TextMesh textMesh;
+
 
     void Awake()
     {
@@ -20,6 +22,7 @@ public class PuzzleRepeater : PuzzleActivator
     void Update()
     {
         timeSpeedChange -= Time.deltaTime;
+        textMesh.text = System.Math.Round(timeSpeedChange, 1).ToString();
         if (timeSpeedChange < 0 )
         {
             timeSpeedChange = speedChange;
