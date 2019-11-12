@@ -98,6 +98,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
             default:
                 break;
         }
+        UpdateLights();
         
     }
 
