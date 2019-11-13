@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Rendering.PostProcessing;
+
 
 public class MomentumManager: MonoBehaviour
 {
@@ -15,11 +17,39 @@ public class MomentumManager: MonoBehaviour
 	private float exponentialLossDuration = 0;
 	private float exponentialLossCoef = 1;
 
+	private Bloom bloom;
+	private ChromaticAberration chromaticAberration;
+	private ColorGrading colorGrading;
+
 	public void Awake ()
 	{
 		instance = this;
 		currentMomentum = 0;
 		wantedMomentum = currentMomentum;
+
+		PostProcessProfile postProcessVolumeProfile = Camera.main.GetComponent<PostProcessVolume>().profile;
+		if (postProcessVolumeProfile == null) { Debug.LogWarning("No post process found, momentum won't update it's values"); }
+
+		//Retrieves or add bloom settings
+		if (!postProcessVolumeProfile.TryGetSettings(out bloom))
+		{
+			postProcessVolumeProfile.AddSettings<Bloom>();
+		}
+		postProcessVolumeProfile.TryGetSettings(out bloom);
+
+		//Retrieves or add chromaticAberration settings
+		if (!postProcessVolumeProfile.TryGetSettings(out chromaticAberration))
+		{
+			postProcessVolumeProfile.AddSettings<ChromaticAberration>();
+		}
+		postProcessVolumeProfile.TryGetSettings(out chromaticAberration);
+
+		//Retrieves or add colorGrading settings
+		if (!postProcessVolumeProfile.TryGetSettings(out colorGrading))
+		{
+			postProcessVolumeProfile.AddSettings<ColorGrading>();
+		}
+		postProcessVolumeProfile.TryGetSettings(out colorGrading);
 	}
 	private void Update ()
 	{
@@ -30,6 +60,19 @@ public class MomentumManager: MonoBehaviour
 			wantedMomentum -= Time.deltaTime * exponentialLossDuration;
 			wantedMomentum = ClampMomentum(wantedMomentum);
 		}
+		UpdatePostProcess();
+	}
+
+	private void UpdatePostProcess ()
+	{
+		//Updates bloom
+		bloom.intensity.value = GetValue(datas.minMaxBloom);
+
+		//Updates color grading
+		colorGrading.temperature.value = GetValue(datas.minMaxTemperature);
+
+		//Updates chromatic aberration
+		chromaticAberration.intensity.value = GetValue(datas.minMaxChromaticAberration);
 	}
 
 	public static float GetMomentum()
@@ -82,9 +125,9 @@ public class MomentumManager: MonoBehaviour
 		return Mathf.Clamp(_momentum, 0f, 1f);
 	}
 
-	public static float GetValue( RangedFloat _value )
+	public static float GetValue( Vector2 _value )
 	{
-		return Mathf.Lerp(_value.Min, _value.Max, currentMomentum);
+		return Mathf.Lerp(_value.x, _value.y, currentMomentum);
 	}
 
 	IEnumerator EnableMomentumContinuousLossAfterDelay(float _delay)

@@ -9,37 +9,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c946bf44ad1df7147b51ee25ff929286, type: 3}
   m_Name: MomentumData
-  m_EditorClassIdentifier: Assembly-CSharp::MomentumData
-  momentumLerpSpeed: 0
-  playerSpeedMultiplier:
-    Min: 1.5435274
-    Max: 3
-  dashRecoverSpeedMultiplier:
-    Min: 0
-    Max: 0
-  ballSpeedMultiplier:
-    Min: 0
-    Max: 0
-  energyGainMultiplier:
-    Min: 0
-    Max: 0
-  ballDamageMultiplier:
-    Min: 0
-    Max: 0
-  enemySpeedMultiplier:
-    Min: 0
-    Max: 0
-  enemySpawnRateMultiplier:
-    Min: 0
-    Max: 0
-  momentumGainedOnPass: 0
-  momentumGainedOnHit: 0
-  momentumGainedOnDunk: 0
-  momentumGainedOnPerfectReception: 0
-  minPassDelayBeforeMomentumLoss: 0
-  momentumLossSpeedIfNoPass: 0
-  momentumLossOnFightEnd: 0
-  momentumLossOnDamage: 0
-  momentumLossWhenBallHitTheGround: 0
+  m_EditorClassIdentifier: 
+  momentumLerpSpeed: 3
+  playerSpeedMultiplier: {x: 1, y: 2}
+  dashRecoverSpeedMultiplier: {x: 1, y: 2}
+  ballSpeedMultiplier: {x: 1, y: 2}
+  energyGainMultiplier: {x: 1, y: 2}
+  ballDamageMultiplier: {x: 1, y: 2}
+  enemySpeedMultiplier: {x: 1, y: 2}
+  enemySpawnRateMultiplier: {x: 1, y: 2}
+  minMaxBloom: {x: 0, y: 10}
+  minMaxTemperature: {x: 0, y: 50}
+  minMaxChromaticAberration: {x: 0, y: 0.5}
+  momentumGainedOnPass: 0.05
+  momentumGainedOnHit: 0.05
+  momentumGainedOnDunk: 0.05
+  momentumGainedOnPerfectReception: 0.05
+  minPassDelayBeforeMomentumLoss: 2
+  momentumLossSpeedIfNoPass: 1
+  momentumLossOnFightEnd: 1
+  momentumLossOnDamage: 0.1
+  momentumLossWhenBallHitTheGround: 1

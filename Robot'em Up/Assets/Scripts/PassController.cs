@@ -98,7 +98,6 @@ public class PassController : MonoBehaviour
 	}
 	public void TryReception() //Player tries to do a perfect reception
 	{
-        /*
 		if (didPerfectReception) { return; }
 		BallBehaviour mainBall = BallBehaviour.instance;
 		if (mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
@@ -115,7 +114,6 @@ public class PassController : MonoBehaviour
 		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
 		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
-        */
 	}
 
 	//Used for generating the preview

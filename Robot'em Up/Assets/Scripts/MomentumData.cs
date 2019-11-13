@@ -4,25 +4,30 @@ using MyBox;
 [CreateAssetMenu(fileName = "MomentumData", menuName = "GlobalDatas/Momentum", order = 1)]
 public class MomentumData : ScriptableObject
 {
-	[Separator("Global settings")]
+	[Header("Global settings")]
 	public float momentumLerpSpeed;
 
-	[Separator("Multiplier settings")]
-	[MinMaxRange(0f, 5f)] public RangedFloat playerSpeedMultiplier;
-	[MinMaxRange(0f, 5f)] public RangedFloat dashRecoverSpeedMultiplier;
-	[MinMaxRange(0f, 5f)] public RangedFloat ballSpeedMultiplier;
-	[MinMaxRange(0f, 5f)] public RangedFloat energyGainMultiplier;
-	[MinMaxRange(0f, 5f)] public RangedFloat ballDamageMultiplier;
-	[MinMaxRange(0f, 5f)] public RangedFloat enemySpeedMultiplier;
-	[MinMaxRange(0f, 5f)] public RangedFloat enemySpawnRateMultiplier;
+	[Header("Multipliers settings")]
+	public Vector2 playerSpeedMultiplier;
+	public Vector2 dashRecoverSpeedMultiplier;
+	public Vector2 ballSpeedMultiplier;
+	public Vector2 energyGainMultiplier;
+	public Vector2 ballDamageMultiplier;
+	public Vector2 enemySpeedMultiplier;
+	public Vector2 enemySpawnRateMultiplier;
 
-	[Separator("Momentum gains")]
+	[Header("PostProcess settings")]
+	public Vector2 minMaxBloom;
+	public Vector2 minMaxTemperature;
+	public Vector2 minMaxChromaticAberration;
+
+	[Header("Gain settings")]
 	[Range(0f, 1f)] public float momentumGainedOnPass;
 	[Range(0f, 1f)] public float momentumGainedOnHit;
 	[Range(0f, 1f)] public float momentumGainedOnDunk;
 	[Range(0f, 1f)] public float momentumGainedOnPerfectReception;
 
-	[Separator("Momentum losses")]
+	[Header("Losses settings")]
 	public float minPassDelayBeforeMomentumLoss;
 	public float momentumLossSpeedIfNoPass;
 	[Range(0f, 1f)] public float momentumLossOnFightEnd;
