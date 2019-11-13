@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 
 		LoadMomentumManager();
+		LoadEnergyManager();
 
         if (surrounderPlayerOne!= null) { Destroy(surrounderPlayerOne); }
         surrounderPlayerOne = Instantiate(SurrounderPrefab, playerOne.transform.position, Quaternion.identity);
@@ -129,5 +130,11 @@ public class GameManager : MonoBehaviour
 	{
 		MomentumManager mm = gameObject.AddComponent<MomentumManager>();
 		MomentumManager.datas = (MomentumData)Resources.Load("MomentumData");
+	}
+
+	void LoadEnergyManager()
+	{
+		EnergyManager em = gameObject.AddComponent<EnergyManager>();
+		EnergyManager.datas = (EnergyData)Resources.Load("EnergyData");
 	}
 }

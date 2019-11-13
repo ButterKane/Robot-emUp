@@ -22,7 +22,7 @@ public class Dummy : MonoBehaviour, IHitable
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount++;
 		_ball.Explode(true);
-		MomentumManager.IncreaseMomentum(0.1f);
+		EnergyManager.IncreaseEnergy(0.1f);
 		if (_hitCount >= maxHealth) { Destroy(this.gameObject); }
 
 		//Fonctions utile
