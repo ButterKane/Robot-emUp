@@ -32,8 +32,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [SerializeField] private Transform _playerTwo;
 
     [Space(2)]
-    [Separator("Variables")]
+    [Separator("Read-only Variables")]
     public EnemyState State;
+<<<<<<< Updated upstream
     [Header("Health")]
     public int MaxHealth = 100;
     public int Health;
@@ -43,6 +44,30 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Header("Follow parameters")]
     public bool IsFollowingPlayer;
     public float FollowSpeed = 100f;
+=======
+    public bool IsAttacking = false;
+    public bool IsFollowingPlayer;
+    public Transform ClosestSurroundPoint;
+    public float Speed = 100;
+
+    [Space(2)]
+    [Separator("Variables")]
+    public int MaxHealth = 100;
+    public int Health;
+    
+    public float AttackDistance = 7f;
+    public float PushForce = 300;
+
+    public AnimationCurve Acceleration;
+    public float TimeToReachMaxSpeed = 0.5f;
+    public float MaxSpeed = 100f;
+
+    public float focusChangeDifferencialReference = 2f; // marge to apply when comparing distances to both players
+    public float focusChangeWaitTime = 0.5f;
+    public float focusChangeSpeed = 2f;
+    public AnimationCurve ChangeFocusSpeedCurve;
+
+>>>>>>> Stashed changes
 
     [Space(2)]
     [Separator("Surrounding Variables")]
@@ -58,6 +83,31 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private float _distanceToTwo;
     private Surrounder _surrounder;
 
+<<<<<<< Updated upstream
+=======
+    [Space(2)]
+    [Separator("Bump/Stagger Variables")]
+    public float moveMultiplicator;
+    public float normalMoveMultiplicator = 1;
+    public AnimationCurve speedRecoverCurve;
+    private bool isBumped;
+
+    private int _hitCount;
+
+    private IEnumerator currentCoroutine;
+
+    public int hitCount
+    {
+        get
+        {
+            return _hitCount;
+        }
+        set
+        {
+            _hitCount = value;
+        }
+    }
+>>>>>>> Stashed changes
 
     // Start is called before the first frame update
     void Start()
@@ -70,12 +120,25 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         State = EnemyState.Idle;
         GameManager.i.enemyManager.enemies.Add(this);
 
+        moveMultiplicator = normalMoveMultiplicator;
+
         WhatShouldIDo(EnemyState.Idle);
         _self = transform;
     }
 
+<<<<<<< Updated upstream
     public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
     {
+=======
+    void Update()
+    {
+        Animator.SetFloat("IdleRunBlend", Speed/MaxSpeed);
+    }
+
+    public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
+    {
+        if (currentCoroutine != null) { StopCoroutine(currentCoroutine); }
+>>>>>>> Stashed changes
         GetTarget();
 
         if (priorityState != EnemyState.Null)
@@ -102,11 +165,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             }
         }
 
+        Debug.Log("WhatShouldIDo? : " + State);
+
         // Compute the choice according to the state
         switch (State)
         {
             case EnemyState.Idle:
-                StartCoroutine(WaitABit());
+                currentCoroutine = WaitABit();
+                StartCoroutine(currentCoroutine);
                 break;
 
             case EnemyState.Moving:
@@ -114,7 +180,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 break;
 
             case EnemyState.Following:
-                StartCoroutine(FollowPlayer(Target));
+                currentCoroutine = FollowPlayer(Target);
+                StartCoroutine(currentCoroutine);
                 break;
 
             case EnemyState.Attacking:
@@ -169,24 +236,74 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     #endregion
 
     #region Launcher Functions
+<<<<<<< Updated upstream
+=======
+    public void LaunchStaggerSequence()
+    {
+        StartCoroutine(HinderMovementSpeed());
+    }
+    
+    public void LaunchBumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
+    {
+        isBumped = false;
+        currentCoroutine = BumpSequence(upForce, pushForce, bumpedKoTime);
+        StartCoroutine(currentCoroutine);
+    }
+
+    public void LaunchHinderMovementSpeed()
+    {
+        StartCoroutine(HinderMovementSpeed());
+    }
+
+>>>>>>> Stashed changes
     public void LaunchSurrounding()
     {
-        StartCoroutine(SurroundPlayer(Target.gameObject));
+        currentCoroutine = SurroundPlayer(Target.gameObject);
+        StartCoroutine(currentCoroutine);
     }
 
     public void LaunchAttack(Transform target)
     {
+<<<<<<< Updated upstream
         transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, _self.position));
         StartCoroutine(_attackScript.Attack(target));
         Animator.SetTrigger("PrepareAttack");
+=======
+        _attackScript.LaunchAttack(target);
+    }
+
+    public void LaunchChangeFocusSequence()
+    {
+        currentCoroutine = ChangeFocusSequence();
+        StopEverythingMethod();
+        StartCoroutine(currentCoroutine);
+    }
+
+    public IEnumerator ChangeFocusSequence()
+    {
+        Animator.SetBool("ChangingFocus", true);
+        _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(Target.position, _self.position));
+
+        // TODO: add a progressive turn
+
+
+        yield return new WaitForSeconds(focusChangeWaitTime);
+        Animator.SetBool("ChangingFocus", false);
+        WhatShouldIDo();
+>>>>>>> Stashed changes
     }
     #endregion
 
+<<<<<<< Updated upstream
     #region Coroutines
+=======
+        #region Coroutines
+>>>>>>> Stashed changes
     public IEnumerator WaitABit()
     {
-        State = EnemyState.Idle;
-        yield return new WaitForSeconds(1.5f);
+        moveMultiplicator = 0;
+        yield return new WaitForSeconds(0.5f);
+        moveMultiplicator = normalMoveMultiplicator;
         WhatShouldIDo();
     }
 
@@ -227,6 +344,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
             do
             {
+                transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(Target.position, _self.position));
                 // Getting base infos
                 p0 = _self.position;
                 distanceToEnd1 = (p2 - p0).magnitude;   // distance from enemy to target
@@ -269,7 +387,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 //Incrementing the avancement
                 if (t < 1)
                 {
+<<<<<<< Updated upstream
                     t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed / 10));
+=======
+                    t += Time.deltaTime / (distanceToEnd2 * (MaxSpeed/10));   
+>>>>>>> Stashed changes
                 }
 
                 yield return null;
@@ -280,11 +402,45 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 Debug.Log("stopped because not moving enough");
             }
             yield return null;
-
+            
             WhatShouldIDo();
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    public IEnumerator HinderMovementSpeed(WhatBumps? cause = default)
+    {
+        switch (cause)
+        {
+            case WhatBumps.Pass:
+                // Fetch ball datas => speed reduction on pass
+                break;
+            case WhatBumps.Dunk:
+                // Fetch ball datas => speed reduction on dunk
+                break;
+            case WhatBumps.Environment:
+                // Fetch environment datas => speed reduction
+                break;
+            default:
+                moveMultiplicator -= 0.5f;
+                Debug.Log("Default case: New speed multiplicator = 0.5");
+                break;
+        }
+        
+        float t = moveMultiplicator;
+        
+        while (moveMultiplicator < normalMoveMultiplicator)
+        {
+            moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        moveMultiplicator = normalMoveMultiplicator;
+    }
+
+>>>>>>> Stashed changes
     public IEnumerator FollowPlayer(Transform playerToFollow)
     {
         Animator.SetBool("FollowingPlayer", true);
@@ -292,13 +448,28 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         while ((Target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
         {
+            Speed = MaxSpeed * moveMultiplicator * Acceleration.Evaluate(t);
+
             _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, _self.position));
 
             Rb.velocity = Vector3.zero;
 
+<<<<<<< Updated upstream
             Rb.AddForce(_self.forward * FollowSpeed * Time.deltaTime, ForceMode.VelocityChange);
 
             followTime += Time.deltaTime;
+=======
+            Rb.AddForce(_self.forward * Speed * Time.deltaTime, ForceMode.VelocityChange);
+
+            if (Speed < MaxSpeed * moveMultiplicator)
+            {
+                t += Time.deltaTime/ TimeToReachMaxSpeed;
+            }
+            else // wait until max speed is reached, then start counting
+            {
+                followTime += Time.deltaTime;
+            }
+>>>>>>> Stashed changes
 
             yield return null;
         }
