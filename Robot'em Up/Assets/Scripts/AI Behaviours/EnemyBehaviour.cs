@@ -55,7 +55,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float AttackDistance = 7f;
     public float PushForce = 300;
     [Header("Follow parameters")]
-    public float FollowSpeed = 100f;
     public AnimationCurve Acceleration;
     public float TimeToReachMaxSpeed = 0.5f;
     public float MaxSpeed = 100f;
@@ -442,7 +441,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     }
     public IEnumerator FollowPlayer(Transform playerToFollow)
     {
-        Animator.SetBool("FollowingPlayer", true);
         float followTime = 0;
         float t = 0;
         while ((Target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
