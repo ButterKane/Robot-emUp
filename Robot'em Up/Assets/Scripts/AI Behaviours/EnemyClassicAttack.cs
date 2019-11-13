@@ -1,14 +1,10 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyClassicAttack : EnemyAttack
 {
-<<<<<<< Updated upstream
-    public override IEnumerator Attack(Transform target)
-    {
-        _behaviourScript.State = EnemyState.Attacking;
-=======
     [Separator("Local Variables")]
 
     public float PreparationTimeBeforeAttack = 0.5f;
@@ -18,6 +14,7 @@ public class EnemyClassicAttack : EnemyAttack
     
     public override IEnumerator Attack(Transform target)
     {
+        _behaviourScript.State = EnemyState.Attacking;
         transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, transform.position));
 
         yield return null;
@@ -31,13 +28,7 @@ public class EnemyClassicAttack : EnemyAttack
         yield return new WaitForSeconds(PreparationTimeBeforeAttack);  // wait the given time 
 
         _behaviourScript.Animator.SetTrigger("AttackTrigger");
->>>>>>> Stashed changes
-
-        _behaviourScript.Animator.SetTrigger("PrepareAttack");
-
-<<<<<<< Updated upstream
-        yield return new WaitForSeconds(BuildUpPounceTime);
-=======
+        
         yield return new WaitForSeconds(waitTime);  // wait for the animation to end
         
         float t = 0;
@@ -55,11 +46,6 @@ public class EnemyClassicAttack : EnemyAttack
             Debug.DrawRay(transform.position, attackDirection, Color.green);
             yield return null;
         }
->>>>>>> Stashed changes
-
-        _behaviourScript.Animator.SetTrigger("Pounce");
-        _behaviourScript.Rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
-        _behaviourScript.Rb.AddForce((target.position - transform.position).normalized * 10, ForceMode.Impulse);
 
         ResetAttackGlobals();
 

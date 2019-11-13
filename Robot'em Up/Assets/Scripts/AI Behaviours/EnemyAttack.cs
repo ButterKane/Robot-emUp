@@ -11,6 +11,12 @@ public class EnemyAttack : MonoBehaviour
     [Header("Variables")]
     public float BuildUpPounceTime = 1.5f;
     public float PounceRecoveryTime = 1.5f;
+    public bool hitSomething;
+
+    public void LaunchAttack(Transform target)
+    {
+        StartCoroutine(Attack(target));
+    }
     
     public virtual IEnumerator Attack(Transform target)
     {
