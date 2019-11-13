@@ -200,7 +200,7 @@ public class DunkController : MonoBehaviour
 				playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
-				MomentumManager.DecreaseMomentum(1f);
+				EnergyManager.DecreaseEnergy(0f);
 				Destroy(waitingFX);
 				dashFX = FXManager.InstantiateFX(ballDatas.DunkDash, ball.transform.position, false, Vector3.zero, Vector3.one, ball.transform);
 				break;

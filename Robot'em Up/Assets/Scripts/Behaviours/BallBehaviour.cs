@@ -41,7 +41,10 @@ public class BallBehaviour : MonoBehaviour
 
 	private void Awake()
     {
-		instance = this;
+		if (instance == null)
+		{
+			instance = this;
+		}
 
 		currentDamageModifiers = new List<DamageModifier>();
 		rb = GetComponent<Rigidbody>();
@@ -91,7 +94,6 @@ public class BallBehaviour : MonoBehaviour
 		currentDirection = _direction;
 		currentThrower = _thrower;
 		currentSpeed = _passDatas.moveSpeed;
-		currentMaxDistance = _passDatas.maxDistance;
 		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
 		canBounce = true;
@@ -269,6 +271,7 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
+				Debug.Log("Grounded ball");
 				break;
 			case BallState.Aimed:
 				DisableGravity();
@@ -327,7 +330,7 @@ public class BallBehaviour : MonoBehaviour
 					}
 				}
 
-				if (currentDistanceTravelled >= currentMaxDistance || currentSpeed <= 0)
+				if (currentSpeed <= 0)
 				{
 					//Ball has arrived to it's destination
 					currentCurve = null;
@@ -360,7 +363,6 @@ public class BallBehaviour : MonoBehaviour
 								{
 									currentCurve = null;
 									currentDistanceTravelled = 0;
-									currentMaxDistance = currentBallDatas.maxDistance;
 								}
 								Vector3 hitNormal = raycast.normal;
 								hitNormal.y = 0;
