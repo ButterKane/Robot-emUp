@@ -175,6 +175,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     IEnumerator CheckDistance()
     {
+        //Checking who is in range
         if (distanceWithPlayerOne < focusDistance)
         {
             playerOneInRange = true;
@@ -202,6 +203,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             }
         }
 
+        //Changing focus between the two
         if(playerOneInRange && playerTwoInRange && focusedPlayer != null)
         {
             if(focusedPlayer == _playerOne && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
@@ -220,6 +222,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             ChangingFocus(GetClosestPlayer());
         }
 
+        //Restart coroutine in X seconds
         yield return new WaitForSeconds(timeBetweenCheck);
         StartCoroutine(CheckDistance());
     }
