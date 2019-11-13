@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 #pragma warning disable 0649
 
-public class MomentumGauge : MonoBehaviour
+public class EnergyGauge : MonoBehaviour
 {
 	[SerializeField] private Image gaugeFillInstant;
 	[SerializeField] private Image gaugeFillLerped;
@@ -19,8 +19,8 @@ public class MomentumGauge : MonoBehaviour
 	}
 	public void UpdateGauge()
 	{
-		gaugeFillInstant.fillAmount = MomentumManager.GetMomentum();
-		gaugeFillLerped.fillAmount = Mathf.Lerp(gaugeFillLerped.fillAmount, MomentumManager.GetMomentum(), Time.deltaTime * 2f);
+		gaugeFillInstant.fillAmount = EnergyManager.GetEnergy();
+		gaugeFillLerped.fillAmount = Mathf.Lerp(gaugeFillLerped.fillAmount, EnergyManager.GetDisplayedEnergy(), Time.deltaTime * 2f);
 		float currentValue = gaugeFillInstant.fillAmount;
 
 		if (Mathf.Abs(currentValue - previousValue) >= 0.1f)
