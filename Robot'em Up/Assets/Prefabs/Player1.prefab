@@ -126,6 +126,8 @@ MonoBehaviour:
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
   receptionMinDistance: 3
   receptionMinDelay: 0.5
+  curveMaxLateralDistance: 0
+  curveMaxPlayerDistance: 0
   curveRaycastIteration: 50
   curveMinAngle: 10
   hanseLength: 50
@@ -420,14 +422,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55f159eef03d1448acab6d2ae2628d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimType: 1
+  aimType: 0
   startTransform: {fileID: 4655006219135653576}
   armTransform: {fileID: 509570522770558410}
-  forwardSpeed: 50
+  forwardSpeed: 100
   retractionSpeed: 100
   maxDistance: 22
-  freezeDuration: 0.15
-  dragSpeed: 30
+  freezeDuration: 0.2
+  dragSpeed: 60
   maxDistanceFromWall: 4
   armRadius: 0.5
   cooldown: 0.3
