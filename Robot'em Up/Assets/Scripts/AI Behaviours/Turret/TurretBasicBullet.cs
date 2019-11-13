@@ -6,6 +6,7 @@ public class TurretBasicBullet : MonoBehaviour
 {
     public Rigidbody rb;
     public float speed;
+    public GameObject deathParticle;
 
     // Update is called once per frame
     void Update()
@@ -17,6 +18,8 @@ public class TurretBasicBullet : MonoBehaviour
     {
         if(other.tag == "Player")
         {
+            other.GetComponent<PawnController>().Damage(1);
+            Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
             Destroy(gameObject);
         }
     }

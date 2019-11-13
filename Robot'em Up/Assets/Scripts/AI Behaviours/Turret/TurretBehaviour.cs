@@ -13,7 +13,7 @@ public enum TurretState
     Dying,
 }
 
-public class TurretBehaviour : MonoBehaviour
+public class TurretBehaviour : MonoBehaviour, IHitable
 {
     [Separator("References")]
     [SerializeField] private Transform _self;
@@ -46,6 +46,7 @@ public class TurretBehaviour : MonoBehaviour
     public Transform leftBulletSpawn;
     public Transform rightBulletSpawn;
 
+    public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
     void Start()
     {
@@ -221,5 +222,20 @@ public class TurretBehaviour : MonoBehaviour
 
         yield return new WaitForSeconds(timeBetweenCheck);
         StartCoroutine(CheckDistance());
+    }
+
+    void Die()
+    {
+        Destroy(gameObject);
+    }
+
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    {
+        Health -= _damages;
+        if (Health <= 0)
+        {
+            Die();
+        }
+        throw new System.NotImplementedException();
     }
 }
