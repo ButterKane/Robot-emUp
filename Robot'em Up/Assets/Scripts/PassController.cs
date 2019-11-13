@@ -20,22 +20,23 @@ public enum PassState
 }
 public class PassController : MonoBehaviour
 {
-	[Header("Global Settings")]
+	[Separator("Global settings")]
 	public bool passPreviewInEditor;
 	public PassMode passMode;
-
-	[Header("Pass settings")]
 	public Transform handTransform;
 	public BallDatas ballDatas;
 	public float passCooldown;
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
 
+	[Separator("Reception settings")]
+	public float receptionMinDistance = 0.2f;
+	public float receptionMinDelay = 0.2f;
+
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveRaycastIteration = 50;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMinAngle = 10;
-	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public AnimationCurve curveYOLO_MDR;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float hanseLength;
 
 	private PlayerController linkedPlayer;
@@ -49,6 +50,8 @@ public class PassController : MonoBehaviour
 	private float currentPassCooldown;
 	private Animator animator;
 	private bool canReceive;
+	private float ballTimeInHand;
+	private bool didPerfectReception;
 
 	private void Awake ()
 	{
@@ -67,7 +70,12 @@ public class PassController : MonoBehaviour
 	{
 		UpdateCooldowns();
 
-		if (ballDatas == null) { return; }
+		if (ballDatas == null) { ballTimeInHand = 0; return; }
+
+		if (ball != null)
+		{
+			ballTimeInHand += Time.deltaTime;
+		}
 
 		if (passPreview)
 		{
@@ -87,6 +95,25 @@ public class PassController : MonoBehaviour
 				PreviewPathInEditor(pathCoordinates);
 		}
 
+	}
+	public void TryReception() //Player tries to do a perfect reception
+	{
+		if (didPerfectReception) { return; }
+		BallBehaviour mainBall = BallBehaviour.instance;
+		if (mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
+		if (ball == null)
+		{
+			if (Vector3.Distance(handTransform.position, mainBall.transform.position) > receptionMinDistance) { return; }
+		} else
+		{
+			if (ballTimeInHand > receptionMinDelay) { return; }
+		}
+		ball = mainBall;
+		ChangePassState(PassState.Aiming);
+		didPerfectReception = true;
+		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
+		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
+		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 	}
 
 	//Used for generating the preview
@@ -176,10 +203,14 @@ public class PassController : MonoBehaviour
 	{
 		if (!CanShoot()) { return; }
 		ChangePassState(PassState.Shooting);
+		if (ballTimeInHand >= receptionMinDelay) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); }
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		currentPassCooldown = passCooldown;
 		BallBehaviour shotBall = ball;
 		ball = null;
+		didPerfectReception = false;
+		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
+		MomentumManager.DisableMomentumExpontentialLoss();
 		if (passMode == PassMode.Curve)
         {
             // Throw a curve pass
@@ -215,6 +246,8 @@ public class PassController : MonoBehaviour
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
+		ballTimeInHand = 0;
+		MomentumManager.EnableMomentumExponentialLoss(MomentumManager.datas.minPassDelayBeforeMomentumLoss, MomentumManager.datas.momentumLossSpeedIfNoPass);
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 

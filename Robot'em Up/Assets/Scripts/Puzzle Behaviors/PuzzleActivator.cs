@@ -57,28 +57,16 @@ public class PuzzleActivator : MonoBehaviour
             }
             else
             {
-                bool temp_Activated = true;
-                foreach (PuzzleActivator puzzleActivator in item.puzzleActivators)
-                {
-                    if (!puzzleActivator.isActivated)
-                    {
-                        temp_Activated = false;
-                    }
-                }
-                
-                foreach (PuzzleActivator puzzleActivator in item.puzzleDesactivator)
-                {
-                    if (puzzleActivator.isActivated)
-                    {
-                        temp_Activated = false;
-                    }
-                }
-                
-                if (temp_Activated)
+                item.UpdateListBool();
+                if (!item.puzzleActivationsBool.Contains(false))
                 {
                     item.WhenActivate();
                 }
 
+                if (!item.puzzleActivationsBool.Contains(true))
+                {
+                    item.WhenDesactivate();
+                }
 
                 item.UpdateLights();
             }
@@ -107,28 +95,17 @@ public class PuzzleActivator : MonoBehaviour
             }
             else
             {
-                bool temp_Activated = true;
-                foreach (var puzzleActivator in item.puzzleActivators)
+                item.UpdateListBool();
+                if (!item.puzzleActivationsBool.Contains(false))
                 {
-                    if (isActivated)
-                    {
-                        temp_Activated = false;
-                    }
+                    item.WhenActivate();
                 }
 
-                foreach (var puzzleActivator in item.puzzleDesactivator)
-                {
-                    if (!isActivated)
-                    {
-                        temp_Activated = false;
-                    }
-                }
-                if (temp_Activated)
+
+                if (!item.puzzleActivationsBool.Contains(true))
                 {
                     item.WhenDesactivate();
                 }
-
-
             }
 
             item.UpdateLights();

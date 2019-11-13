@@ -14,6 +14,25 @@ public enum DamageSource
 	Ball,
 	Dunk,
 }
+
+public enum DamageModifierSource
+{
+	PerfectReception
+}
+
+public class DamageModifier {
+
+	public DamageModifier ( float _multiplyCoef, float _duration, DamageModifierSource _source)
+	{
+		multiplyCoef = _multiplyCoef;
+		duration = _duration;
+		source = _source;
+	}
+	public float multiplyCoef;
+	public float duration;
+	public DamageModifierSource source;
+}
+
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager
@@ -50,6 +69,8 @@ public class GameManager : MonoBehaviour
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
+
+		LoadMomentumManager();
 
         if (surrounderPlayerOne!= null) { Destroy(surrounderPlayerOne); }
         surrounderPlayerOne = Instantiate(SurrounderPrefab, playerOne.transform.position, Quaternion.identity);
@@ -102,5 +123,11 @@ public class GameManager : MonoBehaviour
 		GameObject newBall = Instantiate(i.ballPrefab, null);
         i.ball = newBall;
 		newBall.transform.position = new Vector3(0, 1f, 0);
+	}
+
+	void LoadMomentumManager()
+	{
+		MomentumManager mm = gameObject.AddComponent<MomentumManager>();
+		MomentumManager.datas = (MomentumData)Resources.Load("MomentumData");
 	}
 }

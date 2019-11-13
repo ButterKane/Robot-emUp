@@ -13,18 +13,22 @@ public class DashController : MonoBehaviour
 	public float minDistance = 2f;
 	public float maxDistance = 3f;
 	public float speed = 10f;
+	public int maxStackAmount = 3;
 
 	public bool unstoppableDash;
 	public bool invincibleDuringDash;
 
-	public float cooldown = 3f;
+	public float useCooldown = 0.2f;
+	public float stackCooldown = 8f;
 
 	public DashState state;
 
 	public Transform visuals;
 
 	private PawnController linkedPawn;
-	private float currentCooldown;
+	private float currentUseCooldown;
+	private float currentStackCooldown;
+	private int currentStackAmount;
 	private GameObject currentDashFX;
 
 	public float clonePerSec = 10f;
@@ -38,15 +42,31 @@ public class DashController : MonoBehaviour
 	private void Awake ()
 	{
 		linkedPawn = GetComponent<PawnController>();
+		currentStackAmount = maxStackAmount;
 	}
 
 	private void Update ()
 	{
 		UpdateCooldown();
+		UpdateStackAmount();
+	}
+
+	void UpdateStackAmount()
+	{
+		if (currentStackAmount < maxStackAmount)
+		{
+			currentStackCooldown += Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.dashRecoverSpeedMultiplier);
+			if (currentStackCooldown >= stackCooldown)
+			{
+				currentStackCooldown = 0;
+				currentStackAmount += 1;
+			}
+		}
 	}
 	public void Dash()
 	{
 		if (!CanDash()) { return; }
+		currentStackAmount--;
 		Vector3 startPosition = transform.position;
 		Vector3 endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance
@@ -64,7 +84,7 @@ public class DashController : MonoBehaviour
 		endPosition.y = startPosition.y;
 
 		StartCoroutine(Dash_C(startPosition, endPosition));
-		currentCooldown = cooldown;
+		currentUseCooldown = useCooldown;
 	}
 	void ChangeState(DashState _newState)
 	{
@@ -121,7 +141,7 @@ public class DashController : MonoBehaviour
 
 	public bool CanDash()
 	{
-		if (currentCooldown >= 0)
+		if (currentUseCooldown >= 0 || currentStackAmount <= 0)
 		{
 			return false;
 		}
@@ -130,10 +150,20 @@ public class DashController : MonoBehaviour
 
 	void UpdateCooldown()
 	{
-		if (currentCooldown >= 0)
+		if (currentUseCooldown >= 0)
 		{
-			currentCooldown -= Time.deltaTime;
+			currentUseCooldown -= Time.deltaTime;
 		}
+	}
+
+	public float GetCurrentStackCooldown()
+	{
+		return currentStackCooldown;
+	}
+
+	public int GetCurrentStackAmount()
+	{
+		return currentStackAmount;
 	}
 
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )

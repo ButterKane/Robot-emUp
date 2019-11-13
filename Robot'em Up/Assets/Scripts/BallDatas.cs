@@ -11,7 +11,10 @@ public class BallDatas : ScriptableObject
 	public float moveSpeed;
 	public int maxBounces;
 	public float speedMultiplierOnBounce;
+	public float damageModifierOnReception;
+	public float maxDamageModifier;
 	public int damages;
+	public Gradient colorOverDamage;
 
 	[Header("FX")]
 	public GameObject Trail;
@@ -26,4 +29,6 @@ public class BallDatas : ScriptableObject
 	public GameObject DunkIdle;
 	public GameObject DunkDash;
 	public GameObject DunkReceiving;
+
+	public GameObject PerfectReception;
 }
