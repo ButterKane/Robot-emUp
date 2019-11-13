@@ -102,7 +102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 997638306319169826}
   - component: {fileID: 4058286668081526993}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,14 +305,66 @@ MonoBehaviour:
   _playerOne: {fileID: 0}
   _playerTwo: {fileID: 0}
   State: 0
+  Speed: 0
+  IsFollowingPlayer: 0
   IsAttacking: 0
   MaxHealth: 100
   Health: 0
-  Speed: 100
   AttackDistance: 7
   PushForce: 300
-  IsFollowingPlayer: 0
-  MoveSpeed: 100
+  Acceleration:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  TimeToReachMaxSpeed: 0.5
+  MaxSpeed: 100
+  focusChangeDifferencialReference: 2
+  focusChangeWaitTime: 0.5
+  focusChangeSpeed: 2
+  ChangeFocusSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   TimeBeforeSurround: 2
   BezierCurveHeight: 0.703
   BezierDistanceToHeightRatio: 100
@@ -359,11 +411,45 @@ MonoBehaviour:
   _behaviourScript: {fileID: 7575868252087981993}
   BuildUpPounceTime: 1.5
   PounceRecoveryTime: 1.5
+  hitSomething: 0
   AttackUpForce: 10
   AttackForwardForce: 30
-  ChargeTimeBeforeAttack: 0.5
-  ChargeForce: 2
-  ChargeTimeLength: 0.5
+  PreparationTimeBeforeAttack: 0.5
+  ChargeDuration: 1
+  ChargeDistance: 10
+  ChargeForceVariation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.005665176
+      value: 1.0036657
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5047307
+      value: 0.50944835
+      inSlope: -1.549168
+      outSlope: -1.549168
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.09502796
+    - serializedVersion: 3
+      time: 0.9999993
+      value: 0.09905672
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7575868252143885115
 GameObject:
   m_ObjectHideFlags: 0
