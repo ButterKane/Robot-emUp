@@ -77,6 +77,11 @@ public class MomentumManager: MonoBehaviour
 
 	public static float GetMomentum()
 	{
+		return wantedMomentum;
+	}
+
+	public static float GetDisplayedMomentum()
+	{
 		return currentMomentum;
 	}
 

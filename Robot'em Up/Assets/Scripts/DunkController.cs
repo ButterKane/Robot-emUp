@@ -84,7 +84,7 @@ public class DunkController : MonoBehaviour
 	}
 	public bool CanDunk ()
 	{
-		if (MomentumManager.GetMomentum() >= 1f && dunkState == DunkState.None && passController.GetBall() == null)
+		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null)
 		{
 			return true;
 		}
