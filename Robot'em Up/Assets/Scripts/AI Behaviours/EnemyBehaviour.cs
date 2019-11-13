@@ -15,6 +15,13 @@ public enum EnemyState
     Null,
     Count
 }
+public enum WhatBumps
+{
+    Pass,
+    Dunk,
+    Environment,
+    Count
+}
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
     [Separator("References")]
@@ -34,7 +41,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Space(2)]
     [Separator("Read-only Variables")]
     public EnemyState State;
-<<<<<<< Updated upstream
+    public float Speed = 100;
+
+    [Space(2)]
+    [Separator("Variables")]
+    public bool IsFollowingPlayer;
+    public bool IsAttacking = false;
+
     [Header("Health")]
     public int MaxHealth = 100;
     public int Health;
@@ -42,32 +55,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float AttackDistance = 7f;
     public float PushForce = 300;
     [Header("Follow parameters")]
-    public bool IsFollowingPlayer;
     public float FollowSpeed = 100f;
-=======
-    public bool IsAttacking = false;
-    public bool IsFollowingPlayer;
-    public Transform ClosestSurroundPoint;
-    public float Speed = 100;
-
-    [Space(2)]
-    [Separator("Variables")]
-    public int MaxHealth = 100;
-    public int Health;
-    
-    public float AttackDistance = 7f;
-    public float PushForce = 300;
-
     public AnimationCurve Acceleration;
     public float TimeToReachMaxSpeed = 0.5f;
     public float MaxSpeed = 100f;
-
+    [Header("Focus Change")]
     public float focusChangeDifferencialReference = 2f; // marge to apply when comparing distances to both players
     public float focusChangeWaitTime = 0.5f;
     public float focusChangeSpeed = 2f;
     public AnimationCurve ChangeFocusSpeedCurve;
-
->>>>>>> Stashed changes
 
     [Space(2)]
     [Separator("Surrounding Variables")]
@@ -83,8 +79,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private float _distanceToTwo;
     private Surrounder _surrounder;
 
-<<<<<<< Updated upstream
-=======
     [Space(2)]
     [Separator("Bump/Stagger Variables")]
     public float moveMultiplicator;
@@ -107,7 +101,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             _hitCount = value;
         }
     }
->>>>>>> Stashed changes
 
     // Start is called before the first frame update
     void Start()
@@ -126,10 +119,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _self = transform;
     }
 
-<<<<<<< Updated upstream
-    public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
-    {
-=======
     void Update()
     {
         Animator.SetFloat("IdleRunBlend", Speed/MaxSpeed);
@@ -138,7 +127,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
     {
         if (currentCoroutine != null) { StopCoroutine(currentCoroutine); }
->>>>>>> Stashed changes
+
         GetTarget();
 
         if (priorityState != EnemyState.Null)
@@ -236,8 +225,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     #endregion
 
     #region Launcher Functions
-<<<<<<< Updated upstream
-=======
     public void LaunchStaggerSequence()
     {
         StartCoroutine(HinderMovementSpeed());
@@ -254,8 +241,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         StartCoroutine(HinderMovementSpeed());
     }
-
->>>>>>> Stashed changes
+    
     public void LaunchSurrounding()
     {
         currentCoroutine = SurroundPlayer(Target.gameObject);
@@ -264,11 +250,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void LaunchAttack(Transform target)
     {
-<<<<<<< Updated upstream
-        transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(target.position, _self.position));
-        StartCoroutine(_attackScript.Attack(target));
-        Animator.SetTrigger("PrepareAttack");
-=======
         _attackScript.LaunchAttack(target);
     }
 
@@ -277,6 +258,17 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         currentCoroutine = ChangeFocusSequence();
         StopEverythingMethod();
         StartCoroutine(currentCoroutine);
+    }
+    #endregion
+
+    #region Coroutines
+
+    public IEnumerator WaitABit()
+    {
+        moveMultiplicator = 0;
+        yield return new WaitForSeconds(0.5f);
+        moveMultiplicator = normalMoveMultiplicator;
+        WhatShouldIDo();
     }
 
     public IEnumerator ChangeFocusSequence()
@@ -290,21 +282,37 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         yield return new WaitForSeconds(focusChangeWaitTime);
         Animator.SetBool("ChangingFocus", false);
         WhatShouldIDo();
->>>>>>> Stashed changes
     }
-    #endregion
-
-<<<<<<< Updated upstream
-    #region Coroutines
-=======
-        #region Coroutines
->>>>>>> Stashed changes
-    public IEnumerator WaitABit()
+    public IEnumerator FallSequence(float waitTime)
     {
-        moveMultiplicator = 0;
-        yield return new WaitForSeconds(0.5f);
-        moveMultiplicator = normalMoveMultiplicator;
+        Animator.SetTrigger("FallingTrigger");
+        yield return new WaitForSeconds(waitTime);
+        Animator.SetTrigger("StandingUpTrigger");
+        LaunchHinderMovementSpeed();
         WhatShouldIDo();
+    }
+
+    public IEnumerator BumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
+    {
+        Animator.SetTrigger("BumpTrigger");
+
+        Vector3 propulsionForce = Vector3.zero;
+        propulsionForce += SwissArmyKnife.GetFlattedDownDirection(pushForce);
+        propulsionForce += new Vector3(0, upForce, 0);
+
+        Rb.AddForce(propulsionForce, ForceMode.Impulse);
+
+        yield return null;
+        float initialSpeed = Rb.velocity.magnitude;
+        float projectionAngle = Vector3.Angle(pushForce, propulsionForce);
+
+        // Calculate how much time the enemy is supposed to spedn in the air
+        float airDuration = SwissArmyKnife.GetBallisticThrowLength(initialSpeed, projectionAngle, 0);
+        float timeToWait = SwissArmyKnife.GetBallisticThrowDuration(initialSpeed, projectionAngle, airDuration);
+
+        yield return new WaitForSeconds(timeToWait);    // Wait for the pushing back to have finished
+
+        StartCoroutine(FallSequence(bumpedKoTime));
     }
 
     public IEnumerator SurroundPlayer(GameObject player)
@@ -387,11 +395,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 //Incrementing the avancement
                 if (t < 1)
                 {
-<<<<<<< Updated upstream
-                    t += Time.deltaTime / (distanceToEnd2 * (FollowSpeed / 10));
-=======
                     t += Time.deltaTime / (distanceToEnd2 * (MaxSpeed/10));   
->>>>>>> Stashed changes
                 }
 
                 yield return null;
@@ -406,9 +410,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             WhatShouldIDo();
         }
     }
-
-<<<<<<< Updated upstream
-=======
     public IEnumerator HinderMovementSpeed(WhatBumps? cause = default)
     {
         switch (cause)
@@ -439,13 +440,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         moveMultiplicator = normalMoveMultiplicator;
     }
-
->>>>>>> Stashed changes
     public IEnumerator FollowPlayer(Transform playerToFollow)
     {
         Animator.SetBool("FollowingPlayer", true);
         float followTime = 0;
-
+        float t = 0;
         while ((Target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
         {
             Speed = MaxSpeed * moveMultiplicator * Acceleration.Evaluate(t);
@@ -453,12 +452,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, _self.position));
 
             Rb.velocity = Vector3.zero;
-
-<<<<<<< Updated upstream
-            Rb.AddForce(_self.forward * FollowSpeed * Time.deltaTime, ForceMode.VelocityChange);
-
-            followTime += Time.deltaTime;
-=======
+            
             Rb.AddForce(_self.forward * Speed * Time.deltaTime, ForceMode.VelocityChange);
 
             if (Speed < MaxSpeed * moveMultiplicator)
@@ -469,7 +463,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             {
                 followTime += Time.deltaTime;
             }
->>>>>>> Stashed changes
 
             yield return null;
         }
