@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using MyBox;
 
 [CreateAssetMenu(fileName = "MomentumData", menuName = "GlobalDatas/Momentum", order = 1)]
 public class MomentumData : ScriptableObject
