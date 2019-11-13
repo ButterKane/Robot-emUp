@@ -8,6 +8,7 @@ public class PuzzleActivable : MonoBehaviour
     public PuzzleDatas puzzleData;
     [SerializeField] public List<PuzzleActivator> puzzleActivators;
     [SerializeField] public List<PuzzleActivator> puzzleDesactivator;
+    [ReadOnly] public List<bool> puzzleActivationsBool;
     [SerializeField] public bool needAllConditions = false;
 
     public List<Light> indictatorLightsList;
@@ -20,15 +21,22 @@ public class PuzzleActivable : MonoBehaviour
         {
             WhenActivate();
         }
+
+        if (!isActivated)
+        {
+            WhenDesactivate();
+        }
         foreach (var item in indictatorLightsList)
         {
             item.gameObject.SetActive(true);
         }
-        
+
+
+        UpdateListBool();
         if (needAllConditions)
         {
             int nbLightNeeded = 0;
-            nbLightNeeded += puzzleActivators.Count;
+            nbLightNeeded += puzzleActivationsBool.Count;
             for (int i = nbLightNeeded; i < indictatorLightsList.Count; i++)
             {
                     if (indictatorLightsList[i] != null)
@@ -39,7 +47,7 @@ public class PuzzleActivable : MonoBehaviour
         }
         else
         {
-            //If the activaable don't have needallcontions, we need only one light
+            //If the activable don't have needallcontions, we need only one light
             for (int i = 1; i < indictatorLightsList.Count; i++)
             {
                 if (indictatorLightsList[i] != null)
@@ -66,6 +74,8 @@ public class PuzzleActivable : MonoBehaviour
 
     public virtual void UpdateLights()
     {
+
+        UpdateListBool();
         if (needAllConditions)
         {
             for (int i = 0; i < indictatorLightsList.Count; i++)
@@ -73,7 +83,7 @@ public class PuzzleActivable : MonoBehaviour
                 Light item = indictatorLightsList[i];
                 if (item.gameObject.activeSelf)
                 {
-                    if (puzzleActivators[i].isActivated)
+                    if (puzzleActivationsBool[i])
                     {
                         item.color = Color.green;
                     }
@@ -106,7 +116,66 @@ public class PuzzleActivable : MonoBehaviour
     [ButtonMethod]
     public string InitializeIndicatorLight()
     {
-        Start();
+        foreach (var item in indictatorLightsList)
+        {
+            item.gameObject.SetActive(true);
+        }
+
+
+        UpdateListBool();
+        if (needAllConditions)
+        {
+            int nbLightNeeded = 0;
+            nbLightNeeded += puzzleActivationsBool.Count;
+            for (int i = nbLightNeeded; i < indictatorLightsList.Count; i++)
+            {
+                if (indictatorLightsList[i] != null)
+                {
+                    indictatorLightsList[i].gameObject.SetActive(false);
+                }
+            }
+        }
+        else
+        {
+            //If the activable don't have needallcontions, we need only one light
+            for (int i = 1; i < indictatorLightsList.Count; i++)
+            {
+                if (indictatorLightsList[i] != null)
+                {
+                    indictatorLightsList[i].gameObject.SetActive(false);
+                }
+            }
+        }
+        UpdateLights();
+
         return "Lights updated";
+    }
+
+    public void UpdateListBool()
+    {
+        puzzleActivationsBool = new List<bool>();
+        foreach (var item in puzzleActivators)
+        {
+            if (item.isActivated)
+            {
+                puzzleActivationsBool.Add(true);
+            }
+            else
+            {
+                puzzleActivationsBool.Add(false);
+            }
+        }
+
+        foreach (var item in puzzleDesactivator)
+        {
+            if (item.isActivated)
+            {
+                puzzleActivationsBool.Add(false);
+            }
+            else
+            {
+                puzzleActivationsBool.Add(true);
+            }
+        }
     }
 }

@@ -28,6 +28,11 @@ public class CursorManager : MonoBehaviour
     {
         Player1Cursor.transform.position = MainCamera.WorldToScreenPoint(_playerOne.position);
         Player2Cursor.transform.position = MainCamera.WorldToScreenPoint(_playerTwo.position);
+        if (_ball == null )
+        {
+            _ball = GameManager.i.ball.transform;
+            Debug.Log("_ball null");
+        }
         BallCursor.transform.position = MainCamera.WorldToScreenPoint(_ball.position);
 
         Player1Cursor.transform.position = new Vector3(Player1Cursor.transform.position.x, Player1Cursor.transform.position.y + 20, Player1Cursor.transform.position.z);

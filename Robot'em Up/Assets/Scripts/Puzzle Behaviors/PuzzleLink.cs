@@ -39,12 +39,11 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 Destroy(FX_LinkEnd);
             }
 
-            FX_Linked = FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 1, true, _impactVector, Vector3.one, transform);
+            FX_Linked = FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2f, true, _impactVector, Vector3.one * 2f, transform);
             
-
             if (FX_Activation == null)
             {
-                FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1, true, Vector3.zero, Vector3.one, transform);
+                FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1.4f, true, Vector3.zero, Vector3.one * 1.4f, transform);
             }
 			MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
             chargingTime = puzzleData.nbSecondsLinkMaintained;
