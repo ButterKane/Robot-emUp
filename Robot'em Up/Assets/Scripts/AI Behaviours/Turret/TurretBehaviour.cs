@@ -42,6 +42,10 @@ public class TurretBehaviour : MonoBehaviour
     float distanceWithPlayerTwo;
     Transform focusedPlayer = null;
 
+    public GameObject bulletPrefab;
+    public Transform leftBulletSpawn;
+    public Transform rightBulletSpawn;
+
 
     void Start()
     {
@@ -109,7 +113,19 @@ public class TurretBehaviour : MonoBehaviour
 
     void ExitState()
     {
-
+        switch (State)
+        {
+            case TurretState.Hiding:
+                break;
+            case TurretState.PrepareToAttack:
+                break;
+            case TurretState.Hidden:
+                break;
+            case TurretState.Dying:
+                break;
+            case TurretState.Attacking:
+                break;
+        }
     }
 
     void EnterState()
@@ -129,6 +145,17 @@ public class TurretBehaviour : MonoBehaviour
             case TurretState.Attacking:
                 break;
         }
+    }
+
+    public void LaunchProjectile(bool _fromLeft)
+    {
+        Vector3 spawnPosition;
+        if (_fromLeft)
+            spawnPosition = leftBulletSpawn.position;
+        else
+            spawnPosition = rightBulletSpawn.position;
+
+        GameObject spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
     }
 
     void ChangingFocus(Transform _newFocus)

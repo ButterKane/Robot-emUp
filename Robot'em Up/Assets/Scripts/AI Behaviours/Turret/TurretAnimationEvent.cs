@@ -14,4 +14,12 @@ public class TurretAnimationEvent : MonoBehaviour
     {
         MyScript.ChangingState(TurretState.Hidden);
     }
+    void AttackFromLeft()
+    {
+        MyScript.LaunchProjectile(true);
+    }
+    void AttackFromRight()
+    {
+        MyScript.LaunchProjectile(false);
+    }
 }
