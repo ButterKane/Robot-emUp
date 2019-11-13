@@ -13,32 +13,21 @@ MonoBehaviour:
   m_Name: MomentumData
   m_EditorClassIdentifier: 
   momentumLerpSpeed: 3
-  playerSpeedMultiplier:
-    Min: 1.0084379
-    Max: 2.1187487
-  dashRecoverSpeedMultiplier:
-    Min: 1.0084379
-    Max: 2.140358
-  ballSpeedMultiplier:
-    Min: 1.0084379
-    Max: 1.584688
-  energyGainMultiplier:
-    Min: 1.0084379
-    Max: 2.0168757
-  ballDamageMultiplier:
-    Min: 1.0084379
-    Max: 2.0580363
-  enemySpeedMultiplier:
-    Min: 1.0084379
-    Max: 1.975715
-  enemySpawnRateMultiplier:
-    Min: 1.0084379
-    Max: 2.24326
-  momentumGainedOnPass: 0.01
-  momentumGainedOnHit: 0.02
-  momentumGainedOnDunk: 0.1
-  momentumGainedOnPerfectReception: 0.02
-  minPassDelayBeforeMomentumLoss: 3
+  playerSpeedMultiplier: {x: 1, y: 2}
+  dashRecoverSpeedMultiplier: {x: 1, y: 2}
+  ballSpeedMultiplier: {x: 1, y: 2}
+  energyGainMultiplier: {x: 1, y: 2}
+  ballDamageMultiplier: {x: 1, y: 2}
+  enemySpeedMultiplier: {x: 1, y: 2}
+  enemySpawnRateMultiplier: {x: 1, y: 2}
+  minMaxBloom: {x: 0, y: 10}
+  minMaxTemperature: {x: 0, y: 50}
+  minMaxChromaticAberration: {x: 0, y: 0.5}
+  momentumGainedOnPass: 0.2
+  momentumGainedOnHit: 0.05
+  momentumGainedOnDunk: 0.05
+  momentumGainedOnPerfectReception: 0.05
+  minPassDelayBeforeMomentumLoss: 2
   momentumLossSpeedIfNoPass: 1
   momentumLossOnFightEnd: 1
   momentumLossOnDamage: 0.1
