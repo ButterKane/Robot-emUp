@@ -19,16 +19,22 @@ public class CameraZone : MonoBehaviour
 	private BoxCollider boxCollider;
 
 	private List<PlayerController> playersInside;
+#if UNITY_EDITOR
 	Tool LastTool = Tool.None;
+#endif
 
 	void OnDisable ()
 	{
+#if UNITY_EDITOR
 		Tools.current = LastTool;
+#endif
 	}
 	private void OnEnable ()
 	{
+#if UNITY_EDITOR
 		LastTool = Tools.current;
 		Tools.current = Tool.None;
+#endif
 		if (GetComponent<SpriteRenderer>() == null)
 		{
 			visualizer = gameObject.AddComponent<SpriteRenderer>();
