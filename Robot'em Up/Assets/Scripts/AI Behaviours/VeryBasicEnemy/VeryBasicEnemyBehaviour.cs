@@ -33,6 +33,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     [SerializeField] private Transform _playerTwo;
 
 
+    [Space(2)]
+    [Separator("Tweakable variables")]
     bool playerOneInRange;
     bool playerTwoInRange;
     public int MaxHealth = 100;
@@ -49,6 +51,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
     public float distanceToAttack;
     public float maxAnticipationTime;
+    [Range(0, 1)]public float rotationSpeedPreparingAttack;
     float anticipationTime;
     public float attackMaxDistance;
     public float maxAttackDuration;
@@ -58,14 +61,17 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     Vector3 attackInitialPosition;
     Vector3 attackDestination;
     [Range(0, 1)] public float whenToTriggerNextAnim;
+    public GameObject attackHitBoxPrefab;
+    GameObject myAttackHitBox;
+    public Vector3 hitBoxOffset;
 
     public float maxTimePauseAfterAttack;
     float timePauseAfterAttack;
-    float azdazd;
 
 
     void Start()
     {
+        Health = MaxHealth;
         _self = transform;
         _playerOne = GameManager.i.playerOne.transform;
         _playerTwo = GameManager.i.playerTwo.transform;
@@ -109,8 +115,10 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case VeryBasicEnemyState.ChangingFocus:
                 break;
             case VeryBasicEnemyState.PreparingAttack:
+                Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+                _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+                transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
                 anticipationTime -= Time.deltaTime;
-                azdazd += Time.deltaTime;
                 if (anticipationTime <= 0)
                 {
                     ChangingState(VeryBasicEnemyState.Attacking);
@@ -150,7 +158,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
     void EnterState()
     {
-        print(State);
+        //print(State);
         switch (State)
         {
             case VeryBasicEnemyState.Idle:
@@ -165,7 +173,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case VeryBasicEnemyState.PreparingAttack:
                 navMeshAgent.enabled = false;
                 anticipationTime = maxAnticipationTime;
-                azdazd = 0;
                 Animator.SetTrigger("AttackTrigger");
                 break;
             case VeryBasicEnemyState.Attacking:
@@ -173,6 +180,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 attackInitialPosition = transform.position;
                 attackDestination = attackInitialPosition + attackMaxDistance*transform.forward;
                 attackTimeProgression = 0;
+                myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y*transform.up + hitBoxOffset.z*transform.forward, Quaternion.identity, transform);
                 break;
             case VeryBasicEnemyState.PauseAfterAttack:
                 timePauseAfterAttack = maxTimePauseAfterAttack;
@@ -197,6 +205,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case VeryBasicEnemyState.PreparingAttack:
                 break;
             case VeryBasicEnemyState.Attacking:
+                Destroy(myAttackHitBox);
                 break;
             case VeryBasicEnemyState.PauseAfterAttack:
                 break;
@@ -232,12 +241,15 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         {
             Die();
         }
+        else
+        {
+            Animator.SetTrigger("HitTrigger");
+        }
         throw new System.NotImplementedException();
     }
 
     void Die()
     {
-        print("hey");
         Destroy(gameObject);
     }
 
