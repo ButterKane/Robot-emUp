@@ -91,7 +91,6 @@ GameObject:
   - component: {fileID: 3179655172013363395}
   - component: {fileID: 7135114740279887017}
   - component: {fileID: 3006838605434843963}
-  - component: {fileID: 1637525621067848338}
   - component: {fileID: 1833733463821956502}
   - component: {fileID: 8496942388813941445}
   m_Layer: 0
@@ -162,19 +161,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &1637525621067848338
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2122965009818100832}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &1833733463821956502
 Animator:
   serializedVersion: 3
@@ -309,6 +295,7 @@ GameObject:
   - component: {fileID: 3668126503491773334}
   - component: {fileID: 8174936212591820110}
   - component: {fileID: 4966143793828746274}
+  - component: {fileID: 7033199126207420292}
   m_Layer: 0
   m_Name: P_EnemyTurret
   m_TagString: Untagged
@@ -376,6 +363,19 @@ MonoBehaviour:
     type: 3}
   leftBulletSpawn: {fileID: 7141074347555263544}
   rightBulletSpawn: {fileID: 4485545553351095611}
+--- !u!65 &7033199126207420292
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6086072691216837907}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: -1, z: 0}
 --- !u!1 &6395154014696677350
 GameObject:
   m_ObjectHideFlags: 0

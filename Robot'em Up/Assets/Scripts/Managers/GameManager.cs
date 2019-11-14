@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 #pragma warning disable 0649
 
 public enum VibrationForce
@@ -86,9 +87,13 @@ public class GameManager : MonoBehaviour
 
 	private void Update ()
 	{
-		if (Input.GetKeyDown(KeyCode.R))
+		if (Input.GetKeyDown(KeyCode.B))
 		{
 			ResetBall();
+		}
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			ResetScene();
 		}
 	}
 
@@ -115,6 +120,11 @@ public class GameManager : MonoBehaviour
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
+	public static void ResetScene()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+	}
+
 	public static void ResetBall()
 	{
 		foreach (BallBehaviour ball in FindObjectsOfType<BallBehaviour>())
@@ -122,6 +132,7 @@ public class GameManager : MonoBehaviour
 			Destroy(ball.gameObject);
 		}
 		GameObject newBall = Instantiate(i.ballPrefab, null);
+		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
         i.ball = newBall;
 		newBall.transform.position = new Vector3(0, 1f, 0);
 	}

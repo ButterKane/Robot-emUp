@@ -6,7 +6,6 @@ using UnityEngine;
 public class BallDatas : ScriptableObject
 {
 	[Header("Global settings")]
-	public float maxDistance;
 	public float maxPreviewDistance;
 	public float moveSpeed;
 	public int maxBounces;

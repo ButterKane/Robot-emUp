@@ -97,9 +97,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         switch (State)
         {
             case TurretState.Attacking:
-                Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position - _self.position);
-                wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-                _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, 0.2f);
+				if (focusedPlayer != null)
+				{
+					Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position - _self.position);
+					wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
+					_self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, 0.2f);
+				}
                 break;
             case TurretState.PrepareToAttack:
                 break;
@@ -235,10 +238,10 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Health -= _damages;
-        if (Health <= 0)
+		_ball.Explode(true);
+		if (Health <= 0)
         {
             Die();
         }
-        throw new System.NotImplementedException();
     }
 }
