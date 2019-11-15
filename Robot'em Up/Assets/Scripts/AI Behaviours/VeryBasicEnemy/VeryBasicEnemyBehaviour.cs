@@ -68,6 +68,11 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     public float maxTimePauseAfterAttack;
     float timePauseAfterAttack;
 
+    public GameObject deathParticlePrefab;
+    public float deathParticleScale;
+    public GameObject hitParticlePrefab;
+    public float hitParticleScale;
+
 
     void Start()
     {
@@ -244,12 +249,18 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         else
         {
             Animator.SetTrigger("HitTrigger");
+            GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
+            hitParticle.transform.localScale *= hitParticleScale;
+            Destroy(hitParticlePrefab, 1f);
         }
         throw new System.NotImplementedException();
     }
 
     void Die()
     {
+        GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        deathParticle.transform.localScale *= deathParticleScale;
+        Destroy(deathParticle, 1.5f);
         Destroy(gameObject);
     }
 
