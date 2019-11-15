@@ -7,12 +7,14 @@ public class IndianaExplosion : MonoBehaviour
 {
     public float myScale;
     public float waitTimeForExplosion;
+    public bool isBarrage;
     [ReadOnly] public float waitingForExplosion;
     [ReadOnly]  public bool Explosed;
 
     public GameObject FXExplosion;
     private SpriteRenderer spriteRenderer;
     private SphereCollider sphereCollider;
+    [ReadOnly] public IndianaManager indianaManager;
 
 
     private List<PawnController> ListPawnsHere;
@@ -36,11 +38,16 @@ public class IndianaExplosion : MonoBehaviour
         if (!Explosed)
         {
             transform.Rotate(new Vector3(0, 0, 1), Time.deltaTime * 20f);
+            spriteRenderer.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, 1 - waitingForExplosion / waitTimeForExplosion + 0.05f));
         }
 
         if (waitingForExplosion < 0 && !Explosed)
         {
             Explosed = true;
+            if (!isBarrage)
+            {
+                indianaManager.indianaCamera.shakeAmount += 0.02f * myScale;
+            }
             spriteRenderer.color = new Color(1, 1, 1, 0.05f);
             FXExplosion.SetActive(true);
             foreach (var item in ListPawnsHere)

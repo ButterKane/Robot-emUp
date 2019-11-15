@@ -497,7 +497,7 @@ PrefabInstance:
     - target: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 21.2
+      value: 32.6
       objectReference: {fileID: 0}
     - target: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
@@ -1371,17 +1371,19 @@ MonoBehaviour:
   currentTimer: 0
   currentTimerExplosion: 0
   currentTimerExplosionBarrage: 0
-  directionIndiania: {x: 10, y: 0, z: 0}
+  directionIndiania: {x: 15, y: 0, z: 0}
   startposition: {x: -8.5, y: 1, z: -66}
   currentPositionMultiplier: 0
   minSizeExplosion: 0.2
-  maxSizeExplosion: 3
-  maxDistancePlayer: 5
+  maxSizeExplosion: 2.5
+  maxDistancePlayer: 15
   nbExplosionBySec: 4
   timeBarrage: 1.5
-  nbBarrage: 5
-  directionBarrage: {x: 0, y: 0, z: -25}
+  nbExplosionByBarrage: 6
+  nbBarrage: 4
+  directionBarrage: {x: 0, y: 0, z: -20}
   explosionWaitingTime: 1.35
+  indianaCamera: {fileID: 1251971770}
   prefabIndianaExplosion: {fileID: 8970592547997499449, guid: 8d3891c09165d8546bd0a8ff45673d46,
     type: 3}
 --- !u!4 &456543552
@@ -2662,7 +2664,7 @@ PrefabInstance:
     - target: {fileID: 312656209842447022, guid: 739fbb2b237f4614580ae2925bc3cbc4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 26.22729
+      value: 37.62729
       objectReference: {fileID: 0}
     - target: {fileID: 312656209842447022, guid: 739fbb2b237f4614580ae2925bc3cbc4,
         type: 3}
@@ -3140,7 +3142,7 @@ PrefabInstance:
     - target: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20.04
+      value: 31.439999
       objectReference: {fileID: 0}
     - target: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
@@ -3330,11 +3332,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1251971769}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 934760c4a3e06a648b48e58239b6543d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c60da2f446e9ab44b5bb663a9fcfdcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   firstPawn: {fileID: 247369929}
   secondPawn: {fileID: 7194597109591444365}
+  shakeAmount: 0
 --- !u!4 &1251971771
 Transform:
   m_ObjectHideFlags: 0
@@ -3343,7 +3346,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1251971769}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.7445908, y: -14.352533, z: -49.8}
+  m_LocalPosition: {x: 29.6, y: -14.352533, z: -108.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}
