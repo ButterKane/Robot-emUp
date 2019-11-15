@@ -73,6 +73,9 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     public GameObject hitParticlePrefab;
     public float hitParticleScale;
 
+    //-----------------------------------------
+    public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    //-----------------------------------------
 
     void Start()
     {
@@ -242,7 +245,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Health -= _damages;
-        if(Health <= 0)
+        _ball.Explode(true);
+        if (Health <= 0)
         {
             Die();
         }

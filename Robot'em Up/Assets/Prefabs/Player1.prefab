@@ -101,7 +101,7 @@ MonoBehaviour:
   playerIndex: 0
   triggerTreshold: 0.1
   enableDash: 1
-  enableJump: 1
+  enableJump: 0
   enableDunk: 1
   enablePickOwnBall: 0
   enableMagnet: 1
@@ -120,17 +120,17 @@ MonoBehaviour:
   passPreviewInEditor: 1
   passMode: 1
   handTransform: {fileID: 4655006219135653576}
-  ballDatas: {fileID: 11400000, guid: bcbf07fa2f27e044885056ff5ff74b7c, type: 2}
+  ballDatas: {fileID: 11400000, guid: 359213923aba4d6479b78ed4c94532a4, type: 2}
   passCooldown: 0.5
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
-  receptionMinDistance: 3
-  receptionMinDelay: 0.5
+  receptionMinDistance: 2.5
+  receptionMinDelay: 0.4
   curveMaxLateralDistance: 0
   curveMaxPlayerDistance: 0
-  curveRaycastIteration: 50
-  curveMinAngle: 10
-  hanseLength: 50
+  curveRaycastIteration: 25
+  curveMinAngle: 5
+  hanseLength: 29
   passState: 0
 --- !u!114 &7078735977702430641
 MonoBehaviour:
@@ -145,15 +145,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dunkJumpHeight: 5
-  dunkJumpLength: 1
-  dunkJumpDuration: 0.2
+  dunkJumpLength: 0.4
+  dunkJumpDuration: 0.17
   dunkJumpFreezeDuration: 1
-  dunkDashSpeed: 20
+  dunkDashSpeed: 40
   dunkExplosionRadius: 10
   dunkDamages: 30
   dunkProjectionForce: 30
-  dunkCancelledFallSpeed: 10
-  dunkDashDelay: 0.2
+  dunkCancelledFallSpeed: 20
+  dunkDashDelay: 0.28
   dunkSnapTreshold: 30
   dunkState: 6
 --- !u!114 &5564275353483555727
@@ -204,7 +204,7 @@ MonoBehaviour:
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   maxSlowCoef: 0.1
-  damagesPerSecWithoutLink: 1
+  damagesPerSecWithoutLink: 0.5
   slowCoefCurve:
     serializedVersion: 2
     m_Curve:
@@ -272,7 +272,7 @@ MonoBehaviour:
   speed: 100
   maxStackAmount: 3
   unstoppableDash: 0
-  invincibleDuringDash: 0
+  invincibleDuringDash: 1
   useCooldown: 0.5
   stackCooldown: 2
   state: 1
@@ -493,7 +493,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 0.20046997
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -512,7 +512,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  magnetRadius: 6
+  magnetRadius: 8
   magnetFX: {fileID: 4652725224206270073}
 --- !u!135 &4685530694934457600
 SphereCollider:
@@ -525,7 +525,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 6
+  m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!120 &3947039537101682070
 LineRenderer:

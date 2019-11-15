@@ -311,8 +311,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6086072691216837907}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.774, y: 0.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.3626, y: 1.3626, z: 1.3626}
   m_Children:
   - {fileID: 6442596981544871290}
   m_Father: {fileID: 0}
@@ -357,12 +357,16 @@ MonoBehaviour:
   unfocusDistance: 20
   timeBetweenCheck: 0.2
   distanceBeforeChangingPriority: 2
-  MaxHealth: 15
-  Health: 15
+  MaxHealth: 30
+  Health: 0
   bulletPrefab: {fileID: 3937835393218686174, guid: b8e3861787e70b145a85cd7de75f14e5,
     type: 3}
   leftBulletSpawn: {fileID: 7141074347555263544}
   rightBulletSpawn: {fileID: 4485545553351095611}
+  deathParticlePrefab: {fileID: 103296, guid: 64213efe87b202141b44b6a613b892e9, type: 3}
+  deathParticleScale: 2
+  hitParticlePrefab: {fileID: 102696, guid: 185035e4680c4b344b62bf5ace4674b8, type: 3}
+  hitParticleScale: 3
 --- !u!65 &7033199126207420292
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -374,7 +378,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 3, y: 3, z: 3}
   m_Center: {x: 0, y: -1, z: 0}
 --- !u!1 &6395154014696677350
 GameObject:
