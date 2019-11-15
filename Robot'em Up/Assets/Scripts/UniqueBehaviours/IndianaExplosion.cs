@@ -18,7 +18,7 @@ public class IndianaExplosion : MonoBehaviour
     private List<PawnController> ListPawnsHere;
 
     // Start is called before the first frame update
-    void Start()
+    public void Initiate()
     {
         transform.localScale = new Vector3(myScale, myScale, myScale);
         waitingForExplosion = waitTimeForExplosion;
