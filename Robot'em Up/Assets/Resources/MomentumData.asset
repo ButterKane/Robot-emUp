@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c946bf44ad1df7147b51ee25ff929286, type: 3}
   m_Name: MomentumData
   m_EditorClassIdentifier: 
-  momentumLerpSpeed: 3
-  playerSpeedMultiplier: {x: 1, y: 2}
-  dashRecoverSpeedMultiplier: {x: 1, y: 2}
-  ballSpeedMultiplier: {x: 1, y: 1}
-  energyGainMultiplier: {x: 1, y: 2}
-  ballDamageMultiplier: {x: 1, y: 2}
-  enemySpeedMultiplier: {x: 1, y: 2}
-  enemySpawnRateMultiplier: {x: 1, y: 2}
-  minMaxBloom: {x: 1, y: 10}
-  minMaxTemperature: {x: 0, y: 50}
+  momentumLerpSpeed: 4
+  playerSpeedMultiplier: {x: 1, y: 1.15}
+  dashRecoverSpeedMultiplier: {x: 1, y: 1.25}
+  ballSpeedMultiplier: {x: 1, y: 1.25}
+  energyGainMultiplier: {x: 1, y: 1.2}
+  ballDamageMultiplier: {x: 1, y: 1}
+  enemySpeedMultiplier: {x: 1, y: 0.9}
+  enemySpawnRateMultiplier: {x: 1, y: 1}
+  minMaxBloom: {x: 1, y: 5}
+  minMaxTemperature: {x: 0, y: 40}
   minMaxChromaticAberration: {x: 0, y: 0.5}
   momentumGainedOnPass: 0.2
   momentumGainedOnHit: 0.05
@@ -31,4 +31,4 @@ MonoBehaviour:
   momentumLossSpeedIfNoPass: 1
   momentumLossOnFightEnd: 1
   momentumLossOnDamage: 0.1
-  momentumLossWhenBallHitTheGround: 1
+  momentumLossWhenBallHitTheGround: 0.5

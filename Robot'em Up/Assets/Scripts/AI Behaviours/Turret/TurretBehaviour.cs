@@ -46,6 +46,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public Transform leftBulletSpawn;
     public Transform rightBulletSpawn;
 
+    public GameObject deathParticlePrefab;
+    public float deathParticleScale;
+    public GameObject hitParticlePrefab;
+    public float hitParticleScale;
+
     public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
     void Start()
@@ -232,6 +237,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void Die()
     {
+        GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        deathParticle.transform.localScale *= deathParticleScale;
+        Destroy(deathParticle, 1.5f);
         Destroy(gameObject);
     }
 
@@ -242,6 +250,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 		if (Health <= 0)
         {
             Die();
+        }
+        else
+        {
+            GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
+            hitParticle.transform.localScale *= hitParticleScale;
+            Destroy(hitParticlePrefab, 1f);
         }
     }
 }
