@@ -73,6 +73,17 @@ public class IndianaManager : MonoBehaviour
             if (currentTimerExplosionBarrage < 0)
             {
                 currentTimerExplosionBarrage = timeBarrage;
+
+                for (int i = 0; i < nbBarrage; i++)
+                {
+                    Vector3 wantedPosition = startposition + currentPositionMultiplier * directionIndiania;
+                    wantedPosition += directionBarrage * i;
+                    IndianaExplosion newExplosion = Instantiate(prefabIndianaExplosion, wantedPosition, Quaternion.Euler(-90, 0, 0)).GetComponent<IndianaExplosion>();
+                    newExplosion.myScale = maxSizeExplosion;
+                    newExplosion.waitTimeForExplosion = explosionWaitingTime;
+                    newExplosion.Initiate();
+                }
+
                 currentPositionMultiplier++;
                 for (int i = 0; i < nbBarrage; i++)
                 {
