@@ -409,9 +409,15 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 2
   MaxHealth: 30
   Health: 0
-  forwardPredictionDistance: 0.4
+  forwardPredictionRatio: 0.4
   aimingCubeTransform: {fileID: 8116397337583495147}
+  aimingCubeRenderer: {fileID: 2802001169725089407}
   aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 30}
+  aimingCubeLockedScale: {x: 0.05, y: 0.05, z: 30}
+  lockingAimingColor: {r: 0.9882878, g: 1, b: 0, a: 1}
+  lockingAimingColorIntensity: 8
+  followingAimingColor: {r: 1, g: 0.037245974, b: 0, a: 1}
+  followingAimingColorIntensity: 5
   bulletPrefab: {fileID: 3937835393218686174, guid: b8e3861787e70b145a85cd7de75f14e5,
     type: 3}
   bulletSpawn: {fileID: 4485545553351095611}

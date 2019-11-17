@@ -29,11 +29,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     [Space(2)]
     [Separator("Variables")]
     public TurretState State;
+
+    [Space(2)]
+    [Header("Focus")]
     public float focusDistance;
     public float unfocusDistance;
     public float timeBetweenCheck;
     public float distanceBeforeChangingPriority;
 
+    [Space(2)]
+    [Header("Global")]
     public int MaxHealth = 100;
     public int Health;
     bool playerOneInRange;
@@ -41,18 +46,27 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
     Transform focusedPlayer = null;
-    public float forwardPredictionDistance;
+    public float forwardPredictionRatio;
 
+    [Space(2)]
+    [Header("AimingCube")]
     public Transform aimingCubeTransform;
     public Renderer aimingCubeRenderer;
     public Vector3 aimingCubeDefaultScale;
+    public Vector3 aimingCubeLockedScale;
     bool shouldRotateTowardsPlayer;
     public Color lockingAimingColor;
+    public float lockingAimingColorIntensity;
     public Color followingAimingColor;
+    public float followingAimingColorIntensity;
 
+    [Space(2)]
+    [Header("Bullet")]
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
 
+    [Space(2)]
+    [Header("FXReferences")]
     public GameObject deathParticlePrefab;
     public float deathParticleScale;
     public GameObject hitParticlePrefab;
@@ -71,7 +85,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
         StartCoroutine(CheckDistance());
     }
-
 
     void Update()
     {
@@ -106,7 +119,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void RotateTowardsPlayerAndHisForward()
     {
-        Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionDistance - _self.position);
+        Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, 0.2f);
     }
@@ -267,7 +280,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
             hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(hitParticlePrefab, 1f);
+            Destroy(hitParticlePrefab, 1.5f);
         }
     }
 
@@ -277,13 +290,15 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             shouldRotateTowardsPlayer = true;
             aimingCubeRenderer.material.color = followingAimingColor;
-            aimingCubeRenderer.material.SetColor("_EmisColor", followingAimingColor);
+            aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
+            aimingCubeTransform.localScale = aimingCubeDefaultScale;
         }
         else
         {
             shouldRotateTowardsPlayer = false;
             aimingCubeRenderer.material.color = lockingAimingColor;
-            aimingCubeRenderer.material.SetColor("_EmisColor", lockingAimingColor);
+            aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
+            aimingCubeTransform.localScale = aimingCubeLockedScale;
         }
     }
 }
