@@ -72,6 +72,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     public Vector3 hitBoxOffset;
     public float maxTimePauseAfterAttack;
     float timePauseAfterAttack;
+    public float attackRaycastDistance;
+    bool mustCancelAttack;
 
     [Space(2)]
     [Header("Bump")]
@@ -87,6 +89,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     float bumpTimeProgression;
     [Range(0, 1)] public float whenToTriggerFallingAnim;
     bool fallingTriggerLaunched;
+    public float bumpRaycastDistance;
+    bool mustCancelBump;
 
 
     [Space(2)]
@@ -148,16 +152,35 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case VeryBasicEnemyState.Staggering:
                 break;
             case VeryBasicEnemyState.Bumped:
+
+                //isBeingBumped !
                 if (bumpTimeProgression < 1)
                 {
                     bumpTimeProgression += Time.deltaTime / bumpDuration;
-                    Rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression)));
-                    if (bumpTimeProgression > whenToTriggerFallingAnim && !fallingTriggerLaunched)
+
+                    //must stop ?
+                    int bumpRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+                    if (Physics.Raycast(_self.position, bumpDirection, bumpRaycastDistance, bumpRaycastMask) && !mustCancelBump)
+                    {
+                        mustCancelBump = true;
+                        bumpTimeProgression = whenToTriggerFallingAnim;
+                    }
+
+                    //move !
+                    if (!mustCancelBump)
+                    {
+                        Rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression)));
+                    }
+
+                    //trigger end anim
+                    if (bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
                     {
                         fallingTriggerLaunched = true;
                         Animator.SetTrigger("FallingTrigger");
                     }
                 }
+
+                //when arrived on ground
                 else if (restDuration > 0)
                 {
                     restDuration -= Time.deltaTime;
@@ -166,6 +189,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                         Animator.SetTrigger("StandingUpTrigger");
                     }
                 }
+
+                //time to get up
                 else if(gettingUpDuration>0)
                 {
                     gettingUpDuration -= Time.deltaTime;
@@ -186,14 +211,28 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 }
                 break;
             case VeryBasicEnemyState.Attacking:
+
                 attackTimeProgression += Time.deltaTime / attackDuration;
-                Rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
-                attackDuration -= Time.deltaTime;
-                if(attackDuration <= 0)
+                //attackDuration -= Time.deltaTime;
+
+                //must stop ?
+                int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+                if (Physics.Raycast(_self.position, _self.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
+                {
+                    attackTimeProgression = whenToTriggerEndOfAttackAnim;
+                    mustCancelAttack = true;
+                }
+
+                if (!mustCancelAttack)
+                {
+                    Rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
+                }
+
+                if (attackTimeProgression >=1)
                 {
                     ChangingState(VeryBasicEnemyState.PauseAfterAttack);
                 }
-                else if(attackDuration <= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
+                else if(attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
                 {
                     endOfAttackTriggerLaunched = true;
                     Animator.SetTrigger("EndOfAttackTrigger");
@@ -239,6 +278,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 bumpInitialPosition = transform.position;
                 bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
                 Animator.SetTrigger("BumpTrigger");
+                mustCancelBump = false;
                 break;
             case VeryBasicEnemyState.ChangingFocus:
                 break;
@@ -254,6 +294,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 attackDestination = attackInitialPosition + attackMaxDistance*transform.forward;
                 attackTimeProgression = 0;
                 myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y*transform.up + hitBoxOffset.z*transform.forward, Quaternion.identity, transform);
+                mustCancelAttack = false;
                 break;
             case VeryBasicEnemyState.PauseAfterAttack:
                 timePauseAfterAttack = maxTimePauseAfterAttack;
