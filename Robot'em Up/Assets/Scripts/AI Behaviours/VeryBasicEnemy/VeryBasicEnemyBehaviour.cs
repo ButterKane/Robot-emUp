@@ -9,6 +9,7 @@ public enum VeryBasicEnemyState
     Idle,
     Following,
     Staggering,
+    Bumped,
     ChangingFocus,
     PreparingAttack,
     Attacking,
@@ -44,11 +45,15 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     float distanceWithFocusedPlayer;
     Transform focusedPlayer = null;
     
+    [Space(2)]
+    [Header("Focus")]
     public float focusDistance;
     public float unfocusDistance;
     public float timeBetweenCheck;
     public float distanceBeforeChangingPriority;
 
+    [Space(2)]
+    [Header("Attack")]
     public float distanceToAttack;
     public float maxAnticipationTime;
     [Range(0, 1)]public float rotationSpeedPreparingAttack;
@@ -60,14 +65,32 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     public AnimationCurve attackSpeedCurve;
     Vector3 attackInitialPosition;
     Vector3 attackDestination;
-    [Range(0, 1)] public float whenToTriggerNextAnim;
+    [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
+    bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
     GameObject myAttackHitBox;
     public Vector3 hitBoxOffset;
-
     public float maxTimePauseAfterAttack;
     float timePauseAfterAttack;
 
+    [Space(2)]
+    [Header("Bump")]
+    public float maxGettingUpDuration;
+    public AnimationCurve bumpDistanceCurve;
+    float bumpDistance;
+    float bumpDuration;
+    float restDuration;
+    float gettingUpDuration;
+    Vector3 bumpInitialPosition;
+    Vector3 bumpDestinationPosition;
+    Vector3 bumpDirection;
+    float bumpTimeProgression;
+    [Range(0, 1)] public float whenToTriggerFallingAnim;
+    bool fallingTriggerLaunched;
+
+
+    [Space(2)]
+    [Header("FX References")]
     public GameObject deathParticlePrefab;
     public float deathParticleScale;
     public GameObject hitParticlePrefab;
@@ -84,7 +107,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         _playerOne = GameManager.i.playerOne.transform;
         _playerTwo = GameManager.i.playerTwo.transform;
         State = VeryBasicEnemyState.Following;
-        StartCoroutine(CheckDistance());
+        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
     
     void Update()
@@ -92,6 +115,10 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         UpdateDistancesToPlayers();
         UpdateState();
         UpdateAnimatorBlendTree();
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            BumpMe(8, .35f, 1, -transform.forward);
+        }
     }
 
     private void UpdateAnimatorBlendTree()
@@ -120,6 +147,32 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 break;
             case VeryBasicEnemyState.Staggering:
                 break;
+            case VeryBasicEnemyState.Bumped:
+                if (bumpTimeProgression < 1)
+                {
+                    bumpTimeProgression += Time.deltaTime / bumpDuration;
+                    Rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression)));
+                    if (bumpTimeProgression > whenToTriggerFallingAnim && !fallingTriggerLaunched)
+                    {
+                        fallingTriggerLaunched = true;
+                        Animator.SetTrigger("FallingTrigger");
+                    }
+                }
+                else if (restDuration > 0)
+                {
+                    restDuration -= Time.deltaTime;
+                    if (restDuration <= 0)
+                    {
+                        Animator.SetTrigger("StandingUpTrigger");
+                    }
+                }
+                else if(gettingUpDuration>0)
+                {
+                    gettingUpDuration -= Time.deltaTime;
+                    if(gettingUpDuration<=0)
+                        ChangingState(VeryBasicEnemyState.Following);
+                }
+                break;
             case VeryBasicEnemyState.ChangingFocus:
                 break;
             case VeryBasicEnemyState.PreparingAttack:
@@ -140,8 +193,9 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 {
                     ChangingState(VeryBasicEnemyState.PauseAfterAttack);
                 }
-                else if(attackDuration <= whenToTriggerNextAnim)
+                else if(attackDuration <= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
                 {
+                    endOfAttackTriggerLaunched = true;
                     Animator.SetTrigger("EndOfAttackTrigger");
                 }
                 break;
@@ -160,14 +214,14 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     public void ChangingState(VeryBasicEnemyState _newState)
     {
         ExitState();
+        EnterState(_newState);
         State = _newState;
-        EnterState();
     }
 
-    void EnterState()
+    void EnterState(VeryBasicEnemyState _newState)
     {
-        //print(State);
-        switch (State)
+        print(_newState);
+        switch (_newState)
         {
             case VeryBasicEnemyState.Idle:
                 break;
@@ -175,6 +229,16 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 navMeshAgent.enabled = true;
                 break;
             case VeryBasicEnemyState.Staggering:
+                break;
+            case VeryBasicEnemyState.Bumped:
+                transform.rotation = Quaternion.LookRotation(-bumpDirection);
+                gettingUpDuration = maxGettingUpDuration;
+                fallingTriggerLaunched = false;
+                navMeshAgent.enabled = false;
+                bumpTimeProgression = 0;
+                bumpInitialPosition = transform.position;
+                bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
+                Animator.SetTrigger("BumpTrigger");
                 break;
             case VeryBasicEnemyState.ChangingFocus:
                 break;
@@ -185,6 +249,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 break;
             case VeryBasicEnemyState.Attacking:
                 attackDuration = maxAttackDuration;
+                endOfAttackTriggerLaunched = false;
                 attackInitialPosition = transform.position;
                 attackDestination = attackInitialPosition + attackMaxDistance*transform.forward;
                 attackTimeProgression = 0;
@@ -207,6 +272,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case VeryBasicEnemyState.Following:
                 break;
             case VeryBasicEnemyState.Staggering:
+                break;
+            case VeryBasicEnemyState.Bumped:
                 break;
             case VeryBasicEnemyState.ChangingFocus:
                 break;
@@ -268,7 +335,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         Destroy(gameObject);
     }
 
-    IEnumerator CheckDistance()
+    IEnumerator CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance)
@@ -319,16 +386,21 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
         //Restart coroutine in X seconds
         yield return new WaitForSeconds(timeBetweenCheck);
-        StartCoroutine(CheckDistance());
+        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
 
     void ChangingFocus(Transform _newFocus)
     {
-        /*if(_newFocus != null)
-        {
-
-        }*/
         focusedPlayer = _newFocus;
+    }
+
+    public void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
+    {
+        bumpDistance = _bumpDistance;
+        bumpDuration = _bumpDuration;
+        restDuration = _restDuration;
+        bumpDirection = _bumpDirection;
+        ChangingState(VeryBasicEnemyState.Bumped);
     }
 
 }
