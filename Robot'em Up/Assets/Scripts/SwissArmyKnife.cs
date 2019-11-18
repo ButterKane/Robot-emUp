@@ -14,7 +14,7 @@ public static class SwissArmyKnife
     }
 
 
-        public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
+    public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
     {
         Vector2 dir = initial - target;
         float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;

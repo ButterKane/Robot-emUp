@@ -80,10 +80,11 @@ public class PawnController : MonoBehaviour
 	private float timeInAir;
 	private float climbingHoldTime;
 	private Rigidbody rb;
-	private Animator animator;
+	protected Animator animator;
 	private Vector3 initialScale;
 	private bool frozen;
 	private bool isPlayer;
+	protected bool targetable;
 
 	protected PassController passController;
 
@@ -100,6 +101,7 @@ public class PawnController : MonoBehaviour
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
 		currentHealth = maxHealth;
+		targetable = true;
 		if (GetComponent<PlayerController>() != null)
 		{
 			isPlayer = true;
@@ -215,6 +217,11 @@ public class PawnController : MonoBehaviour
 		}
 	}
 
+	public bool IsTargetable ()
+	{
+		return targetable;
+	}
+
 	public bool CanJump()
 	{
 		if (grounded && moveState != MoveState.Blocked) { return true; }
@@ -312,7 +319,7 @@ public class PawnController : MonoBehaviour
 		speedCoefs.Add(_speedCoef);
 	}
 
-    public void Kill()
+    public virtual void Kill()
     {
         Destroy(this.gameObject);
     }
@@ -323,7 +330,7 @@ public class PawnController : MonoBehaviour
         rb.AddExplosionForce(_magnitude, explosionPoint, 0);
     }
 
-	public void Damage(int _amount)
+	public virtual void Damage(int _amount)
 	{
         StartCoroutine(InvicibleFrame());
 		currentHealth -= _amount;
@@ -361,6 +368,44 @@ public class PawnController : MonoBehaviour
 		rb.isKinematic = false;
 		rb.useGravity = true;
 		frozen = false;
+	}
+
+	public void Hide ()
+	{
+		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		{
+			renderer.enabled = false;
+		}
+	}
+
+	public void UnHide()
+	{
+		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		{
+			renderer.enabled = true;
+		}
+	}
+
+	public void SetUntargetable ()
+	{
+		PassController potentialPassController = GetComponentInChildren<PassController>();
+		if (potentialPassController != null)
+		{
+			potentialPassController.DropBall();
+		}
+		foreach (Collider collider in GetComponentsInChildren<Collider>())
+		{
+			collider.enabled = false;
+		}
+		targetable = false;
+	}
+	public void SetTargetable ()
+	{
+		foreach (Collider collider in GetComponentsInChildren<Collider>())
+		{
+			collider.enabled = true;
+		}
+		targetable = true;
 	}
 
 	public Vector3 GetCenterPosition()

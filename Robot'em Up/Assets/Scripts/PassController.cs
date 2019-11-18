@@ -77,6 +77,8 @@ public class PassController : MonoBehaviour
 			ballTimeInHand += Time.deltaTime;
 		}
 
+		if (!otherPlayer.IsTargetable()) { DisablePassPreview(); }
+
 		if (passPreview)
 		{
 			bool snapped = false;
@@ -249,6 +251,7 @@ public class PassController : MonoBehaviour
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		ballTimeInHand = 0;
 		MomentumManager.EnableMomentumExponentialLoss(MomentumManager.datas.minPassDelayBeforeMomentumLoss, MomentumManager.datas.momentumLossSpeedIfNoPass);
+		if (!linkedPlayer.IsTargetable()) { DropBall(); }
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 
@@ -292,7 +295,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking())
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || !GetTarget().IsTargetable())
 		{
 			return false;
 		} else
@@ -304,6 +307,14 @@ public class PassController : MonoBehaviour
 	public BallBehaviour GetBall()
 	{
 		return ball;
+	}
+
+	public void DropBall()
+	{
+		if (GetBall() == null) { return; }
+		ball.transform.SetParent(null);
+		ball.ChangeState(BallState.Grounded);
+		ball = null;
 	}
 
 	public BallDatas GetBallDatas()
