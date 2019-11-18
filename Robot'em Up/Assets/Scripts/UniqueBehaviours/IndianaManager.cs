@@ -93,7 +93,7 @@ public class IndianaManager : MonoBehaviour
                 currentPositionMultiplier++;
                 InvisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
                 InvisibleColliderForward.transform.position = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
-                indianaCamera.RailPositionWanted = transform.position + (currentPositionMultiplier) * directionIndiania;
+                indianaCamera.RailPositionWanted = transform.position + (currentPositionMultiplier + 1 ) * directionIndiania;
                 for (int j = 0; j < nbBarrage; j++)
                 {
                     for (int i = 0; i < nbExplosionByBarrage; i++)
