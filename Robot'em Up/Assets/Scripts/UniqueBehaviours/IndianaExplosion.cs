@@ -46,7 +46,7 @@ public class IndianaExplosion : MonoBehaviour
             Explosed = true;
             if (!isBarrage)
             {
-                indianaManager.indianaCamera.shakeAmount += 0.02f * myScale;
+                indianaManager.indianaCamera.shakeAmount += 0.025f * myScale;
             }
             spriteRenderer.color = new Color(1, 1, 1, 0.05f);
             FXExplosion.SetActive(true);
