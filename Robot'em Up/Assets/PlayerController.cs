@@ -26,12 +26,14 @@ public class PlayerController : PawnController
 	public GameObject FX_revive;
 
 	public float deathExplosionRadius = 5;
-	public float deathExplosionDamage = 10;
+	public int deathExplosionDamage = 10;
+	public float deathExplosionForce = 10;
 	public float reviveExplosionRadius = 5;
-	public float reviveExplosionDamage = 10;
+	public int reviveExplosionDamage = 10;
+	public float reviveExplosionForce = 10;
 
-	public float minAngleBetweenParts = 20;
-	public float revivePartsCount = 3;
+	public int revivePartsCount = 3;
+	[Range(0,1)] public float partExplosionAngleRandomness = 0.1f;
 	public Vector2 minMaxProjectionForce = new Vector2(9, 11);
 	public float reviveHoldDuration = 3;
 	public float reviveFreezeDuration = 1;
@@ -39,6 +41,7 @@ public class PlayerController : PawnController
 	private DunkController dunkController;
 	private DashController dashController;
 	private ExtendingArmsController extendingArmsController;
+	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 
 	public override void Awake ()
 	{
@@ -50,14 +53,6 @@ public class PlayerController : PawnController
 	}
 	private void Update ()
 	{
-		if (Input.GetKeyDown(KeyCode.K))
-		{
-			Kill();
-		}
-		if (Input.GetKeyDown(KeyCode.L))
-		{
-			Revive();
-		}
 		if (!inputDisabled) { GetInput(); }
 	}
 	void GetInput ()
@@ -102,19 +97,22 @@ public class PlayerController : PawnController
 				extendingArmsController.DisableThrowDirectionIndicator();
 			}
 		}
-		if (state.Triggers.Right > triggerTreshold)
+		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
 			passController.TryReception();
 			passController.Shoot();
 		}
-		if (state.Buttons.Y == ButtonState.Pressed && enableDunk)
+		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
 			dunkController.Dunk();
 		}
-		if (state.Triggers.Left > triggerTreshold && enableDash)
+		if (state.Triggers.Left > triggerTreshold && revivablePlayers.Count <= 0)
 		{
 			//extendingArmsController.ExtendArm();
-			dashController.Dash();
+			if (enableDash)
+			{
+				dashController.Dash();
+			}
 		}
 		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
@@ -123,6 +121,22 @@ public class PlayerController : PawnController
 		if (Mathf.Abs(state.ThumbSticks.Left.X) > 0.5f || Mathf.Abs(state.ThumbSticks.Left.Y) > 0.5f)
 		{
 			Climb();
+		}
+		if (revivablePlayers.Count > 0)
+		{
+			if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
+			{
+				Freeze();
+				SetUntargetable();
+				foreach (ReviveInformations p in revivablePlayers)
+				{
+					p.linkedPanel.FillAssemblingSlider();
+				}
+			} else
+			{
+				UnFreeze();
+				SetTargetable();
+			}
 		}
 	}
 
@@ -243,18 +257,93 @@ public class PlayerController : PawnController
 	public override void Kill ()
 	{
 		animator.SetTrigger("Dead");
+		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
 		SetUntargetable();
 		Freeze();
-		Hide();
 		DisableInput();
+		StartCoroutine(HideAfterDelay(0.5f));
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
+		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 	}
 
-	void Revive()
+	public void Revive(PlayerController _player)
 	{
-		animator.SetTrigger("Revived");
-		UnFreeze();
-		UnHide();
+		_player.animator.SetTrigger("Revive");
+		_player.SetTargetable();
+		_player.UnHide();
+		_player.currentHealth = GetMaxHealth();
+		_player.transform.position = transform.position + Vector3.up * 7 + Vector3.left * 0.1f;
+		_player.FreezeTemporarly(reviveFreezeDuration);
+		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
+		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
+		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.DeathExplosion));
+		foreach (ReviveInformations inf in revivablePlayers)
+		{
+			if (inf.linkedPlayer != _player)
+			{
+				newRevivablePlayers.Add(inf);
+			}
+		}
+		revivablePlayers = newRevivablePlayers;
+	}
+
+	void GenerateReviveParts()
+	{
+		float currentAngle = 0;
+		float defaultAngleDifference = 360 / revivePartsCount;
+		for (int i = 0; i < revivePartsCount; i++)
+		{
+			GameObject revivePart = Instantiate(Resources.Load<GameObject>("PlayerResource/PlayerPart"), null);
+			revivePart.name = "Part " + i + " of " + gameObject.name;
+			revivePart.transform.position = transform.position;
+			Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, currentAngle, 0));
+			float throwForce = Random.Range(minMaxProjectionForce.x, minMaxProjectionForce.y);
+			wantedDirectionAngle.y = throwForce * 0.035f;
+			revivePart.GetComponent<PlayerPart>().Init(this, wantedDirectionAngle.normalized * throwForce, revivePartsCount);
+			currentAngle += defaultAngleDifference + Random.Range(-defaultAngleDifference * partExplosionAngleRandomness, defaultAngleDifference * partExplosionAngleRandomness);
+		}
+	}
+
+	public void FreezeTemporarly(float _duration)
+	{
+		StartCoroutine(FreezeTemporarly_C(_duration));
+	}
+
+	public void AddRevivablePlayer(ReviveInformations _player)
+	{
+		revivablePlayers.Add(_player);
+	}
+
+	IEnumerator HideAfterDelay(float _delay)
+	{
+		yield return new WaitForSeconds(_delay);
+		Hide();
+	}
+
+	IEnumerator ProjectEnemiesInRadiusAfterDelay(float _delay, float _radius, float _force, int _damages, DamageSource _damageSource)
+	{
+		yield return new WaitForSeconds(_delay);
+		foreach (Collider hit in Physics.OverlapSphere(transform.position, _radius))
+		{
+			IHitable potentialHitableObject = hit.transform.GetComponent<IHitable>();
+			if (potentialHitableObject != null) { potentialHitableObject.OnHit(null, (hit.transform.position - transform.position).normalized * _force, this, _damages, _damageSource); }
+		}
+	}
+
+	IEnumerator GenerateRevivePartsAfterDelay(float _delay)
+	{
+		yield return new WaitForSeconds(_delay);
+		GenerateReviveParts();
+	}
+
+	IEnumerator FreezeTemporarly_C(float _duration)
+	{
+		Freeze();
+		DisableInput();
+		yield return new WaitForSeconds(_duration);
+		UnFreeze();
 		EnableInput();
 	}
 }

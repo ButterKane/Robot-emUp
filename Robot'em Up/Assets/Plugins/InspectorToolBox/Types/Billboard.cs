@@ -16,7 +16,7 @@ namespace MyBox
 
 		private void FindCamera()
 		{
-			_camera = FindObjectOfType<Camera>();
+			_camera = Camera.current;
 		}
 	}
 }

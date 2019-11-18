@@ -13,8 +13,16 @@ public static class SwissArmyKnife
         return new Vector3(vector.x, 0, vector.z);
     }
 
+	public static Vector3 RotatePointAroundPivot ( Vector3 point, Vector3 pivot, Vector3 angles )
+	{
+		Vector3 dir = point - pivot; // get point direction relative to pivot
+		dir = Quaternion.Euler(angles) * dir; // rotate it
+		point = dir + pivot; // calculate rotated point
+		return point; // return it
+	}
 
-    public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
+
+	public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
     {
         Vector2 dir = initial - target;
         float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
