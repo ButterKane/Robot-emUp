@@ -41,12 +41,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     [Header("Global")]
     public int MaxHealth = 100;
     public int Health;
+    public float energyAmount;
     bool playerOneInRange;
     bool playerTwoInRange;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
     Transform focusedPlayer = null;
     public float forwardPredictionRatio;
+    public float maxRotationSpeed;
+    public float rotationSpeedAcceleration;
+    float rotationSpeed;
 
     [Space(2)]
     [Header("AimingCube")]
@@ -121,7 +125,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     {
         Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-        _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, 0.2f);
+        _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
     void UpdateState()
@@ -282,6 +286,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             hitParticle.transform.localScale *= hitParticleScale;
             Destroy(hitParticle, 1.5f);
         }
+        EnergyManager.IncreaseEnergy(energyAmount);
     }
 
     public void AimingCubeRotate(bool _true)
