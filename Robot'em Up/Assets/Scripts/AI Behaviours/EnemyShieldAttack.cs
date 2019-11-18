@@ -20,6 +20,5 @@ public class EnemyShieldAttack : EnemyAttack
 
         yield return new WaitForSeconds(PounceRecoveryTime);
 
-        _behaviourScript.WhatShouldIDo();
     }
 }
