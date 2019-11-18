@@ -51,10 +51,9 @@ public class EnemyClassicAttack : EnemyAttack
         ResetAttackGlobals();
 
         _behaviourScript.Rb.velocity = Vector3.zero;
-        _behaviourScript.IsAttacking = false;
+        //_behaviourScript.IsAttacking = false;
 
         yield return new WaitForSeconds(PounceRecoveryTime);
 
-        _behaviourScript.WhatShouldIDo();
     }
 }
