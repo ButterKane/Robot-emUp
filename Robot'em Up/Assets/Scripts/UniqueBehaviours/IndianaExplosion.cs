@@ -52,7 +52,7 @@ public class IndianaExplosion : MonoBehaviour
             FXExplosion.SetActive(true);
             foreach (var item in ListPawnsHere)
             {
-                item.Damage(item.maxHealth / 2);
+                item.Damage(indianaManager.DamageToPawn);
             }
         }
         if (waitingForExplosion < -2)
