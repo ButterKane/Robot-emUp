@@ -64,11 +64,11 @@ public class IndianaManager : MonoBehaviour
                 currentTimerExplosion = 1 / nbExplosionBySec;
                 int temproll = Random.Range(0, 3);
                 Vector3 wantedPosition;
-                if (temproll == 1)
+                if (temproll == 0)
                 {
                     wantedPosition = GameManager.i.playerOne.transform.position;
                 }
-                else if (temproll == 2)
+                else if (temproll == 1)
                 {
                     wantedPosition = GameManager.i.playerTwo.transform.position;
                 }
