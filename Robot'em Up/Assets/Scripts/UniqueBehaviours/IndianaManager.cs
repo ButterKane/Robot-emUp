@@ -6,32 +6,39 @@ using MyBox;
 public class IndianaManager : MonoBehaviour
 {
 
-    public bool activated;
+    [Header("General")]
     public float totalLenght;
+    public int DamageToPawn;
+    public Vector3 directionIndiania;
+    public Vector3 startposition;
+    [Header("State")]
+    public bool activated;
     [ReadOnly] public float currentTimer;
     [ReadOnly] public float currentTimerExplosion;
     [ReadOnly] public float currentTimerExplosionBarrage;
-    public Vector3 directionIndiania;
-    public Vector3 startposition;
-    public float currentPositionMultiplier;
+    [ReadOnly] public float currentPositionMultiplier;
+    [Header("Explosions")]
     public float minSizeExplosion;
     public float maxSizeExplosion;
     public float maxDistancePlayer;
+    public float explosionWaitingTime;
     public float nbExplosionBySec;
+    [Header("Barrage")]
     public float timeBarrage;
     public int nbExplosionByBarrage;
     public int nbBarrage;
     public Vector3 directionBarrage;
-    public float explosionWaitingTime;
-
+    [Header("References - DO NOT TOUCH!")]
     public IndianaCamera indianaCamera;
-
-
     public GameObject prefabIndianaExplosion;
+    public GameObject InvisibleColliderForward;
+    public GameObject InvisibleColliderBackward;
+    private BoxCollider boxCollider;
 
     // Start is called before the first frame update
     void Start()
     {
+        boxCollider = GetComponent<BoxCollider>();
     }
 
     // Update is called once per frame
@@ -46,8 +53,12 @@ public class IndianaManager : MonoBehaviour
             if (currentTimer < 0)
             {
                 activated = false;
+                InvisibleColliderForward.SetActive(false);
+                InvisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3) * directionIndiania;
+                indianaCamera.OnRail = false;
             }
 
+            
            if (currentTimerExplosion < 0)
             {
                 currentTimerExplosion = 1 / nbExplosionBySec;
@@ -80,6 +91,9 @@ public class IndianaManager : MonoBehaviour
                 currentTimerExplosionBarrage = timeBarrage;
 
                 currentPositionMultiplier++;
+                InvisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
+                InvisibleColliderForward.transform.position = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
+                indianaCamera.RailPositionWanted = transform.position + (currentPositionMultiplier) * directionIndiania;
                 for (int j = 0; j < nbBarrage; j++)
                 {
                     for (int i = 0; i < nbExplosionByBarrage; i++)
@@ -101,13 +115,32 @@ public class IndianaManager : MonoBehaviour
     }
 
 
-#if UNITY_EDITOR // conditional compilation is not mandatory
-    [ButtonMethod]
-    private void StartIndianaMoment()
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.GetComponent<PlayerController>())
+        {
+            StartingIndianaMoment();
+        }
+
+    }
+
+
+    private void StartingIndianaMoment()
     {
         activated = true;
         currentTimer = totalLenght;
         currentPositionMultiplier = 0;
+        indianaCamera.OnRail = true;
+        InvisibleColliderForward.SetActive(true);
+        indianaCamera.RailPositionWanted = transform.position + (currentPositionMultiplier) * directionIndiania; ;
+    }
+
+
+#if UNITY_EDITOR // conditional compilation is not mandatory
+    [ButtonMethod]
+    private void StartIndianaMomentEditor()
+    {
+        StartingIndianaMoment();
     }
 #endif
 }
