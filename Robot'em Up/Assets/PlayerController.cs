@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
+using MyBox;
 
 public class PlayerController : PawnController
 {
 	[Space(2)]
-	[Header("Player settings")]
+	[Separator("Player settings")]
 	public PlayerIndex playerIndex;
 	public float triggerTreshold = 0.1f;
 	GamePadState state;
-	GamePadState prevState;
 	private Camera cam;
 	private bool inputDisabled;
 
@@ -19,6 +19,22 @@ public class PlayerController : PawnController
 	public bool enableDunk;
 	public bool enablePickOwnBall;
 	public bool enableMagnet;
+
+	[Separator("Revive settings")]
+	public GameObject FX_hit;
+	public GameObject FX_death;
+	public GameObject FX_revive;
+
+	public float deathExplosionRadius = 5;
+	public float deathExplosionDamage = 10;
+	public float reviveExplosionRadius = 5;
+	public float reviveExplosionDamage = 10;
+
+	public float minAngleBetweenParts = 20;
+	public float revivePartsCount = 3;
+	public Vector2 minMaxProjectionForce = new Vector2(9, 11);
+	public float reviveHoldDuration = 3;
+	public float reviveFreezeDuration = 1;
 
 	private DunkController dunkController;
 	private DashController dashController;
@@ -34,6 +50,14 @@ public class PlayerController : PawnController
 	}
 	private void Update ()
 	{
+		if (Input.GetKeyDown(KeyCode.K))
+		{
+			Kill();
+		}
+		if (Input.GetKeyDown(KeyCode.L))
+		{
+			Revive();
+		}
 		if (!inputDisabled) { GetInput(); }
 	}
 	void GetInput ()
@@ -55,7 +79,6 @@ public class PlayerController : PawnController
 
 	void GamepadInput ()
 	{
-		prevState = state;
 		state = GamePad.GetState(playerIndex);
 		moveInput = (state.ThumbSticks.Left.X * cam.transform.right) + (state.ThumbSticks.Left.Y * cam.transform.forward);
 		moveInput.y = 0;
@@ -205,5 +228,33 @@ public class PlayerController : PawnController
 			yield return new WaitForEndOfFrame();
 		}
 		GamePad.SetVibration(playerIndex, 0f, 0f);
+	}
+
+	public override void Damage ( int _amount )
+	{
+		base.Damage(_amount);
+		FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
+		if (currentHealth <= 0)
+		{
+			Kill();
+		}
+	}
+
+	public override void Kill ()
+	{
+		animator.SetTrigger("Dead");
+		SetUntargetable();
+		Freeze();
+		Hide();
+		DisableInput();
+	}
+
+	void Revive()
+	{
+		animator.SetTrigger("Revived");
+		UnFreeze();
+		UnHide();
+		SetTargetable();
+		EnableInput();
 	}
 }

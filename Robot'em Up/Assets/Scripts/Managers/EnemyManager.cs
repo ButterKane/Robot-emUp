@@ -12,8 +12,8 @@ public class EnemyManager : MonoBehaviour
 
     [Space(2)]
     [Header("Auto-assigned References")]
-    public GameObject playerOne;
-    public GameObject playerTwo;
+    public PlayerController playerOne;
+    public PlayerController playerTwo;
     public GameObject enemyCurrentlyAttacking = null;
     public List<EnemyBehaviour> enemies;
 

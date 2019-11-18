@@ -317,7 +317,7 @@ public class BallBehaviour : MonoBehaviour
 					ConvertCoordinatesToCurve(currentPassController.GetCurvedPathCoordinates(currentPassController.GetTarget().transform, initialLookDirection), out curveX, out curveY, out curveZ, out curveLength);
 					currentMaxDistance = curveLength;
 					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
-					//transform.position = Vector3.Lerp(transform.position, new Vector3(curveX.Evaluate(positionOnCurve), curveY.Evaluate(positionOnCurve), curveZ.Evaluate(positionOnCurve)), Time.deltaTime * currentSpeed);
+					if (positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); }
 					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
 					currentDirection = nextPosition - transform.position;
 				}
@@ -332,7 +332,6 @@ public class BallBehaviour : MonoBehaviour
 
 				if (currentSpeed <= 0)
 				{
-					//Ball has arrived to it's destination
 					currentCurve = null;
 					ChangeState(BallState.Grounded);
 				}
@@ -340,10 +339,8 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
-					RaycastHit hit;
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
 
-					//NEW COLLISION SYSTEM
 					RaycastHit[] hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
 					foreach (RaycastHit raycast in hitColliders)
 					{
@@ -380,40 +377,6 @@ public class BallBehaviour : MonoBehaviour
 							}
 						}
 					}
-
-					//OLD COLLISION SYSTEM
-					/*
-					if (Physics.SphereCast(transform.position, 1f, currentDirection, out hit, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f))
-					{
-						IHitable potentialHitableObjectFound = hit.transform.GetComponent<IHitable>();
-						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
-						{
-							hitGameObjects.Add(potentialHitableObjectFound);
-							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
-						}
-						if (hit.collider.isTrigger || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
-						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
-						{
-							if (currentCurve != null)
-							{
-								currentCurve = null;
-								currentDistanceTravelled = 0;
-								currentMaxDistance = currentBallDatas.maxDistance;
-							}
-							Vector3 hitNormal = hit.normal;
-							hitNormal.y = 0;
-							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
-							newDirection.y = -currentDirection.y;
-							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
-							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
-						} else if (canHitWalls)
-						{
-							ChangeState(BallState.Grounded);
-							MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
-						}
-					}
-					*/
-
 					RaycastHit[] previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
 					foreach (RaycastHit raycast in previousColliders)
 					{
@@ -425,12 +388,8 @@ public class BallBehaviour : MonoBehaviour
 						}
 					}
 				}
-
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
 				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
-
-				Vector3 previousDirection = (transform.position - previousPosition);
-				float previousDirectionMagnitude = previousDirection.magnitude;
 				break;
 		}
 	}
