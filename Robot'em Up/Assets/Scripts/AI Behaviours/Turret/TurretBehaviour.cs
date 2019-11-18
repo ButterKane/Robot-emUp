@@ -280,7 +280,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
             hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(hitParticlePrefab, 1.5f);
+            Destroy(hitParticle, 1.5f);
         }
     }
 
