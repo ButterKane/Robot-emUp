@@ -44,8 +44,9 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     float distanceWithPlayerTwo;
     float distanceWithFocusedPlayer;
     Transform focusedPlayer = null;
-    
-    [Space(2)]
+	public float energyAmount;
+
+	[Space(2)]
     [Header("Focus")]
     public float focusDistance;
     public float unfocusDistance;
@@ -352,6 +353,13 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
+		switch (_source)
+		{
+			case DamageSource.Dunk:
+				Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+				BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+				break;
+		}
         Health -= _damages;
         _ball.Explode(true);
         if (Health <= 0)
@@ -363,9 +371,9 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             Animator.SetTrigger("HitTrigger");
             GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
             hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(hitParticlePrefab, 1f);
+            Destroy(hitParticle, 1f);
         }
-        throw new System.NotImplementedException();
+		EnergyManager.IncreaseEnergy(energyAmount);
     }
 
     void Die()
