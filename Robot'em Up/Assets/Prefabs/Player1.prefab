@@ -106,15 +106,17 @@ MonoBehaviour:
   enablePickOwnBall: 0
   enableMagnet: 1
   FX_hit: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89, type: 3}
-  FX_death: {fileID: 0}
+  FX_death: {fileID: 931145262344750406, guid: 49511d94e820e4147827919cbd7c9d50, type: 3}
   FX_revive: {fileID: 0}
-  deathExplosionRadius: 5
+  deathExplosionRadius: 20
   deathExplosionDamage: 10
-  reviveExplosionRadius: 5
+  deathExplosionForce: 10
+  reviveExplosionRadius: 20
   reviveExplosionDamage: 10
-  minAngleBetweenParts: 20
+  reviveExplosionForce: 10
   revivePartsCount: 3
-  minMaxProjectionForce: {x: 9, y: 11}
+  partExplosionAngleRandomness: 0.412
+  minMaxProjectionForce: {x: 15, y: 17}
   reviveHoldDuration: 3
   reviveFreezeDuration: 1
 --- !u!114 &514769572
@@ -930,6 +932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d41bc0d9d50034a9d189359eff6d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  retrievedParts: []
 --- !u!1 &8166042458316642354
 GameObject:
   m_ObjectHideFlags: 0

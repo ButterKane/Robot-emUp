@@ -6,11 +6,10 @@ public class VeryBasicEnemyAttackHitBox : MonoBehaviour
 {
     void OnTriggerEnter(Collider other)
     {
-        print(other.name);
         if (other.tag == "Player")
         {
             if (other.GetComponent<PawnController>() != null)
-                other.GetComponent<PawnController>().Damage(2);
+                other.GetComponent<PawnController>().Damage(8);
         }
     }
 }

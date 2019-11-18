@@ -220,7 +220,10 @@ public class DunkController : MonoBehaviour
 				{
 					player.Vibrate(0.3f, VibrationForce.Heavy);
 				}
-				Destroy(dashFX);
+				if (dashFX != null)
+				{
+					Destroy(dashFX);
+				}
 				FXManager.InstantiateFX(ballDatas.DunkExplosion, ball.transform.position, false, Vector3.zero, Vector3.one);
 				break;
 		}

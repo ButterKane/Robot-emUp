@@ -202,6 +202,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case VeryBasicEnemyState.ChangingFocus:
                 break;
             case VeryBasicEnemyState.PreparingAttack:
+				if (focusedPlayer == null) { break; }
                 Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
                 _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
                 transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
@@ -260,7 +261,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
     void EnterState(VeryBasicEnemyState _newState)
     {
-        print(_newState);
         switch (_newState)
         {
             case VeryBasicEnemyState.Idle:
@@ -353,15 +353,16 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
-		switch (_source)
+		if (_source == DamageSource.Dunk || _source == DamageSource.DeathExplosion)
 		{
-			case DamageSource.Dunk:
-				Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-				BumpMe(10, 1, 1, normalizedImpactVector.normalized);
-				break;
+			Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+			BumpMe(10, 1, 1, normalizedImpactVector.normalized);
 		}
         Health -= _damages;
-        _ball.Explode(true);
+		if (_ball != null)
+		{
+			_ball.Explode(true);
+		}
         if (Health <= 0)
         {
             Die();
