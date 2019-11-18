@@ -337,11 +337,11 @@ MonoBehaviour:
   Rb: {fileID: 373019035910456883}
   Animator: {fileID: 373019037066540610}
   navMeshAgent: {fileID: 373019035910456886}
-  Target: {fileID: 0}
   _playerOne: {fileID: 0}
   _playerTwo: {fileID: 0}
   MaxHealth: 30
   Health: 0
+  focusedPlayer: {fileID: 0}
   energyAmount: 1
   focusDistance: 18
   unfocusDistance: 20
@@ -414,6 +414,8 @@ MonoBehaviour:
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
   hitParticleScale: 3
   ClosestSurroundPoint: {fileID: 0}
+  BezierCurveHeight: 0.5
+  BezierDistanceToHeightRatio: 100
 --- !u!1 &373019035912214700
 GameObject:
   m_ObjectHideFlags: 0

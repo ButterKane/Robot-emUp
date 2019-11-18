@@ -78,17 +78,20 @@ public class EnemyManager : MonoBehaviour
 
         foreach (var enemy in enemies)
         {
-            if (enemy.Target.gameObject == playerOne)
+            if (enemy.focusedPlayer != null)
             {
-                groupOne.Add(enemy);
+                if (enemy.focusedPlayer.gameObject == playerOne.gameObject)
+                {
+                    groupOne.Add(enemy);
+                }
+                else if (enemy.focusedPlayer.gameObject == playerTwo.gameObject)
+                {
+                    groupTwo.Add(enemy);
+                }
+                else { Debug.Log("The enemy " + enemy.name + " doesn't have a target"); }
             }
-            else if (enemy.Target.gameObject == playerTwo)
-            {
-                groupTwo.Add(enemy);
-            }
-            else { Debug.Log("The enemy " + enemy.name + " doesn't have a target"); }
         }
-        
+
         groupOne = GetClosestEnemies(groupOne);
         groupTwo = GetClosestEnemies(groupTwo);
     }
@@ -103,8 +106,9 @@ public class EnemyManager : MonoBehaviour
             return null;
         }
 
-        enemies.Sort((a, b) => {
-            var target = a.Target;
+        enemies.Sort((a, b) =>
+        {
+            var target = a.focusedPlayer;
             var dstToA = (target.transform.position - a.transform.position).magnitude;
             var dstToB = (target.transform.position - b.transform.position).magnitude;
 
@@ -121,7 +125,7 @@ public class EnemyManager : MonoBehaviour
                 closeEnemies.Add(enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
             }
         }
-        
+
         return closeEnemies;
     }
 

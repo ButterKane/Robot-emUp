@@ -30,38 +30,39 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Separator("Auto-assigned References")]
-    public Transform Target;
     [SerializeField] private Transform _playerOne;
+    private PawnController _playerOneController;
     [SerializeField] private Transform _playerTwo;
+    private PawnController _playerTwoController;
 
 
     [Space(2)]
     [Separator("Tweakable variables")]
     bool playerOneInRange;
     bool playerTwoInRange;
-    public int MaxHealth = 100;
+    public int MaxHealth = 30;
     public int Health;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
     float distanceWithFocusedPlayer;
-    Transform focusedPlayer = null;
-    public float energyAmount;
+    public Transform focusedPlayer = null;
+    public float energyAmount = 1;
 
     [Space(2)]
     [Header("Focus")]
-    public float focusDistance;
-    public float unfocusDistance;
-    public float timeBetweenCheck;
-    public float distanceBeforeChangingPriority;
+    public float focusDistance = 18;
+    public float unfocusDistance = 20;
+    public float timeBetweenCheck = 0.25f;
+    public float distanceBeforeChangingPriority = 3;
 
     [Space(2)]
     [Header("Attack")]
-    public float distanceToAttack;
-    public float maxAnticipationTime;
-    [Range(0, 1)] public float rotationSpeedPreparingAttack;
+    public float distanceToAttack = 5;
+    public float maxAnticipationTime = 0.5f;
+    [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
     float anticipationTime;
-    public float attackMaxDistance;
-    public float maxAttackDuration;
+    public float attackMaxDistance = 8;
+    public float maxAttackDuration = 0.5f;
     float attackDuration;
     float attackTimeProgression;
     public AnimationCurve attackSpeedCurve;
@@ -72,14 +73,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public GameObject attackHitBoxPrefab;
     GameObject myAttackHitBox;
     public Vector3 hitBoxOffset;
-    public float maxTimePauseAfterAttack;
+    public float maxTimePauseAfterAttack = 1;
     float timePauseAfterAttack;
-    public float attackRaycastDistance;
+    public float attackRaycastDistance = 2;
     bool mustCancelAttack;
 
     [Space(2)]
     [Header("Bump")]
-    public float maxGettingUpDuration;
+    public float maxGettingUpDuration = 0.6f;
     public AnimationCurve bumpDistanceCurve;
     float bumpDistance;
     float bumpDuration;
@@ -91,20 +92,23 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     float bumpTimeProgression;
     [Range(0, 1)] public float whenToTriggerFallingAnim;
     bool fallingTriggerLaunched;
-    public float bumpRaycastDistance;
+    public float bumpRaycastDistance = 1;
     bool mustCancelBump;
 
 
     [Space(2)]
     [Header("FX References")]
     public GameObject deathParticlePrefab;
-    public float deathParticleScale;
+    public float deathParticleScale = 2;
     public GameObject hitParticlePrefab;
-    public float hitParticleScale;
+    public float hitParticleScale = 3;
 
     [Space(2)]
     [Header("Surrounding")]
     public Transform ClosestSurroundPoint;
+    [Range(0, 1)]
+    public float BezierCurveHeight = 0.5f;
+    public float BezierDistanceToHeightRatio = 100f;
 
     //-----------------------------------------
     public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
@@ -116,6 +120,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _self = transform;
         _playerOne = GameManager.i.playerOne.transform;
         _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOneController = _playerOne.GetComponent<PlayerController>();
+        _playerTwoController = _playerTwo.GetComponent<PlayerController>();
+        GameManager.i.enemyManager.enemies.Add(this);
         State = EnemyState.Following;
         StartCoroutine(CheckDistanceAndAdaptFocus());
     }
@@ -148,7 +155,33 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.Following:
                 if (focusedPlayer != null)
                 {
-                    navMeshAgent.SetDestination(focusedPlayer.position);
+                    if (ClosestSurroundPoint != null)
+                    {
+
+                        float distanceToPointRatio = (1 + (_self.position - ClosestSurroundPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+
+                        Vector3 p0 = _self.position;    // The starting point
+
+                        Vector3 p2 = SwissArmyKnife.GetFlattedDownPosition(ClosestSurroundPoint.position, _self.position);  // The destination
+
+                        float angle = Vector3.SignedAngle(p2 - p0, focusedPlayer.transform.position - p0, Vector3.up);
+
+                        int moveSens = angle > 1 ? 1 : -1;
+
+                        Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight * distanceToPointRatio;  // "third point" of the bezier curve
+
+                        // Calculating position on bezier curve, following start point, end point and avancement
+                        // In this version, the avancement has been replaced by a constant because it's recalculated every frame
+                        Vector3 positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * p0) + (2 * 0.5f * 0.5f * p1) + (Mathf.Pow(0.5f, 2) * p2);
+                        navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(positionOnBezierCurve, focusedPlayer.position));
+
+                        
+                    }
+                    else
+                    {
+                        navMeshAgent.SetDestination(focusedPlayer.position);
+                    }
+
                     if (distanceWithFocusedPlayer <= distanceToAttack)
                     {
                         ChangingState(EnemyState.PreparingAttack);
@@ -346,6 +379,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     Transform GetClosestPlayer()
     {
+        if (!_playerOneController.IsTargetable())
+        {
+            return _playerTwo;
+        }
+
+        if (!_playerTwoController.IsTargetable())
+        {
+            return _playerOne;
+        }
+
         if (distanceWithPlayerOne >= distanceWithPlayerTwo)
         {
             return _playerTwo;
@@ -410,6 +453,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             playerTwoInRange = false;
         }
 
+
         //Unfocus player because of distance
         if (focusedPlayer != null)
         {
@@ -422,13 +466,19 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         //Changing focus between the two
         if (playerOneInRange && playerTwoInRange && focusedPlayer != null)
         {
-            if (focusedPlayer == _playerOne && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if (_playerTwoController.IsTargetable())
             {
-                ChangingFocus(_playerTwo);
+                if (focusedPlayer == _playerOne && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
+                {
+                    ChangingFocus(_playerTwo);
+                }
             }
-            else if (focusedPlayer == _playerTwo && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (_playerOneController.IsTargetable())
             {
-                ChangingFocus(_playerOne);
+                if (focusedPlayer == _playerTwo && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+                {
+                    ChangingFocus(_playerOne);
+                }
             }
         }
 
