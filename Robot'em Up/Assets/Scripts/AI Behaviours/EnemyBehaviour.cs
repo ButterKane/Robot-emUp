@@ -112,11 +112,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Death")]
-    public int coreDrops = 1;
-
-    //-----------------------------------------
-    public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-    //-----------------------------------------
+    public float coreDropChances = 1;
+	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
 
     void Start()
     {
@@ -450,8 +447,23 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
         Destroy(deathParticle, 1.5f);
-        Destroy(gameObject);
+		if (Random.Range(0f, 1f) <= coreDropChances)
+		{
+			DropCore();
+		}	
+		Destroy(gameObject);
     }
+
+	void DropCore()
+	{
+		GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+		newCore.name = "Core of " + gameObject.name;
+		newCore.transform.position = transform.position;
+		Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
+		float throwForce = Random.Range(10, 17);
+		wantedDirectionAngle.y = throwForce * 0.035f;
+		newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+	}
 
     IEnumerator CheckDistanceAndAdaptFocus()
     {

@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 89546690751142512}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 15, y: 15, z: 15}
   m_Children:
   - {fileID: 1554781355365910208}
   m_Father: {fileID: 5742919883532306063}
@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89546690751142512}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 4300004, guid: 47d64afc26b14c746a12d50bf5c67769, type: 3}
 --- !u!23 &7551979151563360218
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -58,7 +58,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 55c0cd122e2ec5d4eb6df00a2966824b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4981,7 +4981,7 @@ Transform:
   m_GameObject: {fileID: 1554781355365754508}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.2537, y: 2.2537022, z: 2.2537022}
+  m_LocalScale: {x: 0.15024666, y: 0.1502467, z: 0.1502467}
   m_Children: []
   m_Father: {fileID: 2412270733443665491}
   m_RootOrder: 0
@@ -19048,8 +19048,8 @@ GameObject:
   - component: {fileID: 8714318216389512783}
   - component: {fileID: 5517303860623863048}
   m_Layer: 17
-  m_Name: PlayerPart
-  m_TagString: PlayerPart
+  m_Name: PlayerCore
+  m_TagString: CorePart
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19083,7 +19083,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e8f07a420f874a488ec0920ad26fbf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linkedPlayer: {fileID: 0}
+  linkedPawn: {fileID: 0}
+  healthValue: 0
+  grounded: 0
   totalPartCount: 0
 --- !u!54 &1671113247490161440
 Rigidbody:
