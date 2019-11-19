@@ -14,6 +14,8 @@ public enum DamageSource
 {
 	Ball,
 	Dunk,
+	DeathExplosion,
+
 }
 
 public enum DamageModifierSource

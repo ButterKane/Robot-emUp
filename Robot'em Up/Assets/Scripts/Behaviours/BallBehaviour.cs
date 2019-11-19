@@ -271,7 +271,6 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
-				Debug.Log("Grounded ball");
 				break;
 			case BallState.Aimed:
 				DisableGravity();
