@@ -110,6 +110,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float BezierCurveHeight = 0.5f;
     public float BezierDistanceToHeightRatio = 100f;
 
+    [Space(2)]
+    [Header("Death")]
+    public int coreDrops = 1;
+
     //-----------------------------------------
     public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     //-----------------------------------------
@@ -157,7 +161,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 {
                     if (ClosestSurroundPoint != null)
                     {
-
                         float distanceToPointRatio = (1 + (_self.position - ClosestSurroundPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
 
                         Vector3 p0 = _self.position;    // The starting point
@@ -174,8 +177,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                         // In this version, the avancement has been replaced by a constant because it's recalculated every frame
                         Vector3 positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * p0) + (2 * 0.5f * 0.5f * p1) + (Mathf.Pow(0.5f, 2) * p2);
                         navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(positionOnBezierCurve, focusedPlayer.position));
-
-                        
                     }
                     else
                     {
@@ -250,32 +251,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 }
                 break;
             case EnemyState.Attacking:
-
-                attackTimeProgression += Time.deltaTime / attackDuration;
-                //attackDuration -= Time.deltaTime;
-
-                //must stop ?
-                int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-                if (Physics.Raycast(_self.position, _self.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
-                {
-                    attackTimeProgression = whenToTriggerEndOfAttackAnim;
-                    mustCancelAttack = true;
-                }
-
-                if (!mustCancelAttack)
-                {
-                    Rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
-                }
-
-                if (attackTimeProgression >= 1)
-                {
-                    ChangingState(EnemyState.PauseAfterAttack);
-                }
-                else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
-                {
-                    endOfAttackTriggerLaunched = true;
-                    Animator.SetTrigger("EndOfAttackTrigger");
-                }
+                AttackingState();
+                
                 break;
             case EnemyState.PauseAfterAttack:
                 timePauseAfterAttack -= Time.deltaTime;
@@ -285,6 +262,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 }
                 break;
             case EnemyState.Dying:
+                Die();
                 break;
         }
     }
@@ -327,19 +305,53 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 Animator.SetTrigger("AttackTrigger");
                 break;
             case EnemyState.Attacking:
-                attackDuration = maxAttackDuration;
-                endOfAttackTriggerLaunched = false;
-                attackInitialPosition = transform.position;
-                attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
-                attackTimeProgression = 0;
-                myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
-                mustCancelAttack = false;
+                EnterAttackingState();
                 break;
             case EnemyState.PauseAfterAttack:
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
                 break;
+        }
+    }
+
+    public virtual void EnterAttackingState()
+    {
+        attackDuration = maxAttackDuration;
+        endOfAttackTriggerLaunched = false;
+        attackInitialPosition = transform.position;
+        attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
+        attackTimeProgression = 0;
+        myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
+        mustCancelAttack = false;
+    }
+
+    public virtual void AttackingState()
+    {
+        attackTimeProgression += Time.deltaTime / attackDuration;
+        //attackDuration -= Time.deltaTime;
+
+        //must stop ?
+        int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+        if (Physics.Raycast(_self.position, _self.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
+        {
+            attackTimeProgression = whenToTriggerEndOfAttackAnim;
+            mustCancelAttack = true;
+        }
+
+        if (!mustCancelAttack)
+        {
+            Rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
+        }
+
+        if (attackTimeProgression >= 1)
+        {
+            ChangingState(EnemyState.PauseAfterAttack);
+        }
+        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
+        {
+            endOfAttackTriggerLaunched = true;
+            Animator.SetTrigger("EndOfAttackTrigger");
         }
     }
 
@@ -401,18 +413,27 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
+        Vector3 normalizedImpactVector;
         switch (_source)
         {
             case DamageSource.Dunk:
-                Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized);
                 break;
+            case DamageSource.RedBarrelExplosion:
+                normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                break;
+
         }
         Health -= _damages;
-        _ball.Explode(true);
+
+        if (_ball)
+            _ball.Explode(true);
+
         if (Health <= 0)
         {
-            Die();
+            State = EnemyState.Dying;
         }
         else
         {
@@ -424,7 +445,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         EnergyManager.IncreaseEnergy(energyAmount);
     }
 
-    void Die()
+    protected virtual void Die()
     {
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
