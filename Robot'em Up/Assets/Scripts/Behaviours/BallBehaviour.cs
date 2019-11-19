@@ -88,8 +88,6 @@ public class BallBehaviour : MonoBehaviour
 
     public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
 	{
-
-		Debug.Log("Shooting");
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
 		transform.position = _startPosition;

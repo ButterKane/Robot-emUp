@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerPart : MonoBehaviour
+public class CorePart : MonoBehaviour
 {
-	public PlayerController linkedPlayer;
+	public PawnController linkedPawn;
 	private Rigidbody rb;
 	private Animator animator;
 	float lifeTime = 0;
 	bool inited = false;
+	public int healthValue;
 	public bool grounded = false;
 	public int totalPartCount;
 	PlayerController picker = null;
-	public void Init(PlayerController _linkedPlayer, Vector3 _throwVector, int _totalPartCount)
+	public void Init(PawnController _linkedPawn, Vector3 _throwVector, int _totalPartCount, int _healthValue)
 	{
-		linkedPlayer = _linkedPlayer;
+		linkedPawn = _linkedPawn;
 		picker = null;
 		totalPartCount = _totalPartCount;
+		healthValue = _healthValue;
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponent<Animator>();
 		inited = true;

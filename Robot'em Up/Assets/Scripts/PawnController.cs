@@ -331,13 +331,19 @@ public class PawnController : MonoBehaviour
         rb.AddExplosionForce(_magnitude, explosionPoint, 0);
     }
 
+	public virtual void Heal(int _amount)
+	{
+		int newHealth = currentHealth + _amount;
+		currentHealth = Mathf.Clamp(newHealth, 0, GetMaxHealth());
+	}
+
 	public virtual void Damage(int _amount)
 	{
         StartCoroutine(InvicibleFrame());
 		currentHealth -= _amount;
-		if (_amount <= 0)
+		if (currentHealth <= 0)
 		{
-			Destroy(this.gameObject);
+			Kill();
 		}
 		float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
 		scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);

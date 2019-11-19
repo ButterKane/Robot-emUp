@@ -22,6 +22,7 @@ public class PlayerController : PawnController, IHitable
 
 	[Separator("Revive settings")]
 	public GameObject FX_hit;
+	public GameObject FX_heal;
 	public GameObject FX_death;
 	public GameObject FX_revive;
 
@@ -244,14 +245,15 @@ public class PlayerController : PawnController, IHitable
 		GamePad.SetVibration(playerIndex, 0f, 0f);
 	}
 
+	public override void Heal ( int _amount )
+	{
+		base.Heal(_amount);
+		FXManager.InstantiateFX(FX_heal, Vector3.zero, true, Vector3.zero, Vector3.one * 3.25f, transform);
+	}
 	public override void Damage ( int _amount )
 	{
 		base.Damage(_amount);
 		FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
-		if (currentHealth <= 0)
-		{
-			Kill();
-		}
 	}
 
 	public override void Kill ()
@@ -281,7 +283,7 @@ public class PlayerController : PawnController, IHitable
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
 		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
-		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
+		FXManager.InstantiateFX(FX_revive, GetCenterPosition(), false, Vector3.zero, Vector3.one * 5);
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
@@ -299,13 +301,13 @@ public class PlayerController : PawnController, IHitable
 		float defaultAngleDifference = 360 / revivePartsCount;
 		for (int i = 0; i < revivePartsCount; i++)
 		{
-			GameObject revivePart = Instantiate(Resources.Load<GameObject>("PlayerResource/PlayerPart"), null);
+			GameObject revivePart = Instantiate(Resources.Load<GameObject>("PlayerResource/PlayerCore"), null);
 			revivePart.name = "Part " + i + " of " + gameObject.name;
 			revivePart.transform.position = transform.position;
 			Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, currentAngle, 0));
 			float throwForce = Random.Range(minMaxProjectionForce.x, minMaxProjectionForce.y);
 			wantedDirectionAngle.y = throwForce * 0.035f;
-			revivePart.GetComponent<PlayerPart>().Init(this, wantedDirectionAngle.normalized * throwForce, revivePartsCount);
+			revivePart.GetComponent<CorePart>().Init(this, wantedDirectionAngle.normalized * throwForce, revivePartsCount, 0);
 			currentAngle += defaultAngleDifference + Random.Range(-defaultAngleDifference * partExplosionAngleRandomness, defaultAngleDifference * partExplosionAngleRandomness);
 		}
 	}
