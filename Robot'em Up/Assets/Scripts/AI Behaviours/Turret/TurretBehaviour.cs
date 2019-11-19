@@ -23,9 +23,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     [Space(2)]
     [Separator("Auto-assigned References")]
     public Transform Target;
-    [SerializeField] private Transform _playerOne;
-    [SerializeField] private Transform _playerTwo;
-    
+    private Transform _playerOneTransform;
+    private Transform _playerTwoTransform;
+    private PawnController _playerOnePawnController;
+    private PawnController _playerTwoPawnController;
+
     [Space(2)]
     [Separator("Variables")]
     public TurretState State;
@@ -46,14 +48,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     bool playerTwoInRange;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
-    Transform focusedPlayer = null;
+    Transform focusedPlayerTransform = null;
+    PawnController focusedPlayerPawnController;
     public float forwardPredictionRatio;
     public float maxRotationSpeed;
     public float rotationSpeedAcceleration;
     float rotationSpeed;
 
     [Space(2)]
-    [Header("AimingCube")]
+    [Header("Aiming Cube & Sphere")]
+    //CUBE
     public Transform aimingCubeTransform;
     public Renderer aimingCubeRenderer;
     public Vector3 aimingCubeDefaultScale;
@@ -63,6 +67,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
     public float followingAimingColorIntensity;
+    //MISC
+    Vector3 wantedAimingPosition;
+    Quaternion wantedRotation;
 
     [Space(2)]
     [Header("Bullet")]
@@ -81,13 +88,15 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     void Start()
     {
         _self = transform;
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOneTransform = GameManager.i.playerOne.transform;
+        _playerTwoTransform = GameManager.i.playerTwo.transform;
+        _playerOnePawnController = GameManager.i.playerOne.GetComponent<PawnController>();
+        _playerTwoPawnController = GameManager.i.playerTwo.GetComponent<PawnController>();
 
 
         Health = MaxHealth;
 
-        StartCoroutine(CheckDistance());
+        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
 
     void Update()
@@ -98,19 +107,19 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void UpdateDistancesToPlayers()
     {
-        distanceWithPlayerOne = Vector3.Distance(_self.position, _playerOne.position);
-        distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwo.position);
+        distanceWithPlayerOne = Vector3.Distance(_self.position, _playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwoTransform.position);
     }
 
     Transform GetClosestPlayer()
     {
         if (distanceWithPlayerOne >= distanceWithPlayerTwo)
         {
-            return _playerTwo;
+            return _playerTwoTransform;
         }
         else
         {
-            return _playerOne;
+            return _playerOneTransform;
         }
     }
 
@@ -123,7 +132,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void RotateTowardsPlayerAndHisForward()
     {
-        Quaternion wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayerTransform.position + focusedPlayerTransform.forward*focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
@@ -134,10 +143,14 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         switch (State)
         {
             case TurretState.Attacking:
-				if (focusedPlayer != null)
+				if (focusedPlayerTransform != null)
 				{
                     if(shouldRotateTowardsPlayer)
                         RotateTowardsPlayerAndHisForward();
+                }
+                if(focusedPlayerTransform != null)
+                {
+                    wantedAimingPosition = focusedPlayerTransform.position + focusedPlayerTransform.forward * focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio;
                 }
                 break;
             case TurretState.PrepareToAttack:
@@ -198,19 +211,20 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void ChangingFocus(Transform _newFocus)
     {
-        if(focusedPlayer == null && _newFocus!=null)
+        if(focusedPlayerTransform == null && _newFocus!=null)
         {
             ChangingState(TurretState.PrepareToAttack);
         }
-        else if(focusedPlayer != null && _newFocus == null)
+        else if(focusedPlayerTransform != null && _newFocus == null)
         {
             ChangingState(TurretState.Hiding);
         }
 
-        focusedPlayer = _newFocus;
+        focusedPlayerTransform = _newFocus;
+        focusedPlayerPawnController = _newFocus.GetComponent<PawnController>();
     }
 
-    IEnumerator CheckDistance()
+    IEnumerator CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance)
@@ -232,36 +246,38 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
 
         //Unfocus player because of distance
-        if (focusedPlayer != null)
+        if (focusedPlayerTransform != null)
         {
-            if((focusedPlayer == _playerOne && distanceWithPlayerOne>unfocusDistance) || (focusedPlayer == _playerTwo && distanceWithPlayerTwo > unfocusDistance))
+            if((focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne>unfocusDistance) 
+                || (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo > unfocusDistance
+                || focusedPlayerPawnController.isInvincible))
             {
                 ChangingFocus(null);
             }
         }
 
         //Changing focus between the two
-        if(playerOneInRange && playerTwoInRange && focusedPlayer != null)
+        if(playerOneInRange && playerTwoInRange && focusedPlayerTransform != null)
         {
-            if(focusedPlayer == _playerOne && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if(focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
-                ChangingFocus(_playerTwo);
+                ChangingFocus(_playerTwoTransform);
             }
-            else if (focusedPlayer == _playerTwo && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
             {
-                ChangingFocus(_playerOne);
+                ChangingFocus(_playerOneTransform);
             }
         }
 
         //no focused yet ? Choose one
-        if((playerOneInRange || playerTwoInRange) && focusedPlayer == null)
+        if((playerOneInRange || playerTwoInRange) && focusedPlayerTransform == null)
         {
             ChangingFocus(GetClosestPlayer());
         }
 
         //Restart coroutine in X seconds
         yield return new WaitForSeconds(timeBetweenCheck);
-        StartCoroutine(CheckDistance());
+        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
 
     void Die()
