@@ -256,8 +256,11 @@ public class PlayerController : PawnController, IHitable
 
 	public override void Kill ()
 	{
+		if (moveState == MoveState.Dead) { return; }
+		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
+		DropBall();
 		SetUntargetable();
 		Freeze();
 		DisableInput();
@@ -268,6 +271,7 @@ public class PlayerController : PawnController, IHitable
 
 	public void Revive(PlayerController _player)
 	{
+		moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
 		_player.SetTargetable();
 		_player.UnHide();
