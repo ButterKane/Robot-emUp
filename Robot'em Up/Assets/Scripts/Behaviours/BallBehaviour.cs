@@ -67,7 +67,7 @@ public class BallBehaviour : MonoBehaviour
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
     {
-        transform.SetParent(null, true);
+		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
 		currentThrower = _thrower;
 		currentSpeed = _passDatas.moveSpeed;
@@ -88,6 +88,8 @@ public class BallBehaviour : MonoBehaviour
 
     public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
 	{
+
+		Debug.Log("Shooting");
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
 		transform.position = _startPosition;

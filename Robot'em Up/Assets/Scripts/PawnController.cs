@@ -9,7 +9,8 @@ public enum MoveState
     Walk,
     Blocked,
 	Jumping,
-	Climbing
+	Climbing,
+	Dead
 }
 
 public enum SlowReason
@@ -66,7 +67,7 @@ public class PawnController : MonoBehaviour
 
 	[Space(2)]
     [Header("Debug (Don't change)")]
-	[SerializeField] private MoveState moveState;
+	[HideInInspector] public MoveState moveState;
 	private float accelerationTimer;
     protected Vector3 moveInput;
 	protected Vector3 lookInput;
@@ -386,13 +387,16 @@ public class PawnController : MonoBehaviour
 		}
 	}
 
-	public void SetUntargetable ()
+	public void DropBall()
 	{
 		PassController potentialPassController = GetComponentInChildren<PassController>();
 		if (potentialPassController != null)
 		{
 			potentialPassController.DropBall();
 		}
+	}
+	public void SetUntargetable ()
+	{
 		foreach (Collider collider in GetComponentsInChildren<Collider>())
 		{
 			collider.enabled = false;

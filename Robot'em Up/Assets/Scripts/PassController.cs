@@ -313,6 +313,7 @@ public class PassController : MonoBehaviour
 	{
 		if (GetBall() == null) { return; }
 		ball.transform.SetParent(null);
+		ball.ChangeSpeed(0);
 		ball.ChangeState(BallState.Grounded);
 		ball = null;
 	}

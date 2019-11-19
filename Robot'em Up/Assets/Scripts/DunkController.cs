@@ -54,6 +54,8 @@ public class DunkController : MonoBehaviour
 	{
 		BallBehaviour ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
+		EnergyManager.DecreaseEnergy(1f);
+		Debug.Log("Energy : " + EnergyManager.GetEnergy());
 		Collider[] hitColliders = Physics.OverlapSphere(ball.transform.position, dunkExplosionRadius);
 		int i = 0;
 		while (i < hitColliders.Length)
@@ -200,7 +202,6 @@ public class DunkController : MonoBehaviour
 				playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
-				EnergyManager.DecreaseEnergy(0f);
 				Destroy(waitingFX);
 				dashFX = FXManager.InstantiateFX(ballDatas.DunkDash, ball.transform.position, false, Vector3.zero, Vector3.one, ball.transform);
 				break;
