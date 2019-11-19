@@ -4,7 +4,7 @@ using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
 
-public class PlayerController : PawnController
+public class PlayerController : PawnController, IHitable
 {
 	[Space(2)]
 	[Separator("Player settings")]
@@ -278,7 +278,7 @@ public class PlayerController : PawnController
 		SetTargetable();
 		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
 		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
-		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.DeathExplosion));
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
 			if (inf.linkedPlayer != _player)
@@ -345,5 +345,15 @@ public class PlayerController : PawnController
 		yield return new WaitForSeconds(_duration);
 		UnFreeze();
 		EnableInput();
+	}
+
+	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
+	{
+		switch (_source)
+		{
+			case DamageSource.RedBarrelExplosion:
+				Damage(_damages);
+				break;
+		}
 	}
 }
