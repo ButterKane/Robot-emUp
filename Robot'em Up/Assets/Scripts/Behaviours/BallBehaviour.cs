@@ -27,6 +27,7 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private List<DamageModifier> currentDamageModifiers;
 	[SerializeField] private Color currentColor;
 	[SerializeField] private bool teleguided;
+	[SerializeField] private float currentTimeFlying;
 
 	private Collider col;
 	private Rigidbody rb;
@@ -38,6 +39,7 @@ public class BallBehaviour : MonoBehaviour
 	public static BallBehaviour instance;
 
 	private Vector3 currentPosition;
+	private Vector3 startPosition;
 
 	private void Awake()
     {
@@ -57,6 +59,10 @@ public class BallBehaviour : MonoBehaviour
 
 	private void Update ()
 	{
+		if (currentState == BallState.Flying)
+		{
+			currentTimeFlying += Time.deltaTime;
+		}
 		UpdateBallPosition();
 		UpdateDamageModifiers();
 		if (Input.GetKeyDown(KeyCode.K))
@@ -67,6 +73,7 @@ public class BallBehaviour : MonoBehaviour
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
     {
+		startPosition = _passController.GetHandTransform().position;
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
 		currentThrower = _thrower;
@@ -76,7 +83,8 @@ public class BallBehaviour : MonoBehaviour
 		currentBounceCount = 0;
 		canBounce = true;
 		canHitWalls = true;
-		currentCurve = _passController.GetCurvedPathCoordinates(_target, _lookDirection);
+		currentCurve = _passController.GetCurvedPathCoordinates(startPosition, _target, _lookDirection);
+		currentTimeFlying = 0;
 		initialLookDirection = _lookDirection;
 		teleguided = false;
 
@@ -86,7 +94,7 @@ public class BallBehaviour : MonoBehaviour
 	}
 
 
-    public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas) //Shoot the ball toward a direction
+    public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas, bool _teleguided) //Shoot the ball toward a direction
 	{
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
@@ -96,9 +104,11 @@ public class BallBehaviour : MonoBehaviour
 		currentSpeed = _passDatas.moveSpeed;
 		currentBallDatas = _passDatas;
 		currentBounceCount = 0;
+		currentTimeFlying = 0;
+		currentCurve = null;
 		canBounce = true;
 		canHitWalls = true;
-		teleguided = true;
+		teleguided = _teleguided;
 
 		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
@@ -213,6 +223,16 @@ public class BallBehaviour : MonoBehaviour
 		return currentThrower;
 	}
 
+	public int GetCurrentBounceCount()
+	{
+		return currentBounceCount;
+	}
+
+	public float GetTimeFlying()
+	{
+		return currentTimeFlying;
+	}
+
 	public int GetCurrentDamages()
 	{
 		float damages = currentBallDatas.damages;
@@ -313,7 +333,7 @@ public class BallBehaviour : MonoBehaviour
 					float curveLength;
 					PassController currentPassController = GetCurrentThrower().GetComponent<PassController>();
 					if (currentPassController == null) { return; }
-					ConvertCoordinatesToCurve(currentPassController.GetCurvedPathCoordinates(currentPassController.GetTarget().transform, initialLookDirection), out curveX, out curveY, out curveZ, out curveLength);
+					ConvertCoordinatesToCurve(currentPassController.GetCurvedPathCoordinates(startPosition, currentPassController.GetTarget().transform, initialLookDirection), out curveX, out curveY, out curveZ, out curveLength);
 					currentMaxDistance = curveLength;
 					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
 					if (positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); }

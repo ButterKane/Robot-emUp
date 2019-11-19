@@ -17,7 +17,6 @@ public class PlayerController : PawnController, IHitable
 	public bool enableDash;
 	public bool enableJump;
 	public bool enableDunk;
-	public bool enablePickOwnBall;
 	public bool enableMagnet;
 
 	[Separator("Revive settings")]

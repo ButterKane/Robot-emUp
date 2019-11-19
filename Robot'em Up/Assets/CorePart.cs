@@ -63,6 +63,12 @@ public class CorePart : MonoBehaviour
 		}
 	}
 
+	public bool CanBePicked()
+	{
+		if (picker != null) { return false; }
+		return true;
+	}
+
 	public void Pick(PlayerController _player)
 	{
 		animator.SetTrigger("pick");
