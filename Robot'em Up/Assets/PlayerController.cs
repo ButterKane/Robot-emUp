@@ -14,6 +14,7 @@ public class PlayerController : PawnController, IHitable
 	private Camera cam;
 	private bool inputDisabled;
 
+	[SerializeField] private bool _lockable;  public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	public bool enableDash;
 	public bool enableJump;
 	public bool enableDunk;

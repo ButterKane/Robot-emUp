@@ -5,6 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	private int _hitCount;
 	private Vector3 initialScale;
 	public int hitCount { 

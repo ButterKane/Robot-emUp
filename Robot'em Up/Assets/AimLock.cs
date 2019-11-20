@@ -4,23 +4,23 @@ using UnityEngine;
 
 public class AimLock : MonoBehaviour
 {
-	public EnemyBehaviour linkedEnemy;
+	public Transform linkedTarget;
 	private Animator animator;
 	private SphereCollider extendedCollider;
 
-	public void Init(EnemyBehaviour _linkedEnemy, float _radius)
+	public void Init(Transform _linkedTarget, float _radius)
 	{
-		linkedEnemy = _linkedEnemy;
+		linkedTarget = _linkedTarget;
 		animator = GetComponent<Animator>();
-		extendedCollider = _linkedEnemy.gameObject.AddComponent<SphereCollider>();
+		extendedCollider = _linkedTarget.gameObject.AddComponent<SphereCollider>();
 		extendedCollider.isTrigger = true;
 		extendedCollider.radius = _radius;
 	}
 
 	private void Update ()
 	{
-		if (linkedEnemy == null) { return; }
-		transform.position = Camera.main.WorldToScreenPoint(linkedEnemy.transform.position + Vector3.up * 1);
+		if (linkedTarget == null) { return; }
+		transform.position = Camera.main.WorldToScreenPoint(linkedTarget.position + Vector3.up * 1);
 	}
 
 	public void DestroyObject()
