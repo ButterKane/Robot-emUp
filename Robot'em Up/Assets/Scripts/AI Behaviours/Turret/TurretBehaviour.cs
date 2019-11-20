@@ -111,15 +111,21 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwoTransform.position);
     }
 
-    Transform GetClosestPlayer()
+    Transform GetClosestAndAvailablePlayer()
     {
-        if (distanceWithPlayerOne >= distanceWithPlayerTwo)
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && _playerTwoPawnController.IsTargetable())
+            || !_playerOnePawnController.IsTargetable())
         {
             return _playerTwoTransform;
         }
-        else
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && _playerOnePawnController.IsTargetable())
+            || !_playerTwoPawnController.IsTargetable())
         {
             return _playerOneTransform;
+        }
+        else
+        {
+            return null;
         }
     }
 
@@ -256,15 +262,18 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         //Unfocus player because of distance
         if (focusedPlayerTransform != null)
         {
-            if((focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne>unfocusDistance) 
-                || (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo > unfocusDistance))
+            if((focusedPlayerTransform == _playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !_playerOnePawnController.IsTargetable())) 
+                || ((focusedPlayerTransform == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
+                //print("hey");
             }
         }
 
         //Changing focus between the two
-        if(playerOneInRange && playerTwoInRange && focusedPlayerTransform != null)
+        if((playerOneInRange && _playerOnePawnController.IsTargetable()) 
+            && (playerTwoInRange && _playerTwoPawnController.IsTargetable()) 
+            && focusedPlayerTransform != null)
         {
             if(focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
@@ -277,9 +286,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
 
         //no focused yet ? Choose one
-        if((playerOneInRange || playerTwoInRange) && focusedPlayerTransform == null)
+        if(((playerOneInRange && _playerOnePawnController.IsTargetable()) 
+            || (playerTwoInRange && _playerTwoPawnController.IsTargetable())) 
+            && focusedPlayerTransform == null)
         {
-            ChangingFocus(GetClosestPlayer());
+            ChangingFocus(GetClosestAndAvailablePlayer());
         }
 
         //Restart coroutine in X seconds
