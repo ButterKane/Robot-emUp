@@ -65,10 +65,6 @@ public class BallBehaviour : MonoBehaviour
 		}
 		UpdateBallPosition();
 		UpdateDamageModifiers();
-		if (Input.GetKeyDown(KeyCode.K))
-		{
-			AddNewDamageModifier(new DamageModifier(1.2f, -1f, DamageModifierSource.PerfectReception));
-		}
 	}
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
@@ -117,6 +113,8 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
+		currentCurve = null;
+		currentDistanceTravelled = 0;
 		currentBounceCount++;
 		currentDirection = _newDirection;
 		currentDirection.y = 0;
@@ -291,6 +289,7 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
+				LockManager.UnlockAll();
 				break;
 			case BallState.Aimed:
 				DisableGravity();
@@ -308,6 +307,7 @@ public class BallBehaviour : MonoBehaviour
 			case BallState.Held:
 				DisableGravity();
 				DisableCollisions();
+				LockManager.UnlockAll();
 				FXManager.InstantiateFX(currentBallDatas.ReceiveCore, Vector3.zero, true, Vector3.zero,Vector3.one, transform);
 				Destroy(trailFX);
 				break;
@@ -322,6 +322,10 @@ public class BallBehaviour : MonoBehaviour
 
 	private void UpdateBallPosition()
 	{
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			Bounce(Vector3.left * 10, currentBallDatas.speedMultiplierOnBounce);
+		}
 		switch (currentState)
 		{
 			case BallState.Flying:
@@ -333,10 +337,12 @@ public class BallBehaviour : MonoBehaviour
 					float curveLength;
 					PassController currentPassController = GetCurrentThrower().GetComponent<PassController>();
 					if (currentPassController == null) { return; }
-					ConvertCoordinatesToCurve(currentPassController.GetCurvedPathCoordinates(startPosition, currentPassController.GetTarget().transform, initialLookDirection), out curveX, out curveY, out curveZ, out curveLength);
+					List<Vector3> pathCoordinates = currentPassController.GetCurvedPathCoordinates(startPosition, currentPassController.GetTarget().transform, initialLookDirection);
+					ConvertCoordinatesToCurve(pathCoordinates, out curveX, out curveY, out curveZ, out curveLength);
 					currentMaxDistance = curveLength;
 					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
-					if (positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); }
+					PassController.LockEnemiesInPath(pathCoordinates, positionOnCurve);
+					if (positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
 					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
 					currentDirection = nextPosition - transform.position;
 				}
@@ -375,11 +381,6 @@ public class BallBehaviour : MonoBehaviour
 						{
 							if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 							{
-								if (currentCurve != null)
-								{
-									currentCurve = null;
-									currentDistanceTravelled = 0;
-								}
 								Vector3 hitNormal = raycast.normal;
 								hitNormal.y = 0;
 								Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);

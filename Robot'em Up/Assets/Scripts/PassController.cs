@@ -55,6 +55,7 @@ public class PassController : MonoBehaviour
 	private bool canReceive;
 	private float ballTimeInHand;
 	private bool didPerfectReception;
+	private PassState previousState;
 
 	private void Awake ()
 	{
@@ -95,6 +96,7 @@ public class PassController : MonoBehaviour
 			}
 			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
 			PreviewPath(pathCoordinates);
+			LockEnemiesInPath(pathCoordinates,0);
 			if (passPreviewInEditor)
 				PreviewPathInEditor(pathCoordinates);
 		}
@@ -296,8 +298,15 @@ public class PassController : MonoBehaviour
 
 	public void DisablePassPreview()
 	{
-		passPreview = false;
-		lineRenderer.positionCount = 0;
+		if (passPreview)
+		{
+			if (previousState != PassState.Shooting)
+			{
+				LockManager.UnlockAll();
+			}
+			passPreview = false;
+			lineRenderer.positionCount = 0;
+		}
 	}
 
 	public bool CanShoot()
@@ -354,6 +363,32 @@ public class PassController : MonoBehaviour
 		lineRenderer.materials[0].mainTextureScale = new Vector3(distance * (1f/lineRenderer.startWidth), 1, 1);
 	}
 
+	public static void LockEnemiesInPath(List<Vector3> _pathCoordinates, float _startValue)
+	{
+		List<EnemyBehaviour> foundEnemies = new List<EnemyBehaviour>();
+		int startPoint = Mathf.RoundToInt((_startValue - 0.05f) * _pathCoordinates.Count);
+		startPoint = Mathf.Clamp(startPoint, 0, _pathCoordinates.Count - 1);
+		for (int i = startPoint; i < _pathCoordinates.Count - 1; i++)
+		{
+			Vector3 direction = _pathCoordinates[i + 1] - _pathCoordinates[i];
+			foreach (RaycastHit hit in Physics.RaycastAll(_pathCoordinates[i], direction, direction.magnitude))
+			{
+				EnemyBehaviour potentialEnemy = hit.transform.GetComponent<EnemyBehaviour>();
+				if (potentialEnemy != null)
+				{
+					foundEnemies.Add(potentialEnemy);
+					LockManager.LockEnemy(potentialEnemy);
+				}
+			}
+		}
+		foreach (AimLock lockedEnemy in LockManager.lockedTargets)
+		{
+			if (!foundEnemies.Contains(lockedEnemy.linkedEnemy)) {
+				LockManager.UnlockEnemy(lockedEnemy);
+			}
+		}
+	}
+
 	private float GetPathTotalLength(List<Vector3> pathCoordinates)
 	{
 		float totalLength = 0;
@@ -375,6 +410,9 @@ public class PassController : MonoBehaviour
 
 	public void ChangePassState ( PassState _newState )
 	{
+		if (_newState == passState) { return; }
+		previousState = passState;
+		passState = _newState;
 		switch (_newState)
 		{
 			case PassState.Aiming:
@@ -392,6 +430,5 @@ public class PassController : MonoBehaviour
 				animator.SetTrigger("ShootingMissedTrigger");
 				break;
 		}
-		passState = _newState;
 	}
 }

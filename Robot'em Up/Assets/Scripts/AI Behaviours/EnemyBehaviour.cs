@@ -411,6 +411,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Vector3 normalizedImpactVector;
+		LockManager.UnlockEnemy(this);
         switch (_source)
         {
             case DamageSource.Dunk:
@@ -444,6 +445,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     protected virtual void Die()
     {
+		LockManager.UnlockEnemy(this);
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
         Destroy(deathParticle, 1.5f);
