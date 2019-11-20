@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PuzzleStop : MonoBehaviour, IHitable
 {
-
-    public PuzzleDatas puzzleData;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	public PuzzleDatas puzzleData;
     private GameObject FX_StopBall;
     private int _hitCount;
     public int hitCount

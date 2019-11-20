@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class EnemyShield : MonoBehaviour, IHitable
 {
-    private int _hitCount;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	private int _hitCount;
     public int hitCount
     {
         get

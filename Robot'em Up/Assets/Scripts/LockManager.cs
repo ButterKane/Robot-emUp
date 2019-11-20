@@ -7,34 +7,34 @@ public class LockManager : MonoBehaviour
 	public static List<AimLock> lockedTargets = new List<AimLock>();
 	private static LockDatas datas;
 
-	public static void LockEnemy(EnemyBehaviour _enemy)
+	public static void LockTarget(Transform _target)
 	{
 		if (datas == null) { datas = Resources.Load<LockDatas>("LockData"); }
 		if (!datas.enableLock) { return; }
 		foreach (AimLock lockF in lockedTargets)
 		{
-			if (lockF.linkedEnemy == _enemy)
+			if (lockF.linkedTarget == _target)
 			{
 				return;
 			}
 		}
 		AimLock newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
 		newLock.transform.SetParent(FindObjectOfType<Canvas>().transform);
-		newLock.Init(_enemy, datas.lockHitboxRadius);
+		newLock.Init(_target, datas.lockHitboxRadius);
 		lockedTargets.Add(newLock);
 	}
 
-	public static void UnlockEnemy(EnemyBehaviour _enemy)
+	public static void UnlockTarget(Transform _target)
 	{
 		foreach (AimLock lockF in lockedTargets)
 		{
-			if (lockF.linkedEnemy == _enemy)
+			if (lockF.linkedTarget == _target)
 			{
 				lockF.Unlock();
 			}
 		}
 	}
-	public static void UnlockEnemy ( AimLock _enemy )
+	public static void UnlockTarget ( AimLock _enemy )
 	{
 		_enemy.Unlock();
 	}
@@ -45,6 +45,33 @@ public class LockManager : MonoBehaviour
 		foreach (AimLock lockF in lockedTargets)
 		{
 			lockF.Unlock();
+		}
+	}
+	public static void LockTargetsInPath ( List<Vector3> _pathCoordinates, float _startValue )
+	{
+		List<Transform> foundTargets = new List<Transform>();
+		int startPoint = Mathf.RoundToInt((_startValue - 0.05f) * _pathCoordinates.Count);
+		startPoint = Mathf.Clamp(startPoint, 0, _pathCoordinates.Count - 1);
+		for (int i = startPoint; i < _pathCoordinates.Count - 1; i++)
+		{
+			Vector3 direction = _pathCoordinates[i + 1] - _pathCoordinates[i];
+			RaycastHit[] hitObjects = Physics.RaycastAll(_pathCoordinates[i], direction, direction.magnitude);
+			foreach (RaycastHit hit in hitObjects)
+			{
+				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
+				if (potentialTarget != null && potentialTarget.lockable)
+				{
+					foundTargets.Add(hit.transform);
+					LockManager.LockTarget(hit.transform);
+				}
+			}
+		}
+		foreach (AimLock lockedTarget in lockedTargets)
+		{
+			if (!foundTargets.Contains(lockedTarget.linkedTarget))
+			{
+				LockManager.UnlockTarget(lockedTarget);
+			}
 		}
 	}
 }

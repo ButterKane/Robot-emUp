@@ -55,7 +55,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float rotationSpeedAcceleration;
     float rotationSpeed;
 
-    [Space(2)]
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+
+	[Space(2)]
     [Header("Aiming Cube & Sphere")]
     //CUBE
     public Transform aimingCubeTransform;

@@ -341,7 +341,7 @@ public class BallBehaviour : MonoBehaviour
 					ConvertCoordinatesToCurve(pathCoordinates, out curveX, out curveY, out curveZ, out curveLength);
 					currentMaxDistance = curveLength;
 					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
-					PassController.LockEnemiesInPath(pathCoordinates, positionOnCurve);
+					LockManager.LockTargetsInPath(pathCoordinates, positionOnCurve);
 					if (positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
 					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
 					currentDirection = nextPosition - transform.position;

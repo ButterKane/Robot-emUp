@@ -47,8 +47,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     float distanceWithFocusedPlayer;
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 
-    [Space(2)]
+	[Space(2)]
     [Header("Focus")]
     public float focusDistance = 18;
     public float unfocusDistance = 20;
@@ -411,7 +412,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Vector3 normalizedImpactVector;
-		LockManager.UnlockEnemy(this);
+		LockManager.UnlockTarget(this.transform);
         switch (_source)
         {
             case DamageSource.Dunk:
@@ -445,7 +446,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     protected virtual void Die()
     {
-		LockManager.UnlockEnemy(this);
+		LockManager.UnlockTarget(this.transform);
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
         Destroy(deathParticle, 1.5f);
