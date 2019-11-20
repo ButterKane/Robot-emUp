@@ -291,7 +291,10 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Health -= _damages;
-		_ball.Explode(true);
+		if (_ball != null)
+		{
+			_ball.Explode(true);
+		}
 		if (Health <= 0)
         {
             Die();

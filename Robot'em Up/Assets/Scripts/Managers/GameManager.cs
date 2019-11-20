@@ -14,6 +14,9 @@ public enum DamageSource
 {
 	Ball,
 	Dunk,
+	DeathExplosion,
+	ReviveExplosion,
+	RedBarrelExplosion
 }
 
 public enum DamageModifierSource
@@ -43,11 +46,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public EventManager eventManager;
     [HideInInspector] public EnemyManager enemyManager;
 
-    public GameObject mainCameraGO;
-    public GameObject playerOne;
-    public GameObject playerTwo;
-    public GameObject ball;
-    public BallBehaviour ballBehaviour;
+	[HideInInspector] public GameObject mainCameraGO;
+	[HideInInspector] public PlayerController playerOne;
+	[HideInInspector] public PlayerController playerTwo;
+	[HideInInspector] public BallBehaviour ball;
     public int ballDamage = 30;
     public List<GameObject> enemies;
 
@@ -65,11 +67,23 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         i = this;
+		//Auto assign players
+		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
+		{
+			if (pc.playerIndex == XInputDotNetPure.PlayerIndex.One) {
+				playerOne = pc;
+			}
+			if (pc.playerIndex == XInputDotNetPure.PlayerIndex.Two)
+			{
+				playerTwo = pc;
+			}
+		}
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
+		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
 		LoadMomentumManager();
 		LoadEnergyManager();
@@ -116,7 +130,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnDummy()
     {
-        playerTwo = Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
+        Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
@@ -133,7 +147,7 @@ public class GameManager : MonoBehaviour
 		}
 		GameObject newBall = Instantiate(i.ballPrefab, null);
 		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
-        i.ball = newBall;
+        i.ball = newBall.GetComponent<BallBehaviour>();
 		newBall.transform.position = new Vector3(0, 1f, 0);
 	}
 

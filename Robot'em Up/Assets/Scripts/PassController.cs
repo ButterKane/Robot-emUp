@@ -29,6 +29,9 @@ public class PassController : MonoBehaviour
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
 
+	public float delayBeforePickingOwnBall;
+	public int minBouncesBeforePickingOwnBall;
+
 	[Separator("Reception settings")]
 	public float receptionMinDistance = 0.2f;
 	public float receptionMinDelay = 0.2f;
@@ -61,8 +64,7 @@ public class PassController : MonoBehaviour
 		animator = GetComponentInChildren<Animator>();
 
 		canReceive = true;
-		lineRenderer.startColor = previewDefaultColor;
-		lineRenderer.endColor = previewDefaultColor;
+		ChangeColor(previewDefaultColor);
 
 		otherPlayer = GetTarget();
 	}
@@ -77,6 +79,8 @@ public class PassController : MonoBehaviour
 			ballTimeInHand += Time.deltaTime;
 		}
 
+		if (!otherPlayer.IsTargetable() && passMode == PassMode.Curve) { DisablePassPreview(); }
+
 		if (passPreview)
 		{
 			bool snapped = false;
@@ -86,7 +90,7 @@ public class PassController : MonoBehaviour
 					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
-					pathCoordinates = GetCurvedPathCoordinates(otherPlayer.transform, linkedPlayer.GetLookInput());
+					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer.transform, linkedPlayer.GetLookInput());
 					break;
 			}
 			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
@@ -149,10 +153,10 @@ public class PassController : MonoBehaviour
 		return pathCoordinates;
 	}
 
-	public List<Vector3> GetCurvedPathCoordinates(Transform _target, Vector3 _lookDirection)
+	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, Transform _target, Vector3 _lookDirection)
 	{
 		//Get the middle position for the curve
-		Vector3 startPosition = handTransform.position;
+		Vector3 startPosition = _startPosition;
 		Vector3 endPosition = _target.transform.position + Vector3.up;
 		Vector3 direction = endPosition - startPosition;
 		float lookDirectionAngle = Vector3.SignedAngle(new Vector3(direction.x, 0, direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
@@ -222,7 +226,7 @@ public class PassController : MonoBehaviour
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
-					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);
+					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
 				}
             }
         }
@@ -231,11 +235,11 @@ public class PassController : MonoBehaviour
 			if (!passPreview)
 			{
 				if (otherPlayer != null)
-					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas);    // shoot in direction of other player
+					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
 			}
 			else // if aiming with right joystick
 			{
-				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas);
+				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
 			}
 		}
 		ChangePassState(PassState.None);
@@ -249,6 +253,7 @@ public class PassController : MonoBehaviour
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		ballTimeInHand = 0;
 		MomentumManager.EnableMomentumExponentialLoss(MomentumManager.datas.minPassDelayBeforeMomentumLoss, MomentumManager.datas.momentumLossSpeedIfNoPass);
+		if (!linkedPlayer.IsTargetable()) { DropBall(); }
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 
@@ -272,10 +277,15 @@ public class PassController : MonoBehaviour
 		return canReceive;
 	}
 
-	public void ChangeColor(Color _newColor)
+	void ChangeColor ( Color _newColor )
 	{
-		lineRenderer.startColor = _newColor;
-		lineRenderer.endColor = _newColor;
+		Color newStartColor = _newColor;
+		newStartColor.a = lineRenderer.startColor.a;
+		lineRenderer.startColor = newStartColor;
+
+		Color newEndColor = _newColor;
+		newEndColor.a = lineRenderer.endColor.a;
+		lineRenderer.endColor = newEndColor;
 	}
 
 	public void ResetPreviewColor()
@@ -292,7 +302,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking())
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve))
 		{
 			return false;
 		} else
@@ -304,6 +314,15 @@ public class PassController : MonoBehaviour
 	public BallBehaviour GetBall()
 	{
 		return ball;
+	}
+
+	public void DropBall()
+	{
+		if (GetBall() == null) { return; }
+		ball.transform.SetParent(null);
+		ball.ChangeSpeed(0);
+		ball.ChangeState(BallState.Grounded);
+		ball = null;
 	}
 
 	public BallDatas GetBallDatas()
@@ -331,6 +350,8 @@ public class PassController : MonoBehaviour
 	{
 		lineRenderer.positionCount = _pathCoordinates.Count;
 		lineRenderer.SetPositions(_pathCoordinates.ToArray());
+		float distance = GetPathTotalLength(_pathCoordinates);
+		lineRenderer.materials[0].mainTextureScale = new Vector3(distance * (1f/lineRenderer.startWidth), 1, 1);
 	}
 
 	private float GetPathTotalLength(List<Vector3> pathCoordinates)

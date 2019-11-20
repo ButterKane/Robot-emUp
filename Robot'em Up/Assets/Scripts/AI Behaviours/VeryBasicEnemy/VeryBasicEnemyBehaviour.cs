@@ -19,7 +19,7 @@ public enum VeryBasicEnemyState
 
 public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 {
-    VeryBasicEnemyState State = VeryBasicEnemyState.Idle;
+    EnemyState State = EnemyState.Idle;
 
     [Separator("References")]
     [SerializeField] private Transform _self;
@@ -111,7 +111,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         _self = transform;
         _playerOne = GameManager.i.playerOne.transform;
         _playerTwo = GameManager.i.playerTwo.transform;
-        State = VeryBasicEnemyState.Following;
+        State = EnemyState.Following;
         StartCoroutine(CheckDistanceAndAdaptFocus());
     }
     
@@ -138,21 +138,21 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     {
         switch (State)
         {
-            case VeryBasicEnemyState.Idle:
+            case EnemyState.Idle:
                 break;
-            case VeryBasicEnemyState.Following:
+            case EnemyState.Following:
                 if(focusedPlayer != null)
                 {
                     navMeshAgent.SetDestination(focusedPlayer.position);
                     if (distanceWithFocusedPlayer <= distanceToAttack)
                     {
-                        ChangingState(VeryBasicEnemyState.PreparingAttack);
+                        ChangingState(EnemyState.PreparingAttack);
                     }
                 }
                 break;
-            case VeryBasicEnemyState.Staggering:
+            case EnemyState.Staggering:
                 break;
-            case VeryBasicEnemyState.Bumped:
+            case EnemyState.Bumped:
 
                 //isBeingBumped !
                 if (bumpTimeProgression < 1)
@@ -196,22 +196,23 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 {
                     gettingUpDuration -= Time.deltaTime;
                     if(gettingUpDuration<=0)
-                        ChangingState(VeryBasicEnemyState.Following);
+                        ChangingState(EnemyState.Following);
                 }
                 break;
-            case VeryBasicEnemyState.ChangingFocus:
+            case EnemyState.ChangingFocus:
                 break;
-            case VeryBasicEnemyState.PreparingAttack:
+            case EnemyState.PreparingAttack:
+				if (focusedPlayer == null) { break; }
                 Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
                 _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
                 transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
                 anticipationTime -= Time.deltaTime;
                 if (anticipationTime <= 0)
                 {
-                    ChangingState(VeryBasicEnemyState.Attacking);
+                    ChangingState(EnemyState.Attacking);
                 }
                 break;
-            case VeryBasicEnemyState.Attacking:
+            case EnemyState.Attacking:
 
                 attackTimeProgression += Time.deltaTime / attackDuration;
                 //attackDuration -= Time.deltaTime;
@@ -231,7 +232,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
                 if (attackTimeProgression >=1)
                 {
-                    ChangingState(VeryBasicEnemyState.PauseAfterAttack);
+                    ChangingState(EnemyState.PauseAfterAttack);
                 }
                 else if(attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
                 {
@@ -239,38 +240,37 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                     Animator.SetTrigger("EndOfAttackTrigger");
                 }
                 break;
-            case VeryBasicEnemyState.PauseAfterAttack:
+            case EnemyState.PauseAfterAttack:
                 timePauseAfterAttack -= Time.deltaTime;
                 if(timePauseAfterAttack <= 0)
                 {
-                    ChangingState(VeryBasicEnemyState.Following);
+                    ChangingState(EnemyState.Following);
                 }
                 break;
-            case VeryBasicEnemyState.Dying:
+            case EnemyState.Dying:
                 break;
         }
     }
 
-    public void ChangingState(VeryBasicEnemyState _newState)
+    public void ChangingState(EnemyState _newState)
     {
         ExitState();
         EnterState(_newState);
         State = _newState;
     }
 
-    void EnterState(VeryBasicEnemyState _newState)
+    void EnterState(EnemyState _newState)
     {
-        print(_newState);
         switch (_newState)
         {
-            case VeryBasicEnemyState.Idle:
+            case EnemyState.Idle:
                 break;
-            case VeryBasicEnemyState.Following:
+            case EnemyState.Following:
                 navMeshAgent.enabled = true;
                 break;
-            case VeryBasicEnemyState.Staggering:
+            case EnemyState.Staggering:
                 break;
-            case VeryBasicEnemyState.Bumped:
+            case EnemyState.Bumped:
                 transform.rotation = Quaternion.LookRotation(-bumpDirection);
                 gettingUpDuration = maxGettingUpDuration;
                 fallingTriggerLaunched = false;
@@ -281,14 +281,14 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 Animator.SetTrigger("BumpTrigger");
                 mustCancelBump = false;
                 break;
-            case VeryBasicEnemyState.ChangingFocus:
+            case EnemyState.ChangingFocus:
                 break;
-            case VeryBasicEnemyState.PreparingAttack:
+            case EnemyState.PreparingAttack:
                 navMeshAgent.enabled = false;
                 anticipationTime = maxAnticipationTime;
                 Animator.SetTrigger("AttackTrigger");
                 break;
-            case VeryBasicEnemyState.Attacking:
+            case EnemyState.Attacking:
                 attackDuration = maxAttackDuration;
                 endOfAttackTriggerLaunched = false;
                 attackInitialPosition = transform.position;
@@ -297,10 +297,10 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                 myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y*transform.up + hitBoxOffset.z*transform.forward, Quaternion.identity, transform);
                 mustCancelAttack = false;
                 break;
-            case VeryBasicEnemyState.PauseAfterAttack:
+            case EnemyState.PauseAfterAttack:
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
-            case VeryBasicEnemyState.Dying:
+            case EnemyState.Dying:
                 break;
         }
     }
@@ -309,24 +309,24 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     {
         switch (State)
         {
-            case VeryBasicEnemyState.Idle:
+            case EnemyState.Idle:
                 break;
-            case VeryBasicEnemyState.Following:
+            case EnemyState.Following:
                 break;
-            case VeryBasicEnemyState.Staggering:
+            case EnemyState.Staggering:
                 break;
-            case VeryBasicEnemyState.Bumped:
+            case EnemyState.Bumped:
                 break;
-            case VeryBasicEnemyState.ChangingFocus:
+            case EnemyState.ChangingFocus:
                 break;
-            case VeryBasicEnemyState.PreparingAttack:
+            case EnemyState.PreparingAttack:
                 break;
-            case VeryBasicEnemyState.Attacking:
+            case EnemyState.Attacking:
                 Destroy(myAttackHitBox);
                 break;
-            case VeryBasicEnemyState.PauseAfterAttack:
+            case EnemyState.PauseAfterAttack:
                 break;
-            case VeryBasicEnemyState.Dying:
+            case EnemyState.Dying:
                 break;
         }
     }
@@ -353,15 +353,16 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
-		switch (_source)
+		if (_source == DamageSource.Dunk || _source == DamageSource.DeathExplosion)
 		{
-			case DamageSource.Dunk:
-				Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-				BumpMe(10, 1, 1, normalizedImpactVector.normalized);
-				break;
+			Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+			BumpMe(10, 1, 1, normalizedImpactVector.normalized);
 		}
         Health -= _damages;
-        _ball.Explode(true);
+		if (_ball != null)
+		{
+			_ball.Explode(true);
+		}
         if (Health <= 0)
         {
             Die();
@@ -449,7 +450,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         bumpDuration = _bumpDuration;
         restDuration = _restDuration;
         bumpDirection = _bumpDirection;
-        ChangingState(VeryBasicEnemyState.Bumped);
+        ChangingState(EnemyState.Bumped);
     }
 
 }
