@@ -28,7 +28,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Animator Animator;
     public NavMeshAgent navMeshAgent;
 
-    [Space(2)]
+	[Space(2)]
     [Separator("Auto-assigned References")]
     [SerializeField] private Transform _playerOne;
     private PawnController _playerOneController;
@@ -60,7 +60,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
     [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
-    protected float anticipationTime;
+    float anticipationTime;
     public float attackMaxDistance = 8;
     public float maxAttackDuration = 0.5f;
     float attackDuration;
@@ -112,7 +112,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Death")]
-    public int coreDrops = 1;
+    public float coreDropChances = 1;
+	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
 
     void Start()
     {
@@ -237,10 +238,18 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                PreparingAttackState();
+                Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+                _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+                transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+                anticipationTime -= Time.deltaTime;
+                if (anticipationTime <= 0)
+                {
+                    ChangingState(EnemyState.Attacking);
+                }
                 break;
             case EnemyState.Attacking:
                 AttackingState();
+                
                 break;
             case EnemyState.PauseAfterAttack:
                 timePauseAfterAttack -= Time.deltaTime;
@@ -268,9 +277,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         switch (_newState)
         {
             case EnemyState.Idle:
-                StartCoroutine(WaitABit());
                 break;
-            case EnemyState.Following:
+			case EnemyState.Following:
                 navMeshAgent.enabled = true;
                 break;
             case EnemyState.Staggering:
@@ -289,7 +297,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                EnterPreparingAttackState();
+                navMeshAgent.enabled = false;
+                anticipationTime = maxAnticipationTime;
+                Animator.SetTrigger("AttackTrigger");
                 break;
             case EnemyState.Attacking:
                 EnterAttackingState();
@@ -302,13 +312,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public virtual void EnterPreparingAttackState()
-    {
-        navMeshAgent.enabled = false;
-        anticipationTime = maxAnticipationTime;
-        Animator.SetTrigger("AttackTrigger");
-    }
-
     public virtual void EnterAttackingState()
     {
         attackDuration = maxAttackDuration;
@@ -318,18 +321,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         attackTimeProgression = 0;
         myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
-    }
-
-    public virtual void PreparingAttackState()
-    {
-        Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
-        _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
-        anticipationTime -= Time.deltaTime;
-        if (anticipationTime <= 0)
-        {
-            ChangingState(EnemyState.Attacking);
-        }
     }
 
     public virtual void AttackingState()
@@ -420,6 +411,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Vector3 normalizedImpactVector;
+		LockManager.UnlockEnemy(this);
         switch (_source)
         {
             case DamageSource.Dunk:
@@ -453,11 +445,27 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     protected virtual void Die()
     {
+		LockManager.UnlockEnemy(this);
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
         Destroy(deathParticle, 1.5f);
-        Destroy(gameObject);
+		if (Random.Range(0f, 1f) <= coreDropChances)
+		{
+			DropCore();
+		}	
+		Destroy(gameObject);
     }
+
+	void DropCore()
+	{
+		GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+		newCore.name = "Core of " + gameObject.name;
+		newCore.transform.position = transform.position;
+		Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
+		float throwForce = Random.Range(10, 17);
+		wantedDirectionAngle.y = throwForce * 0.035f;
+		newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+	}
 
     IEnumerator CheckDistanceAndAdaptFocus()
     {
@@ -534,9 +542,4 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         ChangingState(EnemyState.Bumped);
     }
 
-    IEnumerator WaitABit()
-    {
-        yield return new WaitForSeconds(1f);
-        ChangingState(EnemyState.Following);
-    }
 }
