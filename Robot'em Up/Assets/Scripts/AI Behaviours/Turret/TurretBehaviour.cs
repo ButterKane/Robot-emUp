@@ -184,6 +184,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void EnterState()
     {
+        //print(State);
         switch (State)
         {
             case TurretState.Hiding:
@@ -217,6 +218,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
         else if(focusedPlayerTransform != null && _newFocus == null)
         {
+            print("heyeyhzdiuazd");
             ChangingState(TurretState.Hiding);
         }
 
@@ -233,6 +235,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     IEnumerator CheckDistanceAndAdaptFocus()
     {
+        print(_playerOnePawnController.IsTargetable());
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
         {
@@ -256,8 +259,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         if (focusedPlayerTransform != null)
         {
             if((focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne>unfocusDistance) 
-                || (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo > unfocusDistance
-                || focusedPlayerPawnController.isInvincible))
+                || (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo > unfocusDistance))
             {
                 ChangingFocus(null);
             }
