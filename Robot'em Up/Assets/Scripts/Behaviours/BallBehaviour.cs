@@ -16,11 +16,11 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private float currentMaxDistance;
 	[SerializeField] private float currentDistanceTravelled;
 	[SerializeField] private float currentSpeed;
-	[SerializeField] private BallState currentState;
+    [SerializeField] private BallState currentState;
 	[SerializeField] private BallDatas currentBallDatas;
 	[SerializeField] private int currentBounceCount;
 	[SerializeField] private PawnController currentThrower;
-	[SerializeField] private bool canBounce;
+	 public bool canBounce;
 	[SerializeField] private bool canHitWalls;
 	[SerializeField] private List<Vector3> currentCurve;
 	[SerializeField] private Vector3 initialLookDirection;

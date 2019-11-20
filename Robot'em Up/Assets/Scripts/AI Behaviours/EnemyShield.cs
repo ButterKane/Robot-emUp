@@ -1,27 +1,33 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyShield : MonoBehaviour, IHitable
+public class EnemyShield : EnemyBehaviour
 {
-    private int _hitCount;
-    public int hitCount
+    [Space(2)]
+    [Separator("Shield Variables")]
+    public GameObject Shield;
+
+    public override void EnterPreparingAttackState()
     {
-        get
+        anticipationTime = maxAnticipationTime;
+    }
+    public override void PreparingAttackState()
+    {
+        anticipationTime -= Time.deltaTime;
+        if (anticipationTime <= 0)
         {
-            return _hitCount;
-        }
-        set
-        {
-            _hitCount = value;
+            ChangingState(EnemyState.Attacking);
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public override void AttackingState()
     {
-        //Stop the ball
-        _ball.ChangeSpeed(0);
-       
+        anticipationTime -= Time.deltaTime;
+        if (anticipationTime <= 0)
+        {
+            ChangingState(EnemyState.Idle);
+        }
     }
-
 }
