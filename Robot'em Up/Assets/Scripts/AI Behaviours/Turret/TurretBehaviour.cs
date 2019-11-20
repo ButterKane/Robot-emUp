@@ -52,8 +52,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     PawnController focusedPlayerPawnController;
     public float forwardPredictionRatio;
     public float maxRotationSpeed;
-    public float rotationSpeedAcceleration;
-    float rotationSpeed;
 
     [Space(2)]
     [Header("Aiming Cube & Sphere")]
