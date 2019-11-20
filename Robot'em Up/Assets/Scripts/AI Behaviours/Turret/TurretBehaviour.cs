@@ -221,13 +221,20 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
 
         focusedPlayerTransform = _newFocus;
-        focusedPlayerPawnController = _newFocus.GetComponent<PawnController>();
+        if(_newFocus != null)
+        {
+            focusedPlayerPawnController = _newFocus.gameObject.GetComponent<PlayerController>();
+        }
+        else
+        {
+            focusedPlayerPawnController = null;
+        }
     }
 
     IEnumerator CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
-        if (distanceWithPlayerOne < focusDistance)
+        if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
         {
             playerOneInRange = true;
         }
@@ -236,7 +243,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance)
+        if (distanceWithPlayerTwo < focusDistance && _playerTwoPawnController.IsTargetable())
         {
             playerTwoInRange = true;
         }
