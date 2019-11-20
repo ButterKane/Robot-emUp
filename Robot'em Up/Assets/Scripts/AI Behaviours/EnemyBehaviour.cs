@@ -28,7 +28,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Animator Animator;
     public NavMeshAgent navMeshAgent;
 
-    [Space(2)]
+	[Space(2)]
     [Separator("Auto-assigned References")]
     [SerializeField] private Transform _playerOne;
     private PawnController _playerOneController;
@@ -278,7 +278,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         {
             case EnemyState.Idle:
                 break;
-            case EnemyState.Following:
+			case EnemyState.Following:
                 navMeshAgent.enabled = true;
                 break;
             case EnemyState.Staggering:

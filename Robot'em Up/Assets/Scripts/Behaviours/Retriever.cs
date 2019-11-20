@@ -27,7 +27,7 @@ public class Retriever : MonoBehaviour
 		playerController = GetComponentInParent<PlayerController>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
         {
@@ -36,13 +36,8 @@ public class Retriever : MonoBehaviour
 			{
 				if (ballBehaviour.GetState() == BallState.Flying)
 				{
-					if (!playerController.enablePickOwnBall && ballBehaviour.GetCurrentThrower() == playerController)
-					{
-						return;
-					} else
-					{
-						passController.Receive(ballBehaviour);
-					}
+					if (ballBehaviour.GetCurrentThrower() == playerController && (ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+					passController.Receive(ballBehaviour);
 				}
 				else
 				{
@@ -54,6 +49,7 @@ public class Retriever : MonoBehaviour
 		{
 			CorePart corePart = other.GetComponent<CorePart>();
 			if (!corePart.grounded) { return; }
+			if (!corePart.CanBePicked()) { return; }
 			if (corePart.linkedPawn != null)
 			{
 				corePart.Pick(playerController);
@@ -102,7 +98,7 @@ public class Retriever : MonoBehaviour
 				if (playerController.GetHealth() < playerController.GetMaxHealth())
 				{
 					corePart.Pick(playerController);
-					playerController.Heal(corePart.healthValue);
+									playerController.Heal(corePart.healthValue);
 				}
 			}
 		}
