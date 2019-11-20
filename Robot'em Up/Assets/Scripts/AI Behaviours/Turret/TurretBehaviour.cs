@@ -218,7 +218,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
         else if(focusedPlayerTransform != null && _newFocus == null)
         {
-            print("heyeyhzdiuazd");
             ChangingState(TurretState.Hiding);
         }
 
@@ -235,7 +234,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     IEnumerator CheckDistanceAndAdaptFocus()
     {
-        print(_playerOnePawnController.IsTargetable());
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
         {
