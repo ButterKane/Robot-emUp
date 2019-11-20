@@ -18,11 +18,16 @@ public class LockManager : MonoBehaviour
 				return;
 			}
 		}
-		AimLock newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
-		newLock.transform.SetParent(FindObjectOfType<Canvas>().transform);
-		newLock.Init(_target, datas.lockHitboxRadius);
-		lockedTargets.Add(newLock);
-	}
+        Canvas canvas = FindObjectOfType<Canvas>();
+
+        if (canvas != null)
+        {
+            AimLock newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
+            newLock.transform.SetParent(canvas.transform);
+            newLock.Init(_target, datas.lockHitboxRadius);
+            lockedTargets.Add(newLock);
+        }
+    }
 
 	public static void UnlockTarget(Transform _target)
 	{
@@ -58,6 +63,7 @@ public class LockManager : MonoBehaviour
 			RaycastHit[] hitObjects = Physics.RaycastAll(_pathCoordinates[i], direction, direction.magnitude);
 			foreach (RaycastHit hit in hitObjects)
 			{
+                Debug.Log("hit = " + hit.transform.name);
 				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
 				if (potentialTarget != null && potentialTarget.lockable)
 				{

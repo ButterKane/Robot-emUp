@@ -61,7 +61,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
     [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
-    float anticipationTime;
+    protected float anticipationTime;
     public float attackMaxDistance = 8;
     public float maxAttackDuration = 0.5f;
     float attackDuration;
@@ -239,14 +239,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
-                _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
-                transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
-                anticipationTime -= Time.deltaTime;
-                if (anticipationTime <= 0)
-                {
-                    ChangingState(EnemyState.Attacking);
-                }
+                PreparingAttackState();
+                
                 break;
             case EnemyState.Attacking:
                 AttackingState();
@@ -278,6 +272,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         switch (_newState)
         {
             case EnemyState.Idle:
+                StartCoroutine(WaitABit());
                 break;
 			case EnemyState.Following:
                 navMeshAgent.enabled = true;
@@ -298,9 +293,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                navMeshAgent.enabled = false;
-                anticipationTime = maxAnticipationTime;
-                Animator.SetTrigger("AttackTrigger");
+                EnterPreparingAttackState();
                 break;
             case EnemyState.Attacking:
                 EnterAttackingState();
@@ -313,6 +306,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
+    public virtual void EnterPreparingAttackState()
+    {
+        navMeshAgent.enabled = false;
+        anticipationTime = maxAnticipationTime;
+        Animator.SetTrigger("AttackTrigger");
+    }
+
     public virtual void EnterAttackingState()
     {
         attackDuration = maxAttackDuration;
@@ -322,6 +322,18 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         attackTimeProgression = 0;
         myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
+    }
+
+    public virtual void PreparingAttackState()
+    {
+        Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+        _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+        anticipationTime -= Time.deltaTime;
+        if (anticipationTime <= 0)
+        {
+            ChangingState(EnemyState.Attacking);
+        }
     }
 
     public virtual void AttackingState()
@@ -543,4 +555,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         ChangingState(EnemyState.Bumped);
     }
 
+    IEnumerator WaitABit()
+    {
+        yield return new WaitForSeconds(1f);
+        State = EnemyState.Following;
+    }
 }
