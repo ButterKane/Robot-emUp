@@ -56,7 +56,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 
 	[Space(2)]
-    [Header("Aiming Cube & Sphere")]
+    [Header("Aiming Cube")]
     //CUBE
     public Transform aimingCubeTransform;
     public Renderer aimingCubeRenderer;
@@ -67,6 +67,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
     public float followingAimingColorIntensity;
+    public LayerMask layersToCheckToScale;
     //MISC
     Vector3 wantedAimingPosition;
     Quaternion wantedRotation;
@@ -153,10 +154,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 				{
                     if(shouldRotateTowardsPlayer)
                         RotateTowardsPlayerAndHisForward();
-                }
-                if(focusedPlayerTransform != null)
-                {
                     wantedAimingPosition = focusedPlayerTransform.position + focusedPlayerTransform.forward * focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio;
+                }
+
+                //Adapt aimCube Scale and Position
+                RaycastHit hit;
+                if(Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
+                {
+                    aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
+                    print("Distance : " + Vector3.Distance(_self.position, hit.point));
+                    aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z/2 * _self.forward);
                 }
                 break;
             case TurretState.PrepareToAttack:
