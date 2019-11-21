@@ -63,8 +63,9 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     public float focusChangeWaitTime = 0.5f;
     public float focusChangeSpeed = 2f;
     public AnimationCurve ChangeFocusSpeedCurve;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 
-    [Space(2)]
+	[Space(2)]
     [Separator("Surrounding Variables")]
     public float TimeBeforeSurround = 2f;
     [Range(0, 1)]
@@ -101,8 +102,8 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
     {
         _playerOne = GameManager.i.playerOne.transform;
         _playerTwo = GameManager.i.playerTwo.transform;

@@ -5,7 +5,8 @@ using UnityEditor;
 
 public class PuzzleForceField : PuzzleActivable, IHitable
 {
-    private int _hitCount;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	private int _hitCount;
     public typeForceField type = typeForceField.blockTheBall;
     public enum typeForceField { blockTheBall, blockBallAndPlayer, Flipper }
     private MeshRenderer meshRenderer;

@@ -45,6 +45,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     float distanceWithFocusedPlayer;
     Transform focusedPlayer = null;
 	public float energyAmount;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 
 	[Space(2)]
     [Header("Focus")]
