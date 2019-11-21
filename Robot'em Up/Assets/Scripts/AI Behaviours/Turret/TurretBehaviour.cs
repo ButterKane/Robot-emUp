@@ -50,7 +50,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     float distanceWithPlayerTwo;
     Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
-    public float forwardPredictionRatio;
+    public float defaultForwardPredictionRatio;
+    float forwardPredictionRatio;
+    public Vector2 minMaxRandomRangePredictionRatio;
     public float maxRotationSpeed;
 
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
@@ -150,6 +152,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         switch (State)
         {
             case TurretState.Attacking:
+
 				if (focusedPlayerTransform != null)
 				{
                     if(shouldRotateTowardsPlayer)
@@ -162,7 +165,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 if(Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
                 {
                     aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
-                    print("Distance : " + Vector3.Distance(_self.position, hit.point));
                     aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z/2 * _self.forward);
                 }
                 break;
@@ -341,6 +343,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             aimingCubeRenderer.material.color = followingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
+            forwardPredictionRatio = defaultForwardPredictionRatio + Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
         }
         else
         {
