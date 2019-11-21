@@ -8,9 +8,24 @@ public enum TurretState
 {
     Hidden,
     Hiding,
-    PrepareToAttack,
+    GettingOutOfGround,
+    Idle,
     Attacking,
     Dying,
+}
+
+public enum TurretAttackState
+{
+    Anticipation,
+    Attack,
+    Rest,
+}
+
+public enum AimingCubeState
+{
+    NotVisible,
+    Following,
+    Locking,
 }
 
 public class TurretBehaviour : MonoBehaviour, IHitable
@@ -30,13 +45,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Separator("Variables")]
-    public TurretState State;
+    [ReadOnly] public TurretState State;
+    [ReadOnly] public TurretAttackState attackState;
+    [ReadOnly] public AimingCubeState aimingCubeState;
 
     [Space(2)]
     [Header("Focus")]
     public float focusDistance;
     public float unfocusDistance;
-    public float timeBetweenCheck;
+    public float maxTimeBetweenCheck;
+    float timeBetweenCheck;
     public float distanceBeforeChangingPriority;
 
     [Space(2)]
@@ -50,10 +68,18 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     float distanceWithPlayerTwo;
     Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
+
+    [Space(2)]
+    [Header("Attack")]
     public float defaultForwardPredictionRatio;
     float forwardPredictionRatio;
     public Vector2 minMaxRandomRangePredictionRatio;
     public float maxRotationSpeed;
+    public float maxAnticipationTime;
+    float anticipationTime;
+    public float maxRestTime;
+    float restTime;
+    public float restTimeBeforeAimingCubeUnlocked;
 
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 
@@ -96,10 +122,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         _playerOnePawnController = GameManager.i.playerOne.GetComponent<PawnController>();
         _playerTwoPawnController = GameManager.i.playerTwo.GetComponent<PawnController>();
 
-
         Health = MaxHealth;
 
-        StartCoroutine(CheckDistanceAndAdaptFocus());
+        State = TurretState.Idle;
     }
 
     void Update()
@@ -148,33 +173,31 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void UpdateState()
     {
-        //print(State);
+        print(attackState);
         switch (State)
         {
             case TurretState.Attacking:
-
-				if (focusedPlayerTransform != null)
-				{
-                    if(shouldRotateTowardsPlayer)
-                        RotateTowardsPlayerAndHisForward();
-                    wantedAimingPosition = focusedPlayerTransform.position + focusedPlayerTransform.forward * focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio;
-                }
-
-                //Adapt aimCube Scale and Position
-                RaycastHit hit;
-                if(Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
-                {
-                    aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
-                    aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z/2 * _self.forward);
-                }
+                AttackingUpdateState();		
                 break;
-            case TurretState.PrepareToAttack:
+            case TurretState.GettingOutOfGround:
                 break;
             case TurretState.Hiding:
                 break;
             case TurretState.Hidden:
                 break;
             case TurretState.Dying:
+                break;
+            case TurretState.Idle:
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
+                }
+                if(focusedPlayerTransform != null)
+                {
+                    ChangingState(TurretState.Attacking);
+                }
                 break;
         }
     }
@@ -185,14 +208,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             case TurretState.Hiding:
                 break;
-            case TurretState.PrepareToAttack:
+            case TurretState.GettingOutOfGround:
                 break;
             case TurretState.Hidden:
                 break;
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                aimingCubeTransform.localScale = Vector3.zero;
+                ChangeAimingCubeState(AimingCubeState.NotVisible);
+                break;
+            case TurretState.Idle:
                 break;
         }
     }
@@ -205,17 +230,70 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             case TurretState.Hiding:
                 Animator.SetTrigger("HidingTrigger");
                 break;
-            case TurretState.PrepareToAttack:
-                Animator.SetTrigger("PrepareToAttackTrigger");
+            case TurretState.GettingOutOfGround:
+                Animator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
                 break;
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                aimingCubeTransform.localScale = aimingCubeDefaultScale;
+                attackState = TurretAttackState.Anticipation;
+                Animator.SetTrigger("AnticipationTrigger");
+                anticipationTime = maxAnticipationTime;
+                restTime = maxRestTime;
+                break;
+            case TurretState.Idle:
+                timeBetweenCheck = 0;
                 break;
         }
+    }
+
+    void AttackingUpdateState()
+    {
+        switch (attackState)
+        {
+            case TurretAttackState.Anticipation:
+                if (focusedPlayerTransform != null)
+                {
+                    RotateTowardsPlayerAndHisForward();
+                }
+                anticipationTime -= Time.deltaTime;
+                if (anticipationTime <= 0)
+                {
+                    attackState = TurretAttackState.Attack;
+                    Animator.SetTrigger("AttackTrigger");
+                }
+                break;
+            case TurretAttackState.Attack:
+                break;
+            case TurretAttackState.Rest:
+                restTime -= Time.deltaTime;
+                if (restTime <= 0)
+                {
+                    ChangeAimingCubeState(AimingCubeState.NotVisible);
+                    Animator.SetTrigger("FromRestToIdleTrigger");
+                    ChangingState(TurretState.Idle);
+                }
+                else if(maxRestTime - restTime > restTimeBeforeAimingCubeUnlocked && aimingCubeState != AimingCubeState.Following)
+                {
+                    ChangeAimingCubeState(AimingCubeState.Following);
+                }
+                break;
+        }
+
+        //Adapt aimCube Scale and Position
+        RaycastHit hit;
+        if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
+        {
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
+            aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z / 2 * _self.forward);
+        }
+    }
+
+    public void TransitionFromAttackToRest() //called from animation event !
+    {
+        attackState = TurretAttackState.Rest;
     }
 
     public void LaunchProjectile()
@@ -229,7 +307,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     {
         if(focusedPlayerTransform == null && _newFocus!=null)
         {
-            ChangingState(TurretState.PrepareToAttack);
+            ChangingState(TurretState.GettingOutOfGround);
         }
         else if(focusedPlayerTransform != null && _newFocus == null)
         {
@@ -247,7 +325,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    IEnumerator CheckDistanceAndAdaptFocus()
+    void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
@@ -301,10 +379,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             ChangingFocus(GetClosestAndAvailablePlayer());
         }
-
-        //Restart coroutine in X seconds
-        yield return new WaitForSeconds(timeBetweenCheck);
-        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
 
     void Die()
@@ -335,9 +409,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         EnergyManager.IncreaseEnergy(energyAmount);
     }
 
-    public void AimingCubeRotate(bool _true)
+    public void ChangeAimingCubeState(AimingCubeState _NewState)
     {
-        if (_true)
+        if (_NewState == AimingCubeState.Following)
         {
             shouldRotateTowardsPlayer = true;
             aimingCubeRenderer.material.color = followingAimingColor;
@@ -345,12 +419,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
             forwardPredictionRatio = defaultForwardPredictionRatio + Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
         }
-        else
+        else if(_NewState == AimingCubeState.Locking)
         {
             shouldRotateTowardsPlayer = false;
             aimingCubeRenderer.material.color = lockingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeLockedScale;
+        }
+        else if(_NewState == AimingCubeState.NotVisible)
+        {
+            aimingCubeTransform.localScale = Vector3.zero;
         }
     }
 }

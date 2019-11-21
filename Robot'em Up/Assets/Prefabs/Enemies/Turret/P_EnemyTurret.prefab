@@ -401,9 +401,11 @@ MonoBehaviour:
   Animator: {fileID: 1833733463821956502}
   Target: {fileID: 0}
   State: 0
+  attackState: 0
+  aimingCubeState: 0
   focusDistance: 50
   unfocusDistance: 55
-  timeBetweenCheck: 0.2
+  maxTimeBetweenCheck: 0.25
   distanceBeforeChangingPriority: 2
   MaxHealth: 30
   Health: 0
@@ -411,6 +413,9 @@ MonoBehaviour:
   defaultForwardPredictionRatio: 0.8
   minMaxRandomRangePredictionRatio: {x: -0.1, y: 0.1}
   maxRotationSpeed: 5
+  maxAnticipationTime: 1
+  maxRestTime: 0.5
+  restTimeBeforeAimingCubeUnlocked: 0
   _lockable: 0
   aimingCubeTransform: {fileID: 8116397337583495147}
   aimingCubeRenderer: {fileID: 2802001169725089407}
@@ -438,7 +443,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6086072691216837907}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.86
