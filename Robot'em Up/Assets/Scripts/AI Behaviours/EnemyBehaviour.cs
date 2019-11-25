@@ -23,7 +23,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public EnemyState State = EnemyState.Idle;
 
     [Separator("References")]
-    [SerializeField] private Transform _self;
+    [SerializeField] protected Transform _self;
     public Rigidbody Rb;
     public Animator Animator;
     public NavMeshAgent navMeshAgent;
@@ -64,20 +64,20 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     protected float anticipationTime;
     public float attackMaxDistance = 8;
     public float maxAttackDuration = 0.5f;
-    float attackDuration;
-    float attackTimeProgression;
+    protected float attackDuration;
+    protected float attackTimeProgression;
     public AnimationCurve attackSpeedCurve;
-    Vector3 attackInitialPosition;
-    Vector3 attackDestination;
+    protected Vector3 attackInitialPosition;
+    protected Vector3 attackDestination;
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
-    bool endOfAttackTriggerLaunched;
+    protected bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
     GameObject myAttackHitBox;
     public Vector3 hitBoxOffset;
     public float maxTimePauseAfterAttack = 1;
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
-    bool mustCancelAttack;
+    protected bool mustCancelAttack;
 
     [Space(2)]
     [Header("Bump")]
@@ -157,6 +157,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.Following:
                 if (focusedPlayer != null)
                 {
+                    Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+                    _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+
                     if (ClosestSurroundPoint != null)
                     {
                         float distanceToPointRatio = (1 + (_self.position - ClosestSurroundPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
@@ -280,15 +284,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.Staggering:
                 break;
             case EnemyState.Bumped:
-                transform.rotation = Quaternion.LookRotation(-bumpDirection);
-                gettingUpDuration = maxGettingUpDuration;
-                fallingTriggerLaunched = false;
-                navMeshAgent.enabled = false;
-                bumpTimeProgression = 0;
-                bumpInitialPosition = transform.position;
-                bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
-                Animator.SetTrigger("BumpTrigger");
-                mustCancelBump = false;
+                EnterBumpedState();
                 break;
             case EnemyState.ChangingFocus:
                 break;
@@ -306,6 +302,19 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
+    public virtual void EnterBumpedState()
+    {
+        transform.rotation = Quaternion.LookRotation(-bumpDirection);
+        gettingUpDuration = maxGettingUpDuration;
+        fallingTriggerLaunched = false;
+        navMeshAgent.enabled = false;
+        bumpTimeProgression = 0;
+        bumpInitialPosition = transform.position;
+        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
+        Animator.SetTrigger("BumpTrigger");
+        mustCancelBump = false;
+    }
+
     public virtual void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
@@ -315,7 +324,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void EnterAttackingState()
     {
-        attackDuration = maxAttackDuration;
+        //attackDuration = maxAttackDuration;
         endOfAttackTriggerLaunched = false;
         attackInitialPosition = transform.position;
         attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
@@ -338,7 +347,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void AttackingState()
     {
-        attackTimeProgression += Time.deltaTime / attackDuration;
+        attackTimeProgression += Time.deltaTime / maxAttackDuration;
         //attackDuration -= Time.deltaTime;
 
         //must stop ?
@@ -376,6 +385,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.Staggering:
                 break;
             case EnemyState.Bumped:
+                ExitBumpedState();
                 break;
             case EnemyState.ChangingFocus:
                 break;
@@ -389,6 +399,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case EnemyState.Dying:
                 break;
         }
+    }
+
+    public virtual void ExitBumpedState()
+    {
+        // Used in variants
     }
 
     void UpdateDistancesToPlayers()
@@ -546,7 +561,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         focusedPlayer = _newFocus;
     }
 
-    public void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
+    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
     {
         bumpDistance = _bumpDistance;
         bumpDuration = _bumpDuration;
