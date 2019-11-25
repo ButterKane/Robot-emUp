@@ -109,6 +109,59 @@ public class GameManager : MonoBehaviour
 		{
 			ResetScene();
 		}
+		UpdateSceneLoader();
+	}
+
+	void LoadSceneByIndex(int index)
+	{
+		SceneLoader sceneLoader = Resources.Load<SceneLoader>("SceneLoader");
+		if (sceneLoader == null) { Debug.LogWarning("SceneLoader not found, can't load scene"); return; }
+		string sceneFound = sceneLoader.GetSceneByIndex(index);
+		if (sceneFound == "") { Debug.LogWarning("Scene with that ID doesn't exit"); return; }
+		SceneManager.LoadScene(sceneFound);
+	}
+	void UpdateSceneLoader()
+	{
+		if (Input.GetKeyDown(KeyCode.Alpha1))
+		{
+			LoadSceneByIndex(1);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha2))
+		{
+			LoadSceneByIndex(2);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			LoadSceneByIndex(3);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha4))
+		{
+			LoadSceneByIndex(4);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha5))
+		{
+			LoadSceneByIndex(5);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha6))
+		{
+			LoadSceneByIndex(6);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha7))
+		{
+			LoadSceneByIndex(7);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha8))
+		{
+			LoadSceneByIndex(8);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha9))
+		{
+			LoadSceneByIndex(9);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha0))
+		{
+			LoadSceneByIndex(10);
+		}
 	}
 
 	//private void AssignPlayers()
