@@ -30,10 +30,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
 	[Space(2)]
     [Separator("Auto-assigned References")]
-    [SerializeField] private Transform _playerOne;
-    private PawnController _playerOneController;
-    [SerializeField] private Transform _playerTwo;
-    private PawnController _playerTwoController;
+    [SerializeField] private Transform _playerOneTransform;
+    private PawnController _playerOnePawnController;
+    [SerializeField] private Transform _playerTwoTransform;
+    private PawnController _playerTwoPawnController;
 
 
     [Space(2)]
@@ -55,6 +55,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float unfocusDistance = 20;
     public float timeBetweenCheck = 0.25f;
     public float distanceBeforeChangingPriority = 3;
+    private float maxTimeBetweenCheck = 0.25f;
 
     [Space(2)]
     [Header("Attack")]
@@ -96,7 +97,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float bumpRaycastDistance = 1;
     bool mustCancelBump;
 
-
     [Space(2)]
     [Header("FX References")]
     public GameObject deathParticlePrefab;
@@ -120,13 +120,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         Health = MaxHealth;
         _self = transform;
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
-        _playerOneController = _playerOne.GetComponent<PlayerController>();
-        _playerTwoController = _playerTwo.GetComponent<PlayerController>();
+        timeBetweenCheck = maxTimeBetweenCheck;
+        _playerOneTransform = GameManager.i.playerOne.transform;
+        _playerTwoTransform = GameManager.i.playerTwo.transform;
+        _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
+        _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
         State = EnemyState.Following;
-        StartCoroutine(CheckDistanceAndAdaptFocus());
+        CheckDistanceAndAdaptFocus();
     }
 
     void Update()
@@ -153,8 +154,21 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         switch (State)
         {
             case EnemyState.Idle:
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
+                }
                 break;
             case EnemyState.Following:
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
+                }
+
                 if (focusedPlayer != null)
                 {
                     Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
@@ -408,31 +422,27 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     void UpdateDistancesToPlayers()
     {
-        distanceWithPlayerOne = Vector3.Distance(_self.position, _playerOne.position);
-        distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwo.position);
+        distanceWithPlayerOne = Vector3.Distance(_self.position, _playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwoTransform.position);
         if (focusedPlayer != null)
             distanceWithFocusedPlayer = Vector3.Distance(_self.position, focusedPlayer.position);
     }
 
-    Transform GetClosestPlayer()
+    Transform GetClosestAndAvailablePlayer()
     {
-        if (!_playerOneController.IsTargetable())
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && _playerTwoPawnController.IsTargetable())
+            || !_playerOnePawnController.IsTargetable())
         {
-            return _playerTwo;
+            return _playerTwoTransform;
         }
-
-        if (!_playerTwoController.IsTargetable())
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && _playerOnePawnController.IsTargetable())
+            || !_playerTwoPawnController.IsTargetable())
         {
-            return _playerOne;
-        }
-
-        if (distanceWithPlayerOne >= distanceWithPlayerTwo)
-        {
-            return _playerTwo;
+            return _playerOneTransform;
         }
         else
         {
-            return _playerOne;
+            return null;
         }
     }
 
@@ -495,10 +505,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 		newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
 	}
 
-    IEnumerator CheckDistanceAndAdaptFocus()
+    void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
-        if (distanceWithPlayerOne < focusDistance)
+        if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
         {
             playerOneInRange = true;
         }
@@ -507,7 +517,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance)
+        if (distanceWithPlayerTwo < focusDistance && _playerTwoPawnController.IsTargetable())
         {
             playerTwoInRange = true;
         }
@@ -516,44 +526,39 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             playerTwoInRange = false;
         }
 
-
         //Unfocus player because of distance
         if (focusedPlayer != null)
         {
-            if ((focusedPlayer == _playerOne && distanceWithPlayerOne > unfocusDistance) || (focusedPlayer == _playerTwo && distanceWithPlayerTwo > unfocusDistance))
+            if ((focusedPlayer == _playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !_playerOnePawnController.IsTargetable()))
+                || ((focusedPlayer == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
+                //print("hey");
             }
         }
 
         //Changing focus between the two
-        if (playerOneInRange && playerTwoInRange && focusedPlayer != null)
+        if ((playerOneInRange && _playerOnePawnController.IsTargetable())
+            && (playerTwoInRange && _playerTwoPawnController.IsTargetable())
+            && focusedPlayer != null)
         {
-            if (_playerTwoController.IsTargetable())
+            if (focusedPlayer == _playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
-                if (focusedPlayer == _playerOne && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
-                {
-                    ChangingFocus(_playerTwo);
-                }
+                ChangingFocus(_playerTwoTransform);
             }
-            else if (_playerOneController.IsTargetable())
+            else if (focusedPlayer == _playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
             {
-                if (focusedPlayer == _playerTwo && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
-                {
-                    ChangingFocus(_playerOne);
-                }
+                ChangingFocus(_playerOneTransform);
             }
         }
 
         //no focused yet ? Choose one
-        if ((playerOneInRange || playerTwoInRange) && focusedPlayer == null)
+        if (((playerOneInRange && _playerOnePawnController.IsTargetable())
+            || (playerTwoInRange && _playerTwoPawnController.IsTargetable()))
+            && focusedPlayer == null)
         {
-            ChangingFocus(GetClosestPlayer());
+            ChangingFocus(GetClosestAndAvailablePlayer());
         }
-
-        //Restart coroutine in X seconds
-        yield return new WaitForSeconds(timeBetweenCheck);
-        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
 
     void ChangingFocus(Transform _newFocus)
