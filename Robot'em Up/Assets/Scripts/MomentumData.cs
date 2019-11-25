@@ -19,6 +19,7 @@ public class MomentumData : ScriptableObject
 	public Vector2 minMaxBloom;
 	public Vector2 minMaxTemperature;
 	public Vector2 minMaxChromaticAberration;
+    public Vector2 minMaxGrain;
 
 	[Header("Gain settings")]
 	[Range(0f, 1f)] public float momentumGainedOnPass;
