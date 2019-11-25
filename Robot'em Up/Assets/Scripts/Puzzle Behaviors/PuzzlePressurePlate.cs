@@ -52,10 +52,10 @@ public class PuzzlePressurePlate : PuzzleActivator
             ListPawnsHere.Remove(pawn);
             if (ListPawnsHere.Count < 1)
             {
+                isActivated = false;
                 DesactiveLinkedObjects();
                 PawnHere = false;
                 transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
-                isActivated = false;
             }
         }
 
