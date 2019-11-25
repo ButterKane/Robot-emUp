@@ -8,9 +8,24 @@ public enum TurretState
 {
     Hidden,
     Hiding,
-    PrepareToAttack,
+    GettingOutOfGround,
+    Idle,
     Attacking,
     Dying,
+}
+
+public enum TurretAttackState
+{
+    Anticipation,
+    Attack,
+    Rest,
+}
+
+public enum AimingCubeState
+{
+    NotVisible,
+    Following,
+    Locking,
 }
 
 public class TurretBehaviour : MonoBehaviour, IHitable
@@ -30,13 +45,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Separator("Variables")]
-    public TurretState State;
+    [ReadOnly] public TurretState State;
+    [ReadOnly] public TurretAttackState attackState;
+    [ReadOnly] public AimingCubeState aimingCubeState;
 
     [Space(2)]
     [Header("Focus")]
     public float focusDistance;
     public float unfocusDistance;
-    public float timeBetweenCheck;
+    public float maxTimeBetweenCheck;
+    float timeBetweenCheck;
     public float distanceBeforeChangingPriority;
 
     [Space(2)]
@@ -50,15 +68,23 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     float distanceWithPlayerTwo;
     Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
-    public float forwardPredictionRatio;
+
+    [Space(2)]
+    [Header("Attack")]
+    public float defaultForwardPredictionRatio;
+    float forwardPredictionRatio;
+    public Vector2 minMaxRandomRangePredictionRatio;
     public float maxRotationSpeed;
-    public float rotationSpeedAcceleration;
-    float rotationSpeed;
+    public float maxAnticipationTime;
+    float anticipationTime;
+    public float maxRestTime;
+    float restTime;
+    public float restTimeBeforeAimingCubeUnlocked;
 
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 
 	[Space(2)]
-    [Header("Aiming Cube & Sphere")]
+    [Header("Aiming Cube")]
     //CUBE
     public Transform aimingCubeTransform;
     public Renderer aimingCubeRenderer;
@@ -69,6 +95,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
     public float followingAimingColorIntensity;
+    public LayerMask layersToCheckToScale;
     //MISC
     Vector3 wantedAimingPosition;
     Quaternion wantedRotation;
@@ -95,10 +122,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         _playerOnePawnController = GameManager.i.playerOne.GetComponent<PawnController>();
         _playerTwoPawnController = GameManager.i.playerTwo.GetComponent<PawnController>();
 
-
         Health = MaxHealth;
 
-        StartCoroutine(CheckDistanceAndAdaptFocus());
+        State = TurretState.Idle;
     }
 
     void Update()
@@ -113,15 +139,21 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwoTransform.position);
     }
 
-    Transform GetClosestPlayer()
+    Transform GetClosestAndAvailablePlayer()
     {
-        if (distanceWithPlayerOne >= distanceWithPlayerTwo)
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && _playerTwoPawnController.IsTargetable())
+            || !_playerOnePawnController.IsTargetable())
         {
             return _playerTwoTransform;
         }
-        else
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && _playerOnePawnController.IsTargetable())
+            || !_playerTwoPawnController.IsTargetable())
         {
             return _playerOneTransform;
+        }
+        else
+        {
+            return null;
         }
     }
 
@@ -141,27 +173,31 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void UpdateState()
     {
-        //print(State);
+        print(attackState);
         switch (State)
         {
             case TurretState.Attacking:
-				if (focusedPlayerTransform != null)
-				{
-                    if(shouldRotateTowardsPlayer)
-                        RotateTowardsPlayerAndHisForward();
-                }
-                if(focusedPlayerTransform != null)
-                {
-                    wantedAimingPosition = focusedPlayerTransform.position + focusedPlayerTransform.forward * focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio;
-                }
+                AttackingUpdateState();		
                 break;
-            case TurretState.PrepareToAttack:
+            case TurretState.GettingOutOfGround:
                 break;
             case TurretState.Hiding:
                 break;
             case TurretState.Hidden:
                 break;
             case TurretState.Dying:
+                break;
+            case TurretState.Idle:
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
+                }
+                if(focusedPlayerTransform != null)
+                {
+                    ChangingState(TurretState.Attacking);
+                }
                 break;
         }
     }
@@ -172,14 +208,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             case TurretState.Hiding:
                 break;
-            case TurretState.PrepareToAttack:
+            case TurretState.GettingOutOfGround:
                 break;
             case TurretState.Hidden:
                 break;
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                aimingCubeTransform.localScale = Vector3.zero;
+                ChangeAimingCubeState(AimingCubeState.NotVisible);
+                break;
+            case TurretState.Idle:
                 break;
         }
     }
@@ -192,17 +230,70 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             case TurretState.Hiding:
                 Animator.SetTrigger("HidingTrigger");
                 break;
-            case TurretState.PrepareToAttack:
-                Animator.SetTrigger("PrepareToAttackTrigger");
+            case TurretState.GettingOutOfGround:
+                Animator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
                 break;
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                aimingCubeTransform.localScale = aimingCubeDefaultScale;
+                attackState = TurretAttackState.Anticipation;
+                Animator.SetTrigger("AnticipationTrigger");
+                anticipationTime = maxAnticipationTime;
+                restTime = maxRestTime;
+                break;
+            case TurretState.Idle:
+                timeBetweenCheck = 0;
                 break;
         }
+    }
+
+    void AttackingUpdateState()
+    {
+        switch (attackState)
+        {
+            case TurretAttackState.Anticipation:
+                if (focusedPlayerTransform != null)
+                {
+                    RotateTowardsPlayerAndHisForward();
+                }
+                anticipationTime -= Time.deltaTime;
+                if (anticipationTime <= 0)
+                {
+                    attackState = TurretAttackState.Attack;
+                    Animator.SetTrigger("AttackTrigger");
+                }
+                break;
+            case TurretAttackState.Attack:
+                break;
+            case TurretAttackState.Rest:
+                restTime -= Time.deltaTime;
+                if (restTime <= 0)
+                {
+                    ChangeAimingCubeState(AimingCubeState.NotVisible);
+                    Animator.SetTrigger("FromRestToIdleTrigger");
+                    ChangingState(TurretState.Idle);
+                }
+                else if(maxRestTime - restTime > restTimeBeforeAimingCubeUnlocked && aimingCubeState != AimingCubeState.Following)
+                {
+                    ChangeAimingCubeState(AimingCubeState.Following);
+                }
+                break;
+        }
+
+        //Adapt aimCube Scale and Position
+        RaycastHit hit;
+        if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
+        {
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
+            aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z / 2 * _self.forward);
+        }
+    }
+
+    public void TransitionFromAttackToRest() //called from animation event !
+    {
+        attackState = TurretAttackState.Rest;
     }
 
     public void LaunchProjectile()
@@ -216,7 +307,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     {
         if(focusedPlayerTransform == null && _newFocus!=null)
         {
-            ChangingState(TurretState.PrepareToAttack);
+            ChangingState(TurretState.GettingOutOfGround);
         }
         else if(focusedPlayerTransform != null && _newFocus == null)
         {
@@ -234,7 +325,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    IEnumerator CheckDistanceAndAdaptFocus()
+    void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
@@ -258,15 +349,18 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         //Unfocus player because of distance
         if (focusedPlayerTransform != null)
         {
-            if((focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne>unfocusDistance) 
-                || (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo > unfocusDistance))
+            if((focusedPlayerTransform == _playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !_playerOnePawnController.IsTargetable())) 
+                || ((focusedPlayerTransform == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
+                //print("hey");
             }
         }
 
         //Changing focus between the two
-        if(playerOneInRange && playerTwoInRange && focusedPlayerTransform != null)
+        if((playerOneInRange && _playerOnePawnController.IsTargetable()) 
+            && (playerTwoInRange && _playerTwoPawnController.IsTargetable()) 
+            && focusedPlayerTransform != null)
         {
             if(focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
@@ -279,14 +373,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
 
         //no focused yet ? Choose one
-        if((playerOneInRange || playerTwoInRange) && focusedPlayerTransform == null)
+        if(((playerOneInRange && _playerOnePawnController.IsTargetable()) 
+            || (playerTwoInRange && _playerTwoPawnController.IsTargetable())) 
+            && focusedPlayerTransform == null)
         {
-            ChangingFocus(GetClosestPlayer());
+            ChangingFocus(GetClosestAndAvailablePlayer());
         }
-
-        //Restart coroutine in X seconds
-        yield return new WaitForSeconds(timeBetweenCheck);
-        StartCoroutine(CheckDistanceAndAdaptFocus());
     }
 
     void Die()
@@ -317,21 +409,26 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         EnergyManager.IncreaseEnergy(energyAmount);
     }
 
-    public void AimingCubeRotate(bool _true)
+    public void ChangeAimingCubeState(AimingCubeState _NewState)
     {
-        if (_true)
+        if (_NewState == AimingCubeState.Following)
         {
             shouldRotateTowardsPlayer = true;
             aimingCubeRenderer.material.color = followingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
+            forwardPredictionRatio = defaultForwardPredictionRatio + Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
         }
-        else
+        else if(_NewState == AimingCubeState.Locking)
         {
             shouldRotateTowardsPlayer = false;
             aimingCubeRenderer.material.color = lockingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeLockedScale;
+        }
+        else if(_NewState == AimingCubeState.NotVisible)
+        {
+            aimingCubeTransform.localScale = Vector3.zero;
         }
     }
 }

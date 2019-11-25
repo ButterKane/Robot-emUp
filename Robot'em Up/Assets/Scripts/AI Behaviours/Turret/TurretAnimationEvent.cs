@@ -5,6 +5,7 @@ using UnityEngine;
 public class TurretAnimationEvent : MonoBehaviour
 {
     public TurretBehaviour MyScript;
+    bool canCallFollowingState = true;
 
     void FinishedPrepareAttack()
     {
@@ -21,11 +22,21 @@ public class TurretAnimationEvent : MonoBehaviour
 
     void AimingCubeRotateTrue()
     {
-        MyScript.AimingCubeRotate(true);
+        if (canCallFollowingState)
+        {
+            MyScript.ChangeAimingCubeState(AimingCubeState.Following);
+            canCallFollowingState = false;
+        }
     }
 
     void AimingCubeRotateFalse()
     {
-        MyScript.AimingCubeRotate(false);
+        MyScript.ChangeAimingCubeState(AimingCubeState.Locking);
+    }
+
+    void GoToRestAttackState()
+    {
+        MyScript.TransitionFromAttackToRest();
+        canCallFollowingState = true;
     }
 }

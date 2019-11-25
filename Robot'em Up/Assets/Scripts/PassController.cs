@@ -250,6 +250,7 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
+		CursorManager.SetBallPointerParent(transform);
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;

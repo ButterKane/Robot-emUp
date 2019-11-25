@@ -289,6 +289,7 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
+				CursorManager.SetBallPointerParent(transform);
 				LockManager.UnlockAll();
 				break;
 			case BallState.Aimed:
@@ -296,6 +297,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableCollisions();
 				break;
 			case BallState.Flying:
+				CursorManager.SetBallPointerParent(null);
 				DisableGravity();
 				EnableCollisions();
 				currentDistanceTravelled = 0;
@@ -389,7 +391,7 @@ public class BallBehaviour : MonoBehaviour
 								FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
 								return;
 							}
-							else if (canHitWalls)
+							else
 							{
 								ChangeState(BallState.Grounded);
 								MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
@@ -410,6 +412,10 @@ public class BallBehaviour : MonoBehaviour
 				}
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
 				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
+				if (currentCurve == null && currentDistanceTravelled >= currentMaxDistance)
+				{
+					ChangeState(BallState.Grounded);
+				}
 				break;
 		}
 	}
