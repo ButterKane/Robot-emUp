@@ -7,6 +7,7 @@ public class Boss_WeakPoint : PuzzleActivable
     // Start is called before the first frame update
 
 
+    public int life = 1;
     public GameObject weakPointModel;
     public GameObject explosionFx;
 
@@ -14,8 +15,20 @@ public class Boss_WeakPoint : PuzzleActivable
     {
         isActivated = true;
         UpdateLights();
-        DestroyWeakPoint();
 
+        FXManager.InstantiateFX(explosionFx, Vector3.up * 1, true, Vector3.zero, Vector3.one * 2);
+        life--;
+        if (life < 1)
+        {
+            DestroyWeakPoint();
+            FXManager.InstantiateFX(explosionFx, Vector3.up * 1, true, Vector3.zero, Vector3.one * 3);
+        }
+
+        PuzzleLink[] links = FindObjectsOfType<PuzzleLink>();
+        foreach (var item in links)
+        {
+            item.chargingTime = -1f;
+        }
     }
 
     public void DestroyWeakPoint()
@@ -23,7 +36,6 @@ public class Boss_WeakPoint : PuzzleActivable
         if (weakPointModel != null)
         {
             Destroy(weakPointModel);
-            FXManager.InstantiateFX(explosionFx, Vector3.up * 1, true, Vector3.zero, Vector3.one * 2);
         }
     }
 }
