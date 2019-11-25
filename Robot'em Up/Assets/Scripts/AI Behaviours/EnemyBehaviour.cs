@@ -9,7 +9,6 @@ public enum EnemyState
 {
     Idle,
     Following,
-    Staggering,
     Bumped,
     ChangingFocus,
     PreparingAttack,
@@ -17,6 +16,14 @@ public enum EnemyState
     PauseAfterAttack,
     Dying,
 }
+public enum WhatBumps
+{
+    Pass,
+    Dunk,
+    Environment,
+    Count
+}
+
 
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
@@ -58,6 +65,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     private float maxTimeBetweenCheck = 0.25f;
 
     [Space(2)]
+    [Header("Movement")]
+    public float normalSpeed = 5;
+    public float normalAcceleration = 30;
+    private float moveMultiplicator;
+    private int normalMoveMultiplicator = 1;
+    public AnimationCurve speedRecoverCurve;
+    private float staggerAvancement;
+    private WhatBumps whatBumps;
+
+    [Space(2)]
     [Header("Attack")]
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
@@ -79,7 +96,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
-
+    
     [Space(2)]
     [Header("Bump")]
     public float maxGettingUpDuration = 0.6f;
@@ -115,6 +132,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Header("Death")]
     public float coreDropChances = 1;
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
+
+    
 
     void Start()
     {
@@ -205,8 +224,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     }
                 }
                 break;
-            case EnemyState.Staggering:
-                break;
             case EnemyState.Bumped:
 
                 //isBeingBumped !
@@ -294,8 +311,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 break;
 			case EnemyState.Following:
                 navMeshAgent.enabled = true;
-                break;
-            case EnemyState.Staggering:
                 break;
             case EnemyState.Bumped:
                 EnterBumpedState();
@@ -396,8 +411,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 break;
             case EnemyState.Following:
                 break;
-            case EnemyState.Staggering:
-                break;
             case EnemyState.Bumped:
                 ExitBumpedState();
                 break;
@@ -417,7 +430,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void ExitBumpedState()
     {
-        // Used in variants
+        StartCoroutine(StaggeredCo(whatBumps));
     }
 
     void UpdateDistancesToPlayers()
@@ -455,12 +468,17 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case DamageSource.Dunk:
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                whatBumps = WhatBumps.Dunk;
                 break;
             case DamageSource.RedBarrelExplosion:
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                whatBumps = WhatBumps.Environment;
                 break;
-
+            case DamageSource.Ball:
+                whatBumps = WhatBumps.Pass;
+                StartCoroutine(StaggeredCo(whatBumps));
+                break;
         }
         Health -= _damages;
 
@@ -564,6 +582,41 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
+    }
+
+    public IEnumerator StaggeredCo(WhatBumps? cause = default)
+    {
+        // TODO: CHange the staggering values according to what bumps
+        switch (cause)
+        {
+            case WhatBumps.Pass:
+                moveMultiplicator -= 0.5f;
+                // Fetch ball datas => speed reduction on pass
+                break;
+            case WhatBumps.Dunk:
+                moveMultiplicator -= 0.5f;
+                // Fetch ball datas => speed reduction on dunk
+                break;
+            case WhatBumps.Environment:
+                moveMultiplicator -= 0.5f;
+                // Fetch environment datas => speed reduction
+                break;
+            default:
+                moveMultiplicator -= 0.5f;
+                Debug.Log("Default case: New speed multiplicator = 0.5");
+                break;
+        }
+
+        float t = moveMultiplicator;
+
+        while (moveMultiplicator < normalMoveMultiplicator)
+        {
+            moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        moveMultiplicator = normalMoveMultiplicator;
     }
 
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)

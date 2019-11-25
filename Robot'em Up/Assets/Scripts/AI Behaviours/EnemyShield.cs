@@ -20,9 +20,6 @@ public class EnemyShield : EnemyBehaviour
     }
     bool isShieldActivated;
 
-    private float normalSpeed = 3f;
-    private float normalAcceleration = 30;
-
     [Space(2)]
     [Header("Attack")]
     public float attackSpeed = 7;

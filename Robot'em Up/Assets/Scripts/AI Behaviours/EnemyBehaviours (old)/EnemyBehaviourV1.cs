@@ -15,13 +15,6 @@ public enum EnemyStateV1
     Null,
     Count
 }
-public enum WhatBumps
-{
-    Pass,
-    Dunk,
-    Environment,
-    Count
-}
 public class EnemyBehaviourV1 : MonoBehaviour, IHitable
 {
     [Separator("References")]
