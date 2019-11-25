@@ -20,7 +20,8 @@ public class EnemyShield : EnemyBehaviour
     }
     bool isShieldActivated;
 
-    public float normalSpeed = 3f;
+    private float normalSpeed = 3f;
+    private float normalAcceleration = 30;
 
     [Space(2)]
     [Header("Attack")]
@@ -31,6 +32,8 @@ public class EnemyShield : EnemyBehaviour
     // ATTACK
     public override void EnterPreparingAttackState()
     {
+        normalSpeed = navMeshAgent.speed;
+        normalAcceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         Animator.SetTrigger("AttackTrigger");
     }   
@@ -43,7 +46,7 @@ public class EnemyShield : EnemyBehaviour
         }
 
         attackTimeProgression += Time.deltaTime / maxAttackDuration;
-        Debug.Log("attack time = " + attackTimeProgression);
+
         //must stop ?
         int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
         if (Physics.Raycast(_self.position, _self.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
@@ -62,27 +65,17 @@ public class EnemyShield : EnemyBehaviour
 
             Debug.DrawRay(_self.position + direction * 5, Vector3.up, Color.green, 2f);
             navMeshAgent.SetDestination(_self.position + direction * 5);
-
-            // Rotate enemy to face direction it's going
-            var targetPosition = navMeshAgent.pathEndPosition;
-            var targetPoint = new Vector3(targetPosition.x, transform.position.y, targetPosition.z);
-            var _direction = (targetPoint - transform.position).normalized;
-            var _lookRotation = Quaternion.LookRotation(_direction);
-
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, _lookRotation, 360);
-        
         }
 
         if (attackTimeProgression >= 1)
         {
-            Debug.Log("end");
             navMeshAgent.speed = normalSpeed;
+            navMeshAgent.acceleration = normalAcceleration;
             IsShieldActivated = true;
             ChangingState(EnemyState.PauseAfterAttack);
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
         {
-            Debug.Log("end aniamtion");
             endOfAttackTriggerLaunched = true;
             Animator.SetTrigger("EndOfAttackTrigger");
         }
