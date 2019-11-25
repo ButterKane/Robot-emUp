@@ -631,6 +631,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     IEnumerator WaitABit()
     {
         yield return new WaitForSeconds(1f);
-        State = EnemyState.Following;
+        ChangingState(EnemyState.Following);
     }
 }
