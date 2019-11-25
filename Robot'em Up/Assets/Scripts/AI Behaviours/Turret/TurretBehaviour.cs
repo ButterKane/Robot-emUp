@@ -184,6 +184,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             case TurretState.Hiding:
                 break;
             case TurretState.Hidden:
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                }
                 break;
             case TurretState.Dying:
                 break;
