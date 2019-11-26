@@ -6,6 +6,11 @@ public class FXManager : MonoBehaviour
 {
 	public static GameObject InstantiateFX(GameObject fx, Vector3 _position, bool _useLocalPosition, Vector3 _direction, Vector3 _sizeMultiplier, Transform _parent = null )
 	{
+		if (fx == null)
+		{
+			Debug.Log("Warning: No FX assigned");
+			return null;
+		}
 		GameObject newFX = Instantiate(fx);
 		if (_parent != null)
 		{

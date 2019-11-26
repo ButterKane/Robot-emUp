@@ -97,17 +97,31 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenDesactivate()
     {
-        isActivated = false;
-        UpdateLights();
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
-
-        Destroy(myFx);
-
-        if (myFx != null)
+        bool checkAllConditionsCustom = true;
+        
+        foreach (var item in puzzleActivators)
         {
-            Destroy(myFx);
+            if (item.isActivated)
+            {
+                checkAllConditionsCustom = false;
+            }
         }
-        myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+        
+        if (checkAllConditionsCustom)
+        {
+
+            isActivated = false;
+            UpdateLights();
+            meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
+
+            Destroy(myFx);
+
+            if (myFx != null)
+            {
+                Destroy(myFx);
+            }
+            myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+        }
         
     }
 

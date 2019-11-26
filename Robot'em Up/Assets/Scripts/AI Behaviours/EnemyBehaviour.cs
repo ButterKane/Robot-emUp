@@ -1,19 +1,20 @@
-﻿using MyBox;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#pragma warning disable 0649
+using MyBox;
+using UnityEngine.AI;
 
 
 public enum EnemyState
 {
     Idle,
-    Moving,
     Following,
+    Bumped,
+    ChangingFocus,
+    PreparingAttack,
     Attacking,
-    Surrounding,
-    Null,
-    Count
+    PauseAfterAttack,
+    Dying,
 }
 public enum WhatBumps
 {
@@ -22,404 +23,582 @@ public enum WhatBumps
     Environment,
     Count
 }
+
+
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
+    public EnemyState State = EnemyState.Idle;
+
     [Separator("References")]
-    [SerializeField] private Transform _self;
+    [SerializeField] protected Transform _self;
     public Rigidbody Rb;
-    [SerializeField] private ParticleSystem _hitFXPrefab;
-    [SerializeField] private ParticleSystem _destroyedFXPrefab;
-    [SerializeField] private EnemyAttack _attackScript;
     public Animator Animator;
+    public NavMeshAgent navMeshAgent;
 
-    [Space(2)]
+	[Space(2)]
     [Separator("Auto-assigned References")]
-    public Transform Target;
-    [SerializeField] private Transform _playerOne;
-    [SerializeField] private Transform _playerTwo;
+    [SerializeField] private Transform _playerOneTransform;
+    private PawnController _playerOnePawnController;
+    [SerializeField] private Transform _playerTwoTransform;
+    private PawnController _playerTwoPawnController;
+
 
     [Space(2)]
-    [Separator("Read-only Variables")]
-    public EnemyState State;
-    public float Speed = 100;
-
-    [Space(2)]
-    [Separator("Variables")]
-    public bool IsFollowingPlayer;
-    public bool IsAttacking = false;
-
-    [Header("Health")]
-    public int MaxHealth = 100;
+    [Separator("Tweakable variables")]
+    bool playerOneInRange;
+    bool playerTwoInRange;
+    public int MaxHealth = 30;
     public int Health;
-    [Header("Attack parameters")]
-    public float AttackDistance = 7f;
-    public float PushForce = 300;
-    [Header("Follow parameters")]
-    public AnimationCurve Acceleration;
-    public float TimeToReachMaxSpeed = 0.5f;
-    public float MaxSpeed = 100f;
-    [Header("Focus Change")]
-    public float focusChangeDifferencialReference = 2f; // marge to apply when comparing distances to both players
-    public float focusChangeWaitTime = 0.5f;
-    public float focusChangeSpeed = 2f;
-    public AnimationCurve ChangeFocusSpeedCurve;
+    float distanceWithPlayerOne;
+    float distanceWithPlayerTwo;
+    float distanceWithFocusedPlayer;
+    public Transform focusedPlayer = null;
+    public float energyAmount = 1;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+
+	[Space(2)]
+    [Header("Focus")]
+    public float focusDistance = 18;
+    public float unfocusDistance = 20;
+    public float timeBetweenCheck = 0.25f;
+    public float distanceBeforeChangingPriority = 3;
+    private float maxTimeBetweenCheck = 0.25f;
 
     [Space(2)]
-    [Separator("Surrounding Variables")]
-    public float TimeBeforeSurround = 2f;
+    [Header("Movement")]
+    public float normalSpeed = 5;
+    public float normalAcceleration = 30;
+    private float moveMultiplicator;
+    private int normalMoveMultiplicator = 1;
+    public AnimationCurve speedRecoverCurve;
+    private float staggerAvancement;
+    private WhatBumps whatBumps;
+
+    [Space(2)]
+    [Header("Attack")]
+    public float distanceToAttack = 5;
+    public float maxAnticipationTime = 0.5f;
+    [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
+    protected float anticipationTime;
+    public float attackMaxDistance = 8;
+    public float maxAttackDuration = 0.5f;
+    protected float attackDuration;
+    protected float attackTimeProgression;
+    public AnimationCurve attackSpeedCurve;
+    protected Vector3 attackInitialPosition;
+    protected Vector3 attackDestination;
+    [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
+    protected bool endOfAttackTriggerLaunched;
+    public GameObject attackHitBoxPrefab;
+    GameObject myAttackHitBox;
+    public Vector3 hitBoxOffset;
+    public float maxTimePauseAfterAttack = 1;
+    float timePauseAfterAttack;
+    public float attackRaycastDistance = 2;
+    protected bool mustCancelAttack;
+    
+    [Space(2)]
+    [Header("Bump")]
+    public float maxGettingUpDuration = 0.6f;
+    public AnimationCurve bumpDistanceCurve;
+    float bumpDistance;
+    float bumpDuration;
+    float restDuration;
+    float gettingUpDuration;
+    Vector3 bumpInitialPosition;
+    Vector3 bumpDestinationPosition;
+    Vector3 bumpDirection;
+    float bumpTimeProgression;
+    [Range(0, 1)] public float whenToTriggerFallingAnim;
+    bool fallingTriggerLaunched;
+    public float bumpRaycastDistance = 1;
+    bool mustCancelBump;
+
+    [Space(2)]
+    [Header("FX References")]
+    public GameObject deathParticlePrefab;
+    public float deathParticleScale = 2;
+    public GameObject hitParticlePrefab;
+    public float hitParticleScale = 3;
+
+    [Space(2)]
+    [Header("Surrounding")]
+    public Transform ClosestSurroundPoint;
     [Range(0, 1)]
     public float BezierCurveHeight = 0.5f;
     public float BezierDistanceToHeightRatio = 100f;
-    public float DistanceToDestinationTolerance = 0.2f; // the estimated distance where it's considered the enemy is close enough to the surrounding point
-    [HideInInspector] public Transform ClosestSurroundPoint;
-
-    // Private variables 
-    private float _distanceToOne;
-    private float _distanceToTwo;
-    private Surrounder _surrounder;
 
     [Space(2)]
-    [Separator("Bump/Stagger Variables")]
-    public float moveMultiplicator;
-    public float normalMoveMultiplicator = 1;
-    public AnimationCurve speedRecoverCurve;
-    private bool isBumped;
+    [Header("Death")]
+    public float coreDropChances = 1;
+	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
 
-    private int _hitCount;
+    
 
-    private IEnumerator currentCoroutine;
-
-    public int hitCount
-    {
-        get
-        {
-            return _hitCount;
-        }
-        set
-        {
-            _hitCount = value;
-        }
-    }
-
-    // Start is called before the first frame update
     void Start()
     {
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
-
         Health = MaxHealth;
-        IsFollowingPlayer = false;
-        State = EnemyState.Idle;
-        GameManager.i.enemyManager.enemies.Add(this);
-
-        moveMultiplicator = normalMoveMultiplicator;
-
-        WhatShouldIDo(EnemyState.Idle);
         _self = transform;
+        timeBetweenCheck = maxTimeBetweenCheck;
+        _playerOneTransform = GameManager.i.playerOne.transform;
+        _playerTwoTransform = GameManager.i.playerTwo.transform;
+        _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
+        _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
+        GameManager.i.enemyManager.enemies.Add(this);
+        State = EnemyState.Following;
+        CheckDistanceAndAdaptFocus();
     }
 
     void Update()
     {
-        Animator.SetFloat("IdleRunBlend", Speed/MaxSpeed);
+        UpdateDistancesToPlayers();
+        UpdateState();
+        UpdateAnimatorBlendTree();
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            BumpMe(8, .35f, 1, -transform.forward);
+        }
     }
 
-    public void WhatShouldIDo(EnemyState priorityState = EnemyState.Null)
+    private void UpdateAnimatorBlendTree()
     {
-        if (currentCoroutine != null) { StopCoroutine(currentCoroutine); }
-
-        GetTarget();
-
-        if (priorityState != EnemyState.Null)
+        if (Animator != null)
         {
-            State = priorityState;
+            Animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
         }
-        else
-        {
-            if ((Target.position - _self.position).magnitude < AttackDistance)
-            {
-                if (GameManager.i.enemyManager.enemyCurrentlyAttacking == null)
-                {
-                    GameManager.i.enemyManager.enemyCurrentlyAttacking = _self.gameObject;
-                    State = EnemyState.Attacking;
-                }
-                else
-                {
-                    State = EnemyState.Idle;
-                }
-            }
-            else if (Target != null)
-            {
-                State = EnemyState.Following;
-            }
-        }
+    }
 
-        Debug.Log("WhatShouldIDo? : " + State);
-
-        // Compute the choice according to the state
+    void UpdateState()
+    {
         switch (State)
         {
             case EnemyState.Idle:
-                currentCoroutine = WaitABit();
-                StartCoroutine(currentCoroutine);
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
+                }
                 break;
-
-            case EnemyState.Moving:
-                // Simple move in an area, not following a player
-                break;
-
             case EnemyState.Following:
-                currentCoroutine = FollowPlayer(Target);
-                StartCoroutine(currentCoroutine);
-                break;
+                timeBetweenCheck -= Time.deltaTime;
+                if (timeBetweenCheck <= 0)
+                {
+                    CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
+                }
 
+                if (focusedPlayer != null)
+                {
+                    Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+                    _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+
+                    if (ClosestSurroundPoint != null)
+                    {
+                        float distanceToPointRatio = (1 + (_self.position - ClosestSurroundPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+
+                        Vector3 p0 = _self.position;    // The starting point
+
+                        Vector3 p2 = SwissArmyKnife.GetFlattedDownPosition(ClosestSurroundPoint.position, _self.position);  // The destination
+
+                        float angle = Vector3.SignedAngle(p2 - p0, focusedPlayer.transform.position - p0, Vector3.up);
+
+                        int moveSens = angle > 1 ? 1 : -1;
+
+                        Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight * distanceToPointRatio;  // "third point" of the bezier curve
+
+                        // Calculating position on bezier curve, following start point, end point and avancement
+                        // In this version, the avancement has been replaced by a constant because it's recalculated every frame
+                        Vector3 positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * p0) + (2 * 0.5f * 0.5f * p1) + (Mathf.Pow(0.5f, 2) * p2);
+                        navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(positionOnBezierCurve, focusedPlayer.position));
+                    }
+                    else
+                    {
+                        navMeshAgent.SetDestination(focusedPlayer.position);
+                    }
+
+                    if (distanceWithFocusedPlayer <= distanceToAttack)
+                    {
+                        ChangingState(EnemyState.PreparingAttack);
+                    }
+                }
+                break;
+            case EnemyState.Bumped:
+
+                //isBeingBumped !
+                if (bumpTimeProgression < 1)
+                {
+                    bumpTimeProgression += Time.deltaTime / bumpDuration;
+
+                    //must stop ?
+                    int bumpRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+                    if (Physics.Raycast(_self.position, bumpDirection, bumpRaycastDistance, bumpRaycastMask) && !mustCancelBump)
+                    {
+                        mustCancelBump = true;
+                        bumpTimeProgression = whenToTriggerFallingAnim;
+                    }
+
+                    //move !
+                    if (!mustCancelBump)
+                    {
+                        Rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression)));
+                    }
+
+                    //trigger end anim
+                    if (bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
+                    {
+                        fallingTriggerLaunched = true;
+                        Animator.SetTrigger("FallingTrigger");
+                    }
+                }
+
+                //when arrived on ground
+                else if (restDuration > 0)
+                {
+                    restDuration -= Time.deltaTime;
+                    if (restDuration <= 0)
+                    {
+                        Animator.SetTrigger("StandingUpTrigger");
+                    }
+                }
+
+                //time to get up
+                else if (gettingUpDuration > 0)
+                {
+                    gettingUpDuration -= Time.deltaTime;
+                    if (gettingUpDuration <= 0)
+                        ChangingState(EnemyState.Following);
+                }
+                break;
+            case EnemyState.ChangingFocus:
+                break;
+            case EnemyState.PreparingAttack:
+                PreparingAttackState();
+                
+                break;
             case EnemyState.Attacking:
-                LaunchAttack(Target);
+                AttackingState();
+                
                 break;
+            case EnemyState.PauseAfterAttack:
+                timePauseAfterAttack -= Time.deltaTime;
+                if (timePauseAfterAttack <= 0)
+                {
+                    ChangingState(EnemyState.Following);
+                }
+                break;
+            case EnemyState.Dying:
+                Die();
+                break;
+        }
+    }
 
-            case EnemyState.Surrounding:
-                LaunchSurrounding();
-                break;
+    public void ChangingState(EnemyState _newState)
+    {
+        ExitState();
+        EnterState(_newState);
+        State = _newState;
+    }
 
-            default:
-                State = EnemyState.Idle; // Making sure the enemy never "bugs" and ends up with no state
+    void EnterState(EnemyState _newState)
+    {
+        print(_newState);
+        switch (_newState)
+        {
+            case EnemyState.Idle:
+                StartCoroutine(WaitABit());
                 break;
+			case EnemyState.Following:
+                navMeshAgent.enabled = true;
+                break;
+            case EnemyState.Bumped:
+                EnterBumpedState();
+                break;
+            case EnemyState.ChangingFocus:
+                break;
+            case EnemyState.PreparingAttack:
+                EnterPreparingAttackState();
+                break;
+            case EnemyState.Attacking:
+                EnterAttackingState();
+                break;
+            case EnemyState.PauseAfterAttack:
+                timePauseAfterAttack = maxTimePauseAfterAttack;
+                break;
+            case EnemyState.Dying:
+                break;
+        }
+    }
+
+    public virtual void EnterBumpedState()
+    {
+        transform.rotation = Quaternion.LookRotation(-bumpDirection);
+        gettingUpDuration = maxGettingUpDuration;
+        fallingTriggerLaunched = false;
+        navMeshAgent.enabled = false;
+        bumpTimeProgression = 0;
+        bumpInitialPosition = transform.position;
+        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
+        Animator.SetTrigger("BumpTrigger");
+        mustCancelBump = false;
+    }
+
+    public virtual void EnterPreparingAttackState()
+    {
+        navMeshAgent.enabled = false;
+        anticipationTime = maxAnticipationTime;
+        Animator.SetTrigger("AttackTrigger");
+    }
+
+    public virtual void EnterAttackingState()
+    {
+        //attackDuration = maxAttackDuration;
+        endOfAttackTriggerLaunched = false;
+        attackInitialPosition = transform.position;
+        attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
+        attackTimeProgression = 0;
+        myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
+        mustCancelAttack = false;
+    }
+
+    public virtual void PreparingAttackState()
+    {
+        Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+        _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+        anticipationTime -= Time.deltaTime;
+        if (anticipationTime <= 0)
+        {
+            ChangingState(EnemyState.Attacking);
+        }
+    }
+
+    public virtual void AttackingState()
+    {
+        attackTimeProgression += Time.deltaTime / maxAttackDuration;
+        //attackDuration -= Time.deltaTime;
+
+        //must stop ?
+        int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+        if (Physics.Raycast(_self.position, _self.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
+        {
+            attackTimeProgression = whenToTriggerEndOfAttackAnim;
+            mustCancelAttack = true;
+        }
+
+        if (!mustCancelAttack)
+        {
+            Rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
+        }
+
+        if (attackTimeProgression >= 1)
+        {
+            ChangingState(EnemyState.PauseAfterAttack);
+        }
+        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
+        {
+            endOfAttackTriggerLaunched = true;
+            Animator.SetTrigger("EndOfAttackTrigger");
+        }
+    }
+
+    void ExitState()
+    {
+        switch (State)
+        {
+            case EnemyState.Idle:
+                break;
+            case EnemyState.Following:
+                break;
+            case EnemyState.Bumped:
+                ExitBumpedState();
+                break;
+            case EnemyState.ChangingFocus:
+                break;
+            case EnemyState.PreparingAttack:
+                break;
+            case EnemyState.Attacking:
+                Destroy(myAttackHitBox);
+                break;
+            case EnemyState.PauseAfterAttack:
+                break;
+            case EnemyState.Dying:
+                break;
+        }
+    }
+
+    public virtual void ExitBumpedState()
+    {
+        StartCoroutine(StaggeredCo(whatBumps));
+    }
+
+    void UpdateDistancesToPlayers()
+    {
+        distanceWithPlayerOne = Vector3.Distance(_self.position, _playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwoTransform.position);
+        if (focusedPlayer != null)
+            distanceWithFocusedPlayer = Vector3.Distance(_self.position, focusedPlayer.position);
+    }
+
+    Transform GetClosestAndAvailablePlayer()
+    {
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && _playerTwoPawnController.IsTargetable())
+            || !_playerOnePawnController.IsTargetable())
+        {
+            return _playerTwoTransform;
+        }
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && _playerOnePawnController.IsTargetable())
+            || !_playerTwoPawnController.IsTargetable())
+        {
+            return _playerOneTransform;
+        }
+        else
+        {
+            return null;
         }
     }
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
-        Debug.Log("Damage taken " + _source);
-        DamageTaken(_damages);
-        _ball.Explode(true);
-        MomentumManager.IncreaseMomentum(0.1f);
-
-        StopEverythingMethod();
-
-        WhatShouldIDo();
-    }
-
-    #region Collisions managing
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "Player")
+        Vector3 normalizedImpactVector;
+		LockManager.UnlockTarget(this.transform);
+        switch (_source)
         {
-            if (collision.gameObject.GetComponent<PawnController>().isInvincible == false)
-            {
-                Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
-                collision.gameObject.GetComponent<PawnController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);
-                collision.gameObject.GetComponent<PawnController>().Damage(10);
-            }
-            StopAllCoroutines();
-            WhatShouldIDo();
+            case DamageSource.Dunk:
+                normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                whatBumps = WhatBumps.Dunk;
+                break;
+            case DamageSource.RedBarrelExplosion:
+                normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                whatBumps = WhatBumps.Environment;
+                break;
+            case DamageSource.Ball:
+                whatBumps = WhatBumps.Pass;
+                StartCoroutine(StaggeredCo(whatBumps));
+                break;
         }
-    }
+        Health -= _damages;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject == GameManager.i.ball)
+        if (_ball)
+            _ball.Explode(true);
+
+        if (Health <= 0)
         {
-            DamageTaken(GameManager.i.ballDamage);
-        }
-    }
-    #endregion
-
-    #region Launcher Functions
-    public void LaunchStaggerSequence()
-    {
-        StartCoroutine(HinderMovementSpeed());
-    }
-    
-    public void LaunchBumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
-    {
-        isBumped = false;
-        currentCoroutine = BumpSequence(upForce, pushForce, bumpedKoTime);
-        StartCoroutine(currentCoroutine);
-    }
-
-    public void LaunchHinderMovementSpeed()
-    {
-        StartCoroutine(HinderMovementSpeed());
-    }
-    
-    public void LaunchSurrounding()
-    {
-        currentCoroutine = SurroundPlayer(Target.gameObject);
-        StartCoroutine(currentCoroutine);
-    }
-
-    public void LaunchAttack(Transform target)
-    {
-        _attackScript.LaunchAttack(target);
-    }
-
-    public void LaunchChangeFocusSequence()
-    {
-        currentCoroutine = ChangeFocusSequence();
-        StopEverythingMethod();
-        StartCoroutine(currentCoroutine);
-    }
-    #endregion
-
-    #region Coroutines
-
-    public IEnumerator WaitABit()
-    {
-        moveMultiplicator = 0;
-        yield return new WaitForSeconds(0.5f);
-        moveMultiplicator = normalMoveMultiplicator;
-        WhatShouldIDo();
-    }
-
-    public IEnumerator ChangeFocusSequence()
-    {
-        Animator.SetBool("ChangingFocus", true);
-        _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(Target.position, _self.position));
-
-        // TODO: add a progressive turn
-
-
-        yield return new WaitForSeconds(focusChangeWaitTime);
-        Animator.SetBool("ChangingFocus", false);
-        WhatShouldIDo();
-    }
-    public IEnumerator FallSequence(float waitTime)
-    {
-        Animator.SetTrigger("FallingTrigger");
-        yield return new WaitForSeconds(waitTime);
-        Animator.SetTrigger("StandingUpTrigger");
-        LaunchHinderMovementSpeed();
-        WhatShouldIDo();
-    }
-
-    public IEnumerator BumpSequence(float upForce, Vector3 pushForce, float bumpedKoTime)
-    {
-        Animator.SetTrigger("BumpTrigger");
-
-        Vector3 propulsionForce = Vector3.zero;
-        propulsionForce += SwissArmyKnife.GetFlattedDownDirection(pushForce);
-        propulsionForce += new Vector3(0, upForce, 0);
-
-        Rb.AddForce(propulsionForce, ForceMode.Impulse);
-
-        yield return null;
-        float initialSpeed = Rb.velocity.magnitude;
-        float projectionAngle = Vector3.Angle(pushForce, propulsionForce);
-
-        // Calculate how much time the enemy is supposed to spedn in the air
-        float airDuration = SwissArmyKnife.GetBallisticThrowLength(initialSpeed, projectionAngle, 0);
-        float timeToWait = SwissArmyKnife.GetBallisticThrowDuration(initialSpeed, projectionAngle, airDuration);
-
-        yield return new WaitForSeconds(timeToWait);    // Wait for the pushing back to have finished
-
-        StartCoroutine(FallSequence(bumpedKoTime));
-    }
-
-    public IEnumerator SurroundPlayer(GameObject player)
-    {
-        float distanceFromStartToNow = 0f;
-
-        Transform surroundingPoint = ClosestSurroundPoint;
-
-        /// Bezier quadratic curve : (1-avancement)^2*p0 + 2(1-avancement)*avancement*p1 + avancement^2*p2
-        /// With p0,p1,p2 as Vector3 positions, p0 & p2 as start an end points
-
-        if (surroundingPoint == null) // If there's no point to use to surround, abort
-        {
-            WhatShouldIDo();
+            State = EnemyState.Dying;
         }
         else
         {
-            float distanceToPointRatio = (1 + (_self.position - surroundingPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+            Animator.SetTrigger("HitTrigger");
+            GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
+            hitParticle.transform.localScale *= hitParticleScale;
+            Destroy(hitParticle, 1f);
+        }
+        EnergyManager.IncreaseEnergy(energyAmount);
+    }
 
-            Vector3 p0 = _self.position;
+    protected virtual void Die()
+    {
+		LockManager.UnlockTarget(this.transform);
+        GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        deathParticle.transform.localScale *= deathParticleScale;
+        Destroy(deathParticle, 1.5f);
+		if (Random.Range(0f, 1f) <= coreDropChances)
+		{
+			DropCore();
+		}	
+		Destroy(gameObject);
+    }
 
-            //Vector3 p2 = script.GetAPositionFromPoint(surroundingPoint);
+	void DropCore()
+	{
+		GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+		newCore.name = "Core of " + gameObject.name;
+		newCore.transform.position = transform.position;
+		Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
+		float throwForce = Random.Range(10, 17);
+		wantedDirectionAngle.y = throwForce * 0.035f;
+		newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+	}
 
-            Vector3 p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
+    void CheckDistanceAndAdaptFocus()
+    {
+        //Checking who is in range
+        if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
+        {
+            playerOneInRange = true;
+        }
+        else
+        {
+            playerOneInRange = false;
+        }
 
-            float angle = Vector3.SignedAngle(p2 - p0, player.transform.position - p0, Vector3.up);
+        if (distanceWithPlayerTwo < focusDistance && _playerTwoPawnController.IsTargetable())
+        {
+            playerTwoInRange = true;
+        }
+        else
+        {
+            playerTwoInRange = false;
+        }
 
-            int moveSens = angle > 1 ? 1 : -1;
-
-            Vector3 p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight * distanceToPointRatio;
-
-            float distanceToEnd1 = (p2 - p0).magnitude;
-            float distanceToEnd2 = (p2 - p0).magnitude;
-
-            float t = 0f;                    // movement avancement on the curve
-            float timeNotMovingMuch = 0f;   // checks if blocked by somethign during the movement
-
-            do
+        //Unfocus player because of distance
+        if (focusedPlayer != null)
+        {
+            if ((focusedPlayer == _playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !_playerOnePawnController.IsTargetable()))
+                || ((focusedPlayer == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
-                transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(Target.position, _self.position));
-                // Getting base infos
-                p0 = _self.position;
-                distanceToEnd1 = (p2 - p0).magnitude;   // distance from enemy to target
-                p2 = SwissArmyKnife.GetFlattedDownPosition(surroundingPoint.position, _self.position);
-                distanceToEnd2 = (p2 - p0).magnitude;   // distance from enemy to target after recalculating target position
-
-                Debug.DrawRay(p2, Vector3.up * 3, Color.green);
-
-                // Getting third point of bezier curve
-                p1 = p0 + (p2 - p0) / 0.5f + Vector3.Cross(p2 - p0, Vector3.up) * moveSens * BezierCurveHeight;
-
-                // Calculating position on bezier curve, following start point, end point and avancement
-                Vector3 positionOnBezierCurve = (Mathf.Pow((1 - t), 2) * p0) + (2 * (1 - t) * t * p1) + (Mathf.Pow(t, 2) * p2);
-
-
-                _self.position = positionOnBezierCurve;
-
-
-                // Adapting the avancement with the distance to travel
-                float distanceTraveled = distanceToEnd1 * t;    // traveled distance in units
-
-                if (distanceToEnd1 != distanceToEnd2)
-                {
-                    float distanceTraveledTransfered = distanceTraveled / distanceToEnd2;   // traveled distance transfered on new distance
-                    t = distanceTraveledTransfered;    // sets the current avancement according to new distance
-                }
-
-                // Stopping the enemy if it's blocked
-                distanceFromStartToNow = (positionOnBezierCurve - p0).magnitude;
-
-                if ((_self.position - p0).magnitude < distanceFromStartToNow)    // Comparing the traveled distance and the supposed distance to see if blocked
-                {
-                    timeNotMovingMuch += Time.deltaTime;
-                }
-                else
-                {
-                    timeNotMovingMuch = 0f;
-                }
-
-                //Incrementing the avancement
-                if (t < 1)
-                {
-                    t += Time.deltaTime / (distanceToEnd2 * (MaxSpeed/10));   
-                }
-
-                yield return null;
-            } while ((p0 - p2).magnitude > DistanceToDestinationTolerance && timeNotMovingMuch < 0.5f);
-
-            if (timeNotMovingMuch > 0.5f)
-            {
-                Debug.Log("stopped because not moving enough");
+                ChangingFocus(null);
+                //print("hey");
             }
-            yield return null;
-            
-            WhatShouldIDo();
+        }
+
+        //Changing focus between the two
+        if ((playerOneInRange && _playerOnePawnController.IsTargetable())
+            && (playerTwoInRange && _playerTwoPawnController.IsTargetable())
+            && focusedPlayer != null)
+        {
+            if (focusedPlayer == _playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            {
+                ChangingFocus(_playerTwoTransform);
+            }
+            else if (focusedPlayer == _playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            {
+                ChangingFocus(_playerOneTransform);
+            }
+        }
+
+        //no focused yet ? Choose one
+        if (((playerOneInRange && _playerOnePawnController.IsTargetable())
+            || (playerTwoInRange && _playerTwoPawnController.IsTargetable()))
+            && focusedPlayer == null)
+        {
+            ChangingFocus(GetClosestAndAvailablePlayer());
         }
     }
-    public IEnumerator HinderMovementSpeed(WhatBumps? cause = default)
+
+    void ChangingFocus(Transform _newFocus)
     {
+        focusedPlayer = _newFocus;
+    }
+
+    public IEnumerator StaggeredCo(WhatBumps? cause = default)
+    {
+        // TODO: CHange the staggering values according to what bumps
         switch (cause)
         {
             case WhatBumps.Pass:
+                moveMultiplicator -= 0.5f;
                 // Fetch ball datas => speed reduction on pass
                 break;
             case WhatBumps.Dunk:
+                moveMultiplicator -= 0.5f;
                 // Fetch ball datas => speed reduction on dunk
                 break;
             case WhatBumps.Environment:
+                moveMultiplicator -= 0.5f;
                 // Fetch environment datas => speed reduction
                 break;
             default:
@@ -427,9 +606,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 Debug.Log("Default case: New speed multiplicator = 0.5");
                 break;
         }
-        
+
         float t = moveMultiplicator;
-        
+
         while (moveMultiplicator < normalMoveMultiplicator)
         {
             moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
@@ -439,98 +618,19 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         moveMultiplicator = normalMoveMultiplicator;
     }
-    public IEnumerator FollowPlayer(Transform playerToFollow)
+
+    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
     {
-        float followTime = 0;
-        float t = 0;
-        while ((Target.position - _self.position).magnitude > AttackDistance && followTime <= TimeBeforeSurround)
-        {
-            Speed = MaxSpeed * moveMultiplicator * Acceleration.Evaluate(t);
-
-            _self.LookAt(SwissArmyKnife.GetFlattedDownPosition(playerToFollow.position, _self.position));
-
-            Rb.velocity = Vector3.zero;
-            
-            Rb.AddForce(_self.forward * Speed * Time.deltaTime, ForceMode.VelocityChange);
-
-            if (Speed < MaxSpeed * moveMultiplicator)
-            {
-                t += Time.deltaTime/ TimeToReachMaxSpeed;
-            }
-            else // wait until max speed is reached, then start counting
-            {
-                followTime += Time.deltaTime;
-            }
-
-            yield return null;
-        }
-
-        if (followTime >= TimeBeforeSurround)
-        {
-            if ((Target.gameObject == GameManager.i.playerOne && EnemyManager.i.enemyGroupOne.Contains(this))
-                || (Target.gameObject == GameManager.i.playerTwo && EnemyManager.i.enemyGroupTwo.Contains(this)))
-            {
-                WhatShouldIDo(EnemyState.Surrounding);
-            }
-            else
-            {
-                WhatShouldIDo();
-            }
-        }
-        else
-        {
-            WhatShouldIDo();
-        }
+        bumpDistance = _bumpDistance;
+        bumpDuration = _bumpDuration;
+        restDuration = _restDuration;
+        bumpDirection = _bumpDirection;
+        ChangingState(EnemyState.Bumped);
     }
 
-    #endregion
-
-    #region Private methods
-    private void GetTarget()
+    IEnumerator WaitABit()
     {
-        _distanceToOne = (_playerOne.position - transform.position).magnitude;
-        _distanceToTwo = (_playerTwo.position - transform.position).magnitude;
-
-        if (_distanceToOne < _distanceToTwo)
-        {
-            Target = _playerOne;
-        }
-        else
-        {
-            Target = _playerTwo;
-        }
+        yield return new WaitForSeconds(1f);
+        ChangingState(EnemyState.Following);
     }
-
-    private void DamageTaken(int damage)
-    {
-        StopEverythingMethod();
-        Rb.velocity = Vector3.zero;
-
-        Animator.SetTrigger("Hit"); // play animation
-        Instantiate(_hitFXPrefab, _self.position, Quaternion.identity);
-        Health -= damage;
-        CheckHealth();
-
-        WhatShouldIDo();
-    }
-
-    private void CheckHealth()
-    {
-        if (Health <= 0)
-        {
-            Instantiate(_destroyedFXPrefab, _self.position, Quaternion.identity);
-            GameManager.i.enemyManager.enemies.Remove(this);
-            Destroy(_self.gameObject);
-        }
-    }
-
-    private void StopEverythingMethod()
-    {
-        StopAllCoroutines();
-        if (GameManager.i.enemyManager.enemyCurrentlyAttacking == this.gameObject) { GameManager.i.enemyManager.enemyCurrentlyAttacking = null; }
-        Animator.SetTrigger("Reset");
-
-    }
-    #endregion
-
 }

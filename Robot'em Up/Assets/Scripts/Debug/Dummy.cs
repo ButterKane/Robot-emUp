@@ -5,6 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	private int _hitCount;
 	private Vector3 initialScale;
 	public int hitCount { 
@@ -21,7 +22,10 @@ public class Dummy : MonoBehaviour, IHitable
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount++;
-		_ball.Explode(true);
+		if (_ball != null)
+		{
+			_ball.Explode(true);
+		}
 		EnergyManager.IncreaseEnergy(0.1f);
 		if (_hitCount >= maxHealth) { Destroy(this.gameObject); }
 

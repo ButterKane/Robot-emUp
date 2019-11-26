@@ -14,6 +14,9 @@ public enum DamageSource
 {
 	Ball,
 	Dunk,
+	DeathExplosion,
+	ReviveExplosion,
+	RedBarrelExplosion
 }
 
 public enum DamageModifierSource
@@ -43,11 +46,10 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public EventManager eventManager;
     [HideInInspector] public EnemyManager enemyManager;
 
-    public GameObject mainCameraGO;
-    public GameObject playerOne;
-    public GameObject playerTwo;
-    public GameObject ball;
-    public BallBehaviour ballBehaviour;
+	[HideInInspector] public GameObject mainCameraGO;
+	[HideInInspector] public PlayerController playerOne;
+	[HideInInspector] public PlayerController playerTwo;
+	[HideInInspector] public BallBehaviour ball;
     public int ballDamage = 30;
     public List<GameObject> enemies;
 
@@ -65,11 +67,23 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         i = this;
+		//Auto assign players
+		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
+		{
+			if (pc.playerIndex == XInputDotNetPure.PlayerIndex.One) {
+				playerOne = pc;
+			}
+			if (pc.playerIndex == XInputDotNetPure.PlayerIndex.Two)
+			{
+				playerTwo = pc;
+			}
+		}
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
+		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
 		LoadMomentumManager();
 		LoadEnergyManager();
@@ -95,6 +109,59 @@ public class GameManager : MonoBehaviour
 		{
 			ResetScene();
 		}
+		UpdateSceneLoader();
+	}
+
+	void LoadSceneByIndex(int index)
+	{
+		SceneLoader sceneLoader = Resources.Load<SceneLoader>("SceneLoader");
+		if (sceneLoader == null) { Debug.LogWarning("SceneLoader not found, can't load scene"); return; }
+		string sceneFound = sceneLoader.GetSceneByIndex(index);
+		if (sceneFound == "") { Debug.LogWarning("Scene with that ID doesn't exit"); return; }
+		SceneManager.LoadScene(sceneFound);
+	}
+	void UpdateSceneLoader()
+	{
+		if (Input.GetKeyDown(KeyCode.Alpha1))
+		{
+			LoadSceneByIndex(1);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha2))
+		{
+			LoadSceneByIndex(2);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			LoadSceneByIndex(3);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha4))
+		{
+			LoadSceneByIndex(4);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha5))
+		{
+			LoadSceneByIndex(5);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha6))
+		{
+			LoadSceneByIndex(6);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha7))
+		{
+			LoadSceneByIndex(7);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha8))
+		{
+			LoadSceneByIndex(8);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha9))
+		{
+			LoadSceneByIndex(9);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha0))
+		{
+			LoadSceneByIndex(10);
+		}
 	}
 
 	//private void AssignPlayers()
@@ -116,7 +183,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnDummy()
     {
-        playerTwo = Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
+        Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
@@ -133,7 +200,7 @@ public class GameManager : MonoBehaviour
 		}
 		GameObject newBall = Instantiate(i.ballPrefab, null);
 		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
-        i.ball = newBall;
+        i.ball = newBall.GetComponent<BallBehaviour>();
 		newBall.transform.position = new Vector3(0, 1f, 0);
 	}
 

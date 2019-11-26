@@ -50,9 +50,9 @@ public class Surrounder : MonoBehaviour
 
     public void AttributeClosestEnemies()
     {
-        for (int i = 0; i < pointsScripts.Count; i++)
+        for (int i = 0; i < pointsScripts.Count; i++) 
         {
-            pointsScripts[i].closestEnemy = null;
+            pointsScripts[i].closestEnemy = null;   // empty the list
         }
 
         foreach (var enemy in closestEnemies)

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 559701810998271556}
   - component: {fileID: 7931417664060648215}
   - component: {fileID: 7771328276034546981}
-  - component: {fileID: 8350283369071618115}
   - component: {fileID: 6561459608439898454}
   - component: {fileID: 8991668823125711432}
+  - component: {fileID: 3271394819718229627}
   m_Layer: 0
   m_Name: P_TurretBasicBullet
   m_TagString: Untagged
@@ -29,8 +29,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3937835393218686174}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.9, y: 0.88, z: 1.12}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.30558693, y: 0.30558693, z: 1.6188468}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -81,19 +81,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &8350283369071618115
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3937835393218686174}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &6561459608439898454
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -126,3 +113,18 @@ MonoBehaviour:
   speed: 100
   deathParticle: {fileID: 3758249355753035628, guid: 2f949488fbe4dc947b2d0a6ffb6ffa8b,
     type: 3}
+  damageDealt: 3
+  maxLifeTime: 5
+--- !u!135 &3271394819718229627
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3937835393218686174}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.94
+  m_Center: {x: 0, y: 0, z: 0}
