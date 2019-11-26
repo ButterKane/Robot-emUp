@@ -9,13 +9,14 @@ public class PuzzleRepeater : PuzzleActivator
     public float speedChange;
     [ReadOnly]
     public float timeSpeedChange;
+    public float startSpeed = 0;
 
     public TextMesh textMesh;
 
 
     void Awake()
     {
-        timeSpeedChange = speedChange;
+        timeSpeedChange = startSpeed;
     }
 
     // Update is called once per frame
