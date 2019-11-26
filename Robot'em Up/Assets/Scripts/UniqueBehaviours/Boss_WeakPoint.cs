@@ -11,17 +11,24 @@ public class Boss_WeakPoint : PuzzleActivable
     public GameObject weakPointModel;
     public GameObject explosionFx;
 
+    public void Awake()
+    {
+
+    }
+
+
     override public void WhenActivate()
     {
         isActivated = true;
         UpdateLights();
 
-        FXManager.InstantiateFX(explosionFx, Vector3.up * 1, true, Vector3.zero, Vector3.one * 2);
+        Debug.Log("Explosion");
+        FXManager.InstantiateFX(explosionFx, transform.position + Vector3.up *1.5f, true, Vector3.zero, Vector3.one * 3);
         life--;
         if (life < 1)
         {
+            FXManager.InstantiateFX(explosionFx, transform.position, true, Vector3.zero, Vector3.one * 5);
             DestroyWeakPoint();
-            FXManager.InstantiateFX(explosionFx, Vector3.up * 1, true, Vector3.zero, Vector3.one * 3);
         }
 
         PuzzleLink[] links = FindObjectsOfType<PuzzleLink>();
