@@ -20,6 +20,7 @@ public class MomentumManager: MonoBehaviour
 	private Bloom bloom;
 	private ChromaticAberration chromaticAberration;
 	private ColorGrading colorGrading;
+    private Grain grain;
 
 	public void Awake ()
 	{
@@ -50,7 +51,14 @@ public class MomentumManager: MonoBehaviour
 			postProcessVolumeProfile.AddSettings<ColorGrading>();
 		}
 		postProcessVolumeProfile.TryGetSettings(out colorGrading);
-	}
+
+        //Retrieves or add grain settings
+        if (!postProcessVolumeProfile.TryGetSettings(out grain))
+        {
+            postProcessVolumeProfile.AddSettings<Grain>();
+        }
+        postProcessVolumeProfile.TryGetSettings(out grain);
+    }
 	private void Update ()
 	{
 		currentMomentum = Mathf.Lerp(currentMomentum, wantedMomentum, Time.deltaTime * datas.momentumLerpSpeed);
@@ -73,7 +81,10 @@ public class MomentumManager: MonoBehaviour
 
 		//Updates chromatic aberration
 		chromaticAberration.intensity.value = GetValue(datas.minMaxChromaticAberration);
-	}
+
+        //Updates grain
+        grain.intensity.value = GetValue(datas.minMaxGrain);
+    }
 
 	public static float GetMomentum()
 	{

@@ -151,8 +151,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                     }
                 }
                 break;
-            case EnemyState.Staggering:
-                break;
             case EnemyState.Bumped:
 
                 //isBeingBumped !
@@ -269,8 +267,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case EnemyState.Following:
                 navMeshAgent.enabled = true;
                 break;
-            case EnemyState.Staggering:
-                break;
             case EnemyState.Bumped:
                 transform.rotation = Quaternion.LookRotation(-bumpDirection);
                 gettingUpDuration = maxGettingUpDuration;
@@ -313,8 +309,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case EnemyState.Idle:
                 break;
             case EnemyState.Following:
-                break;
-            case EnemyState.Staggering:
                 break;
             case EnemyState.Bumped:
                 break;

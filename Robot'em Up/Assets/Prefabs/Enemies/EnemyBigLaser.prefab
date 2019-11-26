@@ -1,22 +1,22 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7534365355684496450
+--- !u!114 &-4787477513866298953
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7449900513924197488}
+  m_GameObject: {fileID: 6912448888974116348}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f69425a4c5ed87f40adc392634d4bc2d, type: 3}
+  m_Script: {fileID: 11500000, guid: f12abe39f6d274749ac325cfacd9540b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   State: 0
-  _self: {fileID: 7449900513924197480}
-  Rb: {fileID: 7449900513924197492}
-  Animator: {fileID: 7449900512966237189}
-  navMeshAgent: {fileID: 7449900513924197489}
+  _self: {fileID: 6912448888974116324}
+  Rb: {fileID: 6912448888974116344}
+  Animator: {fileID: 6912448890066269577}
+  navMeshAgent: {fileID: 6912448888974116349}
   _playerOne: {fileID: 0}
   _playerTwo: {fileID: 0}
   MaxHealth: 30
@@ -59,7 +59,7 @@ MonoBehaviour:
   whenToTriggerEndOfAttackAnim: 0.302
   attackHitBoxPrefab: {fileID: 1561288176734524478, guid: 5a96c9071a92ed1449640b4ee659fc33,
     type: 3}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
+  hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
   maxGettingUpDuration: 0.6
@@ -97,11 +97,11 @@ MonoBehaviour:
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
   coreDrops: 1
-  explosionFX: {fileID: 105310, guid: e6ea0c2b13012484ba2f5dc1054e6d75, type: 3}
-  explosionRadius: 3
-  explosionDamage: 10
-  buildUpBeforeExplosion: 0.5
---- !u!1001 &7083713466704685639
+  isFiring: 0
+  LaserLineGO: {fileID: 1332909482415417178, guid: eeeb05fe5ff7f5f4daf28512a5bd6bbd,
+    type: 3}
+  LaserThickness: 3
+--- !u!1001 &6539448151256744907
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -111,7 +111,7 @@ PrefabInstance:
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
-      value: EnemyRedBarrel
+      value: EnemyBigLaser
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -168,51 +168,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
     m_RemovedComponents:
     - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
---- !u!1 &7449900513924197488 stripped
+--- !u!1 &6912448888974116348 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
+  m_PrefabInstance: {fileID: 6539448151256744907}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &7449900513924197480 stripped
+--- !u!4 &6912448888974116324 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
+  m_PrefabInstance: {fileID: 6539448151256744907}
   m_PrefabAsset: {fileID: 0}
---- !u!54 &7449900513924197492 stripped
+--- !u!54 &6912448888974116344 stripped
 Rigidbody:
   m_CorrespondingSourceObject: {fileID: 373019035910456883, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
+  m_PrefabInstance: {fileID: 6539448151256744907}
   m_PrefabAsset: {fileID: 0}
---- !u!195 &7449900513924197489 stripped
+--- !u!195 &6912448888974116349 stripped
 NavMeshAgent:
   m_CorrespondingSourceObject: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
+  m_PrefabInstance: {fileID: 6539448151256744907}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &7449900512966237189 stripped
+--- !u!95 &6912448890066269577 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
+  m_PrefabInstance: {fileID: 6539448151256744907}
   m_PrefabAsset: {fileID: 0}
