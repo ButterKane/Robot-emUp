@@ -7,6 +7,7 @@ using UnityEngine.AI;
 
 public enum EnemyState
 {
+    WaitForCombatStart,
     Idle,
     Following,
     Bumped,
@@ -55,14 +56,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+    public bool arenaRobot;
 
 	[Space(2)]
     [Header("Focus")]
     public float focusDistance = 18;
     public float unfocusDistance = 20;
-    public float timeBetweenCheck = 0.25f;
+    float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
-    private float maxTimeBetweenCheck = 0.25f;
+    public float maxTimeBetweenCheck;
 
     [Space(2)]
     [Header("Movement")]
@@ -131,6 +133,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Space(2)]
     [Header("Death")]
     public float coreDropChances = 1;
+    public Vector2 minMaxDropForce;
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
 
     
@@ -145,8 +148,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
         _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
-        State = EnemyState.Following;
-        CheckDistanceAndAdaptFocus();
+
+        if (arenaRobot)
+        {
+            ChangingState(EnemyState.WaitForCombatStart);
+        }
+        else
+        {
+            ChangingState(EnemyState.Idle);
+        }
     }
 
     void Update()
@@ -154,10 +164,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         UpdateDistancesToPlayers();
         UpdateState();
         UpdateAnimatorBlendTree();
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            BumpMe(8, .35f, 1, -transform.forward);
-        }
     }
 
     private void UpdateAnimatorBlendTree()
@@ -178,6 +184,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 {
                     CheckDistanceAndAdaptFocus();
                     timeBetweenCheck = maxTimeBetweenCheck;
+                }
+                if (focusedPlayer != null)
+                {
+                    ChangingState(EnemyState.Following);
                 }
                 break;
             case EnemyState.Following:
@@ -285,7 +295,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 timePauseAfterAttack -= Time.deltaTime;
                 if (timePauseAfterAttack <= 0)
                 {
-                    ChangingState(EnemyState.Following);
+                    ChangingState(EnemyState.Idle);
                 }
                 break;
             case EnemyState.Dying:
@@ -303,14 +313,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     void EnterState(EnemyState _newState)
     {
-        print(_newState);
+        //print(_newState);
         switch (_newState)
         {
             case EnemyState.Idle:
-                StartCoroutine(WaitABit());
+                timeBetweenCheck = 0;
+                //StartCoroutine(WaitABit(1));
                 break;
 			case EnemyState.Following:
                 navMeshAgent.enabled = true;
+                timeBetweenCheck = 0;
                 break;
             case EnemyState.Bumped:
                 EnterBumpedState();
@@ -518,13 +530,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 		newCore.name = "Core of " + gameObject.name;
 		newCore.transform.position = transform.position;
 		Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
-		float throwForce = Random.Range(10, 17);
+		float throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
 		wantedDirectionAngle.y = throwForce * 0.035f;
 		newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
 	}
 
     void CheckDistanceAndAdaptFocus()
     {
+        //print(focusedPlayer);
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
         {
@@ -551,7 +564,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 || ((focusedPlayer == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
-                //print("hey");
             }
         }
 
@@ -628,9 +640,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         ChangingState(EnemyState.Bumped);
     }
 
-    IEnumerator WaitABit()
+    IEnumerator WaitABit(float _duration)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(_duration);
         ChangingState(EnemyState.Following);
     }
 }
