@@ -391,7 +391,7 @@ public class BallBehaviour : MonoBehaviour
 								FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
 								return;
 							}
-							else
+							else if (canHitWalls)
 							{
 								ChangeState(BallState.Grounded);
 								MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
