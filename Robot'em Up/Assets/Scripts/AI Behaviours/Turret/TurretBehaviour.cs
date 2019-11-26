@@ -6,6 +6,7 @@ using MyBox;
 
 public enum TurretState
 {
+    WaitForCombatStart,
     Hidden,
     Hiding,
     GettingOutOfGround,
@@ -68,6 +69,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     float distanceWithPlayerTwo;
     Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
+    public bool arenaTurret;
 
     [Space(2)]
     [Header("Attack")]
@@ -90,7 +92,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public Renderer aimingCubeRenderer;
     public Vector3 aimingCubeDefaultScale;
     public Vector3 aimingCubeLockedScale;
-    bool shouldRotateTowardsPlayer;
     public Color lockingAimingColor;
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
@@ -124,7 +125,14 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
         Health = MaxHealth;
 
-        State = TurretState.Idle;
+        if (arenaTurret)
+        {
+            ChangingState(TurretState.WaitForCombatStart);
+        }
+        else
+        {
+            ChangingState(TurretState.Idle);
+        }
     }
 
     void Update()
@@ -173,7 +181,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void UpdateState()
     {
-        print(attackState);
+        //print(attackState);
         switch (State)
         {
             case TurretState.Attacking:
@@ -358,7 +366,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 || ((focusedPlayerTransform == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
-                //print("hey");
             }
         }
 
@@ -418,7 +425,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     {
         if (_NewState == AimingCubeState.Following)
         {
-            shouldRotateTowardsPlayer = true;
             aimingCubeRenderer.material.color = followingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
@@ -426,7 +432,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
         else if(_NewState == AimingCubeState.Locking)
         {
-            shouldRotateTowardsPlayer = false;
             aimingCubeRenderer.material.color = lockingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeLockedScale;
