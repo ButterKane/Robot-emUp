@@ -24,7 +24,6 @@ public class TreadmillAction : MonoBehaviour
         {
             foreach (var rb in _concernedRbs)
             {
-                Debug.Log("Treadmill for " + rb.gameObject.name);
                 rb.AddForce(-rb.velocity , ForceMode.Acceleration);
                 rb.AddForce(steveDirection * TreadmillForce, ForceMode.Acceleration);
             }
@@ -47,7 +46,6 @@ public class TreadmillAction : MonoBehaviour
                 {
                     if (rb == thisRb)
                     {
-                        Debug.Log(other.gameObject.name + " is already in the list");
                         isAlreadyPresent = true;
                         break;
                     }
@@ -55,7 +53,6 @@ public class TreadmillAction : MonoBehaviour
 
                 if (!isAlreadyPresent)
                 {
-                    Debug.Log("Adding " + other.gameObject.name + " to the list");
                     _concernedRbs.Add(thisRb);
                 }
             }
@@ -64,7 +61,6 @@ public class TreadmillAction : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("Removing " + other.gameObject.transform.root.name + " of the list");
         _concernedRbs.Remove(other.gameObject.transform.root.GetComponent<Rigidbody>());
     }
 
