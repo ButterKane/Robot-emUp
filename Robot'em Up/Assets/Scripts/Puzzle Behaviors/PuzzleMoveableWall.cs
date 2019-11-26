@@ -6,8 +6,8 @@ using MyBox;
 public class PuzzleMoveableWall : PuzzleActivable
 {
 
-    public Vector3 Pos1;
-    public Vector3 Pos2;
+    [ReadOnly] public Vector3 Pos1;
+    [ReadOnly] public Vector3 Pos2;
     public Vector3 PositionModifier;
     [Range(0, 10)]
     public float speed;
@@ -23,6 +23,7 @@ public class PuzzleMoveableWall : PuzzleActivable
     {
         startTime = Time.time;
         journeyLength = Vector3.Distance(Pos1, Pos2);
+        RecalculatePositions();
 
     }
 
