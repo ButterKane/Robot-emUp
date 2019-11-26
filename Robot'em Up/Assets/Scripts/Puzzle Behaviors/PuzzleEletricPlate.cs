@@ -28,7 +28,14 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     void FixedUpdate()
     {
-        
+        for (int i = 0; i < PawnTrapped.Count; i++)
+        {
+            PawnController item = PawnTrapped[i];
+            if (item.currentHealth <1)
+            {
+                PawnTrapped.Remove(item);
+            }
+        }
         waitTimeBeforeNextDamage -= Time.deltaTime;
         //waitTimeBeforeNextFx -= Time.deltaTime;
 
