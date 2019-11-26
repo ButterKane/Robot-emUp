@@ -63,7 +63,7 @@ public class LockManager : MonoBehaviour
 			RaycastHit[] hitObjects = Physics.RaycastAll(_pathCoordinates[i], direction, direction.magnitude);
 			foreach (RaycastHit hit in hitObjects)
 			{
-                Debug.Log("hit = " + hit.transform.name);
+                //Debug.Log("hit = " + hit.transform.name);
 				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
 				if (potentialTarget != null && potentialTarget.lockable)
 				{
