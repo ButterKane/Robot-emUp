@@ -9,6 +9,7 @@ public class Boss_WeakPoint : PuzzleActivable
 
     public int life = 1;
     public GameObject weakPointModel;
+    public Boss_MainTurret mainTurret;
     public GameObject explosionFx;
 
     public void Awake()
@@ -28,6 +29,7 @@ public class Boss_WeakPoint : PuzzleActivable
         if (life < 1)
         {
             FXManager.InstantiateFX(explosionFx, transform.position, true, Vector3.zero, Vector3.one * 5);
+            mainTurret.InverseLaser();
             DestroyWeakPoint();
         }
 
