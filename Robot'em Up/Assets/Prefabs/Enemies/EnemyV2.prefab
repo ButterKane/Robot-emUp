@@ -337,16 +337,26 @@ MonoBehaviour:
   Rb: {fileID: 373019035910456883}
   Animator: {fileID: 373019037066540610}
   navMeshAgent: {fileID: 373019035910456886}
-  _playerOne: {fileID: 0}
-  _playerTwo: {fileID: 0}
+  _playerOneTransform: {fileID: 0}
+  _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
   Health: 0
   focusedPlayer: {fileID: 0}
   energyAmount: 1
-  focusDistance: 18
-  unfocusDistance: 20
-  timeBetweenCheck: 0.25
+  _lockable: 0
+  arenaRobot: 0
+  focusDistance: 50
+  unfocusDistance: 55
   distanceBeforeChangingPriority: 3
+  maxTimeBetweenCheck: 0.25
+  normalSpeed: 7
+  normalAcceleration: 30
+  speedRecoverCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   distanceToAttack: 5
   maxAnticipationTime: 0.5
   rotationSpeedPreparingAttack: 0.2
@@ -416,6 +426,9 @@ MonoBehaviour:
   ClosestSurroundPoint: {fileID: 0}
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
+  coreDropChances: 1
+  minMaxDropForce: {x: 2, y: 4}
+  minMaxCoreHealthValue: {x: 5, y: 5}
 --- !u!1 &373019035912214700
 GameObject:
   m_ObjectHideFlags: 0

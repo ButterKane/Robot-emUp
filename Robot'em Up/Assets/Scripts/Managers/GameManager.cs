@@ -60,8 +60,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     GameObject dummyPrefab;
-    [SerializeField]
-    GameObject ballPrefab;
+    public GameObject ballPrefab;
 
 
     private void Awake()
