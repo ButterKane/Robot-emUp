@@ -29,17 +29,27 @@ public class PuzzleRepeater : PuzzleActivator
             timeSpeedChange = speedChange;
             if (isActivated)
             {
-                DesactiveLinkedObjects();
-                isActivated = false;
-                UpdateLight();
+                ActivatedAction();
             }
             else
             {
-                ActivateLinkedObjects();
-                isActivated = true;
-                UpdateLight();
+                DeactivatedAction();
             }
         }
+    }
+
+    public virtual void ActivatedAction()
+    {
+        DesactiveLinkedObjects();
+        isActivated = false;
+        UpdateLight();
+    }
+
+    public virtual void DeactivatedAction()
+    {
+        ActivateLinkedObjects();
+        isActivated = true;
+        UpdateLight();
     }
 
 
