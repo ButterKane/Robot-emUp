@@ -40,5 +40,14 @@ public class Boss_MainTurret : MonoBehaviour
             pawn.Damage(DamageToPlayer);
         }
 
+
+        if (other.gameObject.GetComponent<EnemyBehaviour>())
+        {
+
+            EnemyBehaviour ennemy = other.gameObject.GetComponent<EnemyBehaviour>();
+            ennemy.OnHit(GameManager.i.ball, Vector3.zero, GameManager.playerOne, DamageToPlayer, DamageSource.RedBarrelExplosion);
+            
+        }
+
     }
 }
