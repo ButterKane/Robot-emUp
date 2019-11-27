@@ -135,12 +135,12 @@ public class Surrounder : MonoBehaviour
     {
         Vector3 pointToFace = new Vector3();
 
-        if (playerTransform == GameManager.i.playerOne.transform)
+        if (playerTransform == GameManager.playerOne.transform)
         {
             pointToFace = GameManager.i.enemyManager.groupOneMiddlePoint;
             closestEnemies = GameManager.i.enemyManager.enemyGroupOne;
         }
-        else if (playerTransform == GameManager.i.playerTwo.transform)
+        else if (playerTransform == GameManager.playerTwo.transform)
         {
             pointToFace = GameManager.i.enemyManager.groupTwoMiddlePoint;
             closestEnemies = GameManager.i.enemyManager.enemyGroupTwo;

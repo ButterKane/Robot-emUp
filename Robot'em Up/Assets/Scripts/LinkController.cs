@@ -64,6 +64,7 @@ public class LinkController : MonoBehaviour
 
 	private void Update ()
 	{
+		if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { return; }
 		UpdateLink();
 	}
 

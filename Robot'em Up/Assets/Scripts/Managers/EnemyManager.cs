@@ -29,8 +29,8 @@ public class EnemyManager : MonoBehaviour
     }
     public void Start()
     {
-        playerOne = GameManager.i.playerOne;
-        playerTwo = GameManager.i.playerTwo;
+        playerOne = GameManager.playerOne;
+        playerTwo = GameManager.playerTwo;
     }
 
     // Update is called once per frame

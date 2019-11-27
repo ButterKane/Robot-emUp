@@ -57,6 +57,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     public float focusChangeSpeed = 2f;
     public AnimationCurve ChangeFocusSpeedCurve;
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Separator("Surrounding Variables")]
@@ -98,8 +99,8 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
 	// Start is called before the first frame update
 	void Start()
     {
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOne = GameManager.playerOne.transform;
+        _playerTwo = GameManager.playerTwo.transform;
 
         Health = MaxHealth;
         IsFollowingPlayer = false;
