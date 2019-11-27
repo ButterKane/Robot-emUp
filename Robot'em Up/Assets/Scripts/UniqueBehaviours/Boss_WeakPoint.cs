@@ -31,6 +31,7 @@ public class Boss_WeakPoint : PuzzleActivable
             FXManager.InstantiateFX(explosionFx, transform.position, true, Vector3.zero, Vector3.one * 5);
             mainTurret.InverseLaser();
             DestroyWeakPoint();
+            Boss_Manager.i.DestroyAWeakPoint();
         }
 
         PuzzleLink[] links = FindObjectsOfType<PuzzleLink>();
