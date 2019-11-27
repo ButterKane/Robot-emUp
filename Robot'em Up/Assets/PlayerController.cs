@@ -15,6 +15,7 @@ public class PlayerController : PawnController, IHitable
 	private bool inputDisabled;
 
 	[SerializeField] private bool _lockable;  public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool enableDash;
 	public bool enableJump;
 	public bool enableDunk;

@@ -6,6 +6,7 @@ using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	private int _hitCount;
 	private Vector3 initialScale;
 	public int hitCount { 

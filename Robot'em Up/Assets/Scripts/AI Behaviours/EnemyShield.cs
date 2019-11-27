@@ -9,6 +9,7 @@ public class EnemyShield : EnemyBehaviour
     [Separator("Shield Variables")]
     public GameObject Shield;
     public bool deactivateShieldWhenAttacking = true;
+    public float angleRangeForRebound { get { return angleRangeForRebound; } set { angleRangeForRebound = value; Shield.GetComponent<Shield>().angleRangeForRebound = value; } }  // The "field of view" angle of enemy. If incident angle of ball is within this, ball will rebound
 
     public bool IsShieldActivated {
         get { return isShieldActivated; }

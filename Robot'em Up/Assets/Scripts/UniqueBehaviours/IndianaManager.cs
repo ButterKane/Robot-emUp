@@ -66,15 +66,15 @@ public class IndianaManager : MonoBehaviour
                 Vector3 wantedPosition;
                 if (temproll == 0)
                 {
-                    wantedPosition = GameManager.i.playerOne.transform.position;
+                    wantedPosition = GameManager.playerOne.transform.position;
                 }
                 else if (temproll == 1)
                 {
-                    wantedPosition = GameManager.i.playerTwo.transform.position;
+                    wantedPosition = GameManager.playerTwo.transform.position;
                 }
                 else
                 {
-                    wantedPosition = Vector3.Lerp(GameManager.i.playerTwo.transform.position, GameManager.i.playerOne.transform.position, 0.5f);
+                    wantedPosition = Vector3.Lerp(GameManager.playerTwo.transform.position, GameManager.playerOne.transform.position, 0.5f);
                 }
                 wantedPosition = new Vector3(wantedPosition.x + Random.Range(-maxDistancePlayer, maxDistancePlayer), wantedPosition.y, wantedPosition.z + Random.Range(-maxDistancePlayer, maxDistancePlayer));
                 IndianaExplosion newExplosion = Instantiate(prefabIndianaExplosion, wantedPosition, Quaternion.Euler(-90,0,0)).GetComponent<IndianaExplosion>();
