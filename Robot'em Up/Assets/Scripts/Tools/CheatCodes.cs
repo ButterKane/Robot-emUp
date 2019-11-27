@@ -14,8 +14,8 @@ public class CheatCodes : MonoBehaviour
     private void Start()
     {
         BallPrefab = GameManager.i.ballPrefab;
-        PlayerOne = GameManager.i.playerOne;
-        PlayerTwo = GameManager.i.playerTwo;
+        PlayerOne = GameManager.playerOne;
+        PlayerTwo = GameManager.playerTwo;
     }
 
     void OnGUI()

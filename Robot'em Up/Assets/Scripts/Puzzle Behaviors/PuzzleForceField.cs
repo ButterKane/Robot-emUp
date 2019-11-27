@@ -6,7 +6,7 @@ using UnityEditor;
 public class PuzzleForceField : PuzzleActivable, IHitable
 {
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	private int _hitCount;
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
     public typeForceField type = typeForceField.blockTheBall;
     public enum typeForceField { blockTheBall, blockBallAndPlayer, Flipper }
     private MeshRenderer meshRenderer;
@@ -17,18 +17,6 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         meshRenderer = GetComponent<MeshRenderer>();
         boxCollider = GetComponent<BoxCollider>();
         ChangeState();
-    }
-
-    public int hitCount
-    {
-        get
-        {
-            return _hitCount;
-        }
-        set
-        {
-            _hitCount = value;
-        }
     }
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)

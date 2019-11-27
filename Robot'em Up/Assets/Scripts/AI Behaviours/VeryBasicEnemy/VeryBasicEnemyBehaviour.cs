@@ -46,6 +46,7 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     Transform focusedPlayer = null;
 	public float energyAmount;
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Header("Focus")]
@@ -110,8 +111,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     {
         Health = MaxHealth;
         _self = transform;
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOne = GameManager.playerOne.transform;
+        _playerTwo = GameManager.playerTwo.transform;
         State = EnemyState.Following;
         StartCoroutine(CheckDistanceAndAdaptFocus());
     }

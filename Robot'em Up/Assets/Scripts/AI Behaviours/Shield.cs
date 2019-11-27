@@ -5,13 +5,12 @@ using UnityEngine;
 public class Shield : MonoBehaviour, IHitable
 {
     [SerializeField] private bool _lockable = false; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-    public float angleRangeForRebound = 45f;
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+	public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Debug.Log("touched shield");
-        
-        if (Vector3.Dot(_impactVector.normalized, transform.forward.normalized) < (angleRangeForRebound /180)) // Check if dot product is somewhere inside right angle
+        if ((_impactVector.normalized + transform.forward.normalized).magnitude < 1.5f)
         {
             Debug.Log("Rebound");
             Vector3 newDirection = Vector3.Reflect(_impactVector, transform.forward);
