@@ -22,7 +22,7 @@ public class BossGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTimer -= Time.deltaTime;
+        currentTimer -= Time.deltaTime * Boss_Manager.i.difficulty;
         if (currentTimer <= 0)
         {
             currentTimer = WaitingTimeForNextEnemy + Random.Range(-RandomLenghtTime, RandomLenghtTime);

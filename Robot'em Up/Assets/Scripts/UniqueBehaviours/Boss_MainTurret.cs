@@ -16,7 +16,7 @@ public class Boss_MainTurret : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + Time.deltaTime * speed * multiplier, transform.rotation.eulerAngles.z);
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + Time.deltaTime * speed * Boss_Manager.i.difficulty * multiplier, transform.rotation.eulerAngles.z);
     }
 
     public void InverseLaser()
