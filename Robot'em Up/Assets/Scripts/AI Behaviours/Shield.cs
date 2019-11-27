@@ -6,7 +6,7 @@ public class Shield : MonoBehaviour, IHitable
 {
     [SerializeField] private bool _lockable = false; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
-
+	public float angleRangeForRebound;
 	public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {
         Debug.Log("touched shield");
