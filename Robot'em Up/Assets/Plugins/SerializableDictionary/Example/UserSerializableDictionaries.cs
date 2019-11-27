@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEditor;
+#if UNITY_EDITOR
 
 [Serializable]
 public class StringStringDictionary : SerializableDictionary<string, string> {}
@@ -31,3 +32,4 @@ public class MyClass
 
 [Serializable]
 public class QuaternionMyClassDictionary : SerializableDictionary<Quaternion, MyClass> {}
+#endif

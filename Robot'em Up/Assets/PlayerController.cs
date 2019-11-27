@@ -270,6 +270,7 @@ public class PlayerController : PawnController, IHitable
 		StartCoroutine(HideAfterDelay(0.5f));
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
 		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
+		GameManager.deadPlayers.Add(this);
 	}
 
 	public void Revive(PlayerController _player)
@@ -294,6 +295,7 @@ public class PlayerController : PawnController, IHitable
 			}
 		}
 		revivablePlayers = newRevivablePlayers;
+		GameManager.deadPlayers.Remove(_player);
 	}
 
 	void GenerateReviveParts()

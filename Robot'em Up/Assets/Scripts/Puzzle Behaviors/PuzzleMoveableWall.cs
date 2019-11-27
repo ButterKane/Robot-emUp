@@ -91,13 +91,13 @@ public class PuzzleMoveableWall : PuzzleActivable
         UpdateLights();
     }
 
-#if UNITY_EDITOR // conditional compilation is not mandatory
+//#if UNITY_EDITOR // conditional compilation is not mandatory
     [ButtonMethod]
     private void RecalculatePositions()
     {
         Pos1 = transform.position;
         Pos2 = transform.position + PositionModifier;
     }
-#endif
+//#endif
 }
 
