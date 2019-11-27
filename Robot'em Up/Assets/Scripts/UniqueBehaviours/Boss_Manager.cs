@@ -61,16 +61,16 @@ public class Boss_Manager : MonoBehaviour
         int totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
         if (totalHealth / totalmaxHealth > 1.2)
         {
-            difficulty -= Time.deltaTime / divisorSpeedDifficulty;
+            difficulty -= Time.deltaTime / divisorSpeedDifficulty * 1.5f;
         }
         else if (totalHealth / totalmaxHealth > 0.6)
             {
-            difficulty -= Time.deltaTime / divisorSpeedDifficulty / 1.5f;
+            difficulty -= Time.deltaTime / divisorSpeedDifficulty;
 
         }
         else
         {
-            difficulty -= Time.deltaTime / divisorSpeedDifficulty / 2f;
+            difficulty -= Time.deltaTime / divisorSpeedDifficulty / 1.5f;
         }
         if (difficulty < minDifficulty)
         {
