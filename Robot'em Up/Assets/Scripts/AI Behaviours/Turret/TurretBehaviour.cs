@@ -84,6 +84,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float restTimeBeforeAimingCubeUnlocked;
 
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Header("Aiming Cube")]
@@ -118,10 +119,10 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     void Start()
     {
         _self = transform;
-        _playerOneTransform = GameManager.i.playerOne.transform;
-        _playerTwoTransform = GameManager.i.playerTwo.transform;
-        _playerOnePawnController = GameManager.i.playerOne.GetComponent<PawnController>();
-        _playerTwoPawnController = GameManager.i.playerTwo.GetComponent<PawnController>();
+        _playerOneTransform = GameManager.playerOne.transform;
+        _playerTwoTransform = GameManager.playerTwo.transform;
+        _playerOnePawnController = GameManager.playerOne.GetComponent<PawnController>();
+        _playerTwoPawnController = GameManager.playerTwo.GetComponent<PawnController>();
 
         Health = MaxHealth;
 

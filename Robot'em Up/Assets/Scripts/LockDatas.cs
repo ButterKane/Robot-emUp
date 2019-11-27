@@ -6,5 +6,4 @@ using UnityEngine;
 public class LockDatas : ScriptableObject
 {
 	public bool enableLock = true;
-	public float lockHitboxRadius = 4;
 }

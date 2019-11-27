@@ -47,8 +47,8 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public EnemyManager enemyManager;
 
 	[HideInInspector] public GameObject mainCameraGO;
-	[HideInInspector] public PlayerController playerOne;
-	[HideInInspector] public PlayerController playerTwo;
+	[HideInInspector] public static PlayerController playerOne;
+	[HideInInspector] public static PlayerController playerTwo;
 	[HideInInspector] public BallBehaviour ball;
     public int ballDamage = 30;
     public List<GameObject> enemies;

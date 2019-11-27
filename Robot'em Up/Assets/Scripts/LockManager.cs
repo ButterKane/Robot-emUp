@@ -7,7 +7,7 @@ public class LockManager : MonoBehaviour
 	public static List<AimLock> lockedTargets = new List<AimLock>();
 	private static LockDatas datas;
 
-	public static void LockTarget(Transform _target)
+	public static void LockTarget(Transform _target, float _hitboxSize)
 	{
 		if (datas == null) { datas = Resources.Load<LockDatas>("LockData"); }
 		if (!datas.enableLock) { return; }
@@ -24,7 +24,7 @@ public class LockManager : MonoBehaviour
         {
             AimLock newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
             newLock.transform.SetParent(canvas.transform);
-            newLock.Init(_target, datas.lockHitboxRadius);
+            newLock.Init(_target, _hitboxSize);
             lockedTargets.Add(newLock);
         }
     }
@@ -61,14 +61,22 @@ public class LockManager : MonoBehaviour
 		{
 			Vector3 direction = _pathCoordinates[i + 1] - _pathCoordinates[i];
 			RaycastHit[] hitObjects = Physics.RaycastAll(_pathCoordinates[i], direction, direction.magnitude);
-			foreach (RaycastHit hit in hitObjects)
+			List<RaycastHit> hitObjectsList = new List<RaycastHit>(hitObjects);
+			if (i > 1)
 			{
-                //Debug.Log("hit = " + hit.transform.name);
+				RaycastHit[] reverseHitObjects = Physics.RaycastAll(_pathCoordinates[i], -direction, direction.magnitude);
+				foreach (RaycastHit hit in reverseHitObjects)
+				{
+					hitObjectsList.Add(hit);
+				}
+			}
+			foreach (RaycastHit hit in hitObjectsList)
+			{
 				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
 				if (potentialTarget != null && potentialTarget.lockable)
 				{
 					foundTargets.Add(hit.transform);
-					LockManager.LockTarget(hit.transform);
+					LockManager.LockTarget(hit.transform, potentialTarget.lockHitboxSize);
 				}
 			}
 		}

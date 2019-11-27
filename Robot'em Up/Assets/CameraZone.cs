@@ -108,6 +108,14 @@ public class CameraZone : MonoBehaviour
 
 	public List<PlayerController> GetPlayersInside()
 	{
+		if (GameManager.playerOne != null && GameManager.playerOne.moveState == MoveState.Dead && !playersInside.Contains(GameManager.playerOne))
+		{
+			playersInside.Add(GameManager.playerOne);
+		}
+		if (GameManager.playerTwo != null && GameManager.playerTwo.moveState == MoveState.Dead && !playersInside.Contains(GameManager.playerTwo))
+		{
+			playersInside.Add(GameManager.playerTwo);
+		}
 		return playersInside;
 	}
 }

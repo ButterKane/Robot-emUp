@@ -55,7 +55,6 @@ public class DunkController : MonoBehaviour
 		BallBehaviour ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
 		EnergyManager.DecreaseEnergy(1f);
-		Debug.Log("Energy : " + EnergyManager.GetEnergy());
 		Collider[] hitColliders = Physics.OverlapSphere(ball.transform.position, dunkExplosionRadius);
 		int i = 0;
 		while (i < hitColliders.Length)

@@ -56,7 +56,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-    public bool arenaRobot;
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+	public bool arenaRobot;
 
 	[Space(2)]
     [Header("Focus")]
@@ -143,8 +144,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Health = MaxHealth;
         _self = transform;
         timeBetweenCheck = maxTimeBetweenCheck;
-        _playerOneTransform = GameManager.i.playerOne.transform;
-        _playerTwoTransform = GameManager.i.playerTwo.transform;
+        _playerOneTransform = GameManager.playerOne.transform;
+        _playerTwoTransform = GameManager.playerTwo.transform;
         _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
         _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
@@ -483,14 +484,16 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 whatBumps = WhatBumps.Dunk;
                 break;
             case DamageSource.RedBarrelExplosion:
-                normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+				EnergyManager.IncreaseEnergy(energyAmount);
+				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized);
                 whatBumps = WhatBumps.Environment;
                 break;
             case DamageSource.Ball:
-                whatBumps = WhatBumps.Pass;
+				EnergyManager.IncreaseEnergy(energyAmount);
+				whatBumps = WhatBumps.Pass;
                 StartCoroutine(StaggeredCo(whatBumps));
-                break;
+				break;
         }
         Health -= _damages;
 
@@ -508,7 +511,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             hitParticle.transform.localScale *= hitParticleScale;
             Destroy(hitParticle, 1f);
         }
-        EnergyManager.IncreaseEnergy(energyAmount);
     }
 
     protected virtual void Die()
