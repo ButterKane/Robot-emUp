@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
 
 	void LoadSceneByIndex(int index)
 	{
-		SceneManager.LoadScene(SceneManager.GetSceneByBuildIndex(index).name);
+		SceneManager.LoadScene(index);
 		/*
 		SceneLoader sceneLoader = Resources.Load<SceneLoader>("editor/SceneLoader");
 		if (sceneLoader == null) { Debug.LogWarning("SceneLoader not found, can't load scene"); return; }
