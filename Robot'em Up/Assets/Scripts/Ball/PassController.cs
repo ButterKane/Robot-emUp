@@ -386,7 +386,7 @@ public class PassController : MonoBehaviour
 
 	public void ChangePassState ( PassState _newState )
 	{
-		if (_newState == passState) { return; }
+		//if (_newState == passState) { return; }
 		previousState = passState;
 		passState = _newState;
 		switch (_newState)

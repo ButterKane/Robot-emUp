@@ -46,6 +46,8 @@ public class CheatCodes : MonoBehaviour
 
     public void ToggleInvicibility()
     {
-        // TO DO: activate invicibility
+        playersInvicible = !playersInvicible;
+        PlayerOne.IsInvincible = playersInvicible;
+        PlayerTwo.IsInvincible = playersInvicible;
     }
 }

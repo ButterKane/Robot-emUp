@@ -38,8 +38,21 @@ public class PawnController : MonoBehaviour
 {
     [Header("General settings")]
 	public int maxHealth;
-    public bool isInvincible;
-    public float invicibilityTime = 1;
+    public bool IsInvincible
+    {
+        get { return _isInvincible; }
+        set
+        {
+            _isInvincible = value;
+            if (invincibilityCoroutine != null)
+            {
+                StopCoroutine(invincibilityCoroutine);
+            }
+        }
+    }
+    [SerializeField] private bool _isInvincible;
+    public float invincibilityTime = 1;
+    private IEnumerator invincibilityCoroutine;
 
 	[Space(2)]
 	[Header("Movement settings")]
@@ -95,7 +108,8 @@ public class PawnController : MonoBehaviour
 	public virtual void Awake()
     {
 		initialScale = transform.localScale;
-        isInvincible = false;
+        IsInvincible = false;
+        invincibilityCoroutine = null;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
 		rb = GetComponent<Rigidbody>();
@@ -339,19 +353,23 @@ public class PawnController : MonoBehaviour
 
 	public virtual void Damage(int _amount)
 	{
-        StartCoroutine(InvicibleFrame());
-		currentHealth -= _amount;
-		if (currentHealth <= 0)
-		{
-			Kill();
-		}
-		float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
-		scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
-		transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
-		if (GetComponent<PlayerController>() != null)
-		{
-			MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
-		}
+        if (!IsInvincible)
+        {
+            invincibilityCoroutine = InvicibleFrame();
+            StartCoroutine(invincibilityCoroutine);
+            currentHealth -= _amount;
+            if (currentHealth <= 0)
+            {
+                Kill();
+            }
+            float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
+            scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
+            transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
+            if (GetComponent<PlayerController>() != null)
+            {
+                MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
+            }
+        }
 	}
 
 	private void ResetScale()
@@ -456,14 +474,16 @@ public class PawnController : MonoBehaviour
 
 	public void SetInvincible(bool _state)
 	{
-		isInvincible = _state;
+		IsInvincible = _state;
 	}
     private IEnumerator InvicibleFrame()
     {
-        isInvincible = true;
+        IsInvincible = true;
         gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
-        yield return new WaitForSeconds(invicibilityTime);
-        isInvincible = false;
+        yield return new WaitForSeconds(invincibilityTime);
+        Debug.Log("bidouille");
+        IsInvincible = false;
+        invincibilityCoroutine = null;
         gameObject.layer = 8; // 8 = Player Layer
     }
 
