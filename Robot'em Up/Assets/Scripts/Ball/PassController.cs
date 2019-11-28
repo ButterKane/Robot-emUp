@@ -115,8 +115,8 @@ public class PassController : MonoBehaviour
 			if (ballTimeInHand > receptionMinDelay) { return; }
 		}
 		ball = mainBall;
-		EnablePassPreview();
 		ChangePassState(PassState.Aiming);
+		EnablePassPreview();
 		didPerfectReception = true;
 		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
 		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
@@ -386,7 +386,7 @@ public class PassController : MonoBehaviour
 
 	public void ChangePassState ( PassState _newState )
 	{
-		//if (_newState == passState) { return; }
+		if (_newState == passState) { return; }
 		previousState = passState;
 		passState = _newState;
 		switch (_newState)
