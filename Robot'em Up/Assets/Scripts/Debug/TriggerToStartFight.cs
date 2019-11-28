@@ -9,6 +9,7 @@ public class TriggerToStartFight : MonoBehaviour
     public EnemyBehaviour[] enemyArray;
     public TurretBehaviour[] turretArray;
     public Transform wallBehindPlayer;
+    public CinemachineVirtualCamera myVC;
     public Vector3 pos1;
     public Vector3 pos2;
     public float timeForWallToCome;
@@ -32,6 +33,7 @@ public class TriggerToStartFight : MonoBehaviour
                 {
                     turretArray[i].ChangingState(TurretState.Idle);
                 }
+                myVC.m_Priority = 0;
                 gameObject.SetActive(false);
             }
         }
