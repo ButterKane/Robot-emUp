@@ -45,12 +45,11 @@ public class CameraBehaviour : MonoBehaviour
 		if (virtualCamera == null) { virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
 
 		List<PlayerController> players = zone.GetPlayersInside();
-
-		if (zone.GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
+		if (zone.GetPlayersInside().Count >= minPlayersRequired)
 		{
 			//Enable camera
 			virtualCamera.m_Priority = enabledPriority;
-			Vector3 middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			Vector3 middlePosition = Vector3.Lerp(players[0].transform.position, players[1].transform.position, 0.5f);
 
 			Vector3 directionToCenter = middlePosition - zone.transform.position;
 			float xAngle = Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), directionToCenter);
