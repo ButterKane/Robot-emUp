@@ -253,8 +253,11 @@ public class PlayerController : PawnController, IHitable
 	}
 	public override void Damage ( int _amount )
 	{
-		base.Damage(_amount);
-		FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
+        if (!IsInvincible)
+        {
+            base.Damage(_amount);
+            FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
+        }
 	}
 
 	public override void Kill ()
