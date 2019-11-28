@@ -24,7 +24,7 @@ public class TurretBasicBullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        print(other.tag);
+        //print(other.tag);
         if(other.tag == "Player")
         {
             other.GetComponent<PawnController>().Damage(damageDealt);
