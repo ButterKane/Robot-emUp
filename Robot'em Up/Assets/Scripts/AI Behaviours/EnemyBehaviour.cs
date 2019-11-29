@@ -524,8 +524,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
-		}	
-		Destroy(gameObject);
+		}
+        GameManager.i.enemyManager.enemies.Remove(this);
+        Destroy(gameObject);
     }
 
 	void DropCore()
