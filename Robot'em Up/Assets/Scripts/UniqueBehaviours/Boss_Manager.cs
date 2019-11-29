@@ -13,6 +13,7 @@ public class Boss_Manager : MonoBehaviour
     public float difficultyGainedWhenDestroyWeakPoint;
     public float minDifficulty;
     public float difficulty;
+    public bool OnePlayerLeft;
 
     public List<Boss_WeakPoint> weakPoints;
     public Text winningMessage;
@@ -59,6 +60,15 @@ public class Boss_Manager : MonoBehaviour
     {
         int totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
         int totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
+        if (GameManager.playerOne.currentHealth < 1 | GameManager.playerTwo.currentHealth < 1)
+        {
+            OnePlayerLeft = true;
+        }
+        else
+        {
+            OnePlayerLeft = false;
+        }
+
         if (totalHealth / totalmaxHealth > 1.2)
         {
             difficulty += Time.deltaTime / divisorSpeedDifficulty;
