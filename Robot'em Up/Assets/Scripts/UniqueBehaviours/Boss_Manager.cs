@@ -17,6 +17,7 @@ public class Boss_Manager : MonoBehaviour
 
     public List<Boss_WeakPoint> weakPoints;
     public Text winningMessage;
+    public Slider pyramidHeath;
 
     private void Awake()
     {
@@ -58,6 +59,22 @@ public class Boss_Manager : MonoBehaviour
     
     void Update()
     {
+        int temp_var = 0;
+
+
+        foreach (var item in weakPoints)
+        {
+            if (item.life > 0)
+            {
+                temp_var++;
+            }
+        }
+        if (temp_var < 1)
+        {
+            pyramidHeath.gameObject.SetActive(false);
+        }
+        pyramidHeath.value = temp_var;
+
         int totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
         int totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
         if (GameManager.playerOne.currentHealth < 1 | GameManager.playerTwo.currentHealth < 1)

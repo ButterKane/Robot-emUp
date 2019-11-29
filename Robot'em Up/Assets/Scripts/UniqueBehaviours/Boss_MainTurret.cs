@@ -54,7 +54,7 @@ public class Boss_MainTurret : MonoBehaviour
         {
 
             EnemyBehaviour ennemy = other.gameObject.GetComponent<EnemyBehaviour>();
-            ennemy.OnHit(GameManager.i.ball, Vector3.zero, GameManager.playerOne, DamageToPlayer, DamageSource.RedBarrelExplosion);
+            ennemy.OnHit(null, Vector3.zero, null, DamageToPlayer, DamageSource.RedBarrelExplosion);
             
         }
 
