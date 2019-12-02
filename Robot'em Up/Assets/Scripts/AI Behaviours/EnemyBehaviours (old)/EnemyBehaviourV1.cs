@@ -15,13 +15,6 @@ public enum EnemyStateV1
     Null,
     Count
 }
-public enum WhatBumps
-{
-    Pass,
-    Dunk,
-    Environment,
-    Count
-}
 public class EnemyBehaviourV1 : MonoBehaviour, IHitable
 {
     [Separator("References")]
@@ -63,8 +56,10 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     public float focusChangeWaitTime = 0.5f;
     public float focusChangeSpeed = 2f;
     public AnimationCurve ChangeFocusSpeedCurve;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
-    [Space(2)]
+	[Space(2)]
     [Separator("Surrounding Variables")]
     public float TimeBeforeSurround = 2f;
     [Range(0, 1)]
@@ -101,11 +96,11 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
     {
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOne = GameManager.playerOne.transform;
+        _playerTwo = GameManager.playerTwo.transform;
 
         Health = MaxHealth;
         IsFollowingPlayer = false;
@@ -205,7 +200,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (collision.gameObject.GetComponent<PawnController>().isInvincible == false)
+            if (collision.gameObject.GetComponent<PawnController>().IsInvincible == false)
             {
                 Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
                 collision.gameObject.GetComponent<PawnController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);

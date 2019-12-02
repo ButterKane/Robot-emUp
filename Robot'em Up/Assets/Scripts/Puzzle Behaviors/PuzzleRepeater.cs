@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using TMPro;
+
 
 public class PuzzleRepeater : PuzzleActivator
 {
@@ -9,36 +11,47 @@ public class PuzzleRepeater : PuzzleActivator
     public float speedChange;
     [ReadOnly]
     public float timeSpeedChange;
-
-    public TextMesh textMesh;
+    public float startSpeed = 0;
+    public TextMeshPro textMesh;
 
 
     void Awake()
     {
-        timeSpeedChange = speedChange;
+        timeSpeedChange = startSpeed;
     }
 
     // Update is called once per frame
     void Update()
     {
         timeSpeedChange -= Time.deltaTime;
+
         textMesh.text = System.Math.Round(timeSpeedChange, 1).ToString();
         if (timeSpeedChange < 0 )
         {
             timeSpeedChange = speedChange;
             if (isActivated)
             {
-                DesactiveLinkedObjects();
-                isActivated = false;
-                UpdateLight();
+                ActivatedAction();
             }
             else
             {
-                ActivateLinkedObjects();
-                isActivated = true;
-                UpdateLight();
+                DeactivatedAction();
             }
         }
+    }
+
+    public virtual void ActivatedAction()
+    {
+        DesactiveLinkedObjects();
+        isActivated = false;
+        UpdateLight();
+    }
+
+    public virtual void DeactivatedAction()
+    {
+        ActivateLinkedObjects();
+        isActivated = true;
+        UpdateLight();
     }
 
 

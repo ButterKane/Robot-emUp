@@ -4,21 +4,10 @@ using UnityEngine;
 
 public class PuzzleStop : MonoBehaviour, IHitable
 {
-
-    public PuzzleDatas puzzleData;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+	public PuzzleDatas puzzleData;
     private GameObject FX_StopBall;
-    private int _hitCount;
-    public int hitCount
-    {
-        get
-        {
-            return _hitCount;
-        }
-        set
-        {
-            _hitCount = value;
-        }
-    }
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
     {

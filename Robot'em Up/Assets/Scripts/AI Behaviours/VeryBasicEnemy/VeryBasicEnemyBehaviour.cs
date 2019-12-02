@@ -45,6 +45,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     float distanceWithFocusedPlayer;
     Transform focusedPlayer = null;
 	public float energyAmount;
+	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Header("Focus")]
@@ -109,8 +111,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     {
         Health = MaxHealth;
         _self = transform;
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOne = GameManager.playerOne.transform;
+        _playerTwo = GameManager.playerTwo.transform;
         State = EnemyState.Following;
         StartCoroutine(CheckDistanceAndAdaptFocus());
     }
@@ -149,8 +151,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
                         ChangingState(EnemyState.PreparingAttack);
                     }
                 }
-                break;
-            case EnemyState.Staggering:
                 break;
             case EnemyState.Bumped:
 
@@ -268,8 +268,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case EnemyState.Following:
                 navMeshAgent.enabled = true;
                 break;
-            case EnemyState.Staggering:
-                break;
             case EnemyState.Bumped:
                 transform.rotation = Quaternion.LookRotation(-bumpDirection);
                 gettingUpDuration = maxGettingUpDuration;
@@ -312,8 +310,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
             case EnemyState.Idle:
                 break;
             case EnemyState.Following:
-                break;
-            case EnemyState.Staggering:
                 break;
             case EnemyState.Bumped:
                 break;

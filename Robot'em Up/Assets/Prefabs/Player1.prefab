@@ -55,7 +55,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055c45c6e504fc7498f0ca676f7d5ac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 20
+  maxHealth: 100
   isInvincible: 0
   invicibilityTime: 1
   jumpForce: 800
@@ -100,14 +100,17 @@ MonoBehaviour:
   currentHealth: 0
   playerIndex: 0
   triggerTreshold: 0.1
+  _lockable: 0
+  _lockHitboxSize: 0
   enableDash: 1
   enableJump: 0
   enableDunk: 1
-  enablePickOwnBall: 0
   enableMagnet: 1
   FX_hit: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89, type: 3}
+  FX_heal: {fileID: 7463846729143775103, guid: 7da72fa8b0a9ffb49b6b3774ad25a65e, type: 3}
   FX_death: {fileID: 931145262344750406, guid: 49511d94e820e4147827919cbd7c9d50, type: 3}
-  FX_revive: {fileID: 0}
+  FX_revive: {fileID: 6633511075223468162, guid: eaa65c119d2400f4f80af4dc5ebdbe83,
+    type: 3}
   deathExplosionRadius: 20
   deathExplosionDamage: 10
   deathExplosionForce: 10
@@ -116,7 +119,7 @@ MonoBehaviour:
   reviveExplosionForce: 10
   revivePartsCount: 3
   partExplosionAngleRandomness: 0.412
-  minMaxProjectionForce: {x: 15, y: 17}
+  minMaxProjectionForce: {x: 14, y: 17}
   reviveHoldDuration: 3
   reviveFreezeDuration: 1
 --- !u!114 &514769572
@@ -138,6 +141,8 @@ MonoBehaviour:
   passCooldown: 0.5
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
+  delayBeforePickingOwnBall: 0
+  minBouncesBeforePickingOwnBall: 2
   receptionMinDistance: 2.5
   receptionMinDelay: 0.4
   curveMaxLateralDistance: 0
@@ -164,7 +169,7 @@ MonoBehaviour:
   dunkJumpFreezeDuration: 1
   dunkDashSpeed: 40
   dunkExplosionRadius: 10
-  dunkDamages: 30
+  dunkDamages: 15
   dunkProjectionForce: 30
   dunkCancelledFallSpeed: 20
   dunkDashDelay: 0.28
@@ -267,7 +272,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  linkMaterial: {fileID: 2100000, guid: e720cf03c3fc89e44b0a2e0a163c3005, type: 2}
+  linkMaterial: {fileID: 2100000, guid: a806e106ae4a7664d962ebda6c258dd6, type: 2}
   linkWidth: 0.2
 --- !u!114 &-6964692673919125295
 MonoBehaviour:
@@ -371,7 +376,7 @@ LineRenderer:
   m_Positions: []
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.2
+    widthMultiplier: 0.6
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -390,7 +395,7 @@ LineRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 0.078431375}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -436,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55f159eef03d1448acab6d2ae2628d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimType: 0
+  aimType: 1
   startTransform: {fileID: 4655006219135653576}
   armTransform: {fileID: 509570522770558410}
   forwardSpeed: 100
@@ -662,7 +667,7 @@ Transform:
   m_GameObject: {fileID: 1303474972067149720}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.87, y: 0.09699998, z: 0.297}
-  m_LocalScale: {x: 0.48011997, y: 0.22313651, z: 0.48011997}
+  m_LocalScale: {x: 0.48012, y: 0.22313651, z: 0.48012}
   m_Children: []
   m_Father: {fileID: 164450937343815701}
   m_RootOrder: 1
@@ -1069,7 +1074,7 @@ Transform:
   m_GameObject: {fileID: 8773489739464661530}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.86, y: 0.097, z: 0.297}
-  m_LocalScale: {x: 0.48012, y: 0.22313577, z: 0.48012}
+  m_LocalScale: {x: 0.48012, y: 0.2231358, z: 0.48012}
   m_Children:
   - {fileID: 4655006219135653576}
   - {fileID: 509570522770558410}
@@ -1188,6 +1193,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 25.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}

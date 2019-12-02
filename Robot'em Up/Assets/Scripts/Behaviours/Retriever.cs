@@ -27,7 +27,7 @@ public class Retriever : MonoBehaviour
 		playerController = GetComponentInParent<PlayerController>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
         {
@@ -36,13 +36,8 @@ public class Retriever : MonoBehaviour
 			{
 				if (ballBehaviour.GetState() == BallState.Flying)
 				{
-					if (!playerController.enablePickOwnBall && ballBehaviour.GetCurrentThrower() == playerController)
-					{
-						return;
-					} else
-					{
-						passController.Receive(ballBehaviour);
-					}
+					if (ballBehaviour.GetCurrentThrower() == playerController && (ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+					passController.Receive(ballBehaviour);
 				}
 				else
 				{
@@ -50,47 +45,61 @@ public class Retriever : MonoBehaviour
 				}
 			}
         }
-		if (other.tag == "PlayerPart")
+		if (other.tag == "CorePart")
 		{
-			PlayerPart playerPart = other.GetComponent<PlayerPart>();
-			if (!playerPart.grounded) { return; }
-			playerPart.Pick(playerController);
-			bool partsFound = false;
-			List<ReviveInformations> newList = new List<ReviveInformations>();
-			foreach (ReviveInformations parts in retrievedParts)
+			CorePart corePart = other.GetComponent<CorePart>();
+			if (!corePart.grounded) { return; }
+			if (!corePart.CanBePicked()) { return; }
+			if (corePart.linkedPawn != null)
 			{
-				if (parts.linkedPlayer == playerPart.linkedPlayer) {
-					partsFound = true;
-					parts.amount++;
-					parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
-					parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
-					if (parts.amount >= parts.maxAmount)
+				corePart.Pick(playerController);
+				bool partsFound = false;
+				List<ReviveInformations> newList = new List<ReviveInformations>();
+				foreach (ReviveInformations parts in retrievedParts)
+				{
+					if (parts.linkedPlayer == corePart.linkedPawn)
 					{
-						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
-						playerController.AddRevivablePlayer(parts);
+						partsFound = true;
+						parts.amount++;
+						parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
+						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
+						if (parts.amount >= parts.maxAmount)
+						{
+							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
+							playerController.AddRevivablePlayer(parts);
+						}
+						else
+						{
+							newList.Add(parts);
+						}
 					}
 					else
 					{
 						newList.Add(parts);
 					}
 				}
-				else
+				retrievedParts = newList;
+				if (!partsFound)
 				{
-					newList.Add(parts);
+					ReviveInformations newPart = new ReviveInformations();
+					newPart.linkedPlayer = (PlayerController)corePart.linkedPawn;
+					newPart.maxAmount = corePart.totalPartCount;
+					newPart.amount = 1;
+					newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), FindObjectOfType<Canvas>().transform).GetComponent<AssemblingPartPanel>();
+					newPart.linkedPanel.revivedPlayer = newPart.linkedPlayer;
+					newPart.linkedPanel.revivingPlayer = playerController;
+					newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = newPart.amount + "/" + corePart.totalPartCount;
+					retrievedParts.Add(newPart);
 				}
-			}
-			retrievedParts = newList;
-			if (!partsFound)
+			} else
 			{
-				ReviveInformations newPart = new ReviveInformations();
-				newPart.linkedPlayer = playerPart.linkedPlayer;
-				newPart.maxAmount = playerPart.totalPartCount;
-				newPart.amount = 1;
-				newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), FindObjectOfType<Canvas>().transform).GetComponent<AssemblingPartPanel>();
-				newPart.linkedPanel.revivedPlayer = newPart.linkedPlayer;
-				newPart.linkedPanel.revivingPlayer = playerController;
-				newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = newPart.amount + "/" + playerPart.totalPartCount;
-				retrievedParts.Add(newPart);
+				//if (corePart.linkedPawn.GetType() == typeof(EnemyBehaviour)) (Must be added after heriting enemyBehaviour from pawnController)
+
+				if (playerController.GetHealth() < playerController.GetMaxHealth())
+				{
+					corePart.Pick(playerController);
+									playerController.Heal(corePart.healthValue);
+				}
 			}
 		}
     }

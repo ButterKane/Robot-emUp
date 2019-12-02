@@ -52,7 +52,7 @@ public class AttractBall : MonoBehaviour
 		{
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();
 			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || ball.GetState() != BallState.Flying) { return; }
-			if (!playerController.enablePickOwnBall && ball.GetCurrentThrower() == playerController) { return; }
+			if (ball.GetCurrentThrower() == playerController && (ball.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || ball.GetTimeFlying() < passController.delayBeforePickingOwnBall )) { return; }
 
 			ballInside = ball;
 			ballInitialDirection = ball.GetCurrentDirection();
@@ -68,7 +68,7 @@ public class AttractBall : MonoBehaviour
         {
 			BallBehaviour ball = other.GetComponent<BallBehaviour>();
 			if (ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || ball.GetState() != BallState.Flying) { return; }
-			if (!playerController.enablePickOwnBall && ball.GetCurrentThrower() == playerController) { return; }
+			if (ball.GetCurrentThrower() == playerController && (ball.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || ball.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
 
 			float attractionForce = Vector3.Distance(other.transform.position, transform.position);
 			attractionForce = attractionForce / magnetRadius; //Normalize attractionForce
