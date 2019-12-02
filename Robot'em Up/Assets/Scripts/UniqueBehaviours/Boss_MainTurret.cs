@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Boss_MainTurret : MonoBehaviour
 {
@@ -30,6 +31,8 @@ public class Boss_MainTurret : MonoBehaviour
 
     public void InverseLaser()
     {
+        Boss_Manager.i.inversionMessage.gameObject.SetActive(true);
+        Boss_Manager.i.showInversionMessage = 2f;
         if (multiplier ==-1)
         {
             multiplier = 1;
@@ -44,7 +47,6 @@ public class Boss_MainTurret : MonoBehaviour
     {
         if (other.gameObject.GetComponent<PawnController>())
         {
-            
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
             pawn.Damage(DamageToPlayer);
         }
