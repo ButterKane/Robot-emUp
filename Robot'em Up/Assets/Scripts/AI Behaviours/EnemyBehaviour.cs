@@ -55,7 +55,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     float distanceWithFocusedPlayer;
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+    public int damage = 10;
+    [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool arenaRobot;
 
@@ -69,7 +70,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Movement")]
-    public float normalSpeed = 5;
+    [Range(3, 15)]
+    public float normalSpeed = 7;
     public float normalAcceleration = 30;
     private float moveMultiplicator;
     private int normalMoveMultiplicator = 1;
@@ -522,8 +524,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
-		}	
-		Destroy(gameObject);
+		}
+        GameManager.i.enemyManager.enemies.Remove(this);
+        Destroy(gameObject);
     }
 
 	void DropCore()
