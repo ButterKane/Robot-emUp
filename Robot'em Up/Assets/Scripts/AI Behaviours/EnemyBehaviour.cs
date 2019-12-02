@@ -484,13 +484,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         {
             case DamageSource.Dunk:
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, 0.5f, 0.5f,0.5f); // Need Dunk Data
                 whatBumps = WhatBumps.Dunk;
                 break;
             case DamageSource.RedBarrelExplosion:
 				EnergyManager.IncreaseEnergy(energyAmount);
 				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, 0.5f,0.5f,0.5f);    // Need Explosion Data
                 whatBumps = WhatBumps.Environment;
                 break;
             case DamageSource.Ball:
@@ -638,11 +638,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         moveMultiplicator = normalMoveMultiplicator;
     }
 
-    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
+    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
-        bumpDistance = _bumpDistance;
-        bumpDuration = _bumpDuration;
-        restDuration = _restDuration;
+        bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
+        bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
+        restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
         bumpDirection = _bumpDirection;
         ChangingState(EnemyState.Bumped);
     }
