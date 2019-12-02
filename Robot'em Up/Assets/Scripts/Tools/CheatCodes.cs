@@ -18,6 +18,14 @@ public class CheatCodes : MonoBehaviour
         PlayerTwo = GameManager.playerTwo;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Quote))
+        {
+            ActivateCheat = !ActivateCheat;
+        }
+    }
+
     void OnGUI()
     {
         if (ActivateCheat)
