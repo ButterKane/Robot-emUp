@@ -480,17 +480,29 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
+        float BumpDistanceMod = 0.5f;
+        float BumpDurationMod = 0.5f;
+        float BumpRestDurationMod = 0.5f;
         switch (_source)
         {
             case DamageSource.Dunk:
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized, 0.5f, 0.5f,0.5f); // Need Dunk Data
+
+                if (_thrower.GetComponent<DunkController>() != null)
+                {
+                    DunkController controller = _thrower.GetComponent<DunkController>();
+                    BumpDistanceMod = controller.BumpDistanceMod;
+                    BumpDurationMod = controller.BumpDurationMod;
+                    BumpRestDurationMod = controller.BumpRestDurationMod;
+                }
+
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod); 
                 whatBumps = WhatBumps.Dunk;
                 break;
             case DamageSource.RedBarrelExplosion:
 				EnergyManager.IncreaseEnergy(energyAmount);
 				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized, 0.5f,0.5f,0.5f);    // Need Explosion Data
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);    // Need Explosion Data
                 whatBumps = WhatBumps.Environment;
                 break;
             case DamageSource.Ball:
