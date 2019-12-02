@@ -30,8 +30,8 @@ public class EnemyShield : EnemyBehaviour
     // ATTACK
     public override void EnterPreparingAttackState()
     {
-        normalSpeed = navMeshAgent.speed;
-        normalAcceleration = navMeshAgent.acceleration;
+        ActualSpeed = navMeshAgent.speed;
+        NormalAcceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         Animator.SetTrigger("AttackTrigger");
     }   
@@ -67,8 +67,8 @@ public class EnemyShield : EnemyBehaviour
 
         if (attackTimeProgression >= 1)
         {
-            navMeshAgent.speed = normalSpeed;
-            navMeshAgent.acceleration = normalAcceleration;
+            navMeshAgent.speed = ActualSpeed;
+            navMeshAgent.acceleration = NormalAcceleration;
             IsShieldActivated = true;
             ChangingState(EnemyState.PauseAfterAttack);
         }

@@ -16,6 +16,20 @@ public class CheatCodes : MonoBehaviour
         BallPrefab = GameManager.i.ballPrefab;
         PlayerOne = GameManager.playerOne;
         PlayerTwo = GameManager.playerTwo;
+        playersInvicible = false;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Quote))
+        {
+            ActivateCheat = !ActivateCheat;
+        }
+        if (playersInvicible && ActivateCheat)
+        {
+            PlayerOne.IsInvincible = playersInvicible;
+            PlayerTwo.IsInvincible = playersInvicible;
+        }
     }
 
     void OnGUI()
@@ -47,7 +61,10 @@ public class CheatCodes : MonoBehaviour
     public void ToggleInvicibility()
     {
         playersInvicible = !playersInvicible;
-        PlayerOne.IsInvincible = playersInvicible;
-        PlayerTwo.IsInvincible = playersInvicible;
+        if (!playersInvicible)
+        {
+            PlayerOne.IsInvincible = playersInvicible;
+            PlayerTwo.IsInvincible = playersInvicible;
+        }
     }
 }
