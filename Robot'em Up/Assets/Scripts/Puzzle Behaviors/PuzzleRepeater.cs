@@ -12,7 +12,6 @@ public class PuzzleRepeater : PuzzleActivator
     [ReadOnly]
     public float timeSpeedChange;
     public float startSpeed = 0;
-
     public TextMeshPro textMesh;
 
 
