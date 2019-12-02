@@ -72,9 +72,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Movement")]
-    [Range(3, 15)]
-    public float normalSpeed = 7;
-    public float normalAcceleration = 30;
+    public float NormalSpeed = 7; // This value is the one in the inspector, but in practice it is modified by the Random speed mod
+    [HideInInspector] public float ActualSpeed;
+    public float NormalAcceleration = 30;
+    public float RandomSpeedMod;
     private float moveMultiplicator;
     private int normalMoveMultiplicator = 1;
     public AnimationCurve speedRecoverCurve;
@@ -148,6 +149,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         Health = MaxHealth;
         _self = transform;
+        ActualSpeed = NormalSpeed + Random.Range(-RandomSpeedMod, RandomSpeedMod);
         timeBetweenCheck = maxTimeBetweenCheck;
         _playerOneTransform = GameManager.playerOne.transform;
         _playerTwoTransform = GameManager.playerTwo.transform;

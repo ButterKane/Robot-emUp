@@ -13,10 +13,12 @@ public class Boss_Manager : MonoBehaviour
     public float difficultyGainedWhenDestroyWeakPoint;
     public float minDifficulty;
     public float difficulty;
+    public float showInversionMessage;
     public bool OnePlayerLeft;
 
     public List<Boss_WeakPoint> weakPoints;
     public Text winningMessage;
+    public Text inversionMessage;
     public Slider pyramidHeath;
 
     private void Awake()
@@ -60,8 +62,11 @@ public class Boss_Manager : MonoBehaviour
     void Update()
     {
         int temp_var = 0;
-
-
+        showInversionMessage -= Time.deltaTime;
+        if (showInversionMessage < 0)
+        {
+            inversionMessage.gameObject.SetActive(false);
+        }
         foreach (var item in weakPoints)
         {
             if (item.life > 0)

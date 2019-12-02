@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using TMPro;
+
 
 public class PuzzleRepeater : PuzzleActivator
 {
@@ -10,8 +12,7 @@ public class PuzzleRepeater : PuzzleActivator
     [ReadOnly]
     public float timeSpeedChange;
     public float startSpeed = 0;
-
-    public TextMesh textMesh;
+    public TextMeshPro textMesh;
 
 
     void Awake()
@@ -23,6 +24,7 @@ public class PuzzleRepeater : PuzzleActivator
     void Update()
     {
         timeSpeedChange -= Time.deltaTime;
+
         textMesh.text = System.Math.Round(timeSpeedChange, 1).ToString();
         if (timeSpeedChange < 0 )
         {
