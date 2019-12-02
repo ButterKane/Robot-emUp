@@ -344,6 +344,7 @@ MonoBehaviour:
   focusedPlayer: {fileID: 0}
   energyAmount: 0.065
   damage: 10
+  powerLevel: 1
   _lockable: 1
   _lockHitboxSize: 2
   arenaRobot: 0
@@ -431,6 +432,9 @@ MonoBehaviour:
   coreDropChances: 0.3
   minMaxDropForce: {x: 2, y: 4}
   minMaxCoreHealthValue: {x: 5, y: 5}
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &373019035912214700
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,7 +7,6 @@ using MyBox;
 public enum CameraType { Combat, Adventure}
 public class CameraBehaviour : MonoBehaviour
 {
-	public int minPlayersRequired = 2;
 	public int defaultPriority = 9;
 	public int enabledPriority = 11;
 	public float maxRotation = 40;
@@ -44,8 +43,7 @@ public class CameraBehaviour : MonoBehaviour
 		if (zone == null) { return; }
 		if (virtualCamera == null) { virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
 
-		List<PlayerController> players = zone.GetPlayersInside();
-		if (zone.GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
+		if (zone.IsZoneActivated())
 		{
 			//Enable camera
 			virtualCamera.m_Priority = enabledPriority;

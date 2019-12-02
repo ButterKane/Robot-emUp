@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 [ExecuteInEditMode]
 public class CameraZone : MonoBehaviour
@@ -14,9 +15,12 @@ public class CameraZone : MonoBehaviour
 	private Vector3 m_cornerB = new Vector3(30f, 0f, 30f);
 
 
+	public int minPlayersRequired = 2;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
 	private BoxCollider boxCollider;
+	private bool zoneActivated;
+	[HideInInspector] public UnityEvent onZoneActivation;
 
 	private List<PlayerController> playersInside;
 #if UNITY_EDITOR
@@ -59,6 +63,23 @@ public class CameraZone : MonoBehaviour
 
 	public virtual void Update ()
 	{
+		if (Application.isPlaying)
+		{
+			if (IsZoneActivated())
+			{
+				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) < minPlayersRequired)
+				{
+					DesactivateZone();
+				}
+			}
+			else
+			{
+				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
+				{
+					ActivateZone();
+				}
+			}
+		}
 		Vector3 wantedPosition = cornerA + ((cornerB- cornerA) / 2);
 		transform.position = new Vector3(wantedPosition.x, transform.position.y, wantedPosition.z);
 		if (visualizer != null)
@@ -106,6 +127,26 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
+	void ActivateZone()
+	{
+		zoneActivated = true;
+		onZoneActivation.Invoke();
+	}
+
+	void DesactivateZone()
+	{
+		zoneActivated = false;
+	}
+
+	public Vector3 GetCenterPosition()
+	{
+		return transform.position;
+	}
+
+	public bool IsZoneActivated()
+	{
+		return zoneActivated;
+	}
 	public List<PlayerController> GetPlayersInside()
 	{
 		if (playersInside.Count > 0)
