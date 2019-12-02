@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
+using DG.Tweening;
 
 public class PlayerController : PawnController, IHitable
 {
@@ -44,6 +45,9 @@ public class PlayerController : PawnController, IHitable
 	private ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 
+	[HideInInspector] public Canvas overHeadCanvas;
+	private Transform visuals;
+
 	public override void Awake ()
 	{
 		base.Awake();
@@ -51,6 +55,12 @@ public class PlayerController : PawnController, IHitable
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
+		visuals = transform.Find("Visuals");
+		GameObject overHeadCanvasGO = new GameObject();
+		overHeadCanvasGO.transform.SetParent(this.transform);
+		overHeadCanvas = overHeadCanvasGO.AddComponent<Canvas>();
+		overHeadCanvas.renderMode = RenderMode.WorldSpace;
+		overHeadCanvas.transform.position += Vector3.up;
 	}
 	private void Update ()
 	{
@@ -253,6 +263,9 @@ public class PlayerController : PawnController, IHitable
 	public override void Damage ( int _amount )
 	{
 		base.Damage(_amount);
+		float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
+		scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
+		visuals.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
 		FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
 	}
 

@@ -21,6 +21,11 @@ public class DashController : MonoBehaviour
 	public float useCooldown = 0.2f;
 	public float stackCooldown = 8f;
 
+	public AnimationCurve dashFadeCurve;
+	public float dashFadeDuration = 0.2f;
+
+	public float UIFadeDuration = 0.5f;
+	public float UIFadeDelay = 1.5f;
 	public DashState state;
 
 	public Transform visuals;
@@ -182,7 +187,10 @@ public class DashController : MonoBehaviour
 			RaycastHit hit;
 			if (Physics.Raycast(transform.position, transform.forward, out hit, 0.1f))
 			{
-				StopAllCoroutines();
+				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
+				{
+					StopAllCoroutines();
+				}
 			}
 			transform.position = Vector3.Lerp(_startPosition, _endPosition, i / Vector3.Distance(_startPosition, _endPosition));
 			yield return new WaitForEndOfFrame();
@@ -190,7 +198,17 @@ public class DashController : MonoBehaviour
 		transform.position = _endPosition;
 		GenerateClone();
 		ChangeState(DashState.None);
+		StartCoroutine(FadePlayerSpeed());
 		linkedPawn.SetInvincible(false);
+	}
+
+	IEnumerator FadePlayerSpeed()
+	{
+		for (float i = 0; i < dashFadeDuration; i+=Time.deltaTime)
+		{
+			linkedPawn.AddSpeedCoef(new SpeedCoef(1 + dashFadeCurve.Evaluate(i / dashFadeDuration) * (speed * 0.015f), Time.deltaTime, SpeedModifierReason.Dash, false));
+			yield return null;
+		}
 	}
 
 }

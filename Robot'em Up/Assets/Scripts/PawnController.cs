@@ -13,15 +13,16 @@ public enum MoveState
 	Dead
 }
 
-public enum SlowReason
+public enum SpeedModifierReason
 {
 	Link,
 	Freeze,
+	Dash,
 }
 
 public class SpeedCoef
 {
-	public SpeedCoef ( float _speedCoef, float _duration, SlowReason _reason, bool _stackable )
+	public SpeedCoef ( float _speedCoef, float _duration, SpeedModifierReason _reason, bool _stackable )
 	{
 		speedCoef = _speedCoef;
 		duration = _duration;
@@ -30,7 +31,7 @@ public class SpeedCoef
 	}
 	public float speedCoef;
 	public float duration;
-	public SlowReason reason;
+	public SpeedModifierReason reason;
 	public bool stackable;
 }
 
@@ -162,7 +163,7 @@ public class PawnController : MonoBehaviour
 		{
 			accelerationTimer += Time.fixedDeltaTime;
 			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed * GetSpeedCoef()) * maxAcceleration), ForceMode.Acceleration);
+			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed) * maxAcceleration * GetSpeedCoef()), ForceMode.Acceleration);
 			customDrag = movingDrag;
 		} else
 		{
@@ -292,6 +293,7 @@ public class PawnController : MonoBehaviour
 		{
 			speedCoef *= MomentumManager.GetValue(MomentumManager.datas.enemySpeedMultiplier);
 		}
+		Debug.Log("Speed coef: " + speedCoef);
 		return speedCoef;
 	}
 
@@ -345,16 +347,13 @@ public class PawnController : MonoBehaviour
 		{
 			Kill();
 		}
-		float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
-		scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
-		transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
 		if (GetComponent<PlayerController>() != null)
 		{
 			MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
 		}
 	}
 
-	private void ResetScale()
+	protected void ResetScale()
 	{
 		transform.DOScale(initialScale, 0.1f);
 	}
