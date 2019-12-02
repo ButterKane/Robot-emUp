@@ -148,8 +148,8 @@ public class WaveEditor : Editor
 			GUILayout.FlexibleSpace();
 			for (int y = 0; y < waveData.currentEnemies.Count; y++)
 			{
-				GUI.color = waveData.currentEnemies[y].enemyType.color;
 				GUIStyle visualizerStyle = new GUIStyle(GUI.skin.textField);
+				GUI.color = waveData.currentEnemies[y].enemyType.color;
 				visualizerStyle.alignment = TextAnchor.MiddleCenter;
 				GUILayout.TextField(waveData.currentEnemies[y].enemyType.name, visualizerStyle, GUILayout.Width(300 * waveData.currentEnemies[y].probability), GUILayout.Height(30));
 				GUI.color = waveData.currentEnemies[y].enemyType.color;
@@ -181,6 +181,7 @@ public class WaveEditor : Editor
 				{
 					waveData.RemoveEnemySpawnProbability(waveData.currentEnemies[y]);
 					UpdateAvailableEnemies(waveData);
+					return;
 				}
 				for (int z = 0; z < waveEditor.spawnList.Count; z++) {
 					GUI.color = waveEditor.spawnList[z].color;
