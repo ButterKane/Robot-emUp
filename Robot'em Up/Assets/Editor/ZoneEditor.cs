@@ -3,10 +3,10 @@ using UnityEngine;
 using Cinemachine;
 using System.Collections.Generic;
 
-public class CameraEditor
+public class ZoneEditor
 {
-	[MenuItem("Camera/Create combat camera")]
-	static void GenerateCombatCamera ()
+	[MenuItem("Zone/Create combat zone")]
+	static void GenerateCombatZone ()
 	{
 		//Restricted tool list
 		List<Tool> restrictedTools = new List<Tool>();
@@ -14,21 +14,24 @@ public class CameraEditor
 		restrictedTools.Add(Tool.Rotate);
 		restrictedTools.Add(Tool.Scale);
 
-		//Generates main camera object
-		GameObject newCamera = new GameObject();
-		newCamera.name = "Fight Camera";
-		newCamera.AddComponent<ToolRestrictor>().restrictedTools = restrictedTools;
+		//Generates main zone object
+		GameObject newZone = new GameObject();
+		newZone.name = "Fight Zone";
+		newZone.AddComponent<ToolRestrictor>().restrictedTools = restrictedTools;
+
+		//Add wave component
+		newZone.AddComponent<WaveController>();
 
 		//Generates zone selector object
 		GameObject zoneSelector = new GameObject();
 		zoneSelector.name = "Camera zone";
-		zoneSelector.transform.SetParent(newCamera.transform);
+		zoneSelector.transform.SetParent(newZone.transform);
 		CameraZone camZone = zoneSelector.AddComponent<CameraZone>();
 
 		//Generate the camera pivot
 		GameObject cameraPivot = new GameObject();
 		cameraPivot.name = "Camera pivot";
-		cameraPivot.transform.SetParent(newCamera.transform);
+		cameraPivot.transform.SetParent(newZone.transform);
 		CameraBehaviour cam = cameraPivot.AddComponent<CameraBehaviour>();
 		cam.InitCamera(CameraType.Combat, camZone);
 		cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = restrictedTools;
@@ -45,10 +48,10 @@ public class CameraEditor
 		Selection.activeGameObject = zoneSelector;
 	}
 
-	[MenuItem("Camera/Create adventure camera")]
-	static void GenerateAdventureCamera ()
+	[MenuItem("Zone/Create adventure zone")]
+	static void GenerateAdventureZone ()
 	{
-		Debug.LogWarning("Can't generate adventure camera yet (Not implemented)");
+		Debug.LogWarning("Can't generate adventure zone yet (Not implemented)");
 	}
 
 	[CustomEditor(typeof(CameraZone)), CanEditMultipleObjects]

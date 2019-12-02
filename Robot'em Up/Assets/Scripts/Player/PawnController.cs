@@ -50,7 +50,8 @@ public class PawnController : MonoBehaviour
             }
         }
     }
-    [SerializeField] private bool _isInvincible;
+
+	[SerializeField] private bool _isInvincible;
     public float invincibilityTime = 1;
     private IEnumerator invincibilityCoroutine;
 
@@ -508,5 +509,5 @@ public class PawnController : MonoBehaviour
 			animator.ResetTrigger("ClimbTrigger");
 		}
 	}
-    #endregion
+	#endregion
 }
