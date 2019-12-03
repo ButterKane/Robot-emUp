@@ -16,31 +16,36 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
+        if (_source == DamageSource.Ball | _source == DamageSource.Dunk)
         {
-
-            if (FX_Linked != null)
+            if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
             {
-                Destroy(FX_Linked);
-            }
 
-            if (FX_LinkEnd != null)
-            {
-                Destroy(FX_LinkEnd);
-            }
+                if (FX_Linked != null)
+                {
+                    Destroy(FX_Linked);
+                }
 
-            FX_Linked = FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2f, true, _impactVector, Vector3.one * 2f, transform);
+                if (FX_LinkEnd != null)
+                {
+                    Destroy(FX_LinkEnd);
+                }
+
+                FX_Linked = FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2f, true, _impactVector, Vector3.one * 2f, transform);
             
-            if (FX_Activation == null)
-            {
-                FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1.4f, true, Vector3.zero, Vector3.one * 1.4f, transform);
+                if (FX_Activation == null)
+                {
+                    FX_Activation = FXManager.InstantiateFX(puzzleData.Linking, Vector3.up * 1.4f, true, Vector3.zero, Vector3.one * 1.4f, transform);
+                }
+			    MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
+                chargingTime = puzzleData.nbSecondsLinkMaintained;
+                isActivated = true;
+
+                ActivateLinkedObjects();
+
+
+
             }
-			MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
-            chargingTime = puzzleData.nbSecondsLinkMaintained;
-            isActivated = true;
-
-            ActivateLinkedObjects();
-
 
 
         }
