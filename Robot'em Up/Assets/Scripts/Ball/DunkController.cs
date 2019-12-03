@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
@@ -31,9 +32,16 @@ public class DunkController : MonoBehaviour
 
 	public float dunkSnapTreshold = 30f;
 
+    [SerializeField] private DunkState dunkState;
 
-	private Rigidbody rb;
-	[SerializeField] private DunkState dunkState;
+    [Separator("Bump Variables")]
+    public float BumpDistanceMod = 1;
+    public float BumpDurationMod = 0.5f;
+    public float BumpRestDurationMod = 0.7f;
+
+
+    private Rigidbody rb;
+	
 	private Coroutine jumpCoroutine;
 	private PassController passController;
 	private PawnController pawnController;

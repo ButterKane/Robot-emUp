@@ -12,6 +12,18 @@ public class EnemyRedBarrel : EnemyBehaviour
     public int explosionDamage = 10;
     public float buildUpBeforeExplosion = 0.5f;
 
+    [Separator("Explosion Bump variables")]
+    public float BumpDistanceMod = 1.5f;
+    public float BumpDurationMod = 0.7f;
+    public float BumpRestDurationMod = 0.2f;
+    private Vector3 bumpValues;
+
+    new void Start()
+    {
+        base.Start();
+        bumpValues = new Vector3(BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);
+    }
+
     protected override void Die()
     {
         StartCoroutine(ExplosionSequence());
@@ -32,7 +44,7 @@ public class EnemyRedBarrel : EnemyBehaviour
             IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
             if (potentialHitableObject != null)
             {
-                potentialHitableObject.OnHit(null, (hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion);
+                potentialHitableObject.OnHit(null, (hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
             }
             i++;
         }

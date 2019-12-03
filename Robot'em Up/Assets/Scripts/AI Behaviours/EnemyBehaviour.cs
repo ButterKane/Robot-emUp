@@ -22,6 +22,7 @@ public enum WhatBumps
 {
     Pass,
     Dunk,
+    RedBarrel,
     Environment,
     Count
 }
@@ -57,7 +58,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
     public int damage = 10;
-	public int powerLevel = 1;
+	public float powerLevel = 1;
     [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool arenaRobot;
@@ -145,7 +146,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     
 
-    void Start()
+    protected void Start()
     {
         Health = MaxHealth;
         _self = transform;
@@ -484,22 +485,40 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
+        float BumpDistanceMod = 0.5f;
+        float BumpDurationMod = 0.5f;
+        float BumpRestDurationMod = 0.5f;
         switch (_source)
         {
             case DamageSource.Dunk:
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+
+                if (_thrower.GetComponent<DunkController>() != null)
+                {
+                    DunkController controller = _thrower.GetComponent<DunkController>();
+                    BumpDistanceMod = controller.BumpDistanceMod;
+                    BumpDurationMod = controller.BumpDurationMod;
+                    BumpRestDurationMod = controller.BumpRestDurationMod;
+                }
+
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod); 
                 whatBumps = WhatBumps.Dunk;
                 break;
             case DamageSource.RedBarrelExplosion:
 				EnergyManager.IncreaseEnergy(energyAmount);
 				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
-                whatBumps = WhatBumps.Environment;
+                if (_bumpModificators != default(Vector3))
+                {
+                    BumpDistanceMod = _bumpModificators.x;
+                    BumpDurationMod = _bumpModificators.y;
+                    BumpRestDurationMod = _bumpModificators.z;
+                }
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);    // Need Explosion Data
+                whatBumps = WhatBumps.RedBarrel;
                 break;
             case DamageSource.Ball:
 				EnergyManager.IncreaseEnergy(energyAmount);
@@ -647,11 +666,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         moveMultiplicator = normalMoveMultiplicator;
     }
 
-    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
+    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
-        bumpDistance = _bumpDistance;
-        bumpDuration = _bumpDuration;
-        restDuration = _restDuration;
+        bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
+        bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
+        restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
         bumpDirection = _bumpDirection;
         ChangingState(EnemyState.Bumped);
     }
