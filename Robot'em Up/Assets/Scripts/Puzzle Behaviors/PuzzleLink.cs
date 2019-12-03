@@ -14,7 +14,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
 	public float chargingTime;
 
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
         {

@@ -21,6 +21,7 @@ public enum WhatBumps
 {
     Pass,
     Dunk,
+    RedBarrel,
     Environment,
     Count
 }
@@ -142,7 +143,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     
 
-    void Start()
+    protected void Start()
     {
         Health = MaxHealth;
         _self = transform;
@@ -476,7 +477,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
@@ -502,8 +503,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             case DamageSource.RedBarrelExplosion:
 				EnergyManager.IncreaseEnergy(energyAmount);
 				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                if (_bumpModificators != default(Vector3))
+                {
+                    BumpDistanceMod = _bumpModificators.x;
+                    BumpDurationMod = _bumpModificators.y;
+                    BumpRestDurationMod = _bumpModificators.z;
+                }
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);    // Need Explosion Data
-                whatBumps = WhatBumps.Environment;
+                whatBumps = WhatBumps.RedBarrel;
                 break;
             case DamageSource.Ball:
 				EnergyManager.IncreaseEnergy(energyAmount);

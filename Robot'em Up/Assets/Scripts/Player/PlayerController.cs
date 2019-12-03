@@ -359,7 +359,7 @@ public class PlayerController : PawnController, IHitable
 		EnableInput();
 	}
 
-	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
+	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
 		switch (_source)
 		{
