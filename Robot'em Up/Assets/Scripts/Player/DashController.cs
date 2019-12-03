@@ -206,7 +206,7 @@ public class DashController : MonoBehaviour
 	{
 		for (float i = 0; i < dashFadeDuration; i+=Time.deltaTime)
 		{
-			linkedPawn.AddSpeedCoef(new SpeedCoef(1 + dashFadeCurve.Evaluate(i / dashFadeDuration) * (speed * 0.015f), Time.deltaTime, SpeedModifierReason.Dash, false));
+			linkedPawn.AddSpeedCoef(new SpeedCoef(1 + dashFadeCurve.Evaluate(i / dashFadeDuration) * (speed * 0.015f), Time.deltaTime, SpeedMultiplierReason.Dash, false));
 			yield return null;
 		}
 	}

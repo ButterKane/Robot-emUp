@@ -13,16 +13,17 @@ public enum MoveState
 	Dead
 }
 
-public enum SlowReason
+public enum SpeedMultiplierReason
 {
 	Link,
 	Freeze,
 	Reviving,
+	Dash,
 }
 
 public class SpeedCoef
 {
-	public SpeedCoef ( float _speedCoef, float _duration, SlowReason _reason, bool _stackable )
+	public SpeedCoef ( float _speedCoef, float _duration, SpeedMultiplierReason _reason, bool _stackable )
 	{
 		speedCoef = _speedCoef;
 		duration = _duration;
@@ -31,7 +32,7 @@ public class SpeedCoef
 	}
 	public float speedCoef;
 	public float duration;
-	public SlowReason reason;
+	public SpeedMultiplierReason reason;
 	public bool stackable;
 }
 

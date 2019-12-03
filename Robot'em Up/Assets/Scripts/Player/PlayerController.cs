@@ -129,7 +129,7 @@ public class PlayerController : PawnController, IHitable
 		{
 			if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
 			{
-				AddSpeedCoef(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SlowReason.Reviving, false));
+				AddSpeedCoef(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
 				foreach (ReviveInformations p in revivablePlayers)
 				{
 					p.linkedPanel.FillAssemblingSlider();
