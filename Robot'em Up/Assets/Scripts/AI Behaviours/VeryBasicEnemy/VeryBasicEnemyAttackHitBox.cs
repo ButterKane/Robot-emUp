@@ -10,7 +10,7 @@ public class VeryBasicEnemyAttackHitBox : MonoBehaviour
         if (other.tag == "Player")
         {
             if (other.GetComponent<PawnController>() != null)
-                other.GetComponent<PawnController>().Damage(transform.root .GetComponent<EnemyBehaviour>().damage);
+                other.GetComponent<PawnController>().Damage(transform.parent.GetComponent<EnemyBehaviour>().damage);
         }
     }
 }

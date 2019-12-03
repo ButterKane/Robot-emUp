@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Events;
 using UnityEngine.AI;
 
 
@@ -57,6 +58,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
     public int damage = 10;
+	public int powerLevel = 1;
     [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool arenaRobot;
@@ -140,6 +142,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
+	[HideInInspector] public UnityEvent onDeath;
 
     
 
@@ -349,6 +352,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
+	public NavMeshAgent GetNavMeshAgent()
+	{
+		return navMeshAgent;
+	}
+
     public virtual void EnterBumpedState()
     {
         transform.rotation = Quaternion.LookRotation(-bumpDirection);
@@ -547,6 +555,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 			DropCore();
 		}
         GameManager.i.enemyManager.enemies.Remove(this);
+		onDeath.Invoke();
         Destroy(gameObject);
     }
 

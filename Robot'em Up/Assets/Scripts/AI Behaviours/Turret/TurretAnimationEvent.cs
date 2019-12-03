@@ -36,7 +36,10 @@ public class TurretAnimationEvent : MonoBehaviour
 
     void GoToRestAttackState()
     {
-        MyScript.TransitionFromAttackToRest();
-        canCallFollowingState = true;
+        if(MyScript.attackState == TurretAttackState.Attack)
+        {
+            MyScript.TransitionFromAttackToRest();
+            canCallFollowingState = true;
+        }
     }
 }
