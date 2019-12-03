@@ -58,7 +58,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Transform focusedPlayer = null;
     public float energyAmount = 1;
     public int damage = 10;
-	public int powerLevel = 1;
+	public float powerLevel = 1;
     [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool arenaRobot;
