@@ -33,6 +33,7 @@ public class PlayerController : PawnController, IHitable
 	public float reviveExplosionRadius = 5;
 	public int reviveExplosionDamage = 10;
 	public float reviveExplosionForce = 10;
+	public float reviveSpeedCoef = 0.3f;
 
 	public int revivePartsCount = 3;
 	[Range(0,1)] public float partExplosionAngleRandomness = 0.1f;
@@ -128,8 +129,7 @@ public class PlayerController : PawnController, IHitable
 		{
 			if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
 			{
-				Freeze();
-				SetUntargetable();
+				AddSpeedCoef(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SlowReason.Reviving, false));
 				foreach (ReviveInformations p in revivablePlayers)
 				{
 					p.linkedPanel.FillAssemblingSlider();
@@ -256,6 +256,18 @@ public class PlayerController : PawnController, IHitable
         if (!IsInvincible)
         {
             base.Damage(_amount);
+			float damageForce = _amount / maxHealth;
+			if (damageForce < 0.2)
+			{
+				Vibrate(0.2f, VibrationForce.Light);
+			}
+			else if (damageForce < 0.5)
+			{
+				Vibrate(0.3f, VibrationForce.Medium);
+			} else
+			{
+				Vibrate(0.3f, VibrationForce.Heavy);
+			}
             FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
         }
 	}

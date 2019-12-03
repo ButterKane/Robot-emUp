@@ -30,6 +30,7 @@ public class DunkController : MonoBehaviour
 	public float dunkDashDelay = 1f;
 
 	public float dunkSnapTreshold = 30f;
+	public float dunkCooldown = 3f;
 
 
 	private Rigidbody rb;
@@ -37,9 +38,11 @@ public class DunkController : MonoBehaviour
 	private Coroutine jumpCoroutine;
 	private PassController passController;
 	private PawnController pawnController;
+	private PlayerController playerController;
 
 	private GameObject waitingFX;
 	private GameObject dashFX;
+	private float currentCD;
 
 	private void Awake ()
 	{
@@ -48,6 +51,15 @@ public class DunkController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 		passController = GetComponent<PassController>();
 		pawnController = GetComponent<PawnController>();
+		playerController = GetComponent<PlayerController>();
+	}
+
+	private void Update ()
+	{
+		if (currentCD >= 0)
+		{
+			currentCD -= Time.deltaTime;
+		}
 	}
 
 	public void Explode ()
@@ -85,7 +97,7 @@ public class DunkController : MonoBehaviour
 	}
 	public bool CanDunk ()
 	{
-		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null)
+		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null && GameManager.deadPlayers.Count <= 0 && currentCD <= 0)
 		{
 			return true;
 		}
@@ -114,6 +126,10 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator DunkJump_C ()
 	{
+		if (playerController)
+		{
+			playerController.DisableInput();
+		}
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		rb.isKinematic = true;
@@ -144,7 +160,12 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator DunkCancel_C ()
 	{
+		if (playerController)
+		{
+			playerController.EnableInput();
+		}
 		ChangeState(DunkState.Canceling);
+		currentCD = dunkCooldown;
 		yield return FallOnGround_C(dunkCancelledFallSpeed);
 	}
 
@@ -162,6 +183,10 @@ public class DunkController : MonoBehaviour
 		else
 		{
 			StopAllCoroutines();
+			if (playerController)
+			{
+				playerController.EnableInput();
+			}
 			ChangeState(DunkState.None);
 		}
 
@@ -173,6 +198,10 @@ public class DunkController : MonoBehaviour
 		transform.position = endPosition;
 
 		ChangeState(DunkState.None);
+		if (playerController)
+		{
+			playerController.EnableInput();
+		}
 		rb.isKinematic = false;
 		rb.useGravity = true;
 	}

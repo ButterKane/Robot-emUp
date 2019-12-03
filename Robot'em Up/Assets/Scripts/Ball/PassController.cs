@@ -169,7 +169,9 @@ public class PassController : MonoBehaviour
 		Vector3 firstPoint = startPosition;
 		Vector3 firstHandle = startPosition + _lookDirection.normalized * hanseLength;
 		Vector3 secondPoint = endPosition;
-		for (float i = 0; i < curveRaycastIteration; i++)
+
+		RaycastHit hit;
+		for (int i = 0; i < curveRaycastIteration; i++)
 		{
 			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
 			{
@@ -178,6 +180,20 @@ public class PassController : MonoBehaviour
 			else
 			{
 				coordinates.Add(Vector3.Lerp(firstPoint ,endPosition, i / curveRaycastIteration));
+			}
+			if (i > 0)
+			{
+				if (Physics.Raycast(coordinates[i-1], coordinates[i] - coordinates[i-1] , out hit, Vector3.Distance(coordinates[i], coordinates[i - 1])))
+				{
+					if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
+					{
+						coordinates.Add(hit.point);
+						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hit.normal);
+						_direction = _direction.normalized * 10;
+						coordinates.Add(hit.point + _direction);
+						return coordinates;
+					}
+				}
 			}
 		}
 		return coordinates;

@@ -64,7 +64,6 @@ public class LinkController : MonoBehaviour
 
 	private void Update ()
 	{
-		if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { return; }
 		UpdateLink();
 	}
 
@@ -95,13 +94,20 @@ public class LinkController : MonoBehaviour
 	{
 		if (linkGameObject != null)
 		{
+			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; return; }
 			float linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
 			if (!linkIsBroke)
 			{
 				if (linkLength < maxDistanceBeforeBreaking)
 				{
 					//Hide link
-					lineRenderer.positionCount = 0;
+					lineRenderer.positionCount = 2;
+					lineRenderer.SetPosition(0, firstPawn.GetCenterPosition());
+					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
+					Color transparentColor = linkColor.Evaluate(0);
+					transparentColor.a = 0.1f;
+					lineRenderer.startColor = transparentColor;
+					lineRenderer.endColor = transparentColor;
 					ChangeLinkState(LinkState.Hidden);
 				}
 				if (linkLength >= maxDistanceBeforeShowing && linkLength < maxDistanceBeforeSlowing)
@@ -113,7 +119,7 @@ public class LinkController : MonoBehaviour
 					float lerpValue = (maxDistanceBeforeSlowing - linkLength) / (maxDistanceBeforeSlowing - maxDistanceBeforeShowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
 					Color transparentColor = linkColor.Evaluate(0);
-					transparentColor.a = 0;
+					transparentColor.a = 0.1f;
 					lineRenderer.startColor = Color.Lerp(transparentColor, linkColor.Evaluate(0), lerpValue);
 					lineRenderer.endColor = Color.Lerp(transparentColor, linkColor.Evaluate(0), lerpValue);
 					ChangeLinkState(LinkState.Showing);

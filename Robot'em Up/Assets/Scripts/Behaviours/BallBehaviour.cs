@@ -113,6 +113,7 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
+		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
 		currentBounceCount++;

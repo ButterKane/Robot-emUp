@@ -17,6 +17,7 @@ public enum SlowReason
 {
 	Link,
 	Freeze,
+	Reviving,
 }
 
 public class SpeedCoef
