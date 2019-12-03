@@ -80,8 +80,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float maxAnticipationTime;
     float anticipationTime;
     public float maxRestTime;
+    public float randomRangeRestTime;
     float restTime;
-    public float restTimeBeforeAimingCubeUnlocked;
+    //public float restTimeBeforeAimingCubeUnlocked;
 
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
@@ -182,7 +183,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void UpdateState()
     {
-        //print(attackState);
+        //print("Global State : " + State);
         switch (State)
         {
             case TurretState.Attacking:
@@ -229,7 +230,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                ChangeAimingCubeState(AimingCubeState.NotVisible);
                 break;
             case TurretState.Idle:
                 break;
@@ -255,7 +255,8 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 attackState = TurretAttackState.Anticipation;
                 Animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
-                restTime = maxRestTime;
+                restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
+                print(restTime);
                 break;
             case TurretState.Idle:
                 timeBetweenCheck = 0;
@@ -265,12 +266,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void AttackingUpdateState()
     {
+        //print("Attack State : " + attackState);
         switch (attackState)
         {
             case TurretAttackState.Anticipation:
+                //print("here");
+                print("Anticipation time : " + anticipationTime);
                 if (focusedPlayerTransform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
+                    //print("Eh ouais !");
                 }
                 anticipationTime -= Time.deltaTime;
                 if (anticipationTime <= 0)
@@ -283,15 +288,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 break;
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
+                print(restTime);
                 if (restTime <= 0)
                 {
-                    ChangeAimingCubeState(AimingCubeState.NotVisible);
+                    print("hehe trigger");
                     Animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
                 }
-                else if(maxRestTime - restTime > restTimeBeforeAimingCubeUnlocked && aimingCubeState != AimingCubeState.Following)
+                else if(aimingCubeState != AimingCubeState.NotVisible)
                 {
-                    ChangeAimingCubeState(AimingCubeState.Following);
+                    ChangeAimingCubeState(AimingCubeState.NotVisible);
                 }
                 break;
         }
