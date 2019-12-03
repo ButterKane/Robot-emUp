@@ -352,7 +352,6 @@ public class PawnController : MonoBehaviour
 	{
         if (!IsInvincible && invincibilityCoroutine == null)
         {
-            Debug.Log("damage");
             invincibilityCoroutine = InvicibleFrame();
             StartCoroutine(invincibilityCoroutine);
             currentHealth -= _amount;
@@ -476,14 +475,12 @@ public class PawnController : MonoBehaviour
 	}
     private IEnumerator InvicibleFrame()
     {
-        Debug.Log("1");
         IsInvincible = true;
         gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
         yield return new WaitForSeconds(invincibilityTime);
         IsInvincible = false;
         invincibilityCoroutine = null;
         gameObject.layer = 8; // 8 = Player Layer
-        Debug.Log("2");
     }
 
 	private IEnumerator ClimbLedge(Collider _ledge)
