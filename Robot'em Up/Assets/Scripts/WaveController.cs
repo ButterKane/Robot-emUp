@@ -104,7 +104,7 @@ public class WaveController : MonoBehaviour
 		float pickChances = Random.value;
 		int chosenIndex = 0;
 		float cumulativeChances = waveList[currentWaveIndex].currentEnemies[chosenIndex].probability;
-		while (pickChances > cumulativeChances && chosenIndex < waveList[currentWaveIndex].currentEnemies.Count - 1)
+		while (pickChances > cumulativeChances && chosenIndex < waveList[currentWaveIndex].currentEnemies.Count)
 		{
 			chosenIndex++;
 			cumulativeChances += waveList[currentWaveIndex].currentEnemies[chosenIndex].probability;
