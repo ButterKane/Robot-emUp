@@ -2,19 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretBasicBullet : MonoBehaviour
+public class TurretSniperBullet : MonoBehaviour
 {
     public Rigidbody rb;
     public float speed;
     public GameObject deathParticle;
     public int damageDealt;
     public float maxLifeTime;
+    Vector3 initialPosition;
     public Transform target;
 
-    // Update is called once per frame
+    private void Start()
+    {
+        initialPosition = transform.position;
+    }
+    
     void Update()
     {
-        rb.position = transform.position + transform.forward * speed * Time.deltaTime;
+        rb.velocity = (target.position - transform.position).normalized * speed;
         maxLifeTime -= Time.deltaTime;
         if (maxLifeTime <= 0)
         {
@@ -25,13 +30,13 @@ public class TurretBasicBullet : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //print(other.tag);
-        if(other.tag == "Player")
+        if (other.tag == "Player")
         {
             other.GetComponent<PawnController>().Damage(damageDealt);
             Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
             Destroy(gameObject);
         }
-        else if(other.tag == "Environment")
+        else if (other.tag == "Environment")
         {
             Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
             Destroy(gameObject);

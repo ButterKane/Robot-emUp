@@ -32,7 +32,7 @@ public enum AimingCubeState
 public class TurretBehaviour : MonoBehaviour, IHitable
 {
     [Separator("References")]
-    [SerializeField] private Transform _self;
+    [SerializeField] protected Transform _self;
     public Rigidbody Rb;
     public Animator Animator;
 
@@ -67,7 +67,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     bool playerTwoInRange;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
-    Transform focusedPlayerTransform = null;
+    protected Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
     public bool arenaTurret;
 
@@ -78,13 +78,14 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public Vector2 minMaxRandomRangePredictionRatio;
     public float maxRotationSpeed;
     public float maxAnticipationTime;
-    float anticipationTime;
+    protected float anticipationTime;
     public float maxRestTime;
     public float randomRangeRestTime;
-    float restTime;
+    protected float restTime;
+    protected GameObject spawnedBullet;
     //public float restTimeBeforeAimingCubeUnlocked;
 
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+    [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
@@ -137,7 +138,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void Update()
+    public virtual void Update()
     {
         UpdateDistancesToPlayers();
         UpdateState();
@@ -174,7 +175,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         EnterState();
     }
 
-    void RotateTowardsPlayerAndHisForward()
+    protected virtual void RotateTowardsPlayerAndHisForward()
     {
         wantedRotation = Quaternion.LookRotation(focusedPlayerTransform.position + focusedPlayerTransform.forward*focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
@@ -256,7 +257,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 Animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
-                print(restTime);
                 break;
             case TurretState.Idle:
                 timeBetweenCheck = 0;
@@ -264,18 +264,14 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void AttackingUpdateState()
+    public virtual void AttackingUpdateState()
     {
-        //print("Attack State : " + attackState);
         switch (attackState)
         {
             case TurretAttackState.Anticipation:
-                //print("here");
-                print("Anticipation time : " + anticipationTime);
                 if (focusedPlayerTransform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
-                    //print("Eh ouais !");
                 }
                 anticipationTime -= Time.deltaTime;
                 if (anticipationTime <= 0)
@@ -288,14 +284,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 break;
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
-                print(restTime);
                 if (restTime <= 0)
                 {
-                    print("hehe trigger");
                     Animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
                 }
-                else if(aimingCubeState != AimingCubeState.NotVisible)
+                if(aimingCubeState != AimingCubeState.NotVisible)
                 {
                     ChangeAimingCubeState(AimingCubeState.NotVisible);
                 }
@@ -316,11 +310,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
-    public void LaunchProjectile()
+    public virtual void LaunchProjectile()
     {
         Vector3 spawnPosition;
         spawnPosition = bulletSpawn.position;
-        GameObject spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -428,7 +422,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         EnergyManager.IncreaseEnergy(energyAmount);
     }
 
-    public void ChangeAimingCubeState(AimingCubeState _NewState)
+    public virtual void ChangeAimingCubeState(AimingCubeState _NewState)
     {
         if (_NewState == AimingCubeState.Following)
         {
@@ -447,5 +441,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             aimingCubeTransform.localScale = Vector3.zero;
         }
+        aimingCubeState = _NewState;
     }
 }

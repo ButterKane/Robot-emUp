@@ -4,7 +4,7 @@ using UnityEngine;
 using MyBox;
 using UnityEngine.Events;
 using UnityEngine.AI;
-
+using UnityEngine.UI;
 
 public enum EnemyState
 {
@@ -37,6 +37,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public Rigidbody Rb;
     public Animator Animator;
     public NavMeshAgent navMeshAgent;
+    public Transform HealthBarRef;
+    public GameObject HealthBarPrefab;
 
 	[Space(2)]
     [Separator("Auto-assigned References")]
@@ -157,6 +159,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
         _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
+        GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
+        healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
 
         if (arenaRobot)
         {

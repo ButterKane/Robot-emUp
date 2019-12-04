@@ -17,6 +17,9 @@ MonoBehaviour:
   Rb: {fileID: 6181108247738804029}
   Animator: {fileID: 6181108246780876620}
   navMeshAgent: {fileID: 6181108247738804024}
+  HealthBarRef: {fileID: 4697345455816352529}
+  HealthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+    type: 3}
   _playerOneTransform: {fileID: 0}
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
@@ -368,12 +371,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -408,6 +411,12 @@ NavMeshAgent:
 --- !u!95 &6181108246780876620 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4697345455816352529 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}
