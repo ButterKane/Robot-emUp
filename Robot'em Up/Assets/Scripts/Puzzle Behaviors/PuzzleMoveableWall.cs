@@ -9,7 +9,7 @@ public class PuzzleMoveableWall : PuzzleActivable
     [ReadOnly] public Vector3 Pos1;
     [ReadOnly] public Vector3 Pos2;
     public Vector3 PositionModifier;
-    [Range(0, 10)]
+    [Range(0, 40)]
     public float speed;
     public enum MoveableWallState { Pos1, Pos2, OneToTwo, TwoToOne }
     public MoveableWallState state;
@@ -23,6 +23,7 @@ public class PuzzleMoveableWall : PuzzleActivable
     {
         startTime = Time.time;
         journeyLength = Vector3.Distance(Pos1, Pos2);
+        print(journeyLength);
         RecalculatePositions();
 
     }
