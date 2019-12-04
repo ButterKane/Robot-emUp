@@ -113,6 +113,7 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
+		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
 		currentBounceCount++;
@@ -377,7 +378,7 @@ public class BallBehaviour : MonoBehaviour
 							hitGameObjects.Add(potentialHitableObjectFound);
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
-						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || raycast.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
+						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
 
 						if (!raycast.collider.isTrigger)
 						{

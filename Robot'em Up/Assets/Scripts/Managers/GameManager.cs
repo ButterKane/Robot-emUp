@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public GameObject surrounderPlayerOne;
     [HideInInspector] public GameObject surrounderPlayerTwo;
+	public static Canvas mainCanvas;
 	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
 
@@ -86,6 +87,7 @@ public class GameManager : MonoBehaviour
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
+		FindMainCanvas();
 		LoadMomentumManager();
 		LoadEnergyManager();
 
@@ -191,6 +193,16 @@ public class GameManager : MonoBehaviour
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
+	public void FindMainCanvas()
+	{
+		foreach (Canvas canvas in FindObjectsOfType<Canvas>())
+		{
+			if (canvas.renderMode != RenderMode.WorldSpace)
+			{
+				mainCanvas = canvas;
+			}
+		}
+	}
 	public static void ResetScene()
 	{
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
