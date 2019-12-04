@@ -92,7 +92,7 @@ public class SoundManager
 	{
 		SoundData soundData = GetSoundData(_soundName);
 		AudioClip clip = GetSoundClip(soundData);
-		Debug.Log("Playing clip " + clip.name);
+		if (clip == null) { Debug.LogWarning("Warning: Clip not found."); return; }
 		GameObject newSoundPlayer = new GameObject();
 		newSoundPlayer.name = "SoundPlayer";
 		AudioSource newAudioSource = newSoundPlayer.AddComponent<AudioSource>();
