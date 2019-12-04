@@ -7,7 +7,8 @@ public class EnemyShield : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Shield Variables")]
-    public GameObject Shield;
+    public GameObject ShieldPrefab;
+    [System.NonSerialized] public GameObject Shield;
     public bool deactivateShieldWhenAttacking = true;
     public float angleRangeForRebound { get { return angleRangeForRebound; } set { angleRangeForRebound = value; Shield.GetComponent<Shield>().angleRangeForRebound = value; } }  // The "field of view" angle of enemy. If incident angle of ball is within this, ball will rebound
 
@@ -26,6 +27,12 @@ public class EnemyShield : EnemyBehaviour
     public float attackSpeed = 7;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
 
+    private new void Start()
+    {
+        base.Start();
+        Shield = Instantiate(ShieldPrefab);
+        Shield.GetComponent<Shield>().Enemy = this;
+    }
 
     // ATTACK
     public override void EnterPreparingAttackState()

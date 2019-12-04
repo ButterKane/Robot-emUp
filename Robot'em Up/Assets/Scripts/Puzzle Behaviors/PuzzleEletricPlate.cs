@@ -45,7 +45,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             foreach (PawnController item in PawnTrapped)
             {
                 item.Damage(puzzleData.DamageEletricPlate);
-                item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SlowReason.Freeze, false));
+                item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
             }
         }
         /*
@@ -72,7 +72,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
             PawnTrapped.Add(pawn);
-            pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SlowReason.Freeze, false));
+            pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
         }
 
     }

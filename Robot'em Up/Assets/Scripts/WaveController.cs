@@ -90,13 +90,11 @@ public class WaveController : MonoBehaviour
 
 	IEnumerator StartWave_C (int _waveIndex)
 	{
-		Debug.Log("Starting wave " + _waveIndex);
 		for (float i = 0; i < waveList[_waveIndex].duration; i+=Time.deltaTime)
 		{
 			yield return null;
 			currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
 		}
-		Debug.Log("Wave " + _waveIndex + " finished");
 		StopWave();
 	}
 
@@ -106,7 +104,7 @@ public class WaveController : MonoBehaviour
 		float pickChances = Random.value;
 		int chosenIndex = 0;
 		float cumulativeChances = waveList[currentWaveIndex].currentEnemies[chosenIndex].probability;
-		while (pickChances > cumulativeChances && chosenIndex < waveList[currentWaveIndex].currentEnemies.Count - 1)
+		while (pickChances > cumulativeChances && chosenIndex < waveList[currentWaveIndex].currentEnemies.Count)
 		{
 			chosenIndex++;
 			cumulativeChances += waveList[currentWaveIndex].currentEnemies[chosenIndex].probability;
@@ -122,11 +120,6 @@ public class WaveController : MonoBehaviour
 
 		int chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count - 1);
 		chosenSpawnerIndex = _enemy.spawnIndexes[chosenSpawnerIndex];
-		for (int i = 0; i < _enemy.spawnIndexes.Count; i++)
-		{
-			Debug.Log("Enemy spawn indexes: " + _enemy.spawnIndexes[i]);
-		}
-		Debug.Log("Chosen spawn: " + chosenSpawnerIndex);
 		enemyBehaviour.GetNavMeshAgent().enabled = false;
 		newEnemy.transform.position = spawnList[chosenSpawnerIndex].transform.position;
 		enemyBehaviour.GetNavMeshAgent().enabled = true;
@@ -148,6 +141,5 @@ public class WaveController : MonoBehaviour
 	{
 		currentEnemies.Remove(_enemy);
 		UpdateCurrentPowerLevel();
-		Debug.Log("Instantied enemy " + _enemy.name + " has been killed");
 	}
 }

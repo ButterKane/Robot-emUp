@@ -13,11 +13,8 @@ public class CanvasManager : MonoBehaviour
     {
         if (i != null) { Destroy(i); }
         i = this;
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         MainCanvas = Instantiate(mainCanvasPrefab);
     }
+
 }
