@@ -31,6 +31,7 @@ public class DunkController : MonoBehaviour
 
 	public float dunkSnapTreshold = 30f;
 	public float dunkCooldown = 3f;
+	public float dunkCancelFreezeDuration = 0.4f;
 
 
 	private Rigidbody rb;
@@ -160,10 +161,6 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator DunkCancel_C ()
 	{
-		if (playerController)
-		{
-			playerController.EnableInput();
-		}
 		ChangeState(DunkState.Canceling);
 		currentCD = dunkCooldown;
 		yield return FallOnGround_C(dunkCancelledFallSpeed);
@@ -201,6 +198,7 @@ public class DunkController : MonoBehaviour
 		if (playerController)
 		{
 			playerController.EnableInput();
+			playerController.FreezeTemporarly(dunkCancelFreezeDuration);
 		}
 		rb.isKinematic = false;
 		rb.useGravity = true;

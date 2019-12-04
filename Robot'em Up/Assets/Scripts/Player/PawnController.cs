@@ -106,7 +106,7 @@ public class PawnController : MonoBehaviour
 
 	public virtual void Awake()
     {
-		initialScale = transform.localScale;
+		initialScale = transform.Find("Model").transform.localScale;
         IsInvincible = false;
         invincibilityCoroutine = null;
         customGravity = onGroundGravityMultiplyer;
@@ -364,8 +364,8 @@ public class PawnController : MonoBehaviour
             }
             float scaleForce = ((float)_amount / (float)maxHealth) * 3f;
             scaleForce = Mathf.Clamp(scaleForce, 0.3f, 1f);
-            transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
-            if (GetComponent<PlayerController>() != null)
+			transform.Find("Model").transform.DOShakeScale(1f, scaleForce).OnComplete(ResetScale);
+			if (GetComponent<PlayerController>() != null)
             {
                 MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
             }
@@ -444,6 +444,11 @@ public class PawnController : MonoBehaviour
 	public Vector3 GetHeadPosition()
 	{
 		return transform.position + Vector3.up * 1.8f;
+	}
+
+	public float GetHeight()
+	{
+		return 2f;
 	}
 
 	#endregion

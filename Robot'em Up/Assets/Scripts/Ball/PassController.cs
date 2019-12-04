@@ -115,8 +115,10 @@ public class PassController : MonoBehaviour
 			if (ballTimeInHand > receptionMinDelay) { return; }
 		}
 		ball = mainBall;
+		Receive(ball);
 		ChangePassState(PassState.Aiming);
 		EnablePassPreview();
+		StartCoroutine(ShootAfterDelay(receptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
 		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
 		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
@@ -222,9 +224,16 @@ public class PassController : MonoBehaviour
 		return null;
 	}
 
+	public IEnumerator ShootAfterDelay(float _delay)
+	{
+		yield return new WaitForSeconds(_delay);
+		didPerfectReception = false;
+		Shoot();
+	}
 	public void Shoot()
 	{
 		if (!CanShoot()) { return; }
+		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
 		if (ballTimeInHand >= receptionMinDelay) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); }
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
@@ -268,7 +277,7 @@ public class PassController : MonoBehaviour
 	{
 		if (!canReceive) { return; }
 		CursorManager.SetBallPointerParent(transform);
-		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
+		linkedPlayer.Vibrate(0.15f, VibrationForce.Heavy);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		ballTimeInHand = 0;

@@ -70,6 +70,10 @@ public class DashController : MonoBehaviour
 	}
 	public void Dash()
 	{
+		if (GetComponent<PlayerUI>() != null)
+		{
+			GetComponent<PlayerUI>().DisplayDashes();
+		}
 		if (!CanDash()) { return; }
 		currentStackAmount--;
 		Vector3 startPosition = transform.position;

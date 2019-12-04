@@ -250,11 +250,21 @@ public class PlayerController : PawnController, IHitable
 	{
 		base.Heal(_amount);
 		FXManager.InstantiateFX(FX_heal, Vector3.zero, true, Vector3.zero, Vector3.one * 3.25f, transform);
+		PlayerUI potentialPlayerUI = GetComponent<PlayerUI>();
+		if (potentialPlayerUI != null)
+		{
+			potentialPlayerUI.DisplayHealth(HealthAnimationType.Gain);
+		}
 	}
 	public override void Damage ( int _amount )
 	{
         if (!IsInvincible)
         {
+			PlayerUI potentialPlayerUI = GetComponent<PlayerUI>();
+			if (potentialPlayerUI != null)
+			{
+				potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
+			}
             base.Damage(_amount);
 			float damageForce = _amount / maxHealth;
 			if (damageForce < 0.2)
