@@ -491,7 +491,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        Vector3 normalizedImpactVector;
+		SoundManager.PlaySound("EnemyHit", transform.position, transform);
+		Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
         float BumpDistanceMod = 0.5f;
         float BumpDurationMod = 0.5f;
@@ -672,7 +673,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
-        bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
+		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
+		bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
         restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
         bumpDirection = _bumpDirection;

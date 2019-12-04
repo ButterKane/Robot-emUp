@@ -285,6 +285,7 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
+		SoundManager.PlaySound("DeathFromOneCharacter", transform.position, transform);
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
@@ -311,6 +312,7 @@ public class PlayerController : PawnController, IHitable
 		SetTargetable();
 		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
 		FXManager.InstantiateFX(FX_revive, GetCenterPosition(), false, Vector3.zero, Vector3.one * 5);
+		SoundManager.PlaySound("AllyResurrection", _player.transform.position, transform);
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
