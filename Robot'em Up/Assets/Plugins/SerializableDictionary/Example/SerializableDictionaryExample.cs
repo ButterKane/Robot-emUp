@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
 public class SerializableDictionaryExample : MonoBehaviour {
 	// The dictionaries can be accessed throught a property
 	[SerializeField]
@@ -22,3 +23,4 @@ public class SerializableDictionaryExample : MonoBehaviour {
 		m_objectColorDictionary = new ObjectColorDictionary() { {gameObject, Color.blue}, {this, Color.red} };
 	}
 }
+#endif

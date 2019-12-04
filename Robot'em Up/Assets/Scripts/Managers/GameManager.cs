@@ -47,8 +47,8 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public EnemyManager enemyManager;
 
 	[HideInInspector] public GameObject mainCameraGO;
-	[HideInInspector] public PlayerController playerOne;
-	[HideInInspector] public PlayerController playerTwo;
+	[HideInInspector] public static PlayerController playerOne;
+	[HideInInspector] public static PlayerController playerTwo;
 	[HideInInspector] public BallBehaviour ball;
     public int ballDamage = 30;
     public List<GameObject> enemies;
@@ -56,17 +56,18 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public GameObject surrounderPlayerOne;
     [HideInInspector] public GameObject surrounderPlayerTwo;
+	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
 
     [SerializeField]
     GameObject dummyPrefab;
-    [SerializeField]
-    GameObject ballPrefab;
+    public GameObject ballPrefab;
 
 
     private void Awake()
     {
         i = this;
+		deadPlayers = new List<PlayerController>();
 		//Auto assign players
 		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
 		{
@@ -114,53 +115,56 @@ public class GameManager : MonoBehaviour
 
 	void LoadSceneByIndex(int index)
 	{
-		SceneLoader sceneLoader = Resources.Load<SceneLoader>("SceneLoader");
+		SceneManager.LoadScene(index);
+		/*
+		SceneLoader sceneLoader = Resources.Load<SceneLoader>("editor/SceneLoader");
 		if (sceneLoader == null) { Debug.LogWarning("SceneLoader not found, can't load scene"); return; }
 		string sceneFound = sceneLoader.GetSceneByIndex(index);
 		if (sceneFound == "") { Debug.LogWarning("Scene with that ID doesn't exit"); return; }
 		SceneManager.LoadScene(sceneFound);
+		*/
 	}
 	void UpdateSceneLoader()
 	{
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
-			LoadSceneByIndex(1);
+			LoadSceneByIndex(0);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 		{
-			LoadSceneByIndex(2);
+			LoadSceneByIndex(1);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha3))
 		{
-			LoadSceneByIndex(3);
+			LoadSceneByIndex(2);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha4))
 		{
-			LoadSceneByIndex(4);
+			LoadSceneByIndex(3);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha5))
 		{
-			LoadSceneByIndex(5);
+			LoadSceneByIndex(4);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha6))
 		{
-			LoadSceneByIndex(6);
+			LoadSceneByIndex(5);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha7))
 		{
-			LoadSceneByIndex(7);
+			LoadSceneByIndex(6);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha8))
 		{
-			LoadSceneByIndex(8);
+			LoadSceneByIndex(7);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha9))
 		{
-			LoadSceneByIndex(9);
+			LoadSceneByIndex(8);
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha0))
 		{
-			LoadSceneByIndex(10);
+			LoadSceneByIndex(9);
 		}
 	}
 

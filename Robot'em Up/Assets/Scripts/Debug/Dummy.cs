@@ -6,6 +6,7 @@ using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	private int _hitCount;
 	private Vector3 initialScale;
 	public int hitCount { 
@@ -18,7 +19,7 @@ public class Dummy : MonoBehaviour, IHitable
 	}
 
 	public int maxHealth;
-	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount++;

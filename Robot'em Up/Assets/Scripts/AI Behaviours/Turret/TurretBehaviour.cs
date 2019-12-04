@@ -6,6 +6,7 @@ using MyBox;
 
 public enum TurretState
 {
+    WaitForCombatStart,
     Hidden,
     Hiding,
     GettingOutOfGround,
@@ -31,7 +32,7 @@ public enum AimingCubeState
 public class TurretBehaviour : MonoBehaviour, IHitable
 {
     [Separator("References")]
-    [SerializeField] private Transform _self;
+    [SerializeField] protected Transform _self;
     public Rigidbody Rb;
     public Animator Animator;
 
@@ -66,8 +67,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     bool playerTwoInRange;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
-    Transform focusedPlayerTransform = null;
+    protected Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
+    public bool arenaTurret;
 
     [Space(2)]
     [Header("Attack")]
@@ -76,12 +78,15 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public Vector2 minMaxRandomRangePredictionRatio;
     public float maxRotationSpeed;
     public float maxAnticipationTime;
-    float anticipationTime;
+    protected float anticipationTime;
     public float maxRestTime;
-    float restTime;
-    public float restTimeBeforeAimingCubeUnlocked;
+    public float randomRangeRestTime;
+    protected float restTime;
+    protected GameObject spawnedBullet;
+    //public float restTimeBeforeAimingCubeUnlocked;
 
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+    [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Header("Aiming Cube")]
@@ -90,7 +95,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public Renderer aimingCubeRenderer;
     public Vector3 aimingCubeDefaultScale;
     public Vector3 aimingCubeLockedScale;
-    bool shouldRotateTowardsPlayer;
     public Color lockingAimingColor;
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
@@ -117,17 +121,24 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     void Start()
     {
         _self = transform;
-        _playerOneTransform = GameManager.i.playerOne.transform;
-        _playerTwoTransform = GameManager.i.playerTwo.transform;
-        _playerOnePawnController = GameManager.i.playerOne.GetComponent<PawnController>();
-        _playerTwoPawnController = GameManager.i.playerTwo.GetComponent<PawnController>();
+        _playerOneTransform = GameManager.playerOne.transform;
+        _playerTwoTransform = GameManager.playerTwo.transform;
+        _playerOnePawnController = GameManager.playerOne.GetComponent<PawnController>();
+        _playerTwoPawnController = GameManager.playerTwo.GetComponent<PawnController>();
 
         Health = MaxHealth;
 
-        State = TurretState.Idle;
+        if (arenaTurret)
+        {
+            ChangingState(TurretState.WaitForCombatStart);
+        }
+        else
+        {
+            ChangingState(TurretState.Idle);
+        }
     }
 
-    void Update()
+    public virtual void Update()
     {
         UpdateDistancesToPlayers();
         UpdateState();
@@ -164,7 +175,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         EnterState();
     }
 
-    void RotateTowardsPlayerAndHisForward()
+    protected virtual void RotateTowardsPlayerAndHisForward()
     {
         wantedRotation = Quaternion.LookRotation(focusedPlayerTransform.position + focusedPlayerTransform.forward*focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
@@ -173,7 +184,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     void UpdateState()
     {
-        print(attackState);
+        //print("Global State : " + State);
         switch (State)
         {
             case TurretState.Attacking:
@@ -220,7 +231,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                ChangeAimingCubeState(AimingCubeState.NotVisible);
                 break;
             case TurretState.Idle:
                 break;
@@ -246,7 +256,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 attackState = TurretAttackState.Anticipation;
                 Animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
-                restTime = maxRestTime;
+                restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 break;
             case TurretState.Idle:
                 timeBetweenCheck = 0;
@@ -254,7 +264,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void AttackingUpdateState()
+    public virtual void AttackingUpdateState()
     {
         switch (attackState)
         {
@@ -276,13 +286,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 restTime -= Time.deltaTime;
                 if (restTime <= 0)
                 {
-                    ChangeAimingCubeState(AimingCubeState.NotVisible);
                     Animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
                 }
-                else if(maxRestTime - restTime > restTimeBeforeAimingCubeUnlocked && aimingCubeState != AimingCubeState.Following)
+                if(aimingCubeState != AimingCubeState.NotVisible)
                 {
-                    ChangeAimingCubeState(AimingCubeState.Following);
+                    ChangeAimingCubeState(AimingCubeState.NotVisible);
                 }
                 break;
         }
@@ -301,11 +310,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
-    public void LaunchProjectile()
+    public virtual void LaunchProjectile()
     {
         Vector3 spawnPosition;
         spawnPosition = bulletSpawn.position;
-        GameObject spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -358,7 +367,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 || ((focusedPlayerTransform == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
-                //print("hey");
             }
         }
 
@@ -394,7 +402,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         Destroy(gameObject);
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         Health -= _damages;
 		if (_ball != null)
@@ -414,11 +422,10 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         EnergyManager.IncreaseEnergy(energyAmount);
     }
 
-    public void ChangeAimingCubeState(AimingCubeState _NewState)
+    public virtual void ChangeAimingCubeState(AimingCubeState _NewState)
     {
         if (_NewState == AimingCubeState.Following)
         {
-            shouldRotateTowardsPlayer = true;
             aimingCubeRenderer.material.color = followingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
@@ -426,7 +433,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
         else if(_NewState == AimingCubeState.Locking)
         {
-            shouldRotateTowardsPlayer = false;
             aimingCubeRenderer.material.color = lockingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeLockedScale;
@@ -435,5 +441,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             aimingCubeTransform.localScale = Vector3.zero;
         }
+        aimingCubeState = _NewState;
     }
 }

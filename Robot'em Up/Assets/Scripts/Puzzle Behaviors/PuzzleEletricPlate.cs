@@ -28,7 +28,14 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     void FixedUpdate()
     {
-        
+        for (int i = 0; i < PawnTrapped.Count; i++)
+        {
+            PawnController item = PawnTrapped[i];
+            if (item.currentHealth <1)
+            {
+                PawnTrapped.Remove(item);
+            }
+        }
         waitTimeBeforeNextDamage -= Time.deltaTime;
         //waitTimeBeforeNextFx -= Time.deltaTime;
 
@@ -38,6 +45,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             foreach (PawnController item in PawnTrapped)
             {
                 item.Damage(puzzleData.DamageEletricPlate);
+                item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SlowReason.Freeze, false));
             }
         }
         /*
@@ -64,6 +72,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
             PawnTrapped.Add(pawn);
+            pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SlowReason.Freeze, false));
         }
 
     }

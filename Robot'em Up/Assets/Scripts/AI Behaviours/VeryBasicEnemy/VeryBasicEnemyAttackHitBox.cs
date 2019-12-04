@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class VeryBasicEnemyAttackHitBox : MonoBehaviour
 {
+
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
             if (other.GetComponent<PawnController>() != null)
-                other.GetComponent<PawnController>().Damage(8);
+                other.GetComponent<PawnController>().Damage(transform.parent.GetComponent<EnemyBehaviour>().damage);
         }
     }
 }

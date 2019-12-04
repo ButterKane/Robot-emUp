@@ -57,6 +57,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     public float focusChangeSpeed = 2f;
     public AnimationCurve ChangeFocusSpeedCurve;
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Separator("Surrounding Variables")]
@@ -98,8 +99,8 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
 	// Start is called before the first frame update
 	void Start()
     {
-        _playerOne = GameManager.i.playerOne.transform;
-        _playerTwo = GameManager.i.playerTwo.transform;
+        _playerOne = GameManager.playerOne.transform;
+        _playerTwo = GameManager.playerTwo.transform;
 
         Health = MaxHealth;
         IsFollowingPlayer = false;
@@ -182,7 +183,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         Debug.Log("Damage taken " + _source);
         DamageTaken(_damages);
@@ -199,7 +200,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (collision.gameObject.GetComponent<PawnController>().isInvincible == false)
+            if (collision.gameObject.GetComponent<PawnController>().IsInvincible == false)
             {
                 Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
                 collision.gameObject.GetComponent<PawnController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);
