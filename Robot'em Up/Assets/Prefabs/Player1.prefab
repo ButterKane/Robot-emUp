@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 5419603750946610382}
   - component: {fileID: 6326459203825042885}
   - component: {fileID: 4824538873194744163}
+  - component: {fileID: 6803351105506393549}
   m_Layer: 8
   m_Name: Player1
   m_TagString: Player
@@ -117,6 +118,7 @@ MonoBehaviour:
   reviveExplosionRadius: 20
   reviveExplosionDamage: 0
   reviveExplosionForce: 10
+  reviveSpeedCoef: 0.3
   revivePartsCount: 3
   partExplosionAngleRandomness: 0.412
   minMaxProjectionForce: {x: 12, y: 16}
@@ -138,13 +140,13 @@ MonoBehaviour:
   passMode: 1
   handTransform: {fileID: 4655006219135653576}
   ballDatas: {fileID: 11400000, guid: 359213923aba4d6479b78ed4c94532a4, type: 2}
-  passCooldown: 0.5
+  passCooldown: 0.3
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
-  delayBeforePickingOwnBall: 0
+  delayBeforePickingOwnBall: 0.1
   minBouncesBeforePickingOwnBall: 2
   receptionMinDistance: 2.5
-  receptionMinDelay: 0.4
+  receptionMinDelay: 0.3
   curveMaxLateralDistance: 0
   curveMaxPlayerDistance: 0
   curveRaycastIteration: 25
@@ -174,6 +176,8 @@ MonoBehaviour:
   dunkCancelledFallSpeed: 20
   dunkDashDelay: 0.28
   dunkSnapTreshold: 30
+  dunkCooldown: 1
+  dunkCancelFreezeDuration: 0.4
   dunkState: 6
 --- !u!114 &5564275353483555727
 MonoBehaviour:
@@ -294,6 +298,15 @@ MonoBehaviour:
   invincibleDuringDash: 1
   useCooldown: 0.5
   stackCooldown: 2
+  dashFadeCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dashFadeDuration: 0.2
+  UIFadeDuration: 0.5
+  UIFadeDelay: 1.5
   state: 1
   visuals: {fileID: 4621407884147341700}
   clonePerSec: 100
@@ -462,6 +475,149 @@ MonoBehaviour:
   FX_hit: {fileID: 7728491280138033091, guid: 4e5d473577ba3aa4eac6f8c955cf1115, type: 3}
   FX_extension: {fileID: 5970221395719563378, guid: 18947a631fe61194cab38896d21c53da,
     type: 3}
+--- !u!114 &6803351105506393549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69913409235962623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f06fd0fec4169b4b8a31b1b418bbb17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayHealth: 1
+  displayDashes: 1
+  panelWidth: 4
+  panelHeight: 4
+  panelDistanceToPlayer: 1.2
+  healthGainFadeInSpeed: 2
+  healthGainFadeOutSpeed: 2
+  healthGainShowDuration: 2
+  healthGainStartScale: 0
+  healthGainEndScale: 1.2
+  healthGainAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  healthLossFadeInSpeed: 2
+  healthLossFadeOutSpeed: 2
+  healthLossShowDuration: 2
+  healthLossStartScale: 0
+  healthLossEndScale: 1.2
+  healthLossAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  healthFontSize: 1
+  healthFont: {fileID: 11400000, guid: e54c253e1a6c4064bb50eba1bab38ff7, type: 2}
+  healthAlwaysDisplayedTreshold: 0.2
+  healthGainLerpSpeed: 4
+  healthLossLerpSpeed: 8
+  healthColorGradient:
+    serializedVersion: 2
+    key0: {r: 0.29814878, g: 0.9433962, b: 0.58610505, a: 1}
+    key1: {r: 0.45306063, g: 0.7830189, b: 0.40997687, a: 1}
+    key2: {r: 1, g: 0.988338, b: 0, a: 0}
+    key3: {r: 1, g: 0.4669242, b: 0.11792451, a: 0}
+    key4: {r: 1, g: 0, b: 0.27686834, a: 0}
+    key5: {r: 1, g: 0, b: 0.27686834, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 16384
+    ctime2: 39321
+    ctime3: 52428
+    ctime4: 65535
+    ctime5: 65535
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 1
+    m_NumColorKeys: 5
+    m_NumAlphaKeys: 2
+  healthGradientInterpolationRate: 0.1
+  dashFadeInSpeed: 8
+  dashFadeOutSpeed: 8
+  dashShowDuration: 2
+  dashStartScale: 0
+  dashEndScale: 1.2
+  dashAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dashBarSpriteBackground: {fileID: 21300000, guid: 4cfe1c6a5aceb3b42a8663aa6f561e2e,
+    type: 3}
+  dashBarSpriteFill: {fileID: 21300000, guid: ce11f63ecd436654a82deb86d8416a21, type: 3}
+  dashBarColor: {r: 0.3915094, g: 0.7475221, b: 1, a: 1}
 --- !u!1 &195533169622842252
 GameObject:
   m_ObjectHideFlags: 0

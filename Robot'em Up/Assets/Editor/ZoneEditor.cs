@@ -45,6 +45,7 @@ public class ZoneEditor
 		virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
 		virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
 
+		newZone.transform.position = new Vector3(0, 0.5f, 0);
 		Selection.activeGameObject = zoneSelector;
 	}
 

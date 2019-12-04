@@ -85,7 +85,7 @@ public class Retriever : MonoBehaviour
 					newPart.linkedPlayer = (PlayerController)corePart.linkedPawn;
 					newPart.maxAmount = corePart.totalPartCount;
 					newPart.amount = 1;
-					newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), FindObjectOfType<Canvas>().transform).GetComponent<AssemblingPartPanel>();
+					newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
 					newPart.linkedPanel.revivedPlayer = newPart.linkedPlayer;
 					newPart.linkedPanel.revivingPlayer = playerController;
 					newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = newPart.amount + "/" + corePart.totalPartCount;
