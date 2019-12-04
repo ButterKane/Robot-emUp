@@ -53,7 +53,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     bool playerOneInRange;
     bool playerTwoInRange;
     public int MaxHealth = 30;
-    public int Health;
+    [System.NonSerialized] public int Health;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
     float distanceWithFocusedPlayer;

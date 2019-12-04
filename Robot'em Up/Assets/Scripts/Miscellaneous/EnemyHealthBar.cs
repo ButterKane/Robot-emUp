@@ -39,6 +39,10 @@ public class EnemyHealthBar : MonoBehaviour
 
             _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
         }
+        if(Enemy.Health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     void ActivateHealthBar(bool value)
