@@ -23,13 +23,12 @@ MonoBehaviour:
   _playerOneTransform: {fileID: 0}
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
-  Health: 0
   focusedPlayer: {fileID: 0}
   energyAmount: 1
   damage: 10
   powerLevel: 1
-  _lockable: 0
-  _lockHitboxSize: 0
+  _lockable: 1
+  _lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 18
   unfocusDistance: 20
@@ -121,8 +120,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   explosionFX: {fileID: 105310, guid: e6ea0c2b13012484ba2f5dc1054e6d75, type: 3}
-  explosionRadius: 3
-  explosionDamage: 10
+  explosionRadius: 10
+  explosionDamage: 20
   buildUpBeforeExplosion: 0.5
   BumpDistanceMod: 1.5
   BumpDurationMod: 0.7
