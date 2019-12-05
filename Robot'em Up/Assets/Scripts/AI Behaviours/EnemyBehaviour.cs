@@ -81,6 +81,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float RandomSpeedMod;
     private float moveMultiplicator;
     private int normalMoveMultiplicator = 1;
+    public float slowFromPass;
+    public float timeToRecoverSlowFromPass;
+    public float slowFromDunk;
+    public float timeToRecoverSlowFromDunk;
     public AnimationCurve speedRecoverCurve;
     private float staggerAvancement;
     private WhatBumps whatBumps;
@@ -638,33 +642,38 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public IEnumerator StaggeredCo(WhatBumps? cause = default)
     {
-        // TODO: CHange the staggering values according to what bumps
+        float _timeToRecover = 0.5f;
         switch (cause)
         {
             case WhatBumps.Pass:
-                moveMultiplicator -= 0.5f;
+                moveMultiplicator -= slowFromPass;
+                _timeToRecover = timeToRecoverSlowFromPass;
                 // Fetch ball datas => speed reduction on pass
                 break;
             case WhatBumps.Dunk:
-                moveMultiplicator -= 0.5f;
+                moveMultiplicator -= slowFromDunk;
+                _timeToRecover = timeToRecoverSlowFromDunk;
                 // Fetch ball datas => speed reduction on dunk
                 break;
             case WhatBumps.Environment:
                 moveMultiplicator -= 0.5f;
+                _timeToRecover = 0.5f;
                 // Fetch environment datas => speed reduction
                 break;
             default:
                 moveMultiplicator -= 0.5f;
+                _timeToRecover = 0.5f;
                 Debug.Log("Default case: New speed multiplicator = 0.5");
                 break;
         }
 
-        float t = moveMultiplicator;
+        float _t = moveMultiplicator;
+        float _initialMoveMultiplicator = moveMultiplicator;
 
         while (moveMultiplicator < normalMoveMultiplicator)
         {
-            moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
-            t += Time.deltaTime;
+            moveMultiplicator = _initialMoveMultiplicator + (normalMoveMultiplicator - _initialMoveMultiplicator) * speedRecoverCurve.Evaluate(_t);
+            _t += Time.deltaTime / _timeToRecover;
             yield return null;
         }
 

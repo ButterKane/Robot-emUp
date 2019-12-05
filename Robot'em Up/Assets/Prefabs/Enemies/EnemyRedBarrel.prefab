@@ -24,16 +24,16 @@ MonoBehaviour:
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
   focusedPlayer: {fileID: 0}
-  energyAmount: 1
+  energyAmount: 0.8
   damage: 10
   powerLevel: 1
   _lockable: 1
   _lockHitboxSize: 2
   arenaRobot: 0
-  focusDistance: 18
-  unfocusDistance: 20
+  focusDistance: 50
+  unfocusDistance: 55
   distanceBeforeChangingPriority: 3
-  maxTimeBetweenCheck: 0
+  maxTimeBetweenCheck: 0.25
   NormalSpeed: 7
   ActualSpeed: 0
   NormalAcceleration: 30
@@ -192,6 +192,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Speed
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
