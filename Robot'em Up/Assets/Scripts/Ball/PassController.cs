@@ -122,6 +122,7 @@ public class PassController : MonoBehaviour
 		EnablePassPreview();
 		StartCoroutine(ShootAfterDelay(receptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
+		SoundManager.PlaySound("PerfectReception", transform.position, transform);
 		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
 		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);

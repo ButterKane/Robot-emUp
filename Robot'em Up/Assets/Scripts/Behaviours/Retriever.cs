@@ -27,13 +27,6 @@ public class Retriever : MonoBehaviour
 		playerController = GetComponentInParent<PlayerController>();
     }
 
-	private void OnTriggerEnter ( Collider other )
-	{
-		if (other.tag == "Ball")
-		{
-			SoundManager.PlaySound("MagnetAttractingBall", transform.position, transform);
-		}
-	}
 	private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")

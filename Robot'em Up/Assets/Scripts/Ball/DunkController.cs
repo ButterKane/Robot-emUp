@@ -75,6 +75,7 @@ public class DunkController : MonoBehaviour
 	{
 		BallBehaviour ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
+		SoundManager.PlaySound("DunkOnGround", transform.position);
 		EnergyManager.DecreaseEnergy(1f);
 		Collider[] hitColliders = Physics.OverlapSphere(ball.transform.position, dunkExplosionRadius);
 		int i = 0;
