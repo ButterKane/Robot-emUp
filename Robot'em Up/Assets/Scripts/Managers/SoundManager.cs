@@ -111,7 +111,6 @@ public class SoundManager
 	public static SoundData GetSoundData(string _soundName)
 	{
 		SoundDatas soundDatas = Resources.Load<SoundDatas>("SoundDatas");
-		Debug.Log(soundDatas);
 		foreach (SoundData soundData in soundDatas.soundList)
 		{
 			if (soundData.soundName == _soundName)

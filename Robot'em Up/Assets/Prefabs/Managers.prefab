@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1483543552}
   - component: {fileID: 1483543558}
   - component: {fileID: 5253247825595659276}
+  - component: {fileID: 8126601537515546756}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -54,8 +55,6 @@ MonoBehaviour:
   eventManager: {fileID: 0}
   enemyManager: {fileID: 0}
   mainCameraGO: {fileID: 0}
-  playerOne: {fileID: 0}
-  playerTwo: {fileID: 0}
   ball: {fileID: 0}
   ballDamage: 30
   enemies: []
@@ -160,3 +159,18 @@ MonoBehaviour:
   PlayerOne: {fileID: 0}
   PlayerTwo: {fileID: 0}
   playersInvicible: 0
+--- !u!114 &8126601537515546756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 060a1d3de5bacb6428f09ce696addf2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCanvasPrefab: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+    type: 3}
+  MainCanvas: {fileID: 0}
