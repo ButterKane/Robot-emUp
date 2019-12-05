@@ -79,7 +79,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [HideInInspector] public float ActualSpeed;
     public float NormalAcceleration = 30;
     public float RandomSpeedMod;
-    private float moveMultiplicator;
+    private float moveMultiplicator = 1;
     private int normalMoveMultiplicator = 1;
     public float slowFromPass;
     public float timeToRecoverSlowFromPass;
@@ -163,8 +163,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
         _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
-        GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
-        healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
+        //GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
+        //healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
 
         if (arenaRobot)
         {
@@ -667,13 +667,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 break;
         }
 
-        float _t = moveMultiplicator;
+        float _t = 0;
         float _initialMoveMultiplicator = moveMultiplicator;
+        print(_initialMoveMultiplicator);
 
         while (moveMultiplicator < normalMoveMultiplicator)
         {
             moveMultiplicator = _initialMoveMultiplicator + (normalMoveMultiplicator - _initialMoveMultiplicator) * speedRecoverCurve.Evaluate(_t);
             _t += Time.deltaTime / _timeToRecover;
+            print(moveMultiplicator);
             yield return null;
         }
 

@@ -24,7 +24,7 @@ MonoBehaviour:
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
   focusedPlayer: {fileID: 0}
-  energyAmount: 0.8
+  energyAmount: 0.08
   damage: 10
   powerLevel: 1
   _lockable: 1
@@ -37,10 +37,32 @@ MonoBehaviour:
   NormalSpeed: 7
   ActualSpeed: 0
   NormalAcceleration: 30
-  RandomSpeedMod: 0
+  RandomSpeedMod: 0.4
+  slowFromPass: 0.3
+  timeToRecoverSlowFromPass: 0.5
+  slowFromDunk: 0.5
+  timeToRecoverSlowFromDunk: 1
   speedRecoverCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
