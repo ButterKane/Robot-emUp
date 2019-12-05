@@ -6,11 +6,13 @@ public class TurretSniperBullet : MonoBehaviour
 {
     public Rigidbody rb;
     public float speed;
-    public GameObject deathParticle;
     public int damageDealt;
     public float maxLifeTime;
     Vector3 initialPosition;
-    public Transform target;
+    [HideInInspector] public Transform target;
+    [HideInInspector] public Transform spawnParent;
+    public GameObject impactFX;
+    public Vector3 impactFXScale;
 
     private void Start()
     {
@@ -33,12 +35,16 @@ public class TurretSniperBullet : MonoBehaviour
         if (other.tag == "Player")
         {
             other.GetComponent<PawnController>().Damage(damageDealt);
-            Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
+            GameObject _impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
+            _impactFX.transform.localScale = impactFXScale;
+            Destroy(_impactFX, 1);
             Destroy(gameObject);
         }
         else if (other.tag == "Environment")
         {
-            Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
+            GameObject _impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
+            _impactFX.transform.localScale = impactFXScale;
+            Destroy(_impactFX, .25f);
             Destroy(gameObject);
         }
     }

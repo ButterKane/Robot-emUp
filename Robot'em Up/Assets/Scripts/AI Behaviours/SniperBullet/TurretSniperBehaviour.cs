@@ -5,11 +5,16 @@ using UnityEngine;
 public class TurretSniperBehaviour : TurretBehaviour
 {
     public Vector2 minMaxFollowingAimingCubeScale;
+    public Transform aimingAtPlayerFXTransform;
+    public Renderer aimingAtPlayerFXRenderer;
+    public Vector3 aimingAtPlayerFXScaleOnWall;
+    public Vector3 aimingAtPlayerFXScaleOnPlayer;
 
     public override void LaunchProjectile()
     {
         base.LaunchProjectile();
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayerTransform;
+        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = _self;
     }
 
     public override void Update()
@@ -18,21 +23,109 @@ public class TurretSniperBehaviour : TurretBehaviour
         UpdateAimingCubeState();
     }
 
+    public override void ExitState()
+    {
+        switch (State)
+        {
+            case TurretState.Hiding:
+                break;
+            case TurretState.GettingOutOfGround:
+                break;
+            case TurretState.Hidden:
+                break;
+            case TurretState.Dying:
+                break;
+            case TurretState.Attacking:
+                aimingAtPlayerFXRenderer.enabled = false;
+                break;
+            case TurretState.Idle:
+                break;
+        }
+    }
+
+    public override void EnterState()
+    {
+        //print(State);
+        switch (State)
+        {
+            case TurretState.Hiding:
+                Animator.SetTrigger("HidingTrigger");
+                break;
+            case TurretState.GettingOutOfGround:
+                Animator.SetTrigger("GettingOutOfGroundTrigger");
+                break;
+            case TurretState.Hidden:
+                break;
+            case TurretState.Dying:
+                break;
+            case TurretState.Attacking:
+                attackState = TurretAttackState.Anticipation;
+                Animator.SetTrigger("AnticipationTrigger");
+                anticipationTime = maxAnticipationTime;
+                restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
+                aimingAtPlayerFXRenderer.enabled = true;
+                break;
+            case TurretState.Idle:
+                timeBetweenCheck = 0;
+                break;
+        }
+    }
+
     public override void AttackingUpdateState()
     {
+        bool _aimAtPlayer;
+        
+        if(Physics.Raycast(_self.position, _self.forward, Vector3.Distance(_self.position, focusedPlayerTransform.position), layersToCheckToScale))
+        {
+            _aimAtPlayer = false;
+        }
+        else
+        {
+            _aimAtPlayer = true;
+        }
+        //Adapt aimCube Scale and Position
+        RaycastHit hit;
+        if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
+        {
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
+            aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z / 2 * _self.forward);
+        }
+
+        //Adapt PlayerFXRenderer
+
         switch (attackState)
         {
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
+                //ADAPT FXs
+                if (_aimAtPlayer)
+                {
+                    aimingAtPlayerFXTransform.position = focusedPlayerTransform.position;
+                    aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
+                    aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
+                }
+                else
+                {
+                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingCubeTransform.position.y, hit.point.z) + hit.normal * 0.2f;
+                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
+                    aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
+                }
+
+                //ROTATE TOWARDS PLAYER
                 if (focusedPlayerTransform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
+
+                //TRANSITION TO OTHER STATE
                 anticipationTime -= Time.deltaTime;
+                aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1-(anticipationTime/maxAnticipationTime));
                 if (anticipationTime <= 0)
                 {
                     attackState = TurretAttackState.Attack;
                     Animator.SetTrigger("AttackTrigger");
+                    aimingAtPlayerFXRenderer.enabled = false;
+                    aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
                 }
                 break;
             //-------------------------------------------------------
@@ -63,14 +156,6 @@ public class TurretSniperBehaviour : TurretBehaviour
                 break;
              //-------------------------------------------------------
         }
-
-        //Adapt aimCube Scale and Position
-        RaycastHit hit;
-        if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
-        {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
-            aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z / 2 * _self.forward);
-        }
     }
 
     void UpdateAimingCubeState()
@@ -79,7 +164,6 @@ public class TurretSniperBehaviour : TurretBehaviour
         {
             case AimingCubeState.Following:
                 float randomFloat = Random.Range(0f, 1f);
-                print(randomFloat);
                 if (randomFloat>0.5f)
                 {
                     aimingCubeTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.x, minMaxFollowingAimingCubeScale.x, aimingCubeTransform.localScale.z);
