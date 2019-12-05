@@ -227,7 +227,7 @@ public class PlayerUI : MonoBehaviour
 					StopCoroutine(currentCoroutines[healthPanel]);
 					currentCoroutines[healthPanel] = StartCoroutine(UpdatePanel_C(healthPanel, healthGainShowDuration, healthGainFadeOutSpeed, healthGainEndScale));
 				}
-				else if (currentCoroutines[healthPanel] == null)
+				else if (!currentCoroutines.ContainsKey(healthPanel))
 				{
 					currentCoroutines.Add(healthPanel, StartCoroutine(DisplayPanel_C(healthPanel, healthGainShowDuration, healthGainFadeInSpeed, healthGainFadeOutSpeed, healthGainStartScale, healthGainEndScale, healthGainAnimationCurve)));
 				}
@@ -237,7 +237,7 @@ public class PlayerUI : MonoBehaviour
 				{
 					StopCoroutine(currentCoroutines[healthPanel]);
 					currentCoroutines[healthPanel] = StartCoroutine(UpdatePanel_C(healthPanel, healthLossShowDuration, healthLossFadeOutSpeed, healthLossEndScale));
-				} else if (currentCoroutines[healthPanel] == null)
+				} else if (!currentCoroutines.ContainsKey(healthPanel))
 				{
 					currentCoroutines.Add(healthPanel, StartCoroutine(DisplayPanel_C(healthPanel, healthLossShowDuration, healthLossFadeInSpeed, healthLossFadeOutSpeed, healthLossStartScale, healthLossEndScale, healthLossAnimationCurve)));
 				}
@@ -254,7 +254,7 @@ public class PlayerUI : MonoBehaviour
 		}
 		else
 		{
-			if (currentCoroutines[dashPanel] == null)
+			if (!currentCoroutines.ContainsKey(dashPanel))
 			{
 				currentCoroutines.Add(dashPanel, StartCoroutine(DisplayPanel_C(dashPanel, dashShowDuration, dashFadeInSpeed, dashFadeOutSpeed, dashStartScale, dashEndScale, dashAnimationCurve)));
 			}
