@@ -8,6 +8,7 @@ public enum MoveState
     Idle,
     Walk,
     Blocked,
+    Bumped,
 	Jumping,
 	Climbing,
 	Dead
@@ -77,7 +78,24 @@ public class PawnController : MonoBehaviour
 	public float climbForwardPushForce = 450f;
 	public float climbUpwardPushForce = 450f;
 
-	[Space(2)]
+    [Space(2)]
+    [Header("Bump")]
+    public float maxGettingUpDuration = 0.6f;
+    public AnimationCurve bumpDistanceCurve;
+    float bumpDistance;
+    float bumpDuration;
+    float restDuration;
+    float gettingUpDuration;
+    Vector3 bumpInitialPosition;
+    Vector3 bumpDestinationPosition;
+    Vector3 bumpDirection;
+    float bumpTimeProgression;
+    [Range(0, 1)] public float whenToTriggerFallingAnim = 0.302f;
+    bool fallingTriggerLaunched;
+    public float bumpRaycastDistance = 1;
+    bool mustCancelBump;
+
+    [Space(2)]
     [Header("Debug (Don't change)")]
 	[HideInInspector] public MoveState moveState;
 	private float accelerationTimer;
@@ -450,11 +468,33 @@ public class PawnController : MonoBehaviour
 		return 2f;
 	}
 
-	#endregion
+    public void SetInvincible(bool _state)
+    {
+        IsInvincible = _state;
+    }
 
-	#region Private functions
+    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
+    {
+        SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
+        bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
+        bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
+        restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
+        bumpDirection = _bumpDirection;
+        transform.rotation = Quaternion.LookRotation(-bumpDirection);
+        gettingUpDuration = maxGettingUpDuration;
+        fallingTriggerLaunched = false;
+        bumpInitialPosition = transform.position;
+        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
+        Debug.Log("destination position is " + bumpDestinationPosition + ", for position " + transform.position + ", direction " + bumpDirection + ", and distance " + bumpDistance);
+        //Animator.SetTrigger("BumpTrigger");
+        StartCoroutine(Bump_C());
+        //ChangingState(EnemyState.Bumped);
+    }
+    #endregion
 
-	private void UpdateAnimatorBlendTree()
+    #region Private functions
+
+    private void UpdateAnimatorBlendTree()
     {
 		if (animator != null)
 		{
@@ -476,10 +516,7 @@ public class PawnController : MonoBehaviour
 		return null;
 	}
 
-	public void SetInvincible(bool _state)
-	{
-		IsInvincible = _state;
-	}
+	
     private IEnumerator InvicibleFrame()
     {
         IsInvincible = true;
@@ -511,5 +548,57 @@ public class PawnController : MonoBehaviour
 			animator.ResetTrigger("ClimbTrigger");
 		}
 	}
-	#endregion
+
+    private IEnumerator Bump_C()
+    {
+        float bumpTimeProgression = 0;
+        bool mustCancelBump = false;
+
+        while (bumpTimeProgression < 1)
+        {
+            bumpTimeProgression += Time.deltaTime / bumpDuration;
+
+            //must stop ?
+            int bumpRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+            if (Physics.Raycast(transform.position, bumpDirection, 1, bumpRaycastMask) && !mustCancelBump)
+            {
+                mustCancelBump = true;
+                bumpTimeProgression = whenToTriggerFallingAnim;
+            }
+
+            //move !
+            if (!mustCancelBump)
+            {
+                transform.position = Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression));
+            }
+
+            //trigger end anim
+            if (bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
+            {
+                fallingTriggerLaunched = true;
+                //Animator.SetTrigger("FallingTrigger");
+            }
+            yield return null;
+        }
+
+        //when arrived on ground
+        if (restDuration > 0)
+        {
+            restDuration -= Time.deltaTime;
+            if (restDuration <= 0)
+            {
+                //Animator.SetTrigger("StandingUpTrigger");
+            }
+        }
+
+        //time to get up
+        if (gettingUpDuration > 0)
+        {
+            gettingUpDuration -= Time.deltaTime;
+            //if (gettingUpDuration <= 0)
+            //ChangingState(EnemyState.Following);
+        }
+        yield return new WaitForSeconds(1);
+    }
+    #endregion
 }

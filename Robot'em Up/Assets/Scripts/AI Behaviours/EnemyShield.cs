@@ -26,6 +26,9 @@ public class EnemyShield : EnemyBehaviour
     [Header("Attack")]
     public float attackSpeed = 7;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
+    public float BumpOtherDistanceMod = 0.5f;
+    public float BumpOtherDurationMod = 0.2f;
+    public float BumpOtherRestDurationMod = 0.3f;
 
     private new void Start()
     {
@@ -84,6 +87,13 @@ public class EnemyShield : EnemyBehaviour
             endOfAttackTriggerLaunched = true;
             Animator.SetTrigger("EndOfAttackTrigger");
         }
+    }
+
+    public void StopAttack()
+    {
+        navMeshAgent.SetDestination(_self.position);
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
     }
 
     // BUMP
