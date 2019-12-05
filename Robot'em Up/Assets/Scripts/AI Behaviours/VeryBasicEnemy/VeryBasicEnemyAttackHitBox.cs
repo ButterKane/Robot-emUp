@@ -8,6 +8,7 @@ public class VeryBasicEnemyAttackHitBox : MonoBehaviour
     {
         Vector3 impactVector = other.transform.position - transform.position;
         Vector3 flattedDownImpactVector = new Vector3(impactVector.x, 0, impactVector.z);
+
         if (other.tag == "Player")
         {
             if (other.GetComponent<PawnController>() != null)

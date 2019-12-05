@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using MyBox;
+
 public enum MoveState
 {
     Idle,
@@ -50,12 +52,12 @@ public class PawnController : MonoBehaviour
         }
     }
 
-	[SerializeField] private bool _isInvincible;
+	private bool _isInvincible;
     public float invincibilityTime = 1;
     private IEnumerator invincibilityCoroutine;
 
 	[Space(2)]
-	[Header("Movement settings")]
+	[Separator("Movement settings")]
 	public float jumpForce;
     public AnimationCurve accelerationCurve;
 
@@ -79,7 +81,7 @@ public class PawnController : MonoBehaviour
 	public float climbUpwardPushForce = 450f;
 
     [Space(2)]
-    [Header("Bump")]
+    [Separator("Bumped Values")]
     public float maxGettingUpDuration = 0.6f;
     public AnimationCurve bumpDistanceCurve;
     float bumpDistance;
@@ -97,7 +99,7 @@ public class PawnController : MonoBehaviour
 
     [Space(2)]
     [Header("Debug (Don't change)")]
-	[HideInInspector] public MoveState moveState;
+    [System.NonSerialized] public MoveState moveState;
 	private float accelerationTimer;
     protected Vector3 moveInput;
 	protected Vector3 lookInput;
@@ -105,7 +107,7 @@ public class PawnController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	private float speed;
-	public int currentHealth;
+    [System.NonSerialized] public int currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
@@ -476,19 +478,22 @@ public class PawnController : MonoBehaviour
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
         SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
+
         bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
         restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
         bumpDirection = _bumpDirection;
+
+        bumpInitialPosition = transform.position;
+        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
+
         transform.rotation = Quaternion.LookRotation(-bumpDirection);
         gettingUpDuration = maxGettingUpDuration;
         fallingTriggerLaunched = false;
-        bumpInitialPosition = transform.position;
-        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
-        Debug.Log("destination position is " + bumpDestinationPosition + ", for position " + transform.position + ", direction " + bumpDirection + ", and distance " + bumpDistance);
-        //Animator.SetTrigger("BumpTrigger");
+
         StartCoroutine(Bump_C());
-        //ChangingState(EnemyState.Bumped);
+        //Animator.SetTrigger("BumpTrigger");
+        //ChangingState(MoveState.Bumped);
     }
     #endregion
 
@@ -598,6 +603,7 @@ public class PawnController : MonoBehaviour
             //if (gettingUpDuration <= 0)
             //ChangingState(EnemyState.Following);
         }
+
         yield return new WaitForSeconds(1);
     }
     #endregion

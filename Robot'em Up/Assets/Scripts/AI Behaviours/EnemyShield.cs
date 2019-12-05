@@ -10,7 +10,12 @@ public class EnemyShield : EnemyBehaviour
     public GameObject ShieldPrefab;
     [System.NonSerialized] public GameObject Shield;
     public bool deactivateShieldWhenAttacking = true;
-    public float angleRangeForRebound { get { return angleRangeForRebound; } set { angleRangeForRebound = value; Shield.GetComponent<Shield>().angleRangeForRebound = value; } }  // The "field of view" angle of enemy. If incident angle of ball is within this, ball will rebound
+
+    // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
+    public float angleRangeForRebound {
+        get { return angleRangeForRebound; }
+        set { angleRangeForRebound = value; Shield.GetComponent<Shield>().angleRangeForRebound = value; }
+    }  
 
     public bool IsShieldActivated {
         get { return isShieldActivated; }
@@ -89,6 +94,7 @@ public class EnemyShield : EnemyBehaviour
         }
     }
 
+    // Ususally called when hitting player
     public void StopAttack()
     {
         navMeshAgent.SetDestination(_self.position);
@@ -96,7 +102,7 @@ public class EnemyShield : EnemyBehaviour
         mustCancelAttack = true;
     }
 
-    // BUMP
+    // BUMPED
     public override void EnterBumpedState()
     {
         IsShieldActivated = false;
