@@ -113,6 +113,7 @@ public class WaveController : MonoBehaviour
 	}
 	public void InstantiateEnemy ( WaveEnemy _enemy )
 	{
+		if (_enemy.spawnIndexes.Count <= 0) { Debug.LogWarning("Can't spawn enemy: no spawn assigned"); return; }
 		GameObject newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
 		EnemyBehaviour enemyBehaviour = newEnemy.GetComponent<EnemyBehaviour>();
 		if (enemyBehaviour == null) { Destroy(newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
