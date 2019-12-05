@@ -98,7 +98,9 @@ public class PassController : MonoBehaviour
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates,0);
 			if (passPreviewInEditor)
-				PreviewPathInEditor(pathCoordinates);
+			{
+				//PreviewPathInEditor(pathCoordinates);
+			}
 		}
 
 	}
@@ -188,12 +190,26 @@ public class PassController : MonoBehaviour
 				if (Physics.Raycast(coordinates[i-1], coordinates[i] - coordinates[i-1] , out hit, Vector3.Distance(coordinates[i], coordinates[i - 1])))
 				{
 					if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
-					{
+					{ 
 						coordinates.Add(hit.point);
 						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hit.normal);
 						_direction = _direction.normalized * 10;
 						coordinates.Add(hit.point + _direction);
 						return coordinates;
+					} else if (hit.collider.gameObject.GetComponent<Shield>() != null)
+					{
+						Debug.Log("Hit shield");
+						Vector3 impactVector = -(coordinates[i] - coordinates[i - 1]);
+						Debug.DrawRay(hit.point, impactVector.normalized, Color.green);
+						Debug.DrawRay(hit.point, hit.collider.transform.forward.normalized, Color.green);
+						if ((impactVector.normalized + hit.collider.transform.forward.normalized).magnitude > 1.5f)
+						{
+							coordinates.Add(hit.point);
+							Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hit.normal);
+							_direction = _direction.normalized * 10;
+							coordinates.Add(hit.point + _direction);
+							return coordinates;
+						}
 					}
 				}
 			}
@@ -234,6 +250,7 @@ public class PassController : MonoBehaviour
 	{
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
+		SoundManager.PlaySound("ThrowPass", transform.position, transform);
 		ChangePassState(PassState.Shooting);
 		if (ballTimeInHand >= receptionMinDelay) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); }
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
@@ -276,6 +293,7 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
+		SoundManager.PlaySound("BallReception", transform.position, transform);
 		CursorManager.SetBallPointerParent(transform);
 		linkedPlayer.Vibrate(0.15f, VibrationForce.Heavy);
 		ball = _ball;

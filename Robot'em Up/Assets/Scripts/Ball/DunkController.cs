@@ -127,6 +127,7 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkOnGround_C ()
 	{
 		ChangeState(DunkState.Receiving);
+		SoundManager.PlaySound("CaughtBallForDunk", transform.position, transform);
 		yield return new WaitForSeconds(dunkDashDelay);
 		ChangeState(DunkState.Dashing);
 		yield return FallOnGround_C(dunkDashSpeed);
@@ -139,6 +140,7 @@ public class DunkController : MonoBehaviour
 		{
 			playerController.DisableInput();
 		}
+		SoundManager.PlaySound("JumpForDunk", transform.position, transform);
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		rb.isKinematic = true;
@@ -159,6 +161,7 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkWait_C ()
 	{
 		passController.EnableBallReception();
+		SoundManager.PlaySound("ReadyToCatchDunk", transform.position, transform);
 		ChangeState(DunkState.Waiting);
 		SnapController.SetSnappable(SnapType.Pass, this.gameObject, dunkSnapTreshold, dunkJumpFreezeDuration);
 		for (float i = 0; i < dunkJumpFreezeDuration; i += Time.deltaTime)

@@ -113,6 +113,7 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
+		SoundManager.PlaySound("BallRebound", transform.position, transform);
 		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
@@ -291,6 +292,7 @@ public class BallBehaviour : MonoBehaviour
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
+				SoundManager.PlaySound("BallFallOnTheGround", transform.position, transform);
 				LockManager.UnlockAll();
 				break;
 			case BallState.Aimed:

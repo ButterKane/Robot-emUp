@@ -79,8 +79,12 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [HideInInspector] public float ActualSpeed;
     public float NormalAcceleration = 30;
     public float RandomSpeedMod;
-    private float moveMultiplicator;
+    private float moveMultiplicator = 1;
     private int normalMoveMultiplicator = 1;
+    public float slowFromPass;
+    public float timeToRecoverSlowFromPass;
+    public float slowFromDunk;
+    public float timeToRecoverSlowFromDunk;
     public AnimationCurve speedRecoverCurve;
     private float staggerAvancement;
     private WhatBumps whatBumps;
@@ -159,8 +163,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
         _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
-        GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
-        healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
+        //GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
+        //healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
 
         if (arenaRobot)
         {
@@ -491,7 +495,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        Vector3 normalizedImpactVector;
+		SoundManager.PlaySound("EnemyHit", transform.position, transform);
+		Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
         float BumpDistanceMod = 0.5f;
         float BumpDurationMod = 0.5f;
@@ -637,33 +642,40 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public IEnumerator StaggeredCo(WhatBumps? cause = default)
     {
-        // TODO: CHange the staggering values according to what bumps
+        float _timeToRecover = 0.5f;
         switch (cause)
         {
             case WhatBumps.Pass:
-                moveMultiplicator -= 0.5f;
+                moveMultiplicator -= slowFromPass;
+                _timeToRecover = timeToRecoverSlowFromPass;
                 // Fetch ball datas => speed reduction on pass
                 break;
             case WhatBumps.Dunk:
-                moveMultiplicator -= 0.5f;
+                moveMultiplicator -= slowFromDunk;
+                _timeToRecover = timeToRecoverSlowFromDunk;
                 // Fetch ball datas => speed reduction on dunk
                 break;
             case WhatBumps.Environment:
                 moveMultiplicator -= 0.5f;
+                _timeToRecover = 0.5f;
                 // Fetch environment datas => speed reduction
                 break;
             default:
                 moveMultiplicator -= 0.5f;
+                _timeToRecover = 0.5f;
                 Debug.Log("Default case: New speed multiplicator = 0.5");
                 break;
         }
 
-        float t = moveMultiplicator;
+        float _t = 0;
+        float _initialMoveMultiplicator = moveMultiplicator;
+        print(_initialMoveMultiplicator);
 
         while (moveMultiplicator < normalMoveMultiplicator)
         {
-            moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
-            t += Time.deltaTime;
+            moveMultiplicator = _initialMoveMultiplicator + (normalMoveMultiplicator - _initialMoveMultiplicator) * speedRecoverCurve.Evaluate(_t);
+            _t += Time.deltaTime / _timeToRecover;
+            print(moveMultiplicator);
             yield return null;
         }
 
@@ -672,7 +684,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
-        bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
+		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
+		bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
         restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
         bumpDirection = _bumpDirection;
