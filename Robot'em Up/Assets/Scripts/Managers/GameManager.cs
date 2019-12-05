@@ -40,22 +40,22 @@ public class DamageModifier {
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager
-    [HideInInspector] public static GameManager i;
-    [HideInInspector] public LevelManager levelManager;
-    [HideInInspector] public InputManager inputManager;
-    [HideInInspector] public EventManager eventManager;
-    [HideInInspector] public EnemyManager enemyManager;
+    [System.NonSerialized] public static GameManager i;
+    [System.NonSerialized] public LevelManager levelManager;
+    [System.NonSerialized] public InputManager inputManager;
+    [System.NonSerialized]  public EventManager eventManager;
+    [System.NonSerialized]  public EnemyManager enemyManager;
 
-	[HideInInspector] public GameObject mainCameraGO;
-	[HideInInspector] public static PlayerController playerOne;
-	[HideInInspector] public static PlayerController playerTwo;
-	[HideInInspector] public BallBehaviour ball;
+	[System.NonSerialized]  public GameObject mainCameraGO;
+	[System.NonSerialized]  public static PlayerController playerOne;
+	[System.NonSerialized]  public static PlayerController playerTwo;
+    [System.NonSerialized] public BallBehaviour ball;
     public int ballDamage = 30;
     public List<GameObject> enemies;
 
 
-    [HideInInspector] public GameObject surrounderPlayerOne;
-    [HideInInspector] public GameObject surrounderPlayerTwo;
+    [System.NonSerialized] public GameObject surrounderPlayerOne;
+    [System.NonSerialized] public GameObject surrounderPlayerTwo;
 	public static Canvas mainCanvas;
 	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
