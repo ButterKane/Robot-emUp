@@ -132,6 +132,10 @@ public class SoundEditor : Editor
 		GUILayout.EndVertical();
 
 		this.serializedObject.ApplyModifiedProperties();
+		if (GUI.changed)
+		{
+			EditorUtility.SetDirty(target);
+		}
 	}
 
 	void AddSound()

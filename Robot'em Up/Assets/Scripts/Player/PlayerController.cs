@@ -385,6 +385,7 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
+		SoundManager.PlaySound("PlayerHitNoBump", transform.position);
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
