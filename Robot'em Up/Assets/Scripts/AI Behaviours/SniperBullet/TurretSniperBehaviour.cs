@@ -9,6 +9,8 @@ public class TurretSniperBehaviour : TurretBehaviour
     public Renderer aimingAtPlayerFXRenderer;
     public Vector3 aimingAtPlayerFXScaleOnWall;
     public Vector3 aimingAtPlayerFXScaleOnPlayer;
+    public float endAimingFXScaleMultiplier;
+    public float startAimingFXCircleThickness;
 
     public override void LaunchProjectile()
     {
@@ -36,9 +38,10 @@ public class TurretSniperBehaviour : TurretBehaviour
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
+                //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
                 aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
-                aimingAtPlayerFXRenderer.enabled = false;
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
                 break;
             case TurretState.Idle:
                 break;
@@ -61,11 +64,13 @@ public class TurretSniperBehaviour : TurretBehaviour
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
+                //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
                 Animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
-                aimingAtPlayerFXRenderer.enabled = true;
+                //VARIABLES FXs--------------------------------------
+                aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
                 break;
             case TurretState.Idle:
                 timeBetweenCheck = 0;
@@ -121,14 +126,17 @@ public class TurretSniperBehaviour : TurretBehaviour
 
                 //TRANSITION TO OTHER STATE
                 anticipationTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1-(anticipationTime/maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime/maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+
                 if (anticipationTime <= 0)
                 {
                     attackState = TurretAttackState.Attack;
                     Animator.SetTrigger("AttackTrigger");
-                    // reset FX variables
+                    // reset FX variables before attacking ! --------------------------------------------------------------------------
                     aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 10);
                     aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.yellow);
+                    aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
                 }
                 break;
             //-------------------------------------------------------
@@ -155,7 +163,6 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.enabled = false;
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
                 if (restTime <= 0)
                 {
