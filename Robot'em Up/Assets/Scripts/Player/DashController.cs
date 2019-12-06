@@ -92,7 +92,6 @@ public class DashController : MonoBehaviour
 		endPosition.y = startPosition.y;
 
 		currentStackAmount--;
-		CameraShaker.ShakeCamera(1,1,1);
 		StartCoroutine(Dash_C(startPosition, endPosition));
 		currentUseCooldown = useCooldown;
 	}
