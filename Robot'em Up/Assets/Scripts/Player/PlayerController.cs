@@ -266,18 +266,6 @@ public class PlayerController : PawnController, IHitable
 				potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
             base.Damage(_amount);
-			float damageForce = _amount / maxHealth;
-			if (damageForce < 0.2)
-			{
-				Vibrate(0.2f, VibrationForce.Light);
-			}
-			else if (damageForce < 0.5)
-			{
-				Vibrate(0.3f, VibrationForce.Medium);
-			} else
-			{
-				Vibrate(0.3f, VibrationForce.Heavy);
-			}
             FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
         }
 	}
@@ -285,6 +273,14 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
+		if (playerIndex == PlayerIndex.One)
+		{
+			FeedbackManager.SendFeedback("event.DeathFromPlayer1", this);
+		} else if (playerIndex == PlayerIndex.Two)
+		{
+			FeedbackManager.SendFeedback("event.DeathFromPlayer2", this);
+		}
+		FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
 		SoundManager.PlaySound("DeathFromOneCharacter", transform.position, transform);
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
@@ -313,6 +309,7 @@ public class PlayerController : PawnController, IHitable
 		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
 		FXManager.InstantiateFX(FX_revive, GetCenterPosition(), false, Vector3.zero, Vector3.one * 5);
 		SoundManager.PlaySound("AllyResurrection", _player.transform.position, transform);
+		FeedbackManager.SendFeedback("event.AllyResurrection", this);
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
@@ -385,6 +382,7 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
+		FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
 		SoundManager.PlaySound("PlayerHitNoBump", transform.position);
 		switch (_source)
 		{

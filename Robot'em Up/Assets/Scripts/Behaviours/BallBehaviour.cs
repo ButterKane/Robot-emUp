@@ -114,6 +114,7 @@ public class BallBehaviour : MonoBehaviour
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
 		SoundManager.PlaySound("BallRebound", transform.position, transform);
+		FeedbackManager.SendFeedback("event.ReboundOnWalls", this);
 		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
@@ -292,6 +293,7 @@ public class BallBehaviour : MonoBehaviour
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
+				FeedbackManager.SendFeedback("event.BallFallOnGround", this);
 				SoundManager.PlaySound("BallFallOnTheGround", transform.position, transform);
 				LockManager.UnlockAll();
 				break;
@@ -381,7 +383,7 @@ public class BallBehaviour : MonoBehaviour
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
-
+						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
 						if (!raycast.collider.isTrigger)
 						{
 							if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)

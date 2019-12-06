@@ -251,10 +251,10 @@ public class PassController : MonoBehaviour
 	{
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
+		FeedbackManager.SendFeedback("event.ThrowPass", this);
 		SoundManager.PlaySound("ThrowPass", transform.position, transform);
 		ChangePassState(PassState.Shooting);
 		if (ballTimeInHand >= receptionMinDelay) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); }
-		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		currentPassCooldown = passCooldown;
 		BallBehaviour shotBall = ball;
 		ball = null;
@@ -294,9 +294,9 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
+		FeedbackManager.SendFeedback("event.ReceiveBall", this) ;
 		SoundManager.PlaySound("BallReception", transform.position, transform);
 		CursorManager.SetBallPointerParent(transform);
-		linkedPlayer.Vibrate(0.15f, VibrationForce.Heavy);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		ballTimeInHand = 0;

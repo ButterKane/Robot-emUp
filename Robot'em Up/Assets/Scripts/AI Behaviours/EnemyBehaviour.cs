@@ -530,6 +530,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 whatBumps = WhatBumps.RedBarrel;
                 break;
             case DamageSource.Ball:
+				FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
+				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
 				EnergyManager.IncreaseEnergy(energyAmount);
 				whatBumps = WhatBumps.Pass;
                 StartCoroutine(StaggeredCo(whatBumps));
@@ -684,6 +686,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
+		FeedbackManager.SendFeedback("event.EnemyBumpedAway", this);
 		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
 		bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);

@@ -74,10 +74,12 @@ public class LinkController : MonoBehaviour
 		switch (_newState)
 		{
 			case LinkState.Broken:
+				FeedbackManager.SendFeedback("event.LinkBroken", this);
 				SoundManager.PlaySound("LinkBroken", firstPawn.GetCenterPosition() + (firstPawn.GetCenterPosition() + secondPawn.GetCenterPosition() / 2));
 				WarningPanel.OpenPanel();
 				break;
 			case LinkState.Rebuilt:
+				FeedbackManager.SendFeedback("event.LinkRebuilt", this);
 				SoundManager.PlaySound("LinkRebuilt", firstPawn.GetCenterPosition() + (firstPawn.GetCenterPosition() + secondPawn.GetCenterPosition() / 2));
 				WarningPanel.ClosePanel();
 				break;

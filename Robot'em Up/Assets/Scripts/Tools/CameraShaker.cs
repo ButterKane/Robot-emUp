@@ -5,25 +5,97 @@ using Cinemachine;
 
 public class CameraShaker : MonoBehaviour
 {
+	public static List<ShakeData> shakeList = new List<ShakeData>();
+	public static ShakeData currentShake;
+	public static ShakeEffect cameraShaker;
+
 	public static void ShakeCamera ( float _intensity, float _duration, float _frequency )
 	{
-		ShakeEffect shaker = new GameObject().AddComponent<ShakeEffect>();
-		shaker.gameObject.name = "CameraShaker";
-		shaker.ShakeCamera(_duration, _intensity, _frequency);
+		if (cameraShaker == null)
+		{
+			cameraShaker = new GameObject().AddComponent<ShakeEffect>();
+			cameraShaker.gameObject.name = "Camera Shaker";
+		}
+		ShakeData shakeData = new ShakeData(_intensity, _duration, _frequency);
+		if (currentShake != null)
+		{
+			if (_intensity > currentShake.intensity)
+			{
+				shakeList.Add(currentShake);
+				currentShake = shakeData;
+				shakeList.Add(shakeData);
+			} else
+			{
+				shakeList.Add(shakeData);
+			}
+		} else
+		{
+			currentShake = shakeData;
+			shakeList.Add(shakeData);
+		}
 	}
+
+	public static void UpdateShakes()
+	{
+		List<ShakeData> newShakeData = new List<ShakeData>();
+		foreach (ShakeData shakeData in shakeList)
+		{
+			shakeData.durationLeft -= Time.deltaTime;
+			if (shakeData.durationLeft > 0)
+			{
+				newShakeData.Add(shakeData);
+			}
+		}
+		shakeList = newShakeData;
+		if (currentShake != null && currentShake.durationLeft <= 0) { shakeList.Remove(currentShake); currentShake = GetNextShakeData(); }
+	}
+
+	public static ShakeData GetNextShakeData()
+	{
+		if (shakeList.Count <= 0)
+		{
+			return null;
+		}
+		ShakeData biggestShake = shakeList[0];
+		float biggestValue = shakeList[0].intensity;
+		foreach (ShakeData shakeData in shakeList)
+		{
+			if (shakeData.intensity > biggestValue)
+			{
+				biggestValue = shakeData.intensity;
+				biggestShake = shakeData;
+			}
+		}
+		return biggestShake;
+	}
+}
+
+[System.Serializable]
+public class ShakeData
+{
+	public ShakeData (float _intensity, float _duration, float _frequency)
+	{
+		duration = _duration;
+		intensity = _intensity;
+		frequency = _frequency;
+		durationLeft = _duration;
+	}
+	public float duration;
+	public float intensity;
+	public float frequency;
+
+	public float durationLeft;
 }
 
 public class ShakeEffect : MonoBehaviour {
 
-	protected Vector3 _initialPosition;
-	protected Quaternion _initialRotation;
-
 	protected CinemachineBasicMultiChannelPerlin _perlin;
 	protected CinemachineVirtualCamera _virtualCamera;
 
+	public ShakeData currentShake;
+
 	protected virtual void Awake ()
 	{
-
 		CinemachineVirtualCamera _virtualCam = Camera.main.gameObject.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVirtualCamera>();
 		_perlin = _virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 		if (_perlin == null)
@@ -33,22 +105,18 @@ public class ShakeEffect : MonoBehaviour {
 		}
 	}
 
-	public virtual void ShakeCamera ( float duration, float amplitude, float frequency )
+	private void Update ()
 	{
-		StartCoroutine(ShakeCameraCo(duration, amplitude, frequency));
-	}
-
-	protected virtual IEnumerator ShakeCameraCo ( float duration, float amplitude, float frequency )
-	{
-		_perlin.m_AmplitudeGain = amplitude;
-		_perlin.m_FrequencyGain = frequency;
-		yield return new WaitForSeconds(duration);
-		CameraReset();
-	}
-
-	public virtual void CameraReset ()
-	{
-		_perlin.m_AmplitudeGain = 0;
-		_perlin.m_FrequencyGain = 0;
+		currentShake = CameraShaker.currentShake;
+		CameraShaker.UpdateShakes();
+		if (currentShake != null)
+		{
+			_perlin.m_AmplitudeGain = currentShake.intensity;
+			_perlin.m_FrequencyGain = currentShake.frequency;
+		} else
+		{
+			_perlin.m_AmplitudeGain = 0;
+			_perlin.m_FrequencyGain = 0;
+		}
 	}
 }

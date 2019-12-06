@@ -27,6 +27,13 @@ public class Retriever : MonoBehaviour
 		playerController = GetComponentInParent<PlayerController>();
     }
 
+	private void OnTriggerEnter ( Collider other )
+	{
+		if (other.tag == "Ball")
+		{
+			FeedbackManager.SendFeedback("event.MagnetAttractingBall", this);
+		}
+	}
 	private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
@@ -68,6 +75,7 @@ public class Retriever : MonoBehaviour
 						{
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
+							FeedbackManager.SendFeedback("event.PickUpTheLastPartOfBody", this);
 						}
 						else
 						{
