@@ -283,15 +283,14 @@ public class PlayerUI : MonoBehaviour
 			endColor.a = 0;
 			text.color = startColor;
 		}
+		Vector3 initialScale = _panel.transform.localScale / _endScale;
 		yield return new WaitForSeconds(_duration);
 		if (panelShowedPermanently.Contains(_panel))
 		{
-			Debug.Log("Looping coroutine");
 			StopCoroutine(currentCoroutines[_panel]);
 			currentCoroutines[_panel] = StartCoroutine(UpdatePanel_C(_panel, _duration, _fadeOutSpeed, _endScale));
 			yield return null;
 		}
-		Vector3 initialScale = _panel.transform.localScale / _endScale;
 		for (float i = 0; i < 1f / _fadeOutSpeed; i += Time.deltaTime)
 		{
 			foreach (Image image in images)

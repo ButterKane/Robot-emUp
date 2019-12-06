@@ -148,7 +148,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
-    [System.NonSerialized] public UnityEvent onDeath;
+    [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
 
     
 
