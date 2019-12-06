@@ -16,10 +16,10 @@ public class PlayerController : PawnController, IHitable
 
 	[SerializeField] private bool _lockable;  public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
-	public bool enableDash;
-	public bool enableJump;
-	public bool enableDunk;
-	public bool enableMagnet;
+	[System.NonSerialized] public bool enableDash;
+    [System.NonSerialized] public bool enableJump;
+    [System.NonSerialized] public bool enableDunk;
+    [System.NonSerialized] public bool enableMagnet;
 
 	[Separator("Revive settings")]
 	public GameObject FX_hit;

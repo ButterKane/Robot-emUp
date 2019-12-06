@@ -46,11 +46,20 @@ public class LinkController : MonoBehaviour
 
 	private void Awake ()
 	{
-		linkGameObject = GenerateLinkHolder();
-		ChangeLinkState(LinkState.Hidden);
-	}
+        if (firstPawn == null)
+        {
+            firstPawn = GameManager.playerOne;
+        }
 
-	GameObject GenerateLinkHolder()
+        if (secondPawn == null)
+        {
+            secondPawn = GameManager.playerTwo;
+        }
+        linkGameObject = GenerateLinkHolder();
+		ChangeLinkState(LinkState.Hidden);
+    }
+
+    GameObject GenerateLinkHolder()
 	{
 		GameObject newLinkHolder = new GameObject();
 		newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
