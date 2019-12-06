@@ -30,7 +30,7 @@ public enum WhatBumps
 
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
-    public EnemyState State = EnemyState.Idle;
+    [System.NonSerialized] public EnemyState State = EnemyState.Idle;
 
     [Separator("References")]
     [SerializeField] protected Transform _self;
@@ -57,7 +57,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
     float distanceWithFocusedPlayer;
-    public Transform focusedPlayer = null;
+    [System.NonSerialized] public Transform focusedPlayer = null;
     public float energyAmount = 1;
     public int damage = 10;
 	public float powerLevel = 1;
@@ -71,12 +71,12 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float unfocusDistance = 20;
     float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
-    public float maxTimeBetweenCheck;
+    public float maxTimeBetweenCheck = 0.25f;
 
     [Space(2)]
     [Header("Movement")]
     public float NormalSpeed = 7; // This value is the one in the inspector, but in practice it is modified by the Random speed mod
-    [HideInInspector] public float ActualSpeed;
+    [System.NonSerialized] public float ActualSpeed;
     public float NormalAcceleration = 30;
     public float RandomSpeedMod;
     private float moveMultiplicator = 1;
@@ -138,7 +138,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Surrounding")]
-    public Transform ClosestSurroundPoint;
+    [System.NonSerialized] public Transform ClosestSurroundPoint;
     [Range(0, 1)]
     public float BezierCurveHeight = 0.5f;
     public float BezierDistanceToHeightRatio = 100f;
@@ -148,7 +148,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
-	[HideInInspector] public UnityEvent onDeath;
+    [System.NonSerialized] public UnityEvent onDeath;
 
     
 
@@ -530,6 +530,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 whatBumps = WhatBumps.RedBarrel;
                 break;
             case DamageSource.Ball:
+				FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
+				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
 				EnergyManager.IncreaseEnergy(energyAmount);
 				whatBumps = WhatBumps.Pass;
                 StartCoroutine(StaggeredCo(whatBumps));
@@ -542,7 +544,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (Health <= 0)
         {
-            State = EnemyState.Dying;
+            ChangingState(EnemyState.Dying);
         }
         else
         {
@@ -564,7 +566,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 			DropCore();
 		}
         GameManager.i.enemyManager.enemies.Remove(this);
-		onDeath.Invoke();
+		//onDeath.Invoke();
         Destroy(gameObject);
     }
 
@@ -669,7 +671,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         float _t = 0;
         float _initialMoveMultiplicator = moveMultiplicator;
-        print(_initialMoveMultiplicator);
 
         while (moveMultiplicator < normalMoveMultiplicator)
         {
@@ -684,6 +685,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
+		FeedbackManager.SendFeedback("event.EnemyBumpedAway", this);
 		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
 		bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);

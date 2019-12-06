@@ -1,0 +1,291 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 913dc18d857932e42b343758b96da9dc, type: 3}
+  m_Name: FeedbackDatas
+  m_EditorClassIdentifier: 
+  feedbackList:
+  - eventName: event.JumpForDunk
+    shakeData:
+      duration: 0.5
+      intensity: 20
+      frequency: 1
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0.5
+    shakeDataInited: 1
+    vibrationDataInited: 1
+    eventCalled: 1
+  - eventName: event.ThrowPass
+    shakeData:
+      duration: 1
+      intensity: 1
+      frequency: 1
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0.5
+    shakeDataInited: 1
+    vibrationDataInited: 1
+    eventCalled: 1
+  - eventName: event.ReboundOnWalls
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.ReceiveBall
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.EnemyHitByBall
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.BallTouchingEnemy
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.MagnetAttractingBall
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.WalkingOnGround
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.CaughtTheBallForDunk
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.DunkSmashingOnTheGround
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.PlayerHitWithoutBump
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.PlayerBumpedAway
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 0
+  - eventName: event.PlayerBackOnGround
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 0
+  - eventName: event.EnemyBumpedAway
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.LinkRebuilt
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.LinkBroken
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.HealthGoingDown
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 0
+  - eventName: event.DeathFromPlayer1
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.PickUpTheLastPartOfBody
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.AllyResurrection
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.BallFallOnGround
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.DeathFromPlayer2
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1
+  - eventName: event.WallHitByBall
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    eventCalled: 1

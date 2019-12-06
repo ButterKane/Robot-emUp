@@ -75,6 +75,8 @@ public class DunkController : MonoBehaviour
 	{
 		BallBehaviour ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
+		FeedbackManager.SendFeedback("event.DunkSmashingOnTheGround", this);
+		SoundManager.PlaySound("DunkOnGround", transform.position);
 		EnergyManager.DecreaseEnergy(1f);
 		Collider[] hitColliders = Physics.OverlapSphere(ball.transform.position, dunkExplosionRadius);
 		int i = 0;
@@ -127,6 +129,7 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkOnGround_C ()
 	{
 		ChangeState(DunkState.Receiving);
+		FeedbackManager.SendFeedback("event.CaughtTheBallForDunk", this);
 		SoundManager.PlaySound("CaughtBallForDunk", transform.position, transform);
 		yield return new WaitForSeconds(dunkDashDelay);
 		ChangeState(DunkState.Dashing);
@@ -140,6 +143,7 @@ public class DunkController : MonoBehaviour
 		{
 			playerController.DisableInput();
 		}
+		FeedbackManager.SendFeedback("event.JumpForDunk", this);
 		SoundManager.PlaySound("JumpForDunk", transform.position, transform);
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
@@ -254,10 +258,6 @@ public class DunkController : MonoBehaviour
 				playerAnimator.SetTrigger("DunkTrigger");
 				break;
 			case DunkState.Explosing:
-				foreach (PlayerController player in FindObjectsOfType<PlayerController>())
-				{
-					player.Vibrate(0.3f, VibrationForce.Heavy);
-				}
 				if (dashFX != null)
 				{
 					Destroy(dashFX);

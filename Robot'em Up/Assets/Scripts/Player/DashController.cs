@@ -75,14 +75,13 @@ public class DashController : MonoBehaviour
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
-		currentStackAmount--;
 		Vector3 startPosition = transform.position;
 		Vector3 endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance
 		RaycastHit hit;
-		if (Physics.Raycast(transform.position, transform.forward, out hit, maxDistance))
+		if (Physics.Raycast(linkedPawn.GetCenterPosition(), transform.forward, out hit, maxDistance))
 		{
-			if (Vector3.Distance(transform.position, hit.point) <= minDistance)
+			if (Vector3.Distance(linkedPawn.GetCenterPosition(), hit.point) <= minDistance)
 			{
 				return; //Cancel dash
 			} else
@@ -92,6 +91,8 @@ public class DashController : MonoBehaviour
 		}
 		endPosition.y = startPosition.y;
 
+		currentStackAmount--;
+		CameraShaker.ShakeCamera(1,1,1);
 		StartCoroutine(Dash_C(startPosition, endPosition));
 		currentUseCooldown = useCooldown;
 	}

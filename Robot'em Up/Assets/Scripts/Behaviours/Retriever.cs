@@ -31,7 +31,7 @@ public class Retriever : MonoBehaviour
 	{
 		if (other.tag == "Ball")
 		{
-			SoundManager.PlaySound("MagnetAttractingBall", transform.position, transform);
+			FeedbackManager.SendFeedback("event.MagnetAttractingBall", this);
 		}
 	}
 	private void OnTriggerStay(Collider other)
@@ -75,6 +75,7 @@ public class Retriever : MonoBehaviour
 						{
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
+							FeedbackManager.SendFeedback("event.PickUpTheLastPartOfBody", this);
 						}
 						else
 						{

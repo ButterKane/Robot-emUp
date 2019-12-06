@@ -55,7 +55,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public float focusDistance;
     public float unfocusDistance;
     public float maxTimeBetweenCheck;
-    float timeBetweenCheck;
+    protected float timeBetweenCheck;
     public float distanceBeforeChangingPriority;
 
     [Space(2)]
@@ -182,7 +182,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
-    void UpdateState()
+    public virtual void UpdateState()
     {
         //print("Global State : " + State);
         switch (State)
@@ -218,7 +218,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void ExitState()
+    public virtual void ExitState()
     {
         switch (State)
         {
@@ -237,7 +237,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void EnterState()
+    public virtual void EnterState()
     {
         //print(State);
         switch (State)

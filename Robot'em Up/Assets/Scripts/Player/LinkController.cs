@@ -46,11 +46,20 @@ public class LinkController : MonoBehaviour
 
 	private void Awake ()
 	{
-		linkGameObject = GenerateLinkHolder();
-		ChangeLinkState(LinkState.Hidden);
-	}
+        if (firstPawn == null)
+        {
+            firstPawn = GameManager.playerOne;
+        }
 
-	GameObject GenerateLinkHolder()
+        if (secondPawn == null)
+        {
+            secondPawn = GameManager.playerTwo;
+        }
+        linkGameObject = GenerateLinkHolder();
+		ChangeLinkState(LinkState.Hidden);
+    }
+
+    GameObject GenerateLinkHolder()
 	{
 		GameObject newLinkHolder = new GameObject();
 		newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
@@ -74,10 +83,12 @@ public class LinkController : MonoBehaviour
 		switch (_newState)
 		{
 			case LinkState.Broken:
+				FeedbackManager.SendFeedback("event.LinkBroken", this);
 				SoundManager.PlaySound("LinkBroken", firstPawn.GetCenterPosition() + (firstPawn.GetCenterPosition() + secondPawn.GetCenterPosition() / 2));
 				WarningPanel.OpenPanel();
 				break;
 			case LinkState.Rebuilt:
+				FeedbackManager.SendFeedback("event.LinkRebuilt", this);
 				SoundManager.PlaySound("LinkRebuilt", firstPawn.GetCenterPosition() + (firstPawn.GetCenterPosition() + secondPawn.GetCenterPosition() / 2));
 				WarningPanel.ClosePanel();
 				break;
