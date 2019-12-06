@@ -21,11 +21,14 @@ public class PuzzleDoor : PuzzleActivable
     public void DestroyTheDoor()
     {
         open = true;
+        foreach (var item in indictatorLightsList)
+        {
+            item.gameObject.SetActive(false);
+        }
         if (destroyWhenOpened != null)
         {
             //Debug.Log("Destroy a door");
             Destroy(destroyWhenOpened);
-
             FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
         }
     }
