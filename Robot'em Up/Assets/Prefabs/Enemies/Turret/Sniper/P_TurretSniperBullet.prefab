@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 7931417664060648215}
   - component: {fileID: 7771328276034546981}
   - component: {fileID: 6561459608439898454}
-  - component: {fileID: 3271394819718229627}
   - component: {fileID: -1893734198578177992}
+  - component: {fileID: 145347210400987068}
   m_Layer: 0
   m_Name: P_TurretSniperBullet
   m_TagString: Untagged
@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 23cc87b2a10449b48913abbbbe291da3, type: 2}
+  - {fileID: 2100000, guid: 01ede5f703ccb6c46857ffd500d0a139, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -95,21 +95,8 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 4
   m_CollisionDetection: 0
---- !u!135 &3271394819718229627
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3937835393218686174}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.55
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-1893734198578177992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,8 +111,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 6561459608439898454}
   speed: 150
-  deathParticle: {fileID: 3758249355753035628, guid: 2f949488fbe4dc947b2d0a6ffb6ffa8b,
-    type: 3}
   damageDealt: 100
-  maxLifeTime: 5
+  maxLifeTime: 0.5
   target: {fileID: 0}
+  spawnParent: {fileID: 0}
+  impactFX: {fileID: 160900, guid: 1b1f4eecb848b384f93fd0216a95f56e, type: 3}
+  impactFXScale: {x: 3, y: 3, z: 3}
+  layerToCheck:
+    serializedVersion: 2
+    m_Bits: 4096
+  distanceToRaycast: 5
+--- !u!65 &145347210400987068
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3937835393218686174}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.99999994, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
