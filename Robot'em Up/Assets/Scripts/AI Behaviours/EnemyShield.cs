@@ -100,6 +100,7 @@ public class EnemyShield : EnemyBehaviour
         navMeshAgent.SetDestination(_self.position);
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
         mustCancelAttack = true;
+        Animator.SetTrigger("AttackTouchedTrigger");
     }
 
     // BUMPED
