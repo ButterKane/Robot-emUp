@@ -16,10 +16,10 @@ public class PlayerController : PawnController, IHitable
 
 	[SerializeField] private bool _lockable;  public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
-	[System.NonSerialized] public bool enableDash;
-    [System.NonSerialized] public bool enableJump;
-    [System.NonSerialized] public bool enableDunk;
-    [System.NonSerialized] public bool enableMagnet;
+	public bool enableDash;
+    public bool enableJump;
+    public bool enableDunk;
+    public bool enableMagnet;
 
 	[Separator("Revive settings")]
 	public GameObject FX_hit;
@@ -304,6 +304,7 @@ public class PlayerController : PawnController, IHitable
 		_player.currentHealth = GetMaxHealth();
 		_player.transform.position = transform.position + Vector3.up * 7 + Vector3.left * 0.1f;
 		_player.FreezeTemporarly(reviveFreezeDuration);
+		_player.StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
 		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
@@ -371,6 +372,18 @@ public class PlayerController : PawnController, IHitable
 		GenerateReviveParts();
 	}
 
+	IEnumerator DisableInputsTemporarly(float _duration)
+	{
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			if (!inputDisabled)
+			{
+				DisableInput();
+			}
+			yield return null;
+		}
+		EnableInput();
+	}
 	IEnumerator FreezeTemporarly_C(float _duration)
 	{
 		Freeze();
