@@ -74,7 +74,6 @@ public class PuzzleActivable : MonoBehaviour
 
     public virtual void UpdateLights()
     {
-
         UpdateListBool();
         if (needAllConditions)
         {
