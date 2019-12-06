@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ae1881f85ce524a80896da20b3a312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  State: 0
   _self: {fileID: 6181108247738804001}
   Rb: {fileID: 6181108247738804029}
   Animator: {fileID: 6181108246780876620}
@@ -23,7 +22,6 @@ MonoBehaviour:
   _playerOneTransform: {fileID: 0}
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
-  focusedPlayer: {fileID: 0}
   energyAmount: 1
   damage: 10
   powerLevel: 2.5
@@ -35,9 +33,12 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0
   NormalSpeed: 7
-  ActualSpeed: 0
   NormalAcceleration: 30
   RandomSpeedMod: 0
+  slowFromPass: 0
+  timeToRecoverSlowFromPass: 0
+  slowFromDunk: 0
+  timeToRecoverSlowFromDunk: 0
   speedRecoverCurve:
     serializedVersion: 2
     m_Curve: []
@@ -110,20 +111,19 @@ MonoBehaviour:
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
   hitParticleScale: 3
-  ClosestSurroundPoint: {fileID: 0}
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 1, y: 3}
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
   ShieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
     type: 3}
   deactivateShieldWhenAttacking: 1
   attackSpeed: 30
   maxRotationSpeed: 3
+  BumpOtherDistanceMod: 0.5
+  BumpOtherDurationMod: 0.2
+  BumpOtherRestDurationMod: 0.3
 --- !u!1001 &5830630885209383182
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -196,27 +196,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Speed
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: bac6d9c8e7dc9e84cb99f7be6628df7d, type: 2}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

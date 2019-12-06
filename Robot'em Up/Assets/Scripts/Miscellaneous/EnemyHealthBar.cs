@@ -31,18 +31,26 @@ public class EnemyHealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Enemy.Health < Enemy.MaxHealth)
+        if(Enemy != null)
         {
-            ActivateHealthBar(true);
+            if (Enemy.Health < Enemy.MaxHealth)
+            {
+                ActivateHealthBar(true);
 
-            FillRect.sizeDelta = new Vector2(((float)Enemy.Health / Enemy.MaxHealth) * _initialWidth, _rect.height);
+                FillRect.sizeDelta = new Vector2(((float)Enemy.Health / Enemy.MaxHealth) * _initialWidth, _rect.height);
 
-            _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
+                _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
+            }
+            if (Enemy.Health <= 0)
+            {
+                Destroy(this.gameObject);
+            }
         }
-        if(Enemy.Health <= 0)
+        else
         {
             Destroy(this.gameObject);
         }
+            
     }
 
     void ActivateHealthBar(bool value)

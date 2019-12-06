@@ -18,10 +18,19 @@ public class EnemyRedBarrel : EnemyBehaviour
     public float BumpRestDurationMod = 0.2f;
     private Vector3 bumpValues;
 
+    public Renderer explosionRadiusRenderer;
+    public Transform explosionRadiusTransform;
+
     new void Start()
     {
         base.Start();
         bumpValues = new Vector3(BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);
+        explosionRadiusTransform.localScale = new Vector3(explosionRadius * 2, explosionRadius * 2, explosionRadius * 2);
+    }
+
+    public override void AttackingState()
+    {
+        ChangingState(EnemyState.Dying);
     }
 
     protected override void Die()
@@ -32,6 +41,7 @@ public class EnemyRedBarrel : EnemyBehaviour
     private IEnumerator ExplosionSequence()
     {
         Animator.SetTrigger("RedBarrelDeath");
+        explosionRadiusRenderer.enabled = true;
         yield return new WaitForSeconds(buildUpBeforeExplosion);
 
         GameObject hitParticle = Instantiate(explosionFX, transform.position, Quaternion.identity);
@@ -41,7 +51,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         int i = 0;
         while (i < hitColliders.Length)
         {
-            IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
+            IHitable potentialHitableObject = hitColliders[i].GetComponent<IHitable>();
             if (potentialHitableObject != null)
             {
                 potentialHitableObject.OnHit(null, (hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
