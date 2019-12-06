@@ -5,15 +5,15 @@ using UnityEditor;
 using System.IO;
 using System.Linq;
 
-[CustomEditor(typeof(FeedbacksDatas))]
+[CustomEditor(typeof(FeedbackDatas))]
 public class FeedbackEditor : Editor
 {
-	FeedbacksDatas feedbackDatas;
+	FeedbackDatas feedbackDatas;
 
 
 	public override void OnInspectorGUI ()
 	{
-		feedbackDatas = (FeedbacksDatas)target;
+		feedbackDatas = (FeedbackDatas)target;
 
 		this.serializedObject.Update();
 
@@ -42,11 +42,9 @@ public class FeedbackEditor : Editor
 					if (IsEventCalled(feedbackData.eventName))
 					{
 						feedbackData.eventCalled = true;
-						Debug.Log("Event: " + feedbackData.eventName + " called");
 					} else
 					{
 						feedbackData.eventCalled = false;
-						Debug.Log("Event: " + feedbackData.eventName + " not called");
 					}
 				}
 			}
@@ -99,7 +97,6 @@ public class FeedbackEditor : Editor
 								}
 							} else
 							{
-								Debug.Log("Inited");
 								EditorGUILayout.BeginHorizontal();
 								GUILayout.FlexibleSpace();
 								GUILayout.Label("Vibration", EditorStyles.largeLabel);
@@ -223,7 +220,6 @@ public class FeedbackEditor : Editor
 
 	void AddVibration(FeedbackData _data)
 	{
-		Debug.Log("Added vibration");
 		_data.vibrationDataInited = true;
 	}
 

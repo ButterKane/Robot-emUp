@@ -40,7 +40,7 @@ public class FeedbackManager
 
 	public static FeedbackData GetFeedbackData(string _name)
 	{
-		FeedbacksDatas feedbacksDatas = Resources.Load<FeedbacksDatas>("FeedbacksDatas");
+		FeedbackDatas feedbacksDatas = Resources.Load<FeedbackDatas>("FeedbackDatas");
 		foreach (FeedbackData feedbackData in feedbacksDatas.feedbackList)
 		{
 			if (feedbackData.eventName == _name)
