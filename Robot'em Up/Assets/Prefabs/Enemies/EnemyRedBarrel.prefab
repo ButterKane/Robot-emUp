@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f69425a4c5ed87f40adc392634d4bc2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  State: 0
   _self: {fileID: 7449900513924197480}
   Rb: {fileID: 7449900513924197492}
   Animator: {fileID: 7449900512966237189}
@@ -23,7 +22,6 @@ MonoBehaviour:
   _playerOneTransform: {fileID: 0}
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
-  focusedPlayer: {fileID: 0}
   energyAmount: 0.08
   damage: 10
   powerLevel: 1
@@ -35,7 +33,6 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   NormalSpeed: 7
-  ActualSpeed: 0
   NormalAcceleration: 30
   RandomSpeedMod: 0.4
   slowFromPass: 0.3
@@ -132,15 +129,11 @@ MonoBehaviour:
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
   hitParticleScale: 3
-  ClosestSurroundPoint: {fileID: 0}
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 1, y: 3}
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
   explosionFX: {fileID: 105310, guid: e6ea0c2b13012484ba2f5dc1054e6d75, type: 3}
   explosionRadius: 10
   explosionDamage: 20
@@ -148,6 +141,8 @@ MonoBehaviour:
   BumpDistanceMod: 1.5
   BumpDurationMod: 0.7
   BumpRestDurationMod: 0.2
+  explosionRadiusRenderer: {fileID: 0}
+  explosionRadiusTransform: {fileID: 0}
 --- !u!1001 &7083713466704685639
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -215,27 +210,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Speed
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Controller
       value: 
+      objectReference: {fileID: 9100000, guid: 882a1f1e2cd950a4280f0e40a0925c57, type: 2}
+    - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Speed
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

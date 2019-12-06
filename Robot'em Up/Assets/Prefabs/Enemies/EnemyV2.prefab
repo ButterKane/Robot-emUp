@@ -332,7 +332,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3493b39309a3d5f4f97a6fae11f414c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  State: 0
   _self: {fileID: 373019035910456879}
   Rb: {fileID: 373019035910456883}
   Animator: {fileID: 373019037066540610}
@@ -343,7 +342,6 @@ MonoBehaviour:
   _playerOneTransform: {fileID: 0}
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
-  focusedPlayer: {fileID: 0}
   energyAmount: 0.065
   damage: 10
   powerLevel: 1
@@ -355,9 +353,12 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   NormalSpeed: 7
-  ActualSpeed: 0
   NormalAcceleration: 30
   RandomSpeedMod: 0
+  slowFromPass: 0
+  timeToRecoverSlowFromPass: 0
+  slowFromDunk: 0
+  timeToRecoverSlowFromDunk: 0
   speedRecoverCurve:
     serializedVersion: 2
     m_Curve: []
@@ -430,15 +431,11 @@ MonoBehaviour:
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
   hitParticleScale: 3
-  ClosestSurroundPoint: {fileID: 0}
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
   coreDropChances: 0.3
   minMaxDropForce: {x: 2, y: 4}
   minMaxCoreHealthValue: {x: 5, y: 5}
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &373019035912214700
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,7 +560,7 @@ Animator:
   m_GameObject: {fileID: 373019037066540611}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f85fe0652c57af44c9ccd2efa630741c, type: 2}
+  m_Controller: {fileID: 9100000, guid: bac6d9c8e7dc9e84cb99f7be6628df7d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

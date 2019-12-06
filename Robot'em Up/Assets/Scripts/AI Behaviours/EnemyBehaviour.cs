@@ -544,7 +544,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (Health <= 0)
         {
-            State = EnemyState.Dying;
+            ChangingState(EnemyState.Dying);
         }
         else
         {
@@ -566,7 +566,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 			DropCore();
 		}
         GameManager.i.enemyManager.enemies.Remove(this);
-		onDeath.Invoke();
+		//onDeath.Invoke();
         Destroy(gameObject);
     }
 
@@ -671,7 +671,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         float _t = 0;
         float _initialMoveMultiplicator = moveMultiplicator;
-        print(_initialMoveMultiplicator);
 
         while (moveMultiplicator < normalMoveMultiplicator)
         {
