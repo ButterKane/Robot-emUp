@@ -275,7 +275,7 @@ public class BallBehaviour : MonoBehaviour
 
 	public float GetCurrentSpeedModifier()
 	{
-		float otherModifier = 1;
+		float otherModifier = 1f;
 		float perfectReceptionModifier = 1f;
 		foreach (SpeedCoef modifier in currentSpeedModifiers)
 		{

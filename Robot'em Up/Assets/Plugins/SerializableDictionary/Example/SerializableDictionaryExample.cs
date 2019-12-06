@@ -6,7 +6,7 @@ using UnityEngine;
 public class SerializableDictionaryExample : MonoBehaviour {
 	// The dictionaries can be accessed throught a property
 	[SerializeField]
-	StringStringDictionary m_stringStringDictionary;
+	public StringStringDictionary m_stringStringDictionary;
 	public IDictionary<string, string> StringStringDictionary
 	{
 		get { return m_stringStringDictionary; }
