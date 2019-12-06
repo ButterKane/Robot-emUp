@@ -395,6 +395,7 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
+		if (_source == DamageSource.Ball) { return; }
 		FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
 		SoundManager.PlaySound("PlayerHitNoBump", transform.position);
 		switch (_source)
