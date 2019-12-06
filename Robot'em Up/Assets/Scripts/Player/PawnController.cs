@@ -22,6 +22,7 @@ public enum SpeedMultiplierReason
 	Freeze,
 	Reviving,
 	Dash,
+	PerfectReception
 }
 
 public class SpeedCoef
