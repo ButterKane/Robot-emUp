@@ -34,10 +34,10 @@ public class ParticleColorer : MonoBehaviour
 				for (int i = 0; i < sgradient.colorKeys.Length; i++)
 				{
 					GradientColorKey newKey = sgradient.colorKeys[i];
-					if (IsEqualTo(sgradient.colorKeys[i].color,_currentColor))
-					{
+					//if (IsEqualTo(sgradient.colorKeys[i].color,_currentColor))
+					//{
 						newKey.color = _newColor;
-					}
+					//}
 					scolorKeys[i] = newKey;
 				}
 				for (int i = 0; i < sgradient.alphaKeys.Length; i++)
@@ -59,10 +59,10 @@ public class ParticleColorer : MonoBehaviour
 		for (int i = 0; i < colgradient.colorKeys.Length; i++)
 		{
 			GradientColorKey newKey = colgradient.colorKeys[i];
-			if (IsEqualTo(colgradient.colorKeys[i].color, _currentColor))
-			{
+			//if (IsEqualTo(colgradient.colorKeys[i].color, _currentColor))
+			//{
 				newKey.color = _newColor;
-			}
+			//}
 			colorKeys[i] = newKey;
 		}
 		for (int i = 0; i < colgradient.alphaKeys.Length; i++)

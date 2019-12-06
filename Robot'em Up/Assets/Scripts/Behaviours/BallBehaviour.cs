@@ -196,7 +196,7 @@ public class BallBehaviour : MonoBehaviour
 	{
 		if (currentBallDatas != null)
 		{
-			float lerpValue = GetCurrentDamageModifier()-1 / currentBallDatas.maxDamageModifierOnPerfectReception-1;
+			float lerpValue = (GetCurrentDamageModifier()-1) / (currentBallDatas.maxDamageModifierOnPerfectReception - 1);
 			Color newColor = currentBallDatas.colorOverDamage.Evaluate(lerpValue);
 			SetColor(newColor);
 		}
@@ -251,37 +251,53 @@ public class BallBehaviour : MonoBehaviour
 	public int GetCurrentDamages()
 	{
 		float damages = currentBallDatas.damages;
-		float totalModifier = 1;
+		return Mathf.RoundToInt(damages * GetCurrentDamageModifier());
+	}
+
+	public float GetCurrentDamageModifier()
+	{
+		float perfectReceptionModifier = 1f;
+		float otherModifier = 1;
 		foreach (DamageModifier modifier in currentDamageModifiers)
 		{
-			totalModifier *= modifier.multiplyCoef;
+			if (modifier.source == DamageModifierSource.PerfectReception)
+			{
+				perfectReceptionModifier *= modifier.multiplyCoef;
+			}
+			else
+			{
+				otherModifier *= modifier.multiplyCoef;
+			}
 		}
-		totalModifier = Mathf.Clamp(totalModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
-		return Mathf.RoundToInt(damages * totalModifier);
+		perfectReceptionModifier = Mathf.Clamp(perfectReceptionModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
+		return (perfectReceptionModifier * otherModifier);
 	}
 
 	public float GetCurrentSpeedModifier()
 	{
-		float totalModifier = 1;
+		float otherModifier = 1;
+		float perfectReceptionModifier = 1f;
 		foreach (SpeedCoef modifier in currentSpeedModifiers)
 		{
-			totalModifier *= modifier.speedCoef;
+			if (modifier.reason == SpeedMultiplierReason.PerfectReception)
+			{
+				perfectReceptionModifier *= modifier.speedCoef;
+			} else
+			{
+				otherModifier *= modifier.speedCoef;
+			}
 		}
-		return totalModifier;
-	}
-	public float GetCurrentDamageModifier ()
-	{
-		float totalModifier = 1;
-		foreach (DamageModifier modifier in currentDamageModifiers)
-		{
-			totalModifier *= modifier.multiplyCoef;
-		}
-		return totalModifier;
+		perfectReceptionModifier = Mathf.Clamp(perfectReceptionModifier, 0, currentBallDatas.maxSpeedMultiplierOnPerfectReception);
+		return perfectReceptionModifier * otherModifier;
 	}
 
 	void SetColor(Color _newColor)
 	{
-        // ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
+		if (trailFX != null)
+		{
+			ParticleColorer.ReplaceParticleColor(trailFX, new Color(122f / 255f, 0, 122f / 255f), _newColor);
+		}
+        ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
         currentColor = _newColor;
 	}
 
@@ -350,6 +366,8 @@ public class BallBehaviour : MonoBehaviour
 				if (trailFX == null)
 				{
 					trailFX = FXManager.InstantiateFX(currentBallDatas.Trail, Vector3.zero, true, Vector3.zero, Vector3.one, transform);
+					UpdateColor();
+					trailFX.name = "FX_CoreTrail";
 				}
 				break;
 			case BallState.Held:
@@ -457,7 +475,8 @@ public class BallBehaviour : MonoBehaviour
 					}
 				}
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
-				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
+				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
+				Debug.Log(GetCurrentSpeedModifier());
 				if (currentCurve == null && !teleguided && currentDistanceTravelled >= currentMaxDistance)
 				{
 					ChangeState(BallState.Grounded);

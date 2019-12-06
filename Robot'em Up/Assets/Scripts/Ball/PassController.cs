@@ -125,7 +125,10 @@ public class PassController : MonoBehaviour
 		SoundManager.PlaySound("PerfectReception", transform.position, transform);
 		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
 		mainBall.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
-		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
+		float lerpValue = (mainBall.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		Color newColor = ballDatas.colorOverDamage.Evaluate(lerpValue);
+		GameObject perfectFX = FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
+		ParticleColorer.ReplaceParticleColor(perfectFX, new Color(122f / 255f, 0, 122f / 255f), newColor);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 	}
 
@@ -255,7 +258,7 @@ public class PassController : MonoBehaviour
 		FeedbackManager.SendFeedback("event.ThrowPass", this);
 		SoundManager.PlaySound("ThrowPass", transform.position, transform);
 		ChangePassState(PassState.Shooting);
-		if (ballTimeInHand >= receptionMinDelay) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
+		if (ballTimeInHand > receptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
 		currentPassCooldown = passCooldown;
 		BallBehaviour shotBall = ball;
 		ball = null;
