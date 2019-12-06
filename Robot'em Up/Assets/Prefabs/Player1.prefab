@@ -57,7 +57,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  _isInvincible: 0
   invincibilityTime: 1
   jumpForce: 800
   accelerationCurve:
@@ -124,14 +123,12 @@ MonoBehaviour:
     m_RotationOrder: 4
   whenToTriggerFallingAnim: 0.302
   bumpRaycastDistance: 1
-  moveState: 0
-  currentHealth: 0
   playerIndex: 0
   triggerTreshold: 0.1
   _lockable: 0
   _lockHitboxSize: 0
   enableDash: 1
-  enableJump: 0
+  enableJump: 1
   enableDunk: 1
   enableMagnet: 1
   FX_hit: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89, type: 3}
@@ -330,7 +327,25 @@ MonoBehaviour:
   stackCooldown: 2
   dashFadeCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

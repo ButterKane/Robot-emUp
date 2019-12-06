@@ -25,6 +25,7 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private List<Vector3> currentCurve;
 	[SerializeField] private Vector3 initialLookDirection;
 	[SerializeField] private List<DamageModifier> currentDamageModifiers;
+	[SerializeField] private List<SpeedCoef> currentSpeedModifiers;
 	[SerializeField] private Color currentColor;
 	[SerializeField] private bool teleguided;
 	[SerializeField] private float currentTimeFlying;
@@ -48,6 +49,7 @@ public class BallBehaviour : MonoBehaviour
 			instance = this;
 		}
 
+		currentSpeedModifiers = new List<SpeedCoef>();
 		currentDamageModifiers = new List<DamageModifier>();
 		rb = GetComponent<Rigidbody>();
         defaultLayer = gameObject.layer;
@@ -64,7 +66,7 @@ public class BallBehaviour : MonoBehaviour
 			currentTimeFlying += Time.deltaTime;
 		}
 		UpdateBallPosition();
-		UpdateDamageModifiers();
+		UpdateModifiers();
 	}
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
@@ -163,26 +165,38 @@ public class BallBehaviour : MonoBehaviour
 		currentSpeed *= _coef;
 	}
 
-	void UpdateDamageModifiers ()
+	void UpdateModifiers ()
 	{
 		List<DamageModifier> newDamageModifierList = new List<DamageModifier>();
-		foreach (DamageModifier modifier in currentDamageModifiers)
+		foreach (DamageModifier damageModifier in currentDamageModifiers)
 		{
-			if (modifier.duration <= -1) { newDamageModifierList.Add(modifier); continue; }
-			modifier.duration -= Time.deltaTime;
-			if (modifier.duration > 0)
+			if (damageModifier.duration <= -1) { newDamageModifierList.Add(damageModifier); continue; }
+			damageModifier.duration -= Time.deltaTime;
+			if (damageModifier.duration > 0)
 			{
-				newDamageModifierList.Add(modifier);
+				newDamageModifierList.Add(damageModifier);
 			}
 		}
 		currentDamageModifiers = newDamageModifierList;
+
+		List<SpeedCoef> newSpeedModifierList = new List<SpeedCoef>();
+		foreach (SpeedCoef speedModifier in currentSpeedModifiers)
+		{
+			if (speedModifier.duration <= -1) { newSpeedModifierList.Add(speedModifier); continue; }
+			speedModifier.duration -= Time.deltaTime;
+			if (speedModifier.duration > 0)
+			{
+				newSpeedModifierList.Add(speedModifier);
+			}
+		}
+		currentSpeedModifiers = newSpeedModifierList;
 	}
 
 	void UpdateColor ()
 	{
 		if (currentBallDatas != null)
 		{
-			float lerpValue = GetCurrentDamageModifier()-1 / currentBallDatas.maxDamageModifier-1;
+			float lerpValue = GetCurrentDamageModifier()-1 / currentBallDatas.maxDamageModifierOnPerfectReception-1;
 			Color newColor = currentBallDatas.colorOverDamage.Evaluate(lerpValue);
 			SetColor(newColor);
 		}
@@ -242,10 +256,19 @@ public class BallBehaviour : MonoBehaviour
 		{
 			totalModifier *= modifier.multiplyCoef;
 		}
-		totalModifier = Mathf.Clamp(totalModifier, 0, currentBallDatas.maxDamageModifier);
+		totalModifier = Mathf.Clamp(totalModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
 		return Mathf.RoundToInt(damages * totalModifier);
 	}
 
+	public float GetCurrentSpeedModifier()
+	{
+		float totalModifier = 1;
+		foreach (SpeedCoef modifier in currentSpeedModifiers)
+		{
+			totalModifier *= modifier.speedCoef;
+		}
+		return totalModifier;
+	}
 	public float GetCurrentDamageModifier ()
 	{
 		float totalModifier = 1;
@@ -262,6 +285,24 @@ public class BallBehaviour : MonoBehaviour
         currentColor = _newColor;
 	}
 
+	public SpeedCoef AddNewSpeedModifier(SpeedCoef _newModifier)
+	{
+		currentSpeedModifiers.Add(_newModifier);
+		return _newModifier;
+	}
+
+	public void RemoveSpeedModifier(SpeedMultiplierReason _source)
+	{
+		List<SpeedCoef> newModifierList = new List<SpeedCoef>();
+		foreach (SpeedCoef modifier in currentSpeedModifiers)
+		{
+			if (modifier.reason != _source)
+			{
+				newModifierList.Add(modifier);
+			}
+		}
+		currentSpeedModifiers = newModifierList;
+	}
 	public DamageModifier AddNewDamageModifier(DamageModifier _newModifier)
 	{
 		currentDamageModifiers.Add(_newModifier);
@@ -373,7 +414,7 @@ public class BallBehaviour : MonoBehaviour
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
 
-					RaycastHit[] hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
+					RaycastHit[] hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in hitColliders)
 					{
 						IHitable potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
@@ -415,7 +456,7 @@ public class BallBehaviour : MonoBehaviour
 						}
 					}
 				}
-				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
+				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
 				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
 				if (currentCurve == null && !teleguided && currentDistanceTravelled >= currentMaxDistance)
 				{
