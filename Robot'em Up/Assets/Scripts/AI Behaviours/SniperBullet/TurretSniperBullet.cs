@@ -13,6 +13,8 @@ public class TurretSniperBullet : MonoBehaviour
     [HideInInspector] public Transform spawnParent;
     public GameObject impactFX;
     public Vector3 impactFXScale;
+    public LayerMask layerToCheck;
+    public float distanceToRaycast;
 
     private void Start()
     {
@@ -23,8 +25,16 @@ public class TurretSniperBullet : MonoBehaviour
     {
         rb.velocity = (target.position - transform.position).normalized * speed;
         maxLifeTime -= Time.deltaTime;
-        if (maxLifeTime <= 0)
+        if (maxLifeTime <= 0 || !target.GetComponent<PawnController>().IsTargetable())
         {
+            Destroy(gameObject);
+        }
+
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position, rb.velocity, out hit, distanceToRaycast, layerToCheck)){
+            GameObject _impactFX = Instantiate(impactFX, hit.point, Quaternion.identity);
+            _impactFX.transform.localScale = impactFXScale;
+            Destroy(_impactFX, .25f);
             Destroy(gameObject);
         }
     }
@@ -38,13 +48,6 @@ public class TurretSniperBullet : MonoBehaviour
             GameObject _impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
             _impactFX.transform.localScale = impactFXScale;
             Destroy(_impactFX, 1);
-            Destroy(gameObject);
-        }
-        else if (other.tag == "Environment")
-        {
-            GameObject _impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
-            _impactFX.transform.localScale = impactFXScale;
-            Destroy(_impactFX, .25f);
             Destroy(gameObject);
         }
     }

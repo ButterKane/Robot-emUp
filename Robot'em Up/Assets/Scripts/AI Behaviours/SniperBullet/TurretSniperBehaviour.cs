@@ -36,6 +36,8 @@ public class TurretSniperBehaviour : TurretBehaviour
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
+                aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
+                aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
                 aimingAtPlayerFXRenderer.enabled = false;
                 break;
             case TurretState.Idle:
@@ -124,12 +126,27 @@ public class TurretSniperBehaviour : TurretBehaviour
                 {
                     attackState = TurretAttackState.Attack;
                     Animator.SetTrigger("AttackTrigger");
-                    aimingAtPlayerFXRenderer.enabled = false;
-                    aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
+                    // reset FX variables
+                    aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 10);
+                    aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.yellow);
                 }
                 break;
             //-------------------------------------------------------
             case TurretAttackState.Attack:
+                //ADAPT FXs----------------------------------
+                if (_aimAtPlayer)
+                {
+                    aimingAtPlayerFXTransform.position = focusedPlayerTransform.position;
+                    aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
+                    aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
+                }
+                else
+                {
+                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingCubeTransform.position.y, hit.point.z) + hit.normal * 0.2f;
+                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
+                    aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
+                }
+                //ROTATE TOWARDS PLAYER-------------------------------------
                 if (focusedPlayerTransform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
@@ -138,6 +155,8 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
+                aimingAtPlayerFXRenderer.enabled = false;
+                aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
                 if (restTime <= 0)
                 {
                     Animator.SetTrigger("FromRestToIdleTrigger");
