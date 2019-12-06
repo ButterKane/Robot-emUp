@@ -97,11 +97,11 @@ public class ShakeEffect : MonoBehaviour {
 	protected virtual void Awake ()
 	{
 		CinemachineBrain brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
-		if (brain == null) { return; }
+		//if (brain == null) { return; }
 		ICinemachineCamera virtualCameraEnum = brain.ActiveVirtualCamera;
-		if (virtualCameraEnum == null) { return; }
+		//if (virtualCameraEnum == null) { return; }
 		GameObject virtualCamGO = brain.ActiveVirtualCamera.VirtualCameraGameObject;
-		if (virtualCamGO == null) { return; }
+		//if (virtualCamGO == null) { return; }
 		CinemachineVirtualCamera _virtualCam = virtualCamGO.GetComponent<CinemachineVirtualCamera>();
 		_perlin = _virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 		if (_perlin == null)
@@ -113,7 +113,7 @@ public class ShakeEffect : MonoBehaviour {
 
 	private void Update ()
 	{
-		if (_virtualCamera == null) { return; }
+		//if (_virtualCamera == null) { return; }
 		currentShake = CameraShaker.currentShake;
 		CameraShaker.UpdateShakes();
 		if (currentShake != null)

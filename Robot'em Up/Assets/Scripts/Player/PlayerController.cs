@@ -231,15 +231,21 @@ public class PlayerController : PawnController, IHitable
 		{
 			switch (_force)
 			{
+                case VibrationForce.VeryLight:
+                    GamePad.SetVibration(playerIndex, 0.1f, 0.1f);
+                    break;
 				case VibrationForce.Light:
-					GamePad.SetVibration(playerIndex, 0.1f, 0.1f);
-					break;
-				case VibrationForce.Medium:
 					GamePad.SetVibration(playerIndex, 0.2f, 0.2f);
 					break;
-				case VibrationForce.Heavy:
-					GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
+				case VibrationForce.Medium:
+					GamePad.SetVibration(playerIndex, 0.3f, 0.3f);
 					break;
+				case VibrationForce.Heavy:
+					GamePad.SetVibration(playerIndex, 0.4f, 0.4f);
+					break;
+                case VibrationForce.VeryHeavy:
+                    GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
+                    break;
 			}
 			yield return new WaitForEndOfFrame();
 		}

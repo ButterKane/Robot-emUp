@@ -6,9 +6,11 @@ using UnityEngine.SceneManagement;
 
 public enum VibrationForce
 {
+    VeryHeavy,
 	Heavy,
 	Medium,
-	Light
+	Light,
+    VeryLight,
 }
 public enum DamageSource
 {
