@@ -49,10 +49,17 @@ public class EnemyShield : EnemyBehaviour
         NormalAcceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         Animator.SetTrigger("AttackTrigger");
+
+        navMeshAgent.enabled = false;
     }   
 
     public override void AttackingState()
     {
+        if (!navMeshAgent.enabled)
+        {
+            navMeshAgent.enabled = true;
+        }
+
         if (deactivateShieldWhenAttacking)
         {
             IsShieldActivated = false;
@@ -86,6 +93,8 @@ public class EnemyShield : EnemyBehaviour
             navMeshAgent.acceleration = NormalAcceleration;
             IsShieldActivated = true;
             ChangingState(EnemyState.PauseAfterAttack);
+
+            navMeshAgent.enabled = false;
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
         {
@@ -101,6 +110,8 @@ public class EnemyShield : EnemyBehaviour
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
         mustCancelAttack = true;
         Animator.SetTrigger("AttackTouchedTrigger");
+
+        navMeshAgent.enabled = false;
     }
 
     // BUMPED

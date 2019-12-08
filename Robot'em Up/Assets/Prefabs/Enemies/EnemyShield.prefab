@@ -23,15 +23,15 @@ MonoBehaviour:
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
   energyAmount: 1
-  damage: 10
+  damage: 20
   powerLevel: 2.5
-  _lockable: 0
-  _lockHitboxSize: 0
+  _lockable: 1
+  _lockHitboxSize: 2.5
   arenaRobot: 0
   focusDistance: 40
   unfocusDistance: 50
-  distanceBeforeChangingPriority: 3
-  maxTimeBetweenCheck: 0
+  distanceBeforeChangingPriority: 6
+  maxTimeBetweenCheck: 0.25
   NormalSpeed: 7
   NormalAcceleration: 30
   RandomSpeedMod: 0
@@ -45,11 +45,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  distanceToAttack: 5
-  maxAnticipationTime: 0.5
+  distanceToAttack: 12
+  maxAnticipationTime: 1.5
   rotationSpeedPreparingAttack: 0.2
-  attackMaxDistance: 8
-  maxAttackDuration: 0.5
+  attackMaxDistance: 4
+  maxAttackDuration: 1.2
   attackSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -118,9 +118,9 @@ MonoBehaviour:
   minMaxCoreHealthValue: {x: 1, y: 3}
   ShieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
     type: 3}
-  deactivateShieldWhenAttacking: 1
-  attackSpeed: 30
-  maxRotationSpeed: 3
+  deactivateShieldWhenAttacking: 0
+  attackSpeed: 17
+  maxRotationSpeed: 360
   BumpOtherDistanceMod: 0.5
   BumpOtherDurationMod: 0.2
   BumpOtherRestDurationMod: 0.3
@@ -204,7 +204,7 @@ PrefabInstance:
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Speed
-      value: 3
+      value: 5.5
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
