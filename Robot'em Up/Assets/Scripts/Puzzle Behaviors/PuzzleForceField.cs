@@ -94,12 +94,16 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 
     public override void WhenDesactivate()
     {
+
+        SoundManager.PlaySound("ForceFieldDesactivate", transform.position, transform);
         isActivated = false;
         ChangeState();
     }
     
     public override void WhenActivate()
     {
+
+        SoundManager.PlaySound("ForceFieldActivate", transform.position, transform);
         isActivated = true;
         ChangeState();
     }

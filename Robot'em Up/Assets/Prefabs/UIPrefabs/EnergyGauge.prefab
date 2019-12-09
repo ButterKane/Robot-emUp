@@ -446,6 +446,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81f1e7f4ce9078b4cbc75ed9ea857628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultGaugeColor: {r: 0.60784316, g: 0.69411767, b: 1, a: 1}
+  fullGaugeColor: {r: 1, g: 0.6912742, b: 0.033018887, a: 1}
   gaugeFillLerped: {fileID: 1166366096098804256}
   gaugeFillRay: {fileID: 2361644955461490663}
   textAnimator: {fileID: 1022125756641622163}
@@ -1220,11 +1222,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1166366095150063243}
     m_Modifications:
-    - target: {fileID: 8060061600778237297, guid: 9e6831f724c1cef4a95cb4db8668b577,
-        type: 3}
-      propertyPath: m_Name
-      value: Cursors
-      objectReference: {fileID: 0}
     - target: {fileID: 8060061600778237296, guid: 9e6831f724c1cef4a95cb4db8668b577,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1329,6 +1326,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8060061600778237297, guid: 9e6831f724c1cef4a95cb4db8668b577,
+        type: 3}
+      propertyPath: m_Name
+      value: Cursors
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e6831f724c1cef4a95cb4db8668b577, type: 3}

@@ -21,6 +21,9 @@ public class PuzzleDoor : PuzzleActivable
     public void DestroyTheDoor()
     {
         open = true;
+
+        FeedbackManager.SendFeedback("event.doorOpen", this);
+        SoundManager.PlaySound("DoorOpen", transform.position, transform);
         foreach (var item in indictatorLightsList)
         {
             item.gameObject.SetActive(false);

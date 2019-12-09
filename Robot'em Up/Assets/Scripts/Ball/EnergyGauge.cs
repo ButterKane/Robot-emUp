@@ -7,6 +7,9 @@ using DG.Tweening;
 
 public class EnergyGauge : MonoBehaviour
 {
+	[SerializeField] private Color defaultGaugeColor;
+	[SerializeField] private Color fullGaugeColor;
+
 	[SerializeField] private Image gaugeFillLerped;
 	[SerializeField] private Image gaugeFillRay;
 	[SerializeField] private Animator textAnimator;
@@ -17,16 +20,6 @@ public class EnergyGauge : MonoBehaviour
 	private void Update ()
 	{
 		UpdateGauge();
-		if (Input.GetKeyDown(KeyCode.I))
-		{
-			if (EnergyManager.GetEnergy() >= 0.99f)
-			{
-				EnergyManager.DecreaseEnergy(1f);
-			} else
-			{
-				EnergyManager.IncreaseEnergy(1f);
-			}
-		}
 	}
 	public void UpdateGauge()
 	{
@@ -43,8 +36,12 @@ public class EnergyGauge : MonoBehaviour
 		if (EnergyManager.GetEnergy() >= 0.99f)
 		{
 			textAnimator.SetBool("dunkReady", true);
+			gaugeFillLerped.color = new Color(fullGaugeColor.r, fullGaugeColor.g, fullGaugeColor.b, gaugeFillLerped.color.a);
+			gaugeFillRay.color = new Color(fullGaugeColor.r, fullGaugeColor.g, fullGaugeColor.b, gaugeFillLerped.color.a);
 		} else
 		{
+			gaugeFillLerped.color = new Color(defaultGaugeColor.r, defaultGaugeColor.g, defaultGaugeColor.b, gaugeFillLerped.color.a);
+			gaugeFillRay.color = new Color(defaultGaugeColor.r, defaultGaugeColor.g, defaultGaugeColor.b, gaugeFillLerped.color.a);
 			textAnimator.SetBool("dunkReady", false);
 		}
 	}

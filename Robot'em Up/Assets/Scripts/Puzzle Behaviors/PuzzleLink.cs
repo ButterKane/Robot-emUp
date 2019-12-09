@@ -41,6 +41,8 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 chargingTime = puzzleData.nbSecondsLinkMaintained;
                 isActivated = true;
 
+                SoundManager.PlaySound("PuzzleLinkActivate", transform.position, transform);
+
                 ActivateLinkedObjects();
 
 
@@ -78,6 +80,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 Destroy(FX_Linked);
             }
 
+            SoundManager.PlaySound("PuzzleLinkDesactivate", transform.position, transform);
             DesactiveLinkedObjects();
 
 
