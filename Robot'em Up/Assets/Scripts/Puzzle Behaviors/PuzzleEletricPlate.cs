@@ -46,6 +46,8 @@ public class PuzzleEletricPlate : PuzzleActivable
             {
                 item.Damage(puzzleData.DamageEletricPlate);
                 item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+
+                SoundManager.PlaySound("EletricPlateDamage", transform.position, transform);
             }
         }
         /*
