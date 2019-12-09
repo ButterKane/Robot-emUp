@@ -476,7 +476,6 @@ public class BallBehaviour : MonoBehaviour
 				}
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
 				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
-				Debug.Log(GetCurrentSpeedModifier());
 				if (currentCurve == null && !teleguided && currentDistanceTravelled >= currentMaxDistance)
 				{
 					ChangeState(BallState.Grounded);

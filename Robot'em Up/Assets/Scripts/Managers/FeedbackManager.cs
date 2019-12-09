@@ -25,6 +25,7 @@ public class FeedbackManager
 {
 	public static void SendFeedback(string _eventName, Object _target)
 	{
+        Debug.Log(_eventName);
 		FeedbackData feedback = GetFeedbackData(_eventName);
 		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency); }
 		if (feedback.vibrationData != null && feedback.vibrationDataInited && _target != null)
