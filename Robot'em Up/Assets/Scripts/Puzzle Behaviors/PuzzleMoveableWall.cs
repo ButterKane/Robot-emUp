@@ -26,7 +26,6 @@ public class PuzzleMoveableWall : PuzzleActivable
     {
         startTime = Time.time;
         journeyLength = Vector3.Distance(Pos1, Pos2);
-        print(journeyLength);
         RecalculatePositions();
 
     }
