@@ -518,6 +518,11 @@ public class BallBehaviour : MonoBehaviour
 		ballCoroutine = null;
 	}
 
+	public void PrintDecal(RaycastHit ray, Vector3 direction )
+	{
+		Debug.Log("Spawning decal");
+	}
+
 	public void ConvertCoordinatesToCurve(List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength)
 	{
 		AnimationCurve curveX = new AnimationCurve();

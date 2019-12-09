@@ -227,24 +227,25 @@ public class PlayerController : PawnController, IHitable
 
 	IEnumerator Vibrate_C ( float _duration, VibrationForce _force )
 	{
+		float momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.vibrationMultiplier);
 		for (float i = 0; i < _duration; i += Time.deltaTime)
 		{
 			switch (_force)
 			{
                 case VibrationForce.VeryLight:
-                    GamePad.SetVibration(playerIndex, 0.1f, 0.1f);
+                    GamePad.SetVibration(playerIndex, 0.1f* momentumMultiplier, 0.1f* momentumMultiplier);
                     break;
 				case VibrationForce.Light:
-					GamePad.SetVibration(playerIndex, 0.2f, 0.2f);
+					GamePad.SetVibration(playerIndex, 0.2f* momentumMultiplier, 0.2f* momentumMultiplier);
 					break;
 				case VibrationForce.Medium:
-					GamePad.SetVibration(playerIndex, 0.3f, 0.3f);
+					GamePad.SetVibration(playerIndex, 0.3f* momentumMultiplier, 0.3f* momentumMultiplier);
 					break;
 				case VibrationForce.Heavy:
-					GamePad.SetVibration(playerIndex, 0.4f, 0.4f);
+					GamePad.SetVibration(playerIndex, 0.4f* momentumMultiplier, 0.4f* momentumMultiplier);
 					break;
                 case VibrationForce.VeryHeavy:
-                    GamePad.SetVibration(playerIndex, 0.5f, 0.5f);
+                    GamePad.SetVibration(playerIndex, 0.5f* momentumMultiplier, 0.5f* momentumMultiplier);
                     break;
 			}
 			yield return new WaitForEndOfFrame();

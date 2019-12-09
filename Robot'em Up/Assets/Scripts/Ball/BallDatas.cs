@@ -16,6 +16,7 @@ public class BallDatas : ScriptableObject
 	public float maxDamageModifierOnPerfectReception;
 	public int damages;
 	public Gradient colorOverDamage;
+	public Texture2D hitDecal;
 
 	[Header("FX")]
 	public GameObject Trail;
