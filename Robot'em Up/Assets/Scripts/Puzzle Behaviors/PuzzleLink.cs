@@ -80,6 +80,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 Destroy(FX_Linked);
             }
 
+            SoundManager.PlaySound("PuzzleLinkDesactivate", transform.position, transform);
             DesactiveLinkedObjects();
 
 
