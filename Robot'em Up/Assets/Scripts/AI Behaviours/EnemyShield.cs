@@ -129,4 +129,10 @@ public class EnemyShield : EnemyBehaviour
     {
         IsShieldActivated = true;
     }
+    protected override void Die()
+    {
+        base.Die();
+        Destroy(Shield);
+    }
+
 }
