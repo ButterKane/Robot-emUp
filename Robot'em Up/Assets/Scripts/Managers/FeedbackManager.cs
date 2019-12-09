@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+public enum VibrationTarget { TargetedPlayer, BothPlayers}
 [System.Serializable]
 public class VibrationData
 {
 	public VibrationForce force;
 	public float duration;
+	public VibrationTarget target;
 }
 
 [System.Serializable]
@@ -25,16 +27,26 @@ public class FeedbackManager
 {
 	public static void SendFeedback(string _eventName, Object _target)
 	{
-        Debug.Log(_eventName);
 		FeedbackData feedback = GetFeedbackData(_eventName);
 		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency); }
-		if (feedback.vibrationData != null && feedback.vibrationDataInited && _target != null)
+		if (feedback.vibrationData != null && feedback.vibrationDataInited)
 		{
-			Component target = _target as Component;
-			PlayerController player = target.GetComponent<PlayerController>();
-			if (player != null)
+			switch (feedback.vibrationData.target)
 			{
-				player.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
+				case VibrationTarget.TargetedPlayer:
+					if (_target == null) { Debug.LogWarning("Can't make target vibrate"); return; }
+					Component target = _target as Component;
+					PlayerController player = target.GetComponent<PlayerController>();
+					if (player != null)
+					{
+						player.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
+					}
+					break;
+				case VibrationTarget.BothPlayers:
+					GameManager.playerOne.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
+					GameManager.playerTwo.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
+					break;
+
 			}
 		}
 	}

@@ -89,36 +89,45 @@ public class ShakeData
 
 public class ShakeEffect : MonoBehaviour {
 
-	protected CinemachineBasicMultiChannelPerlin _perlin;
-	protected CinemachineVirtualCamera _virtualCamera;
+	public CinemachineBasicMultiChannelPerlin _perlin;
+	public CinemachineVirtualCamera _virtualCamera;
 
 	public ShakeData currentShake;
 
 	protected virtual void Awake ()
 	{
+		_virtualCamera = GetVirtualCamera();
+	}
+
+	public CinemachineVirtualCamera GetVirtualCamera()
+	{
 		CinemachineBrain brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
-		//if (brain == null) { return; }
+		if (brain == null) { return null; }
 		ICinemachineCamera virtualCameraEnum = brain.ActiveVirtualCamera;
-		//if (virtualCameraEnum == null) { return; }
+		if (virtualCameraEnum == null) { return null; }
 		GameObject virtualCamGO = brain.ActiveVirtualCamera.VirtualCameraGameObject;
-		//if (virtualCamGO == null) { return; }
+		if (virtualCamGO == null) { return null; }
 		CinemachineVirtualCamera _virtualCam = virtualCamGO.GetComponent<CinemachineVirtualCamera>();
+		if (_virtualCam == null) { return null; }
 		_perlin = _virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 		if (_perlin == null)
 		{
 			_perlin = _virtualCam.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 			_perlin.m_NoiseProfile = Resources.Load("NoiseProfile") as NoiseSettings;
 		}
+		return _virtualCam;
 	}
 
 	private void Update ()
 	{
-		//if (_virtualCamera == null) { return; }
+		_virtualCamera = GetVirtualCamera();
+		if (_virtualCamera == null) { return ; }
 		currentShake = CameraShaker.currentShake;
 		CameraShaker.UpdateShakes();
 		if (currentShake != null)
 		{
-			_perlin.m_AmplitudeGain = currentShake.intensity;
+			float momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.screenShakeMultiplier);
+			_perlin.m_AmplitudeGain = currentShake.intensity * momentumMultiplier;
 			_perlin.m_FrequencyGain = currentShake.frequency;
 		} else
 		{

@@ -35,7 +35,7 @@ public class FeedbackEditor : Editor
 			GUI.color = Color.white;
 			GUILayout.Space(10);
 
-			if (GUILayout.Button("Check for implemented events", buttonStyle, GUILayout.Height(100)))
+			if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", buttonStyle, GUILayout.Height(100)))
 			{
 				foreach (FeedbackData feedbackData in feedbackDatas.feedbackList)
 				{
@@ -55,7 +55,7 @@ public class FeedbackEditor : Editor
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Feedback datas", headerStyle);
+			GUILayout.Box("Events", headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -120,6 +120,12 @@ public class FeedbackEditor : Editor
 								SerializedProperty m_duration = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vibrationData.duration");
 								GUILayout.Label("Duration: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_duration, GUIContent.none);
+								EditorGUILayout.EndHorizontal();
+
+								EditorGUILayout.BeginHorizontal();
+								SerializedProperty m_target = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vibrationData.target");
+								GUILayout.Label("Target: ", GUILayout.Width(100));
+								EditorGUILayout.PropertyField(m_target, GUIContent.none);
 								EditorGUILayout.EndHorizontal();
 							}
 						}
