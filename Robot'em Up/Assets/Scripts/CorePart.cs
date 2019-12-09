@@ -58,7 +58,8 @@ public class CorePart : MonoBehaviour
 					Destroy(collider);
 				}
 			}
-			animator.SetTrigger("showArrow");
+            if(animator != null)
+			    animator.SetTrigger("showArrow");
 			rb.isKinematic = true;
 		}
 	}
