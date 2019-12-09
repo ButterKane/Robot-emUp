@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  invincibilityTime: 1
+  invincibilityTime: 0.15
   jumpForce: 800
   accelerationCurve:
     serializedVersion: 2
@@ -128,7 +128,7 @@ MonoBehaviour:
   _lockable: 0
   _lockHitboxSize: 0
   enableDash: 1
-  enableJump: 1
+  enableJump: 0
   enableDunk: 1
   enableMagnet: 1
   FX_hit: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89, type: 3}
@@ -146,7 +146,7 @@ MonoBehaviour:
   revivePartsCount: 3
   partExplosionAngleRandomness: 0.412
   minMaxProjectionForce: {x: 12, y: 16}
-  reviveHoldDuration: 1.4
+  reviveHoldDuration: 0.85
   reviveFreezeDuration: 0
 --- !u!114 &514769572
 MonoBehaviour:
@@ -220,10 +220,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstPawn: {fileID: 1446006776330246409}
   secondPawn: {fileID: 0}
-  maxDistanceBeforeShowing: 40
-  maxDistanceBeforeSlowing: 48
-  maxDistanceBeforeBreaking: 56
-  distanceBeforeRebuilding: 35
+  maxDistanceBeforeShowing: 250
+  maxDistanceBeforeSlowing: 255
+  maxDistanceBeforeBreaking: 260
+  distanceBeforeRebuilding: 249
   linkColor:
     serializedVersion: 2
     key0: {r: 0, g: 0.94729495, b: 1, a: 1}
@@ -323,8 +323,8 @@ MonoBehaviour:
   maxStackAmount: 3
   unstoppableDash: 0
   invincibleDuringDash: 1
-  useCooldown: 0.5
-  stackCooldown: 2
+  useCooldown: 0.2
+  stackCooldown: 2.7
   dashFadeCurve:
     serializedVersion: 2
     m_Curve:
@@ -351,7 +351,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   dashFadeDuration: 0.2
   UIFadeDuration: 0.5
-  UIFadeDelay: 1.5
+  UIFadeDelay: 0.8
   state: 1
   visuals: {fileID: 4621407884147341700}
   clonePerSec: 100

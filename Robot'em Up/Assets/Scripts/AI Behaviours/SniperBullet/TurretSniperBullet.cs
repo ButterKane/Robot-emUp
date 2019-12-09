@@ -16,6 +16,9 @@ public class TurretSniperBullet : MonoBehaviour
     public LayerMask layerToCheck;
     public float distanceToRaycast;
 
+    [HideInInspector] public bool isAimingPlayer;
+    public float distanceAoEDamage;
+
     private void Start()
     {
         initialPosition = transform.position;
@@ -35,6 +38,10 @@ public class TurretSniperBullet : MonoBehaviour
             GameObject _impactFX = Instantiate(impactFX, hit.point, Quaternion.identity);
             _impactFX.transform.localScale = impactFXScale;
             Destroy(_impactFX, .25f);
+            if (isAimingPlayer && Vector3.Distance(hit.point, target.position) < distanceAoEDamage)
+            {
+                target.GetComponent<PawnController>().Damage(damageDealt);
+            }
             Destroy(gameObject);
         }
     }
