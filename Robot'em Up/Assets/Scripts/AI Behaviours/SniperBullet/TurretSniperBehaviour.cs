@@ -11,12 +11,9 @@ public class TurretSniperBehaviour : TurretBehaviour
     public Vector3 aimingAtPlayerFXScaleOnPlayer;
     public float endAimingFXScaleMultiplier;
     public float startAimingFXCircleThickness;
-    bool playerInLineOfSight;
-    public float timeForBulletToReach;
 
     public override void LaunchProjectile()
     {
-<<<<<<< HEAD
         Vector3 spawnPosition;
         spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
@@ -42,22 +39,6 @@ public class TurretSniperBehaviour : TurretBehaviour
         SoundManager.PlaySound("SniperTurretDeath", transform.position);
 
         Destroy(gameObject);
-=======
-        GameObject _sniperBulletRef = Instantiate(bulletPrefab, bulletSpawn.position, Quaternion.LookRotation(bulletSpawn.forward));
-
-        if (playerInLineOfSight)
-        {
-            _sniperBulletRef.GetComponent<TurretSniperBullet>().target = focusedPlayerTransform;
-            _sniperBulletRef.GetComponent<TurretSniperBullet>().spawnParent = _self;
-            _sniperBulletRef.GetComponent<TurretSniperBullet>().isAimingPlayer = true;
-        }
-        else
-        {
-            _sniperBulletRef.GetComponent<TurretSniperBullet>().target = focusedPlayerTransform;
-            _sniperBulletRef.GetComponent<TurretSniperBullet>().spawnParent = _self;
-            _sniperBulletRef.GetComponent<TurretSniperBullet>().isAimingPlayer = false;
-        }
->>>>>>> TurretDev
     }
 
     public override void Update()
@@ -119,22 +100,18 @@ public class TurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    void UpdatePlayerInLineOfSight()
+    public override void AttackingUpdateState()
     {
-        if (Physics.Raycast(_self.position, _self.forward, Vector3.Distance(_self.position, focusedPlayerTransform.position), layersToCheckToScale))
+        bool _aimAtPlayer;
+        
+        if(Physics.Raycast(_self.position, _self.forward, Vector3.Distance(_self.position, focusedPlayerTransform.position), layersToCheckToScale))
         {
-            playerInLineOfSight = false;
+            _aimAtPlayer = false;
         }
         else
         {
-            playerInLineOfSight = true;
+            _aimAtPlayer = true;
         }
-    }
-
-    public override void AttackingUpdateState()
-    {
-        UpdatePlayerInLineOfSight();
-
         //Adapt aimCube Scale and Position
         RaycastHit hit;
         if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
@@ -150,7 +127,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
                 //ADAPT FXs
-                if (playerInLineOfSight)
+                if (_aimAtPlayer)
                 {
                     aimingAtPlayerFXTransform.position = focusedPlayerTransform.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
@@ -187,7 +164,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Attack:
                 //ADAPT FXs----------------------------------
-                if (playerInLineOfSight)
+                if (_aimAtPlayer)
                 {
                     aimingAtPlayerFXTransform.position = focusedPlayerTransform.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
