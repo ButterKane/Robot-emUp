@@ -28,7 +28,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         explosionRadiusTransform.localScale = new Vector3(explosionRadius * 2, explosionRadius * 2, explosionRadius * 2);
     }
 
-    public override void AttackingState()
+    public override void PreparingAttackState()
     {
         ChangingState(EnemyState.Dying);
     }
@@ -40,7 +40,7 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     private IEnumerator ExplosionSequence()
     {
-        Animator.SetTrigger("RedBarrelDeath");
+        Animator.SetTrigger("DeathTrigger");
         explosionRadiusRenderer.enabled = true;
         yield return new WaitForSeconds(buildUpBeforeExplosion);
 
