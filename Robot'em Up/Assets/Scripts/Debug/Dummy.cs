@@ -30,7 +30,7 @@ public class Dummy : MonoBehaviour, IHitable
 
         if (_source != DamageSource.Dunk)
         {
-            EnergyManager.IncreaseEnergy(0.15f);
+            EnergyManager.IncreaseEnergy(0.2f);
         }
 		if (_hitCount >= maxHealth) { Destroy(this.gameObject); }
 
