@@ -222,18 +222,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   distanceToAttack: 5
   maxAnticipationTime: 0.75
-  rotationSpeedPreparingAttack: 0.2
-  attackMaxDistance: 8
-  maxAttackDuration: 0.5
+  rotationSpeedPreparingAttack: 0
+  attackMaxDistance: 0
+  maxAttackDuration: 0
   attackSpeedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -242,19 +242,18 @@ MonoBehaviour:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  whenToTriggerEndOfAttackAnim: 0.302
-  attackHitBoxPrefab: {fileID: 1561288176734524478, guid: 5a96c9071a92ed1449640b4ee659fc33,
-    type: 3}
+  whenToTriggerEndOfAttackAnim: 0
+  attackHitBoxPrefab: {fileID: 0}
   hitBoxOffset: {x: 0, y: 0, z: 0}
-  maxTimePauseAfterAttack: 1
-  attackRaycastDistance: 2
+  maxTimePauseAfterAttack: 0
+  attackRaycastDistance: 0
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2

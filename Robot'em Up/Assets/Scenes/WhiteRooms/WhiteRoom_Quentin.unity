@@ -1061,6 +1061,21 @@ PrefabInstance:
       propertyPath: Materials.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: coreDropChances
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: minMaxCoreHealthValue.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: minMaxCoreHealthValue.y
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48c032c58b057434aa1457c10558af0b, type: 3}
 --- !u!4 &385402326 stripped
@@ -4336,11 +4351,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -7534365355684496450, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
-        type: 3}
-      propertyPath: maxAnticipationTime
-      value: 0.75
-      objectReference: {fileID: 0}
     - target: {fileID: 7449900512966237305, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -7104,7 +7114,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1924987060
 Transform:
   m_ObjectHideFlags: 0
@@ -7810,7 +7820,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2030384576
 Transform:
   m_ObjectHideFlags: 0
