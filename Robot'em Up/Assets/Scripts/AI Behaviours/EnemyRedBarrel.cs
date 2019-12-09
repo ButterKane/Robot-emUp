@@ -19,6 +19,7 @@ public class EnemyRedBarrel : EnemyBehaviour
     private Vector3 bumpValues;
 
     public Renderer explosionRadiusRenderer;
+    public Transform explosionGrowingRenderer;
     public Transform explosionRadiusTransform;
 
     new void Start()
@@ -41,8 +42,15 @@ public class EnemyRedBarrel : EnemyBehaviour
     private IEnumerator ExplosionSequence()
     {
         Animator.SetTrigger("DeathTrigger");
-        explosionRadiusRenderer.enabled = true;
-        yield return new WaitForSeconds(buildUpBeforeExplosion);
+        explosionRadiusTransform.gameObject.SetActive(true);
+        float t = 0;
+        while (t < 1)
+        {
+            explosionGrowingRenderer.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, t);
+            t += Time.deltaTime/ buildUpBeforeExplosion;
+            yield return null;
+        }
+        //yield return new WaitForSeconds(buildUpBeforeExplosion);
 
         GameObject hitParticle = Instantiate(explosionFX, transform.position, Quaternion.identity);
         Destroy(hitParticle, 1f);
