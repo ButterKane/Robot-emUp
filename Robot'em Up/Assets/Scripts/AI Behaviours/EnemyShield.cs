@@ -15,10 +15,11 @@ public class EnemyShield : EnemyBehaviour
     [Range(0,90)]
     public float AngleRangeForRebound;
 
-    public float angleRangeForRebound {
-        get { return AngleRangeForRebound; }
-        set { AngleRangeForRebound = value; Shield.GetComponent<Shield>().AngleRangeForRebound = value; }
-    }  
+    public float SpwaningShieldFrontDistance;
+
+    private List<Material> Materials = new List<Material>();
+    public Color NormalColor = Color.blue;
+    public Color AttackingColor = Color.red;
 
     public bool IsShieldActivated {
         get { return isShieldActivated; }
@@ -44,6 +45,10 @@ public class EnemyShield : EnemyBehaviour
         base.Start();
         Shield = Instantiate(ShieldPrefab);
         Shield.GetComponent<Shield>().Enemy = this;
+        foreach(var meshRenderer in GetComponentsInChildren<MeshRenderer>())
+        {
+            Materials.Add(meshRenderer.material);
+        }
     }
 
     // ATTACK
@@ -55,7 +60,16 @@ public class EnemyShield : EnemyBehaviour
         Animator.SetTrigger("AttackTrigger");
 
         navMeshAgent.enabled = false;
-    }   
+    }
+
+    public override void PreparingAttackState()
+    {
+        base.PreparingAttackState();
+        foreach (var material in Materials)
+        {
+            material.SetColor("_Color", Color.Lerp(AttackingColor, NormalColor , anticipationTime));
+        }
+    }
 
     public override void AttackingState()
     {
@@ -105,6 +119,15 @@ public class EnemyShield : EnemyBehaviour
             endOfAttackTriggerLaunched = true;
             Animator.SetTrigger("EndOfAttackTrigger");
         }
+        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
+        {
+            float rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
+            Debug.Log("progression = " + rationalizedProgression);
+            foreach (var material in Materials)
+            {
+                material.SetColor("_Color", Color.Lerp(NormalColor,  AttackingColor, rationalizedProgression)); // Time prgression isn't good
+            }
+        }
     }
 
     // Ususally called when hitting player
@@ -122,6 +145,10 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterBumpedState()
     {
         IsShieldActivated = false;
+        foreach (var material in Materials)
+        {
+            material.SetColor("_Color", NormalColor);
+        }
         base.EnterBumpedState();
     }
 
