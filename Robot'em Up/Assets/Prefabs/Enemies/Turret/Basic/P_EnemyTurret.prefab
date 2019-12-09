@@ -417,7 +417,6 @@ MonoBehaviour:
   maxAnticipationTime: 1
   maxRestTime: 2
   randomRangeRestTime: 0.5
-  restTimeBeforeAimingCubeUnlocked: 0
   _lockable: 1
   _lockHitboxSize: 2
   aimingCubeTransform: {fileID: 8116397337583495147}
@@ -438,6 +437,9 @@ MonoBehaviour:
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 102696, guid: 185035e4680c4b344b62bf5ace4674b8, type: 3}
   hitParticleScale: 3
+  coreDropChances: 0.15
+  minMaxDropForce: {x: 0, y: 0}
+  minMaxCoreHealthValue: {x: 10, y: 10}
 --- !u!135 &8142821643506368650
 SphereCollider:
   m_ObjectHideFlags: 0
