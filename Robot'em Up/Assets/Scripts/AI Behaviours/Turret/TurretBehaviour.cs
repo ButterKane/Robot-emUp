@@ -321,6 +321,8 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         Vector3 spawnPosition;
         spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
+        FeedbackManager.SendFeedback("event.BasicTurretAttack", this);
+        SoundManager.PlaySound("BasicTurretAttack", transform.position);
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -400,7 +402,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void Die()
+    public virtual void Die()
     {
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
@@ -410,6 +412,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         {
             DropCore();
         }
+
+        FeedbackManager.SendFeedback("event.BasicTurretDeath", this);
+        SoundManager.PlaySound("BasicTurretDeath", transform.position);
 
         Destroy(gameObject);
     }
@@ -456,7 +461,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         aimingCubeState = _NewState;
     }
 
-    void DropCore()
+    protected virtual void DropCore()
     {
         GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
         newCore.name = "Core of " + gameObject.name;

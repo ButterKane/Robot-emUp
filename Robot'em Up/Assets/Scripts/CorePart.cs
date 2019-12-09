@@ -58,7 +58,7 @@ public class CorePart : MonoBehaviour
 					Destroy(collider);
 				}
 			}
-            if(animator != null)
+            if(animator != null) //if not an enemy core
 			    animator.SetTrigger("showArrow");
 			rb.isKinematic = true;
 		}
@@ -72,6 +72,7 @@ public class CorePart : MonoBehaviour
 
 	public void Pick(PlayerController _player)
 	{
+
 		animator.SetTrigger("pick");
 		picker = _player;
 	}
