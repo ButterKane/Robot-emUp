@@ -157,19 +157,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!135 &250052093301743292
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7449900513924197488}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.78
-  m_Center: {x: 0, y: 0.35, z: 0}
 --- !u!114 &-7534365355684496450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,6 +301,10 @@ MonoBehaviour:
   explosionRadiusRenderer: {fileID: 374548891395187984}
   explosionGrowingRenderer: {fileID: 4855207849635888025}
   explosionRadiusTransform: {fileID: 6250030408303654563}
+  bodyRenderer: {fileID: 7449900512966237307}
+  materialOnExplosion: {fileID: 2100000, guid: 374f15867c2b46f438fc2475af11c8dd, type: 2}
+  emissionColor: {r: 0.5647059, g: 0, b: 0.7490196, a: 1}
+  minMaxEmissionOnDeath: {x: 2, y: 5}
 --- !u!1001 &7083713466704685639
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -395,7 +386,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
+      objectReference: {fileID: 2100000, guid: 017d549570572da4c855d6f51c980b04, type: 2}
     - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -431,6 +422,12 @@ Rigidbody:
 --- !u!195 &7449900513924197489 stripped
 NavMeshAgent:
   m_CorrespondingSourceObject: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7083713466704685639}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7449900512966237307 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 7083713466704685639}
   m_PrefabAsset: {fileID: 0}

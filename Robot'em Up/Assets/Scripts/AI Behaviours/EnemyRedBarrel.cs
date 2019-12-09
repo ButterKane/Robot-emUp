@@ -21,6 +21,10 @@ public class EnemyRedBarrel : EnemyBehaviour
     public Renderer explosionRadiusRenderer;
     public Transform explosionGrowingRenderer;
     public Transform explosionRadiusTransform;
+    public Renderer bodyRenderer;
+    public Material materialOnExplosion;
+    public Color emissionColor;
+    public Vector2 minMaxEmissionOnDeath;
 
     new void Start()
     {
@@ -32,6 +36,7 @@ public class EnemyRedBarrel : EnemyBehaviour
     public override void PreparingAttackState()
     {
         ChangingState(EnemyState.Dying);
+        bodyRenderer.material = materialOnExplosion;
     }
 
     protected override void Die()
@@ -48,6 +53,13 @@ public class EnemyRedBarrel : EnemyBehaviour
         {
             explosionGrowingRenderer.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, t);
             t += Time.deltaTime/ buildUpBeforeExplosion;
+
+            //Color flicker on death
+            if(Random.Range(0f, 1f) > 0.5f)
+                bodyRenderer.material.SetColor("_EmissionColor", emissionColor * minMaxEmissionOnDeath.x);
+            else
+                bodyRenderer.material.SetColor("_EmissionColor", emissionColor * minMaxEmissionOnDeath.y);
+
             yield return null;
         }
         //yield return new WaitForSeconds(buildUpBeforeExplosion);

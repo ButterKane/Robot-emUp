@@ -118,7 +118,6 @@ public class EnemyShield : EnemyBehaviour
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
         {
             float rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
-            Debug.Log("progression = " + rationalizedProgression);
             foreach (var renderer in Renderers)
             {
                 renderer.material.SetColor("_Color", Color.Lerp(NormalColor,  AttackingColor, rationalizedProgression)); // Time prgression isn't good
