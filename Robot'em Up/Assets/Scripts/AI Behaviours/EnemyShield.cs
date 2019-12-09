@@ -12,9 +12,12 @@ public class EnemyShield : EnemyBehaviour
     public bool deactivateShieldWhenAttacking = true;
 
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
+    [Range(0,90)]
+    public float AngleRangeForRebound;
+
     public float angleRangeForRebound {
-        get { return angleRangeForRebound; }
-        set { angleRangeForRebound = value; Shield.GetComponent<Shield>().angleRangeForRebound = value; }
+        get { return AngleRangeForRebound; }
+        set { AngleRangeForRebound = value; Shield.GetComponent<Shield>().AngleRangeForRebound = value; }
     }  
 
     public bool IsShieldActivated {
@@ -29,7 +32,8 @@ public class EnemyShield : EnemyBehaviour
 
     [Space(2)]
     [Header("Attack")]
-    public float attackSpeed = 7;
+    public Vector2 minMaxAttackSpeed = new Vector2(7,15);
+    public AnimationCurve attackSpeedVariation;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
     public float BumpOtherDistanceMod = 0.5f;
     public float BumpOtherDurationMod = 0.2f;
@@ -77,7 +81,7 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            navMeshAgent.speed = attackSpeed;
+            navMeshAgent.speed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
 
@@ -125,4 +129,10 @@ public class EnemyShield : EnemyBehaviour
     {
         IsShieldActivated = true;
     }
+    protected override void Die()
+    {
+        base.Die();
+        Destroy(Shield);
+    }
+
 }
