@@ -314,6 +314,7 @@ public class PlayerController : PawnController, IHitable
 		_player.transform.position = transform.position + Vector3.up * 7 + Vector3.left * 0.1f;
 		_player.FreezeTemporarly(reviveFreezeDuration);
 		_player.StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
+		StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
 		List<ReviveInformations> newRevivablePlayers = new List<ReviveInformations>();
@@ -396,10 +397,8 @@ public class PlayerController : PawnController, IHitable
 	IEnumerator FreezeTemporarly_C(float _duration)
 	{
 		Freeze();
-		DisableInput();
 		yield return new WaitForSeconds(_duration);
 		UnFreeze();
-		EnableInput();
 	}
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
