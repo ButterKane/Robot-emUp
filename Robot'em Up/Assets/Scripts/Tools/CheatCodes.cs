@@ -44,6 +44,10 @@ public class CheatCodes : MonoBehaviour
             {
                 ToggleInvicibility();
             }
+            if (GUI.Button(new Rect(10, 70, 100, 25), "Charge Energy"))
+            {
+                ChargeEnergy();
+            }
         }
     }
 
@@ -66,5 +70,10 @@ public class CheatCodes : MonoBehaviour
             PlayerOne.IsInvincible = playersInvicible;
             PlayerTwo.IsInvincible = playersInvicible;
         }
+    }
+
+    public void ChargeEnergy()
+    {
+        EnergyManager.IncreaseEnergy(1);
     }
 }
