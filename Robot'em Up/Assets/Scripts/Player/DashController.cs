@@ -75,6 +75,7 @@ public class DashController : MonoBehaviour
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
+		SoundManager.PlaySound("PlayerDash", transform.position, transform);
 		FeedbackManager.SendFeedback("event.OnDash", this);
 		Vector3 startPosition = transform.position;
 		Vector3 endPosition = transform.position + transform.forward * maxDistance; 

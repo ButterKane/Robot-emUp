@@ -35,6 +35,8 @@ public class PassController : MonoBehaviour
 	[Separator("Reception settings")]
 	public float receptionMinDistance = 0.2f;
 	public float receptionMinDelay = 0.2f;
+	public float receptionExplosionRadius = 2f;
+	public int receptionExplosionDamage = 1;
 
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
@@ -116,20 +118,36 @@ public class PassController : MonoBehaviour
 		{
 			if (ballTimeInHand > receptionMinDelay) { return; }
 		}
-		ball = mainBall;
+		ExecutePerfectReception(mainBall);
+	}
+
+	public void ExecutePerfectReception(BallBehaviour ball)
+	{
 		Receive(ball);
 		ChangePassState(PassState.Aiming);
 		EnablePassPreview();
 		StartCoroutine(ShootAfterDelay(receptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
 		SoundManager.PlaySound("PerfectReception", transform.position, transform);
-		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
-		mainBall.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
-		float lerpValue = (mainBall.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
+		ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
+		float lerpValue = (ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
 		Color newColor = ballDatas.colorOverDamage.Evaluate(lerpValue);
 		GameObject perfectFX = FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
 		ParticleColorer.ReplaceParticleColor(perfectFX, new Color(122f / 255f, 0, 122f / 255f), newColor);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
+		Collider[] hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
+		PawnController pawnController = GetComponent<PawnController>();
+		int i = 0;
+		while (i < hitColliders.Length)
+		{
+			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
+			if (potentialHitableObject != null)
+			{
+				potentialHitableObject.OnHit(ball, (hitColliders[i].transform.position - transform.position).normalized, pawnController, receptionExplosionDamage, DamageSource.PerfectReceptionExplosion);
+			}
+			i++;
+		}
 	}
 
 	//Used for generating the preview

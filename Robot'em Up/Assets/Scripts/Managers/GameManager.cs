@@ -18,7 +18,8 @@ public enum DamageSource
 	Dunk,
 	DeathExplosion,
 	ReviveExplosion,
-	RedBarrelExplosion
+	RedBarrelExplosion,
+	PerfectReceptionExplosion
 }
 
 public enum DamageModifierSource
@@ -219,7 +220,7 @@ public class GameManager : MonoBehaviour
 		GameObject newBall = Instantiate(i.ballPrefab, null);
 		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
         i.ball = newBall.GetComponent<BallBehaviour>();
-		newBall.transform.position = new Vector3(0, 1f, 0);
+		newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
 	void LoadMomentumManager()
