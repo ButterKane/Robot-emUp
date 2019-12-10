@@ -22,7 +22,7 @@ MonoBehaviour:
   _playerOneTransform: {fileID: 0}
   _playerTwoTransform: {fileID: 0}
   MaxHealth: 30
-  energyAmount: 1
+  energyAmount: 0.13
   damage: 20
   powerLevel: 2.5
   _lockable: 1
@@ -107,6 +107,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   whenToTriggerFallingAnim: 0.9
   bumpRaycastDistance: 1
+  DamageAfterBump: 0
   deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
@@ -163,11 +164,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Radius
-      value: 1.65
-      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -242,6 +238,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Radius
       value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Radius
+      value: 1.65
       objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
