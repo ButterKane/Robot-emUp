@@ -47,6 +47,7 @@ public class EnemyRedBarrel : EnemyBehaviour
     private IEnumerator ExplosionSequence()
     {
         Animator.SetTrigger("DeathTrigger");
+        SoundManager.PlaySound("RedBarrelExplosionAnticipation", transform.position, transform);
         explosionRadiusTransform.gameObject.SetActive(true);
         float t = 0;
         while (t < 1)
@@ -78,7 +79,8 @@ public class EnemyRedBarrel : EnemyBehaviour
             }
             i++;
         }
-
+        FeedbackManager.SendFeedback("event.RedBarrelExplosion", this);
+        SoundManager.PlaySound("RedBarrelExplosion", transform.position, transform);
         base.Die();
     }
 
