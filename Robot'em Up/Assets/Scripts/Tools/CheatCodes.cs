@@ -21,7 +21,7 @@ public class CheatCodes : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Quote))
+        if (Input.GetKeyDown(KeyCode.Quote)) // "²"
         {
             ActivateCheat = !ActivateCheat;
         }
