@@ -267,13 +267,15 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!IsInvincible)
         {
+			FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
+			SoundManager.PlaySound("PlayerHitNoBump", transform.position);
 			PlayerUI potentialPlayerUI = GetComponent<PlayerUI>();
 			if (potentialPlayerUI != null)
 			{
 				potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
             base.Damage(_amount);
-            FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 2.25f, transform);
+            FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 4.25f, transform);
         }
 	}
 
@@ -403,8 +405,6 @@ public class PlayerController : PawnController, IHitable
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
 		if (_source == DamageSource.Ball) { return; }
-		FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
-		SoundManager.PlaySound("PlayerHitNoBump", transform.position);
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:

@@ -72,8 +72,8 @@ public class CorePart : MonoBehaviour
 
 	public void Pick(PlayerController _player)
 	{
-
-		animator.SetTrigger("pick");
+		if (animator != null)
+			animator.SetTrigger("pick");
 		picker = _player;
 	}
 }
