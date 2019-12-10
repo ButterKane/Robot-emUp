@@ -14,7 +14,9 @@ public class IndianaCamera : MonoBehaviour
     {
         if (OnRail)
         {
-            transform.position = Vector3.Lerp(transform.position, RailPositionWanted, Time.deltaTime);
+            Vector3 playerPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
+            Vector3 wantedPosition = (playerPosition + RailPositionWanted) / 2;
+            transform.position = Vector3.Lerp(transform.position, wantedPosition, Time.deltaTime);
         }
         else
         {
