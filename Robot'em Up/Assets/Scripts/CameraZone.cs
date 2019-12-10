@@ -16,9 +16,10 @@ public class CameraZone : MonoBehaviour
 
 
 	public int minPlayersRequired = 2;
+	public CameraType type;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
-	private BoxCollider boxCollider;
+	private Collider collider;
 	private bool zoneActivated;
 	[HideInInspector] public UnityEvent onZoneActivation;
 
@@ -47,18 +48,26 @@ public class CameraZone : MonoBehaviour
 			visualizer = GetComponent<SpriteRenderer>();
 		}
 		visualizer.transform.localRotation = Quaternion.Euler(new Vector3(-90, transform.localRotation.eulerAngles.y, transform.localRotation.eulerAngles.z));
-		visualizer.transform.localScale = new Vector3(30, 30, 30);
-		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/zoneVisualizer");
-		visualizer.drawMode = SpriteDrawMode.Tiled;
-		if (GetComponent<BoxCollider>() == null)
+		if (cameraPivot == null)
 		{
-			boxCollider = transform.gameObject.AddComponent<BoxCollider>();
-		} else
-		{
-			boxCollider = GetComponent<BoxCollider>();
+			cameraPivot = transform.parent.Find("Camera pivot");
 		}
-		boxCollider.isTrigger = true;
+
 		playersInside = new List<PlayerController>();
+	}
+	
+	public void GenerateZone(CameraType _type) {
+		type = _type;
+		switch (type)
+		{
+			case CameraType.Combat:
+				GenerateCombatZone();
+				break;
+			case CameraType.Circle:
+				GenerateCircleZone();
+				break;
+		}
+		collider.isTrigger = true;
 	}
 
 	public virtual void Update ()
@@ -80,7 +89,52 @@ public class CameraZone : MonoBehaviour
 				}
 			}
 		}
-		Vector3 wantedPosition = cornerA + ((cornerB- cornerA) / 2);
+		switch (type)
+		{
+			case CameraType.Combat:
+				UpdateCombatZone();
+				break;
+			case CameraType.Circle:
+				UpdateCircleZone();
+				break;
+		}
+	}
+
+	void GenerateCombatZone ()
+	{
+		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
+		visualizer.drawMode = SpriteDrawMode.Tiled;
+		visualizer.transform.localScale = new Vector3(30, 30, 30);
+		collider = GetComponent<Collider>();
+		if (collider == null)
+		{
+			collider = transform.gameObject.AddComponent<BoxCollider>();
+		}
+		else
+		{
+			collider = GetComponent<BoxCollider>();
+		}
+	}
+
+	void GenerateCircleZone()
+	{
+		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
+		visualizer.drawMode = SpriteDrawMode.Simple;
+		visualizer.transform.localScale = new Vector3(30, 30, 30);
+		collider = GetComponent<Collider>();
+		if (collider == null)
+		{
+			collider = transform.gameObject.AddComponent<CapsuleCollider>();
+		}
+		else
+		{
+			collider = GetComponent<CapsuleCollider>();
+		}
+	}
+
+	void UpdateCombatZone()
+	{
+		Vector3 wantedPosition = cornerA + ((cornerB - cornerA) / 2);
 		transform.position = new Vector3(wantedPosition.x, transform.position.y, wantedPosition.z);
 		if (visualizer != null)
 		{
@@ -94,18 +148,24 @@ public class CameraZone : MonoBehaviour
 			visualizer.size = new Vector3((sizeX * 2) / transform.localScale.x, (sizeY * 2) / transform.localScale.z, 1);
 			visualizer.transform.localRotation = Quaternion.Euler(new Vector3(-90, transform.localRotation.eulerAngles.y, 0));
 		}
-		if (cameraPivot == null)
-		{
-			cameraPivot = transform.parent.Find("Camera pivot");
-		}
 		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
 		{
 			cameraPivot.transform.position = wantedPosition;
 			cameraPivot.transform.localRotation = Quaternion.Euler(cameraPivot.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, cameraPivot.transform.localRotation.eulerAngles.z);
 		}
-		if (boxCollider != null)
+		if (collider != null)
 		{
-			boxCollider.size = new Vector3(Mathf.Abs(visualizer.size.x), Mathf.Abs(visualizer.size.y), 1); 
+			BoxCollider squareCollider = collider as BoxCollider;
+			squareCollider.size = new Vector3(Mathf.Abs(visualizer.size.x), Mathf.Abs(visualizer.size.y), 1);
+		}
+	}
+
+	void UpdateCircleZone ()
+	{
+		transform.position = visualizer.transform.position;
+		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
+		{
+			cameraPivot.transform.position = visualizer.transform.position;
 		}
 	}
 
