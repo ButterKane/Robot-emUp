@@ -69,6 +69,8 @@ public class EnemyShield : EnemyBehaviour
 
     public override void AttackingState()
     {
+        SoundManager.PlaySound("EnemyShieldAttack", transform.position, transform);
+
         if (!navMeshAgent.enabled)
         {
             navMeshAgent.enabled = true;
@@ -107,14 +109,15 @@ public class EnemyShield : EnemyBehaviour
             navMeshAgent.acceleration = NormalAcceleration;
             IsShieldActivated = true;
             ChangingState(EnemyState.PauseAfterAttack);
+            Animator.SetTrigger("EndOfAttackTrigger");
 
             navMeshAgent.enabled = false;
         }
-        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
+        /*else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
         {
             endOfAttackTriggerLaunched = true;
             Animator.SetTrigger("EndOfAttackTrigger");
-        }
+        }*/
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
         {
             float rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
@@ -151,10 +154,11 @@ public class EnemyShield : EnemyBehaviour
     {
         IsShieldActivated = true;
     }
-    protected override void Die()
+
+    protected override void Die(string deathSound = "EnemyDeath")
     {
-        base.Die();
         Destroy(Shield);
+        base.Die("EnemyShieldDeath");   // Override the death sound with the right one 
     }
 
 }

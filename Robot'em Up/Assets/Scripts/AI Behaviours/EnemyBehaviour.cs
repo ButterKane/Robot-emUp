@@ -411,6 +411,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void AttackingState()
     {
+        SoundManager.PlaySound("EnemyAttack", transform.position, transform);
         attackTimeProgression += Time.deltaTime / maxAttackDuration;
         //attackDuration -= Time.deltaTime;
 
@@ -556,8 +557,12 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    protected virtual void Die()
+    protected virtual void Die(string deathSound = "EnemyDeath")
     {
+        if (deathSound != null)
+        {
+            SoundManager.PlaySound(deathSound, transform.position, transform);
+        }
 		LockManager.UnlockTarget(this.transform);
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
