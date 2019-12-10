@@ -22,6 +22,7 @@ public class BallDatas : ScriptableObject
 	public GameObject Trail;
 	public GameObject WallHit;
 	public GameObject ReceiveCore;
+	public GameObject ThrowCore;
 
 	public GameObject LightExplosion;
 	public GameObject HeavyExplosion;

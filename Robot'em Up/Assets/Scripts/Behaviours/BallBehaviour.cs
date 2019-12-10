@@ -442,7 +442,6 @@ public class BallBehaviour : MonoBehaviour
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
-						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
 						if (!raycast.collider.isTrigger)
 						{
 							if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
@@ -452,7 +451,8 @@ public class BallBehaviour : MonoBehaviour
 								Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
 								newDirection.y = -currentDirection.y;
 								Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
-								FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
+								FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, -currentDirection, Vector3.one * 2.75f);
+								FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
 								return;
 							}
 							else if (canHitWalls)

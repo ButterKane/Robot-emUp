@@ -65,6 +65,10 @@ public class DunkController : MonoBehaviour
 
 	private void Update ()
 	{
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			jumpCoroutine = StartCoroutine(Dunk_C());
+		}
 		if (currentCD >= 0)
 		{
 			currentCD -= Time.deltaTime;
@@ -239,7 +243,7 @@ public class DunkController : MonoBehaviour
 		switch (_newState)
 		{
 			case DunkState.Jumping:
-				FXManager.InstantiateFX(ballDatas.DunkJump, transform.position, false, Vector3.up, Vector3.one * 2);
+				FXManager.InstantiateFX(ballDatas.DunkJump, transform.position + new Vector3(0,0.1f,0), false, Vector3.up, Vector3.one * 2.5f);
 				playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:

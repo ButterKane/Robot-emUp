@@ -221,7 +221,6 @@ public class PassController : MonoBehaviour
 						return coordinates;
 					} else if (hit.collider.gameObject.GetComponent<Shield>() != null)
 					{
-						Debug.Log("Hit shield");
 						Vector3 impactVector = -(coordinates[i] - coordinates[i - 1]);
 						Debug.DrawRay(hit.point, impactVector.normalized, Color.green);
 						Debug.DrawRay(hit.point, hit.collider.transform.forward.normalized, Color.green);
@@ -291,10 +290,12 @@ public class PassController : MonoBehaviour
 				if (passPreview)
 				{
 					shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
+					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
 					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
+					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false,otherPlayer.transform.position - transform.position, Vector3.one * 5f);
 				}
             }
         }
@@ -303,11 +304,15 @@ public class PassController : MonoBehaviour
 			if (!passPreview)
 			{
 				if (otherPlayer != null)
+				{
 					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
+					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, otherPlayer.transform.position - transform.position, Vector3.one * 5f);
+				}
 			}
 			else // if aiming with right joystick
 			{
 				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
+				FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 			}
 		}
 		ChangePassState(PassState.None);
