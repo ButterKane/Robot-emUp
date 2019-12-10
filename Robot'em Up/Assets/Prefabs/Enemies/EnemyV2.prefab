@@ -243,10 +243,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 373019035910456879}
-  - component: {fileID: 373019035910456882}
   - component: {fileID: 373019035910456883}
   - component: {fileID: 373019035910456886}
   - component: {fileID: 1682654848667235717}
+  - component: {fileID: 7311809069756282518}
   m_Layer: 0
   m_Name: EnemyV2
   m_TagString: Enemy
@@ -269,19 +269,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &373019035910456882
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 373019035910456887}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 2.5, y: 2.5, z: 2.5}
-  m_Center: {x: 0, y: 0.29, z: 0}
 --- !u!54 &373019035910456883
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -433,9 +420,22 @@ MonoBehaviour:
   hitParticleScale: 3
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
-  coreDropChances: 0.3
-  minMaxDropForce: {x: 2, y: 4}
-  minMaxCoreHealthValue: {x: 5, y: 5}
+  coreDropChances: 0.1
+  minMaxDropForce: {x: 0, y: 0}
+  minMaxCoreHealthValue: {x: 10, y: 10}
+--- !u!135 &7311809069756282518
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373019035910456887}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.34
+  m_Center: {x: 0, y: 0.37, z: 0}
 --- !u!1 &373019035912214700
 GameObject:
   m_ObjectHideFlags: 0

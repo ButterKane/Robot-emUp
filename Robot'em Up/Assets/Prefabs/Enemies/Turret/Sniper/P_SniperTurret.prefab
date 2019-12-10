@@ -607,6 +607,9 @@ MonoBehaviour:
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 102696, guid: 185035e4680c4b344b62bf5ace4674b8, type: 3}
   hitParticleScale: 3
+  coreDropChances: 0.2
+  minMaxDropForce: {x: 0, y: 0}
+  minMaxCoreHealthValue: {x: 10, y: 10}
   minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.15}
   aimingAtPlayerFXTransform: {fileID: 7429455705988075639}
   aimingAtPlayerFXRenderer: {fileID: 7429455705988075637}
@@ -630,11 +633,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2630881796360466226, guid: 4cccfb20e48f9184099401344ea3c902,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
@@ -706,7 +704,13 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 4
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 2630881796360466226, guid: 4cccfb20e48f9184099401344ea3c902,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 2630881796360466227, guid: 4cccfb20e48f9184099401344ea3c902, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4cccfb20e48f9184099401344ea3c902, type: 3}
 --- !u!4 &7429455705988075639 stripped
 Transform:

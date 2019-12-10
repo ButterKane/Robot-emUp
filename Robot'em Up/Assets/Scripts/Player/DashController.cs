@@ -75,6 +75,7 @@ public class DashController : MonoBehaviour
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
+		FeedbackManager.SendFeedback("event.OnDash", this);
 		Vector3 startPosition = transform.position;
 		Vector3 endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance

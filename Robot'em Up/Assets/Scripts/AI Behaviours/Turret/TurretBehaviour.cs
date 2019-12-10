@@ -116,6 +116,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public GameObject hitParticlePrefab;
     public float hitParticleScale;
 
+    [Space(2)]
+    [Header("Death")]
+    public float coreDropChances = 1;
+    public Vector2 minMaxDropForce;
+    public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
+
     public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
     void Start()
@@ -315,6 +321,8 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         Vector3 spawnPosition;
         spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
+        FeedbackManager.SendFeedback("event.BasicTurretAttack", this);
+        SoundManager.PlaySound("BasicTurretAttack", transform.position);
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -394,11 +402,20 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    void Die()
+    public virtual void Die()
     {
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
         Destroy(deathParticle, 1.5f);
+
+        if (Random.Range(0f, 1f) <= coreDropChances)
+        {
+            DropCore();
+        }
+
+        FeedbackManager.SendFeedback("event.BasicTurretDeath", this);
+        SoundManager.PlaySound("BasicTurretDeath", transform.position);
+
         Destroy(gameObject);
     }
 
@@ -442,5 +459,16 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             aimingCubeTransform.localScale = Vector3.zero;
         }
         aimingCubeState = _NewState;
+    }
+
+    protected virtual void DropCore()
+    {
+        GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+        newCore.name = "Core of " + gameObject.name;
+        newCore.transform.position = transform.position;
+        Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
+        float throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
+        wantedDirectionAngle.y = throwForce * 0.035f;
+        newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
     }
 }

@@ -57,12 +57,13 @@ public class WaveController : MonoBehaviour
 		{
 			if (currentWaveIndex >= 0)
 			{
-				if (delayBeforeNextWave <= 0 && currentPowerLevel <= 0)
-				{
-					StartNextWave();
-				} else
+				if (currentPowerLevel <= 0)
 				{
 					delayBeforeNextWave -= Time.deltaTime;
+					if (delayBeforeNextWave <= 0)
+					{
+						StartNextWave();
+					}
 				}
 			}
 		}

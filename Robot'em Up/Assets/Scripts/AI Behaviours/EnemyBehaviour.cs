@@ -356,6 +356,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
+				onDeath.Invoke();
                 break;
         }
     }

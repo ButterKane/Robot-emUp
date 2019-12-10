@@ -17,7 +17,7 @@ public class EnemyShield : EnemyBehaviour
 
     public float SpwaningShieldFrontDistance;
 
-    private List<Material> Materials = new List<Material>();
+    public Renderer[] Renderers;
     public Color NormalColor = Color.blue;
     public Color AttackingColor = Color.red;
 
@@ -45,10 +45,6 @@ public class EnemyShield : EnemyBehaviour
         base.Start();
         Shield = Instantiate(ShieldPrefab);
         Shield.GetComponent<Shield>().Enemy = this;
-        foreach(var meshRenderer in GetComponentsInChildren<MeshRenderer>())
-        {
-            Materials.Add(meshRenderer.material);
-        }
     }
 
     // ATTACK
@@ -65,9 +61,9 @@ public class EnemyShield : EnemyBehaviour
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
-        foreach (var material in Materials)
+        foreach (var renderer in Renderers)
         {
-            material.SetColor("_Color", Color.Lerp(AttackingColor, NormalColor , anticipationTime));
+            renderer.material.SetColor("_Color", Color.Lerp(AttackingColor, NormalColor , anticipationTime));
         }
     }
 
@@ -122,10 +118,9 @@ public class EnemyShield : EnemyBehaviour
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
         {
             float rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
-            Debug.Log("progression = " + rationalizedProgression);
-            foreach (var material in Materials)
+            foreach (var renderer in Renderers)
             {
-                material.SetColor("_Color", Color.Lerp(NormalColor,  AttackingColor, rationalizedProgression)); // Time prgression isn't good
+                renderer.material.SetColor("_Color", Color.Lerp(NormalColor,  AttackingColor, rationalizedProgression)); // Time prgression isn't good
             }
         }
     }
@@ -145,9 +140,9 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterBumpedState()
     {
         IsShieldActivated = false;
-        foreach (var material in Materials)
+        foreach (var renderer in Renderers)
         {
-            material.SetColor("_Color", NormalColor);
+            renderer.material.SetColor("_Color", NormalColor);
         }
         base.EnterBumpedState();
     }

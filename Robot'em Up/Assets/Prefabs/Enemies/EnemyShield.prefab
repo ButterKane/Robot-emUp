@@ -45,7 +45,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  distanceToAttack: 12
+  distanceToAttack: 10
   maxAnticipationTime: 1.5
   rotationSpeedPreparingAttack: 0.2
   attackMaxDistance: 4
@@ -113,35 +113,42 @@ MonoBehaviour:
   hitParticleScale: 3
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
-  coreDropChances: 1
+  coreDropChances: 0.25
   minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 1, y: 3}
+  minMaxCoreHealthValue: {x: 15, y: 15}
   ShieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
     type: 3}
   deactivateShieldWhenAttacking: 0
-  AngleRangeForRebound: 75
-  minMaxAttackSpeed: {x: 7, y: 15}
+  AngleRangeForRebound: 70
+  SpwaningShieldFrontDistance: 1.25
+  Renderers:
+  - {fileID: 6181108246780876594}
+  - {fileID: 6181108247639220607}
+  - {fileID: 6181108248183470284}
+  NormalColor: {r: 0, g: 0, b: 1, a: 1}
+  AttackingColor: {r: 1, g: 0, b: 0, a: 1}
+  minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1.0023584
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.99810964
-      value: 0.0023584906
-      inSlope: -3.243867
-      outSlope: -3.243867
+      value: 1
+      inSlope: -0.08560447
+      outSlope: -0.08560447
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.0662879
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0.339978
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -2.8573632
+      outSlope: -2.8573632
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08080238
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -156,6 +163,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Radius
+      value: 1.65
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -221,16 +233,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Speed
       value: 5.5
       objectReference: {fileID: 0}
+    - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.4071085
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2147
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2147
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -248,6 +280,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     m_RemovedComponents:
     - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
+    - {fileID: 373019035910456882, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
 --- !u!1 &6181108247738804025 stripped
 GameObject:
@@ -273,9 +306,27 @@ NavMeshAgent:
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &6181108246780876594 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &6181108246780876620 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6181108247639220607 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6181108248183470284 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}
