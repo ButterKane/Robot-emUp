@@ -421,11 +421,25 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
+        SoundManager.PlaySound("TurretHit", transform.position, transform);
+        switch (_source)
+        {
+            case DamageSource.Dunk:
+                _damages += 8; //pck ils subissent pas le bump
+                break;
+            case DamageSource.RedBarrelExplosion:
+                _damages += 8; //pck ils subissent pas le bump
+                break;
+            case DamageSource.Ball:
+                if (_ball != null)
+                {
+                    _ball.Explode(true);
+                }
+                EnergyManager.IncreaseEnergy(energyAmount);
+                break;
+        }
+
         Health -= _damages;
-		if (_ball != null)
-		{
-			_ball.Explode(true);
-		}
 		if (Health <= 0)
         {
             Die();
@@ -436,7 +450,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             hitParticle.transform.localScale *= hitParticleScale;
             Destroy(hitParticle, 1.5f);
         }
-        EnergyManager.IncreaseEnergy(energyAmount);
     }
 
     public virtual void ChangeAimingCubeState(AimingCubeState _NewState)
