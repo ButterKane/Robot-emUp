@@ -128,6 +128,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     bool fallingTriggerLaunched;
     public float bumpRaycastDistance = 1;
     bool mustCancelBump;
+    public int DamageAfterBump;
 
     [Space(2)]
     [Header("FX References")]
@@ -277,12 +278,22 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     {
                         fallingTriggerLaunched = true;
                         Animator.SetTrigger("FallingTrigger");
+
+                        if (DamageAfterBump > 0)
+                        {
+                            Health -= DamageAfterBump;
+                        }
                     }
                 }
 
                 //when arrived on ground
                 else if (restDuration > 0)
                 {
+                    if (Health <= 0)
+                    {
+                        ChangingState(EnemyState.Dying);
+                    }
+
                     restDuration -= Time.deltaTime;
                     if (restDuration <= 0)
                     {
@@ -506,8 +517,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         switch (_source)
         {
             case DamageSource.Dunk:
+                DamageAfterBump = _damages;
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-
                 if (_thrower.GetComponent<DunkController>() != null)
                 {
                     DunkController controller = _thrower.GetComponent<DunkController>();
@@ -515,12 +526,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     BumpDurationMod = controller.BumpDurationMod;
                     BumpRestDurationMod = controller.BumpRestDurationMod;
                 }
-
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod); 
                 whatBumps = WhatBumps.Dunk;
                 break;
+
             case DamageSource.RedBarrelExplosion:
-				EnergyManager.IncreaseEnergy(energyAmount);
+                DamageAfterBump = _damages;
+                EnergyManager.IncreaseEnergy(energyAmount);
 				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                 if (_bumpModificators != default(Vector3))
                 {
@@ -531,30 +543,29 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);    // Need Explosion Data
                 whatBumps = WhatBumps.RedBarrel;
                 break;
+
             case DamageSource.Ball:
-				FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
+                DamageAfterBump = 0;
+                FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
 				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
 				EnergyManager.IncreaseEnergy(energyAmount);
 				whatBumps = WhatBumps.Pass;
                 StartCoroutine(StaggeredCo(whatBumps));
-				break;
+                Health -= _damages;
+                if (Health <= 0)
+                {
+                    ChangingState(EnemyState.Dying);
+                }
+                break;
         }
-        Health -= _damages;
 
         if (_ball)
             _ball.Explode(true);
 
-        if (Health <= 0)
-        {
-            ChangingState(EnemyState.Dying);
-        }
-        else
-        {
             Animator.SetTrigger("HitTrigger");
             GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
             hitParticle.transform.localScale *= hitParticleScale;
             Destroy(hitParticle, 1f);
-        }
     }
 
     protected virtual void Die(string deathSound = "EnemyDeath")
