@@ -728,7 +728,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 259781759}
   m_LocalRotation: {x: 0, y: 0.8790253, z: 0, w: 0.47677526}
-  m_LocalPosition: {x: 15.53, y: 1.98, z: -6.77}
+  m_LocalPosition: {x: 15.3, y: 1.98, z: -6.77}
   m_LocalScale: {x: 1.6, y: 4, z: 14.91}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5078,7 +5078,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1933189077}
   m_LocalRotation: {x: -0, y: 0.38268343, z: -0, w: 0.92387956}
-  m_LocalPosition: {x: -248.1, y: -246.97397, z: -24.361855}
+  m_LocalPosition: {x: -247.9, y: -246.97397, z: -24.361855}
   m_LocalScale: {x: 20, y: 10, z: 20}
   m_Children: []
   m_Father: {fileID: 1315567733}
@@ -5390,15 +5390,22 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0, b: 0, a: 1}
-      probability: 0.85799974
+      probability: 0.8099518
       spawnIndexes: 0100000000000000020000000300000004000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0.9747989, g: 1, b: 0, a: 1}
-      probability: 0.142
+      probability: 0.134048
       spawnIndexes: 0100000000000000020000000300000004000000
+    - enemyType:
+        name: RedBarrel
+        prefab: {fileID: 7449900513924197488, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
+          type: 3}
+        color: {r: 1, g: 0, b: 0.5670934, a: 1}
+      probability: 0.056
+      spawnIndexes: 0000000001000000020000000300000004000000
   - maxPowerLevel:
       serializedVersion: 2
       m_Curve:
@@ -5445,15 +5452,22 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0, b: 0, a: 1}
-      probability: 0.78299975
+      probability: 0.6848021
       spawnIndexes: 00000000010000000200000003000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0.9747989, g: 1, b: 0, a: 1}
-      probability: 0.217
+      probability: 0.22219758
       spawnIndexes: 01000000000000000200000003000000
+    - enemyType:
+        name: RedBarrel
+        prefab: {fileID: 7449900513924197488, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
+          type: 3}
+        color: {r: 1, g: 0, b: 0.5670934, a: 1}
+      probability: 0.093
+      spawnIndexes: 0000000001000000020000000300000004000000
   - maxPowerLevel:
       serializedVersion: 2
       m_Curve:
@@ -5522,15 +5536,22 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0, b: 0, a: 1}
-      probability: 0.7999997
-      spawnIndexes: 00000000010000000200000003000000
+      probability: 0.6890332
+      spawnIndexes: 0000000001000000020000000300000004000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0.9747989, g: 1, b: 0, a: 1}
-      probability: 0.2
-      spawnIndexes: 02000000010000000000000003000000
+      probability: 0.20596623
+      spawnIndexes: 0200000001000000000000000300000004000000
+    - enemyType:
+        name: RedBarrel
+        prefab: {fileID: 7449900513924197488, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
+          type: 3}
+        color: {r: 1, g: 0, b: 0.5670934, a: 1}
+      probability: 0.105
+      spawnIndexes: 0000000001000000020000000300000004000000
   spawnList:
   - customName: Coin1
     transform: {fileID: 1715464892}
@@ -5543,10 +5564,10 @@ MonoBehaviour:
     color: {r: 0.9293916, g: 0.3160377, b: 1, a: 1}
   - customName: Coin4
     transform: {fileID: 348150769}
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 1, g: 0.53187966, b: 0, a: 1}
   - customName: Coin5
     transform: {fileID: 1103414190}
-    color: {r: 1, g: 1, b: 1, a: 1}
+    color: {r: 0.09849739, g: 1, b: 0, a: 1}
   currentEnemies: []
 --- !u!114 &1965198749
 MonoBehaviour:
