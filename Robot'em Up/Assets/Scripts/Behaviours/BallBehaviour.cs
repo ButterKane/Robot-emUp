@@ -124,6 +124,7 @@ public class BallBehaviour : MonoBehaviour
 		currentDirection = _newDirection;
 		currentDirection.y = 0;
 		currentSpeed = currentSpeed * _bounceSpeedMultiplier;
+		teleguided = false;
 		hitGameObjects.Clear();
 	}
 
@@ -441,26 +442,26 @@ public class BallBehaviour : MonoBehaviour
 							hitGameObjects.Add(potentialHitableObjectFound);
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
+						if (raycast.collider.GetComponentInParent<Shield>() != null) {
+							Debug.Log("Shield"); 
+						}
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
-						if (!raycast.collider.isTrigger)
+						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
-							if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
-							{
-								Vector3 hitNormal = raycast.normal;
-								hitNormal.y = 0;
-								Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
-								newDirection.y = -currentDirection.y;
-								Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
-								FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, -currentDirection, Vector3.one * 2.75f);
-								FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
-								return;
-							}
-							else if (canHitWalls)
-							{
-								ChangeState(BallState.Grounded);
-								MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
-								return;
-							}
+							Vector3 hitNormal = raycast.normal;
+							hitNormal.y = 0;
+							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
+							newDirection.y = -currentDirection.y;
+							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
+							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, -currentDirection, Vector3.one * 2.75f);
+							FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
+							return;
+						}
+						else if (canHitWalls)
+						{
+							ChangeState(BallState.Grounded);
+							MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
+							return;
 						}
 					}
 					RaycastHit[] previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
