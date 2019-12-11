@@ -222,7 +222,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
                     transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
 
-                    /*if (ClosestSurroundPoint != null)
+                    if (ClosestSurroundPoint != null)
                     {
                         float distanceToPointRatio = (1 + (_self.position - ClosestSurroundPoint.position).magnitude / BezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
 
@@ -242,9 +242,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                         navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(positionOnBezierCurve, focusedPlayer.position));
                     }
                     else
-                    {*/
+                    {
                         navMeshAgent.SetDestination(focusedPlayer.position);
-                    //}
+                    }
 
                     if (distanceWithFocusedPlayer <= distanceToAttack)
                     {
