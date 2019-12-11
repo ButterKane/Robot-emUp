@@ -26,7 +26,7 @@ MonoBehaviour:
   damage: 20
   powerLevel: 2.5
   _lockable: 1
-  _lockHitboxSize: 1.65
+  _lockHitboxSize: 1
   arenaRobot: 0
   focusDistance: 40
   unfocusDistance: 50
@@ -121,7 +121,7 @@ MonoBehaviour:
     type: 3}
   deactivateShieldWhenAttacking: 0
   AngleRangeForRebound: 70
-  SpwaningShieldFrontDistance: 1.25
+  SpwaningShieldFrontDistance: 2.5
   Renderers:
   - {fileID: 6181108246780876594}
   - {fileID: 6181108247639220607}
@@ -239,6 +239,11 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 0.84
       objectReference: {fileID: 0}
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -264,21 +269,16 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_Radius
-      value: 1.65
-      objectReference: {fileID: 0}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     m_RemovedComponents:
     - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
     - {fileID: 373019035910456882, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
