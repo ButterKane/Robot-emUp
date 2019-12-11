@@ -568,8 +568,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             Destroy(hitParticle, 1f);
     }
 
-    protected virtual void Die(string deathSound = "EnemyDeath")
+    public virtual void Die(string deathSound = "EnemyDeath")
     {
+        GameManager.i.enemyManager.enemies.Remove(this);
+
         if (deathSound != null)
         {
             SoundManager.PlaySound(deathSound, transform.position, transform);
@@ -582,8 +584,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 		{
 			DropCore();
 		}
-        GameManager.i.enemyManager.enemies.Remove(this);
-		//onDeath.Invoke();
+
         Destroy(gameObject);
     }
 
