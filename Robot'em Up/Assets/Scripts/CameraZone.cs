@@ -55,7 +55,39 @@ public class CameraZone : MonoBehaviour
 
 		playersInside = new List<PlayerController>();
 	}
-	
+
+	private void Start ()
+	{
+		EditorApplication.playModeStateChanged += RegenerateVisualizer;
+	}
+
+	private void RegenerateVisualizer ( PlayModeStateChange state )
+	{
+		if (state == PlayModeStateChange.EnteredPlayMode)
+		{
+			switch (type)
+			{
+				case CameraType.Combat:
+					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizerIngame");
+					break;
+				case CameraType.Circle:
+					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
+					break;
+			}
+		} else if (state == PlayModeStateChange.ExitingPlayMode)
+		{
+			switch (type)
+			{
+				case CameraType.Combat:
+					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
+					break;
+				case CameraType.Circle:
+					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
+					break;
+			}
+		}
+	}
+
 	public void GenerateZone(CameraType _type) {
 		type = _type;
 		switch (type)
