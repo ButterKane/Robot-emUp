@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using XInputDotNetPure;
 #pragma warning disable 0649
 
 public enum VibrationForce
@@ -131,6 +132,18 @@ public class GameManager : MonoBehaviour
 	}
 	void UpdateSceneLoader()
 	{
+		GamePadState state = GamePad.GetState(0);
+		for (int i = 1; i <= 2; i++)
+		{
+			if (state.Buttons.Start == ButtonState.Pressed && SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
+			{
+				LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+			} else if (state.Buttons.Back == ButtonState.Pressed && SceneManager.GetActiveScene().buildIndex > 0)
+			{
+				LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+			}
+		}
+
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
 			LoadSceneByIndex(0);
