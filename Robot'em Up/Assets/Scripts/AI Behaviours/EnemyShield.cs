@@ -155,7 +155,7 @@ public class EnemyShield : EnemyBehaviour
         IsShieldActivated = true;
     }
 
-    protected override void Die(string deathSound = "EnemyDeath")
+    public override void Die(string deathSound = "EnemyDeath")
     {
         Destroy(Shield);
         base.Die("EnemyShieldDeath");   // Override the death sound with the right one 
