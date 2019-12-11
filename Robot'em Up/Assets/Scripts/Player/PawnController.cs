@@ -478,6 +478,7 @@ public class PawnController : MonoBehaviour
 
     public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
+        FeedbackManager.SendFeedback("event.PlayerBumpedAway", this);
         SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
 
         bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);

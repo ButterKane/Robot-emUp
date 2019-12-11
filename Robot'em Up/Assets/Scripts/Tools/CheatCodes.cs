@@ -48,6 +48,10 @@ public class CheatCodes : MonoBehaviour
             {
                 ChargeEnergy();
             }
+            if (GUI.Button(new Rect(10, 100, 100, 25), "Kill Enemies"))
+            {
+                StartCoroutine(KillEnemies());
+            }
         }
     }
 
@@ -75,5 +79,26 @@ public class CheatCodes : MonoBehaviour
     public void ChargeEnergy()
     {
         EnergyManager.IncreaseEnergy(1);
+    }
+
+    //public void KillEnemies()
+    //{
+    //    List<EnemyBehaviour> enemies = EnemyManager.i.enemies;
+    //    for (int i = 0; i < enemies.Count; i++)
+    //    {
+    //        enemies[0].Die(); // It doesn't destroy every enemy... :/
+    //        enemies.Remove(enemies[0]);
+    //    }
+    //}
+
+    public IEnumerator KillEnemies()
+    {
+        List<EnemyBehaviour> enemies = EnemyManager.i.enemies;
+        int count = enemies.Count;
+        for (int i = 0; i < count; i++)
+        {
+            enemies[0].Die(); // It doesn't destroy every enemy... :/*
+            yield return null;
+        }
     }
 }

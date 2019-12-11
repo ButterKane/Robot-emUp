@@ -44,7 +44,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         bodyRenderer.material = materialOnExplosion;
     }
 
-    protected override void Die(string deathSound = "EnemyDeath")
+    public override void Die(string deathSound = "EnemyDeath")
     {
         if (Explosion_C == null)
         {
