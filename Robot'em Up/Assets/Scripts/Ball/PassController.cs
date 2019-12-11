@@ -210,28 +210,26 @@ public class PassController : MonoBehaviour
 			}
 			if (i > 0)
 			{
-				if (Physics.Raycast(coordinates[i-1], coordinates[i] - coordinates[i-1] , out hit, Vector3.Distance(coordinates[i], coordinates[i - 1])))
-				{
-					if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
-					{ 
-						coordinates.Add(hit.point);
-						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hit.normal);
-						_direction = _direction.normalized * 10;
-						coordinates.Add(hit.point + _direction);
-						return coordinates;
-					} else if (hit.collider.gameObject.GetComponent<Shield>() != null)
+				foreach (RaycastHit hito in Physics.RaycastAll(coordinates[i - 1], coordinates[i] - coordinates[i - 1], Vector3.Distance(coordinates[i], coordinates[i - 1]))) {
+					if (hito.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
 					{
-						Vector3 impactVector = -(coordinates[i] - coordinates[i - 1]);
-						Debug.DrawRay(hit.point, impactVector.normalized, Color.green);
-						Debug.DrawRay(hit.point, hit.collider.transform.forward.normalized, Color.green);
-						if ((impactVector.normalized + hit.collider.transform.forward.normalized).magnitude > 1.5f)
-						{
-							coordinates.Add(hit.point);
-							Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hit.normal);
-							_direction = _direction.normalized * 10;
-							coordinates.Add(hit.point + _direction);
-							return coordinates;
-						}
+						coordinates.Add(hito.point);
+						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+						_direction = _direction.normalized * 10;
+						coordinates.Add(hito.point + _direction);
+						return coordinates;
+					}
+					else if (hito.collider.gameObject.GetComponentInParent<Shield>() != null)
+					{
+						Debug.Log("Shield hit");
+						Vector3 impactVector = (coordinates[i] - coordinates[i - 1]);
+						Debug.DrawRay(hito.point, impactVector.normalized, Color.green);
+						Debug.DrawRay(hito.point, hito.collider.transform.forward.normalized, Color.green);
+						coordinates.Add(hito.point);
+						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+						_direction = _direction.normalized * 10;
+						coordinates.Add(hito.point + _direction);
+						return coordinates;
 					}
 				}
 			}
