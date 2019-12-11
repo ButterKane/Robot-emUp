@@ -107,7 +107,14 @@ public class CameraBehaviour : MonoBehaviour
 
 	void UpdateCircleCamera()
 	{
-		Vector3 middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+		Vector3 middlePosition = Vector3.zero;
+		if (GameManager.deadPlayers.Count > 0)
+		{
+			middlePosition = zone.GetPlayersInside()[0].transform.position;
+		} else
+		{
+			middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+		}
 		Vector3 directionToCenter = middlePosition - zone.GetCenterPosition();
 		Vector3 wantedPosition = middlePosition;
 		directionToCenter.y = 0;

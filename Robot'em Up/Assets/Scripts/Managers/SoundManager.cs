@@ -96,7 +96,8 @@ public class SoundManager
 		GameObject newSoundPlayer = new GameObject();
 		newSoundPlayer.name = "SoundPlayer";
 		AudioSource newAudioSource = newSoundPlayer.AddComponent<AudioSource>();
-		newAudioSource.spatialBlend = 1f;
+		newAudioSource.spatialBlend = 0.65f;
+		newAudioSource.maxDistance = 100;
 		newAudioSource.volume = soundData.volumeMultiplier;
 		if (_parent != null)
 		{
