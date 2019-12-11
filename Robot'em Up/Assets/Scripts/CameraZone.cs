@@ -68,10 +68,10 @@ public class CameraZone : MonoBehaviour
 			switch (type)
 			{
 				case CameraType.Combat:
-					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizerIngame");
+					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/squareZoneVisualizerIngame");
 					break;
 				case CameraType.Circle:
-					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
+					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
 					break;
 			}
 		} else if (state == PlayModeStateChange.ExitingPlayMode)
