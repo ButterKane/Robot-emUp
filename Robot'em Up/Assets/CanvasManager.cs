@@ -6,7 +6,7 @@ public class CanvasManager : MonoBehaviour
 {
     public static CanvasManager i; 
 
-    [SerializeField] private Canvas mainCanvasPrefab;
+    public Canvas mainCanvasPrefab;
     public Canvas MainCanvas;
 
     private void Awake()

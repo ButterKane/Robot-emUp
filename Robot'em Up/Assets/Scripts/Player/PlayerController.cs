@@ -45,6 +45,7 @@ public class PlayerController : PawnController, IHitable
 	private DashController dashController;
 	private ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
+	private bool dashPressed = false;
 
 	public override void Awake ()
 	{
@@ -109,13 +110,17 @@ public class PlayerController : PawnController, IHitable
 		{
 			dunkController.Dunk();
 		}
-		if (state.Triggers.Left > triggerTreshold && revivablePlayers.Count <= 0)
+		if (state.Triggers.Left > triggerTreshold)
 		{
 			//extendingArmsController.ExtendArm();
-			if (enableDash)
+			if (enableDash && revivablePlayers.Count <= 0 && dashPressed == false)
 			{
 				dashController.Dash();
 			}
+			dashPressed = true;
+		} else
+		{
+			dashPressed = false;
 		}
 		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
