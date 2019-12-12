@@ -81,23 +81,30 @@ public class CheatCodes : MonoBehaviour
         EnergyManager.IncreaseEnergy(1);
     }
 
-    //public void KillEnemies()
-    //{
-    //    List<EnemyBehaviour> enemies = EnemyManager.i.enemies;
-    //    for (int i = 0; i < enemies.Count; i++)
-    //    {
-    //        enemies[0].Die(); // It doesn't destroy every enemy... :/
-    //        enemies.Remove(enemies[0]);
-    //    }
-    //}
-
     public IEnumerator KillEnemies()
     {
         List<EnemyBehaviour> enemies = EnemyManager.i.enemies;
         int count = enemies.Count;
         for (int i = 0; i < count; i++)
         {
-            enemies[0].Die(); // It doesn't destroy every enemy... :/*
+            Debug.Log("destroying " + enemies[0]);
+            if (enemies[0].transform.GetComponent<EnemyRedBarrel>())
+            {
+                EnemyBehaviour temp = enemies[0];
+                EnemyManager.i.enemies.Remove(temp);
+                Destroy(temp.gameObject);
+            }
+            else
+            {
+                enemies[0].Die(); 
+            }
+            yield return null;
+        }
+
+        TurretBehaviour[] turrets = FindObjectsOfType<TurretBehaviour>();
+        foreach(var turret in turrets)
+        {
+            turret.Die();
             yield return null;
         }
     }
