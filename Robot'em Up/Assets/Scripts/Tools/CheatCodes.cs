@@ -1,6 +1,7 @@
 ﻿using MyBox;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class CheatCodes : MonoBehaviour
@@ -65,9 +66,20 @@ public class CheatCodes : MonoBehaviour
             {
                 StartCoroutine(KillEnemies());
             }
+            if (GUI.Button(new Rect(10, 130, 100, 25), "Restart"))
+            {
+                Restart();
+            }
+            if (GUI.Button(new Rect(10, 160, 100, 25), "Go Previous"))
+            {
+                GoPrevious();
+            }
+            if (GUI.Button(new Rect(120, 150, 100, 25), "Go Next"))
+            {
+                GoNext();
+            }
         }
     }
-
 
     public void TPBallOnPlayer()
     {
@@ -121,5 +133,19 @@ public class CheatCodes : MonoBehaviour
             turret.Die();
             yield return null;
         }
+    }
+
+    public void Restart()
+    {
+        GameManager.ResetScene();
+    }
+
+    public void GoNext()
+    {
+        GameManager.i.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+    public void GoPrevious()
+    {
+        GameManager.i.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
     }
 }

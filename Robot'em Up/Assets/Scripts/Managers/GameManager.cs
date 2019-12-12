@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 	}
 
-	void LoadSceneByIndex(int index)
+	public void LoadSceneByIndex(int index)
 	{
 		SceneManager.LoadScene(index);
 		/*
