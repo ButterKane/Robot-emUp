@@ -10,6 +10,8 @@ public class CheatCodes : MonoBehaviour
     [ConditionalField(nameof(ActivateCheat))] public PlayerController PlayerOne;
     [ConditionalField(nameof(ActivateCheat))] public PlayerController PlayerTwo;
     [ConditionalField(nameof(ActivateCheat))] public bool playersInvicible;
+    private bool isInvincibilityToggled = false;
+
 
     private void Start()
     {
@@ -34,16 +36,27 @@ public class CheatCodes : MonoBehaviour
 
     void OnGUI()
     {
+        Color normalColor = GUI.color;
+
         if (ActivateCheat)
         {
             if (GUI.Button(new Rect(10, 10, 60, 25), "TP Ball"))
             {
                 TPBallOnPlayer();
             }
+
+            if (isInvincibilityToggled)
+            {
+                GUI.backgroundColor = Color.green;
+            }
+
             if (GUI.Button(new Rect(10, 40, 120, 25), "Toggle invicibility"))
             {
                 ToggleInvicibility();
             }
+
+            GUI.backgroundColor = normalColor;
+
             if (GUI.Button(new Rect(10, 70, 100, 25), "Charge Energy"))
             {
                 ChargeEnergy();
@@ -68,6 +81,7 @@ public class CheatCodes : MonoBehaviour
 
     public void ToggleInvicibility()
     {
+        isInvincibilityToggled = !isInvincibilityToggled;
         playersInvicible = !playersInvicible;
         if (!playersInvicible)
         {
