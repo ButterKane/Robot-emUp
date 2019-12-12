@@ -33,7 +33,7 @@ public class BossGenerator : MonoBehaviour
             else
             {
                 var newinst = Instantiate(listOfEnemiesPrefabToSpawn[Random.Range(0, listOfEnemiesPrefabToSpawn.Count)], transform.position, Quaternion.identity);
-            newinst.transform.position = new Vector3(newinst.transform.position.x + Random.Range(-1f,1), newinst.transform.position.y, newinst.transform.position.z + Random.Range(-1f, 1));
+            newinst.transform.position = new Vector3(newinst.transform.position.x + Random.Range(-0.5f, 0.5f), newinst.transform.position.y, newinst.transform.position.z + Random.Range(-0.5f, 0.5f));
             }
         }
     }
