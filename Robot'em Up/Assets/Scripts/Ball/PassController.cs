@@ -196,8 +196,6 @@ public class PassController : MonoBehaviour
 		Vector3 firstPoint = startPosition;
 		Vector3 firstHandle = startPosition + _lookDirection.normalized * hanseLength;
 		Vector3 secondPoint = endPosition;
-
-		RaycastHit hit;
 		for (int i = 0; i < curveRaycastIteration; i++)
 		{
 			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
