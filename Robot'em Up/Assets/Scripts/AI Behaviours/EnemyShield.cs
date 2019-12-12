@@ -67,10 +67,15 @@ public class EnemyShield : EnemyBehaviour
         }
     }
 
+
+    public override void EnterAttackingState(string attackSound = "EnemyAttack")
+    {
+        attackSound = "EnemyShieldAttack";
+        base.EnterAttackingState();
+    }
+
     public override void AttackingState()
     {
-        SoundManager.PlaySound("EnemyShieldAttack", transform.position, transform);
-
         if (!navMeshAgent.enabled)
         {
             navMeshAgent.enabled = true;

@@ -397,8 +397,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Animator.SetTrigger("AttackTrigger");
     }
 
-    public virtual void EnterAttackingState()
+    public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
+        SoundManager.PlaySound(attackSound, transform.position, transform);
         //attackDuration = maxAttackDuration;
         endOfAttackTriggerLaunched = false;
         attackInitialPosition = transform.position;
@@ -422,7 +423,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void AttackingState()
     {
-        SoundManager.PlaySound("EnemyAttack", transform.position, transform);
         attackTimeProgression += Time.deltaTime / maxAttackDuration;
         //attackDuration -= Time.deltaTime;
 
