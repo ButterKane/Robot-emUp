@@ -221,15 +221,15 @@ public class PassController : MonoBehaviour
 					}
 					else if (hito.collider.gameObject.GetComponentInParent<Shield>() != null)
 					{
-						Debug.Log("Shield hit");
 						Vector3 impactVector = (coordinates[i] - coordinates[i - 1]);
-						Debug.DrawRay(hito.point, impactVector.normalized, Color.green);
-						Debug.DrawRay(hito.point, hito.collider.transform.forward.normalized, Color.green);
-						coordinates.Add(hito.point);
-						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
-						_direction = _direction.normalized * 10;
-						coordinates.Add(hito.point + _direction);
-						return coordinates;
+						if ((impactVector.normalized + hito.collider.gameObject.transform.forward.normalized).magnitude >= (hito.collider.gameObject.GetComponentInParent<Shield>().Enemy.AngleRangeForRebound / 63.5f))
+						{
+							coordinates.Add(hito.point);
+							Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+							_direction = _direction.normalized * 10;
+							coordinates.Add(hito.point + _direction);
+							return coordinates;
+						}
 					}
 				}
 			}
