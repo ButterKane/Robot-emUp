@@ -59,6 +59,10 @@ public class SoundEditor : Editor
 							GUILayout.Label("Clip", GUILayout.Width(100));
 							soundData.soundList[y].clip = (AudioClip)EditorGUILayout.ObjectField(soundData.soundList[y].clip, typeof(AudioClip), false, GUILayout.Width(150));
 
+							if (GUILayout.Button(EditorGUIUtility.IconContent("Animation.Play"), GUILayout.Width(20), GUILayout.Height(20)))
+							{
+								PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
+							}
 							GUILayout.Label("Play Chances", GUILayout.Width(100));
 							EditorGUI.BeginChangeCheck();
 							float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(soundData.soundList[y].playChances * 100f) / 100f, 0f, 1f);
@@ -147,5 +151,40 @@ public class SoundEditor : Editor
 		newSound.playChances = 1f;
 		newSoundData.soundList.Add(newSound);
 		soundDatas.soundList.Add(newSoundData);
+	}
+
+	void PlaySoundInEditor ( AudioClip clip, int startSample = 0, bool loop = false )
+	{
+		StopAllClips();
+		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
+		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
+			"PlayClip",
+			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+			null,
+			new System.Type[] { typeof(AudioClip), typeof(int), typeof(bool) },
+			null
+		);
+		method.Invoke(
+			null,
+			new object[] { clip, startSample, loop }
+		);
+	}
+
+	void StopAllClips ()
+	{
+		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
+		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
+			"StopAllClips",
+			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+			null,
+			new System.Type[] { },
+			null
+		);
+		method.Invoke(
+			null,
+			new object[] { }
+		);
 	}
 }

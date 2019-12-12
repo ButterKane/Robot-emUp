@@ -58,9 +58,11 @@ public class CameraZone : MonoBehaviour
 
 	private void Start ()
 	{
+#if UNITY_EDITOR
 		EditorApplication.playModeStateChanged += RegenerateVisualizer;
+#endif
 	}
-
+#if UNITY_EDITOR
 	private void RegenerateVisualizer ( PlayModeStateChange state )
 	{
 		if (state == PlayModeStateChange.EnteredPlayMode)
@@ -87,6 +89,7 @@ public class CameraZone : MonoBehaviour
 			}
 		}
 	}
+#endif
 
 	public void GenerateZone(CameraType _type) {
 		type = _type;
