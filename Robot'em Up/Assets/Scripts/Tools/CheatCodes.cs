@@ -74,7 +74,7 @@ public class CheatCodes : MonoBehaviour
             {
                 GoPrevious();
             }
-            if (GUI.Button(new Rect(120, 150, 100, 25), "Go Next"))
+            if (GUI.Button(new Rect(120, 160, 100, 25), "Go Next"))
             {
                 GoNext();
             }
