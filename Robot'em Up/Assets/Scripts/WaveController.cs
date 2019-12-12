@@ -120,7 +120,7 @@ public class WaveController : MonoBehaviour
 		if (enemyBehaviour == null) { Destroy(newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
 		enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(enemyBehaviour); });
 
-		int chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count - 1);
+		int chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
 		chosenSpawnerIndex = _enemy.spawnIndexes[chosenSpawnerIndex];
 		enemyBehaviour.GetNavMeshAgent().enabled = false;
 		newEnemy.transform.position = spawnList[chosenSpawnerIndex].transform.position;

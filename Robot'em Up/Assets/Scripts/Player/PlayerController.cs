@@ -307,13 +307,15 @@ public class PlayerController : PawnController, IHitable
 	public void Revive(PlayerController _player)
 	{
 		moveState = MoveState.Idle;
+		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
 		_player.SetTargetable();
 		_player.UnHide();
 		_player.currentHealth = GetMaxHealth();
 		_player.transform.position = transform.position + Vector3.up * 7 + Vector3.left * 0.1f;
 		_player.FreezeTemporarly(reviveFreezeDuration);
-		_player.StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
+		_player.EnableInput();
+		//_player.StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
@@ -393,6 +395,7 @@ public class PlayerController : PawnController, IHitable
 			yield return null;
 		}
 		EnableInput();
+		yield return null;
 	}
 	IEnumerator FreezeTemporarly_C(float _duration)
 	{

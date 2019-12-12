@@ -119,6 +119,12 @@ public class GameManager : MonoBehaviour
 		UpdateSceneLoader();
 	}
 
+	private void OnApplicationQuit ()
+	{
+		GamePad.SetVibration(PlayerIndex.One, 0, 0);
+		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+	}
+
 	void LoadSceneByIndex(int index)
 	{
 		SceneManager.LoadScene(index);
