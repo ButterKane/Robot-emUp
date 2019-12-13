@@ -108,6 +108,10 @@ public class GameManager : MonoBehaviour
 
 	private void Update ()
 	{
+		if (mainCanvas == null)
+		{
+			FindMainCanvas();
+		}
 		if (Input.GetKeyDown(KeyCode.B))
 		{
 			ResetBall();
