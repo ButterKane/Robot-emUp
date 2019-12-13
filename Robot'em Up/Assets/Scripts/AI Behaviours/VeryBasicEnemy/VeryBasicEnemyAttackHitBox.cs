@@ -19,7 +19,7 @@ public class VeryBasicEnemyAttackHitBox : MonoBehaviour
             {
                 enemyShield.StopAttack();
 
-                if (other.GetComponent<PawnController>() != null)
+                if (other.GetComponent<PawnController>() != null && other.GetComponent<DunkController>() != null && other.GetComponent<DunkController>().isDunking() == false)
                     other.GetComponent<PawnController>().BumpMe(10,1,1, flattedDownImpactVector.normalized, enemyShield.BumpOtherDistanceMod, enemyShield.BumpOtherDurationMod, enemyShield.BumpOtherRestDurationMod);
             }
         }
