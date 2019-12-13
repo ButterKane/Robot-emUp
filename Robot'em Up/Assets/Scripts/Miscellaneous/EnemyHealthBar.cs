@@ -56,7 +56,7 @@ public class EnemyHealthBar : MonoBehaviour
 
                 FillRect.sizeDelta = new Vector2(((float)Turret.Health / Turret.MaxHealth) * _initialWidth, _rect.height);
                 BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
-                _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
+                _self.position = _mainCamera.WorldToScreenPoint(Turret.HealthBarRef.position);
             }
             if (Turret.Health <= 0)
             {
