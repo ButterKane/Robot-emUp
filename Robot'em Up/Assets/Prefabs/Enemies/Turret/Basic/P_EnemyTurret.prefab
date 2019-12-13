@@ -333,6 +333,36 @@ Transform:
   m_Father: {fileID: 3179655172013363395}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3762324217151078883
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3348403758328978162}
+  m_Layer: 0
+  m_Name: HealthBarRef
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3348403758328978162
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3762324217151078883}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.71, z: 0}
+  m_LocalScale: {x: 1.35, y: 1.35, z: 1.35}
+  m_Children: []
+  m_Father: {fileID: 3668126503491773334}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6086072691216837907
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,7 +377,7 @@ GameObject:
   - component: {fileID: 8142821643506368650}
   m_Layer: 0
   m_Name: P_EnemyTurret
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -365,6 +395,7 @@ Transform:
   m_Children:
   - {fileID: 6442596981544871290}
   - {fileID: 8116397337583495147}
+  - {fileID: 3348403758328978162}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -399,6 +430,9 @@ MonoBehaviour:
   _self: {fileID: 3668126503491773334}
   Rb: {fileID: 8174936212591820110}
   Animator: {fileID: 1833733463821956502}
+  HealthBarRef: {fileID: 3348403758328978162}
+  HealthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+    type: 3}
   Target: {fileID: 0}
   State: 0
   attackState: 0

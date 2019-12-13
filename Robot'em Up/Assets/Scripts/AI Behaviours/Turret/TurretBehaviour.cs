@@ -35,6 +35,8 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     [SerializeField] protected Transform _self;
     public Rigidbody Rb;
     public Animator Animator;
+    public Transform HealthBarRef;
+    public GameObject HealthBarPrefab;
 
     [Space(2)]
     [Separator("Auto-assigned References")]
@@ -131,6 +133,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         _playerTwoTransform = GameManager.playerTwo.transform;
         _playerOnePawnController = GameManager.playerOne.GetComponent<PawnController>();
         _playerTwoPawnController = GameManager.playerTwo.GetComponent<PawnController>();
+
+        GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
+        healthBar.GetComponent<EnemyHealthBar>().Turret = this;
 
         Health = MaxHealth;
 

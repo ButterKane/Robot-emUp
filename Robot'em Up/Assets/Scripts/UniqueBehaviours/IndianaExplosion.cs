@@ -48,6 +48,7 @@ public class IndianaExplosion : MonoBehaviour
             {
                 indianaManager.indianaCamera.shakeAmount += 0.025f * myScale;
             }
+            SoundManager.PlaySound("ExplosionIndianaJones", transform.position, transform);
             spriteRenderer.color = new Color(1, 1, 1, 0.05f);
             FXExplosion.SetActive(true);
             foreach (var item in ListPawnsHere)
