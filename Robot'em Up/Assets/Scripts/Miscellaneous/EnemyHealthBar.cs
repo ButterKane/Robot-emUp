@@ -7,6 +7,7 @@ public class EnemyHealthBar : MonoBehaviour
 {
     [SerializeField] private RectTransform FillRect;
     public EnemyBehaviour Enemy;
+    public Gradient healthBarGradient;
     private float _initialWidth;
     private Rect _rect;
     private Camera _mainCamera;
@@ -38,7 +39,7 @@ public class EnemyHealthBar : MonoBehaviour
                 ActivateHealthBar(true);
 
                 FillRect.sizeDelta = new Vector2(((float)Enemy.Health / Enemy.MaxHealth) * _initialWidth, _rect.height);
-
+                BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
                 _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
             }
             if (Enemy.Health <= 0)
