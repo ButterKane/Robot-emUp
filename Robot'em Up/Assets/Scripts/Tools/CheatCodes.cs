@@ -143,11 +143,11 @@ public class CheatCodes : MonoBehaviour
     public void GoNext()
     {
         if(SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
-            GameManager.i.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+            GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void GoPrevious()
     {
         if (SceneManager.GetActiveScene().buildIndex > 0)
-            GameManager.i.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+            GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
     }
 }

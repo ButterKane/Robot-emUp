@@ -63,8 +63,11 @@ public class GameManager : MonoBehaviour
 	public static Canvas mainCanvas;
 	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
+	private static MainMenu menu;
+	private static bool menuCalledOne = false;
+	private static bool menuCalledTwo = false;
 
-    [SerializeField]
+	[SerializeField]
     GameObject dummyPrefab;
     public GameObject ballPrefab;
 
@@ -129,28 +132,52 @@ public class GameManager : MonoBehaviour
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 	}
 
-	public void LoadSceneByIndex(int index)
+	public static void LoadSceneByIndex(int index)
 	{
 		SceneManager.LoadScene(index);
-		/*
-		SceneLoader sceneLoader = Resources.Load<SceneLoader>("editor/SceneLoader");
-		if (sceneLoader == null) { Debug.LogWarning("SceneLoader not found, can't load scene"); return; }
-		string sceneFound = sceneLoader.GetSceneByIndex(index);
-		if (sceneFound == "") { Debug.LogWarning("Scene with that ID doesn't exit"); return; }
-		SceneManager.LoadScene(sceneFound);
-		*/
+		GamePad.SetVibration(PlayerIndex.One, 0, 0);
+		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+		Time.timeScale = 1f;
+	}
+
+	public static void OpenLevelMenu()
+	{
+		Time.timeScale = 0f;
+		menu = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"), null).GetComponent<MainMenu>();
+	}
+
+	public static void CloseLevelMenu()
+	{
+		Time.timeScale = 1f;
+		Destroy(menu.gameObject);
 	}
 	void UpdateSceneLoader()
 	{
-		GamePadState state = GamePad.GetState(0);
-		for (int i = 1; i <= 2; i++)
+		GamePadState state = GamePad.GetState(PlayerIndex.One);
+		for (int i = 0; i < 2; i++)
 		{
-			if (state.Buttons.Start == ButtonState.Pressed && SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
+			if (i == 0) { state = GamePad.GetState(PlayerIndex.One); }
+			if (i == 1) { state = GamePad.GetState(PlayerIndex.Two); }
+			if (state.Buttons.Start == ButtonState.Pressed)
 			{
-				LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
-			} else if (state.Buttons.Back == ButtonState.Pressed && SceneManager.GetActiveScene().buildIndex > 0)
+				if (i == 0) { if (menuCalledOne) { return; } }
+				if (i == 1) { if (menuCalledTwo) { return; } }
+				if (menu != null)
+				{
+					CloseLevelMenu();
+					if (i == 0) { menuCalledOne = true; }
+					if (i == 1) { menuCalledTwo = true; }
+				} else
+				{
+					OpenLevelMenu();
+					if (i == 0) { menuCalledOne = true; }
+					if (i == 1) { menuCalledTwo = true; }
+				}
+			}
+			if (state.Buttons.Start == ButtonState.Released)
 			{
-				LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+				if (i == 0) { menuCalledOne = false; }
+				if (i == 1) { menuCalledTwo = false; }
 			}
 		}
 
