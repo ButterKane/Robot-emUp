@@ -5,7 +5,7 @@ using UnityEngine;
 public class TextRenderQfterFight : MonoBehaviour
 {
     bool waitToBeActivated;
-    public float timeBetweenCheck;
+    float timeBetweenCheck;
     public Renderer myRend;
     GameObject[] enemyArray;
 
@@ -15,7 +15,7 @@ public class TextRenderQfterFight : MonoBehaviour
         timeBetweenCheck -= Time.deltaTime;
         if (waitToBeActivated && timeBetweenCheck < 0f)
         {
-            timeBetweenCheck = timeBetweenCheck;
+            timeBetweenCheck = 0.5f;
             bool isAllEnemyDead = true;
             for (int i = 0; i < enemyArray.Length; i++)
             {
