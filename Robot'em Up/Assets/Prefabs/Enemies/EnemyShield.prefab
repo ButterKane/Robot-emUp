@@ -114,7 +114,7 @@ MonoBehaviour:
   hitParticleScale: 3
   BezierCurveHeight: 0.5
   BezierDistanceToHeightRatio: 100
-  coreDropChances: 0.25
+  coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 15, y: 15}
   ShieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
@@ -164,6 +164,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -229,11 +234,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -264,11 +264,11 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
-      objectReference: {fileID: 0}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
