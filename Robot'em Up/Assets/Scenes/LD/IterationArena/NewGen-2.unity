@@ -655,6 +655,7 @@ GameObject:
   - component: {fileID: 211713476}
   - component: {fileID: 211713475}
   - component: {fileID: 211713474}
+  - component: {fileID: 211713479}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -847,6 +848,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0.2}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &211713479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211713473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f7ae61878ea67043bf4af2c19392c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeBetweenCheck: 0.5
+  myRend: {fileID: 211713477}
 --- !u!1 &259781759
 GameObject:
   m_ObjectHideFlags: 0
@@ -5646,9 +5661,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 211713477}
-          m_MethodName: set_enabled
-          m_Mode: 6
+        - m_Target: {fileID: 211713479}
+          m_MethodName: PleaseActivate
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
