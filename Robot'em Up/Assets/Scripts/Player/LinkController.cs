@@ -107,7 +107,7 @@ public class LinkController : MonoBehaviour
 	{
 		if (linkGameObject != null)
 		{
-			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; return; }
+			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; WarningPanel.ClosePanelInstantly(); linkIsBroke = false; return;}
 			float linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
 			if (!linkIsBroke)
 			{

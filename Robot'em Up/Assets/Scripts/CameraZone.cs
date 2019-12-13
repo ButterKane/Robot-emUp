@@ -19,7 +19,7 @@ public class CameraZone : MonoBehaviour
 	public CameraType type;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
-	private Collider collider;
+	private Collider genCollider;
 	private bool zoneActivated;
 	[HideInInspector] public UnityEvent onZoneActivation;
 
@@ -58,9 +58,11 @@ public class CameraZone : MonoBehaviour
 
 	private void Start ()
 	{
+#if UNITY_EDITOR
 		EditorApplication.playModeStateChanged += RegenerateVisualizer;
+#endif
 	}
-
+#if UNITY_EDITOR
 	private void RegenerateVisualizer ( PlayModeStateChange state )
 	{
 		if (state == PlayModeStateChange.EnteredPlayMode)
@@ -87,6 +89,7 @@ public class CameraZone : MonoBehaviour
 			}
 		}
 	}
+#endif
 
 	public void GenerateZone(CameraType _type) {
 		type = _type;
@@ -99,7 +102,7 @@ public class CameraZone : MonoBehaviour
 				GenerateCircleZone();
 				break;
 		}
-		collider.isTrigger = true;
+		genCollider.isTrigger = true;
 	}
 
 	public virtual void Update ()
@@ -137,14 +140,14 @@ public class CameraZone : MonoBehaviour
 		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
 		visualizer.drawMode = SpriteDrawMode.Tiled;
 		visualizer.transform.localScale = new Vector3(30, 30, 30);
-		collider = GetComponent<Collider>();
-		if (collider == null)
+		genCollider = GetComponent<Collider>();
+		if (genCollider == null)
 		{
-			collider = transform.gameObject.AddComponent<BoxCollider>();
+			genCollider = transform.gameObject.AddComponent<BoxCollider>();
 		}
 		else
 		{
-			collider = GetComponent<BoxCollider>();
+			genCollider = GetComponent<BoxCollider>();
 		}
 	}
 
@@ -153,14 +156,14 @@ public class CameraZone : MonoBehaviour
 		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
 		visualizer.drawMode = SpriteDrawMode.Simple;
 		visualizer.transform.localScale = new Vector3(30, 30, 30);
-		collider = GetComponent<Collider>();
-		if (collider == null)
+		genCollider = GetComponent<Collider>();
+		if (genCollider == null)
 		{
-			collider = transform.gameObject.AddComponent<CapsuleCollider>();
+			genCollider = transform.gameObject.AddComponent<CapsuleCollider>();
 		}
 		else
 		{
-			collider = GetComponent<CapsuleCollider>();
+			genCollider = GetComponent<CapsuleCollider>();
 		}
 	}
 
@@ -185,9 +188,9 @@ public class CameraZone : MonoBehaviour
 			cameraPivot.transform.position = wantedPosition;
 			cameraPivot.transform.localRotation = Quaternion.Euler(cameraPivot.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, cameraPivot.transform.localRotation.eulerAngles.z);
 		}
-		if (collider != null)
+		if (genCollider != null)
 		{
-			BoxCollider squareCollider = collider as BoxCollider;
+			BoxCollider squareCollider = genCollider as BoxCollider;
 			squareCollider.size = new Vector3(Mathf.Abs(visualizer.size.x), Mathf.Abs(visualizer.size.y), 1);
 		}
 	}
