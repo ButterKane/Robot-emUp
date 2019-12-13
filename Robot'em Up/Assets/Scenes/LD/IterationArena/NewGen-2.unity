@@ -1111,12 +1111,12 @@ PrefabInstance:
     - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
       propertyPath: WaitingTimeForNextEnemy
-      value: 8
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
       propertyPath: RandomLenghtTime
-      value: 3
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96075e72e843c9e41b97ddfe80e9503a, type: 3}
@@ -2028,7 +2028,7 @@ PrefabInstance:
     - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
       propertyPath: WaitingTimeForNextEnemy
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
@@ -3128,7 +3128,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1005291876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3693,17 +3693,6 @@ PrefabInstance:
       propertyPath: secondPawn
       value: 
       objectReference: {fileID: 839975549}
-    - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 13400000, guid: 02d8489c5c81d1f4e81341a5737aaec8,
-        type: 2}
-    - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -3717,6 +3706,17 @@ PrefabInstance:
     - target: {fileID: 4824538873194744163, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: aimType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 02d8489c5c81d1f4e81341a5737aaec8,
+        type: 2}
+    - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4186,7 +4186,7 @@ PrefabInstance:
     - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
       propertyPath: WaitingTimeForNextEnemy
-      value: 5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
@@ -5283,7 +5283,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 7
+        value: 6
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -5329,21 +5329,21 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 5
-        inSlope: 0
-        outSlope: 0
+        value: 4
+        inSlope: 2
+        outSlope: 2
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 12
-        inSlope: 1.1320748
-        outSlope: 1.1320748
+        value: 7
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.22500002
+        inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -5370,14 +5370,14 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0, b: 0, a: 1}
-      probability: 0.803
+      probability: 0.826
       spawnIndexes: 000000000100000002000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0.9747989, g: 1, b: 0, a: 1}
-      probability: 0.19699971
+      probability: 0.17399971
       spawnIndexes: 010000000000000002000000
   - maxPowerLevel:
       serializedVersion: 2
@@ -5393,7 +5393,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 12
+        value: 7
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -5404,7 +5404,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     duration: 25
-    pauseBeforeNextWave: 2
+    pauseBeforeNextWave: 0
     onEndEvents:
       m_PersistentCalls:
         m_Calls:
@@ -5447,21 +5447,21 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0, b: 0, a: 1}
-      probability: 0.4896482
+      probability: 0.633
       spawnIndexes: 000000000100000002000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0.9747989, g: 1, b: 0, a: 1}
-      probability: 0.23235112
+      probability: 0.17877097
       spawnIndexes: 020000000100000000000000
     - enemyType:
         name: RedBarrel
         prefab: {fileID: 7449900513924197488, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
           type: 3}
         color: {r: 1, g: 0, b: 0.5670934, a: 1}
-      probability: 0.278
+      probability: 0.18822849
       spawnIndexes: 
   spawnList:
   - customName: Coin1
@@ -6165,17 +6165,17 @@ PrefabInstance:
     - target: {fileID: 486856831424380147, guid: 2c249f77cc5b4d9468ef0a94c9e1ca9e,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 486856831424380147, guid: 2c249f77cc5b4d9468ef0a94c9e1ca9e,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 486856831424380147, guid: 2c249f77cc5b4d9468ef0a94c9e1ca9e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 60.350006
       objectReference: {fileID: 0}
     - target: {fileID: 5665898079466858463, guid: 2c249f77cc5b4d9468ef0a94c9e1ca9e,
         type: 3}
@@ -6363,17 +6363,17 @@ PrefabInstance:
     - target: {fileID: 5945444008471951289, guid: 120094ecf3323874bb5422bacde386fb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5945444008471951289, guid: 120094ecf3323874bb5422bacde386fb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5945444008471951289, guid: 120094ecf3323874bb5422bacde386fb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 60.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 120094ecf3323874bb5422bacde386fb, type: 3}
