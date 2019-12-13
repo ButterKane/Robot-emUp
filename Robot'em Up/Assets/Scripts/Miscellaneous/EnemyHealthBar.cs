@@ -7,6 +7,7 @@ public class EnemyHealthBar : MonoBehaviour
 {
     [SerializeField] private RectTransform FillRect;
     public EnemyBehaviour Enemy;
+    public TurretBehaviour Turret;
     public Gradient healthBarGradient;
     private float _initialWidth;
     private Rect _rect;
@@ -43,6 +44,21 @@ public class EnemyHealthBar : MonoBehaviour
                 _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
             }
             if (Enemy.Health <= 0)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+        else if(Turret != null)
+        {
+            if (Turret.Health < Turret.MaxHealth)
+            {
+                ActivateHealthBar(true);
+
+                FillRect.sizeDelta = new Vector2(((float)Turret.Health / Turret.MaxHealth) * _initialWidth, _rect.height);
+                BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
+                _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
+            }
+            if (Turret.Health <= 0)
             {
                 Destroy(this.gameObject);
             }
