@@ -326,11 +326,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1656431289}
     m_Modifications:
-    - target: {fileID: 8060061600778237297, guid: 9e6831f724c1cef4a95cb4db8668b577,
-        type: 3}
-      propertyPath: m_Name
-      value: Cursors
-      objectReference: {fileID: 0}
     - target: {fileID: 8060061600778237296, guid: 9e6831f724c1cef4a95cb4db8668b577,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -435,6 +430,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8060061600778237297, guid: 9e6831f724c1cef4a95cb4db8668b577,
+        type: 3}
+      propertyPath: m_Name
+      value: Cursors
       objectReference: {fileID: 0}
     - target: {fileID: 8060061600778237299, guid: 9e6831f724c1cef4a95cb4db8668b577,
         type: 3}
@@ -860,7 +860,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7ae61878ea67043bf4af2c19392c3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeBetweenCheck: 0.5
   myRend: {fileID: 211713477}
 --- !u!1 &259781759
 GameObject:
@@ -3908,16 +3907,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4824538873194744163, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: aimType
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: secondPawn
       value: 
       objectReference: {fileID: 839975549}
+    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4824538873194744163, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: aimType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_Material
@@ -3928,16 +3937,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 25.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 25.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
@@ -5678,21 +5677,21 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0, b: 0, a: 1}
-      probability: 0.633
+      probability: 0.74710435
       spawnIndexes: 000000000100000002000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0.9747989, g: 1, b: 0, a: 1}
-      probability: 0.17877097
+      probability: 0
       spawnIndexes: 020000000100000000000000
     - enemyType:
         name: RedBarrel
         prefab: {fileID: 7449900513924197488, guid: e1eebcda61a8f2d4cb329bb7f36c123f,
           type: 3}
         color: {r: 1, g: 0, b: 0.5670934, a: 1}
-      probability: 0.18822849
+      probability: 0.2528952
       spawnIndexes: 
   spawnList:
   - customName: Coin1
@@ -6620,11 +6619,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1005291879}
     m_Modifications:
-    - target: {fileID: 7361388671208415390, guid: d207957b19b86354891a0e8a519ffa45,
-        type: 3}
-      propertyPath: m_Name
-      value: WarningPanel
-      objectReference: {fileID: 0}
     - target: {fileID: 7361388671208415389, guid: d207957b19b86354891a0e8a519ffa45,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6729,6 +6723,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7361388671208415390, guid: d207957b19b86354891a0e8a519ffa45,
+        type: 3}
+      propertyPath: m_Name
+      value: WarningPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7361388671208415361, guid: d207957b19b86354891a0e8a519ffa45,
         type: 3}
