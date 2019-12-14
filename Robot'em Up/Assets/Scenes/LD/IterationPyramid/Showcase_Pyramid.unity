@@ -1260,6 +1260,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player1
       objectReference: {fileID: 0}
+    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: enablePickOwnBall
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: maxHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1320,16 +1330,6 @@ PrefabInstance:
       propertyPath: secondPawn
       value: 
       objectReference: {fileID: 7194597109591444365}
-    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: enablePickOwnBall
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: maxHealth
-      value: 100
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
 --- !u!114 &247369929 stripped
@@ -3511,7 +3511,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &758918527
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3528,8 +3528,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 152.56}
-  m_SizeDelta: {x: 792.9, y: 547.25}
+  m_AnchoredPosition: {x: 0, y: 30.3}
+  m_SizeDelta: {x: 792.9, y: 703}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &758918528
 MonoBehaviour:
@@ -3559,12 +3559,10 @@ MonoBehaviour:
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'YOU WIN!
-
-    (Press start to next)'
+  m_Text: "YOU WIN!\n(Press right arrow \n(on keyboard)\n to next room)"
 --- !u!222 &758918529
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3694,6 +3692,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 4125511053235310956, guid: 832d0ae161ab7db4dbcc60acd46bf948,
         type: 3}
@@ -3924,26 +3942,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_RenderMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_ReferenceResolution.x
-      value: 1920
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_ReferenceResolution.y
-      value: 1080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 832d0ae161ab7db4dbcc60acd46bf948, type: 3}
@@ -5078,6 +5076,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player2
       objectReference: {fileID: 0}
+    - target: {fileID: 7194597108492952852, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: enablePickOwnBall
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7194597108492952852, guid: db5a9d4f63dca3645833fdb540b88560,
+        type: 3}
+      propertyPath: maxHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 2815175127988622336, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5132,16 +5140,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7194597108492952852, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: enablePickOwnBall
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7194597108492952852, guid: db5a9d4f63dca3645833fdb540b88560,
-        type: 3}
-      propertyPath: maxHealth
-      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4247227084850040722, guid: db5a9d4f63dca3645833fdb540b88560,
         type: 3}
@@ -8732,6 +8730,11 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: speedChange
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8898391501262450084, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8786,11 +8789,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: speedChange
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3384318069634552629, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
