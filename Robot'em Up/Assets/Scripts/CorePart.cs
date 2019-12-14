@@ -51,7 +51,7 @@ public class CorePart : MonoBehaviour
 		RaycastHit hit;
 		if (Physics.Raycast(transform.position, Vector3.down, out hit, 1f, LayerMask.GetMask("Environment"))) {
 			grounded = true;
-			foreach (Collider collider in GetComponents<Collider>())
+			foreach (Collider collider in GetComponentsInChildren<Collider>())
 			{
 				if (!collider.isTrigger)
 				{

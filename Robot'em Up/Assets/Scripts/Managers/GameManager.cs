@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
 	private static MainMenu menu;
 	private static bool menuCalledOne = false;
 	private static bool menuCalledTwo = false;
+	private static bool deathPanelCalled = false;
 
 	[SerializeField]
     GameObject dummyPrefab;
@@ -74,7 +75,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        i = this;
+		Time.timeScale = 1f;
+		i = this;
 		deadPlayers = new List<PlayerController>();
 		//Auto assign players
 		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
@@ -111,6 +113,11 @@ public class GameManager : MonoBehaviour
 
 	private void Update ()
 	{
+		if (deadPlayers.Count >= 2 && !deathPanelCalled)
+		{
+			deathPanelCalled = true;
+			Instantiate(Resources.Load<GameObject>("Menu/RestartPanel"));
+		}
 		if (mainCanvas == null)
 		{
 			FindMainCanvas();
@@ -122,6 +129,20 @@ public class GameManager : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.R))
 		{
 			ResetScene();
+		}
+		if (Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
+			{
+				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+			}
+		}
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+			if (SceneManager.GetActiveScene().buildIndex > 0)
+			{
+				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+			}
 		}
 		UpdateSceneLoader();
 	}
