@@ -24,7 +24,7 @@ public class LevelSelector : MonoBehaviour
 			RectTransform buttonTransform = newButton.GetComponent<RectTransform>();
 			buttonTransform.sizeDelta = new Vector2(200, 50);
 
-			newButton.AddComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(x));
+			newButton.AddComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(x)) ;
 			newButton.transform.SetParent(transform.Find("Viewport").transform.Find("Content"));
 
 			GameObject buttonText = new GameObject();
