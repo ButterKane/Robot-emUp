@@ -7,6 +7,8 @@ public class Dummy : MonoBehaviour, IHitable
 {
 	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+
+	public GameObject deathFX;
 	private int _hitCount;
 	private Vector3 initialScale;
 	public int hitCount { 
@@ -32,7 +34,7 @@ public class Dummy : MonoBehaviour, IHitable
         {
             EnergyManager.IncreaseEnergy(0.2f);
         }
-		if (_hitCount >= maxHealth) { Destroy(this.gameObject); }
+		if (_hitCount >= maxHealth) { FXManager.InstantiateFX(deathFX, transform.position, false, Vector3.forward, Vector3.one); Destroy(this.gameObject); }
 
 		//Fonctions utile
 		//_ball.Bounce();

@@ -27,7 +27,7 @@ public class MainMenu : MonoBehaviour
 		selectedButton = _button;
 		RectTransform buttonTransform = _button.GetComponent<RectTransform>();
 		if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), buttonTransform); }
-		selectorArrow.rectTransform.position = _button.transform.position + (Vector3.right * buttonTransform.sizeDelta.x / 2 * buttonTransform.localScale.x);
+		selectorArrow.rectTransform.position = _button.transform.position + ((Vector3.right * buttonTransform.sizeDelta.x / 2 * buttonTransform.localScale.x) + Vector3.right * (100 * selectorArrow.transform.localScale.x)) * transform.localScale.x;
 		selectorOutline.rectTransform.position = buttonTransform.position;
 		selectorOutline.rectTransform.sizeDelta = new Vector2(buttonTransform.sizeDelta.x * (buttonTransform.localScale.x / selectorOutline.rectTransform.localScale.x) * 0.8f, buttonTransform.sizeDelta.y * (buttonTransform.localScale.y / selectorOutline.rectTransform.localScale.y) * 0.6f);
 		selectedButtonIndex = buttons.IndexOf(_button);
@@ -71,6 +71,8 @@ public class MainMenu : MonoBehaviour
 	private void Awake ()
 	{
 		buttons = menuButtons;
+		waitForAResetOne = true;
+		waitForAResetTwo = true;
 		if (sceneList != null) { sceneList.gameObject.SetActive(false); }
 		SelectButton(buttons[0]);
 		GameManager gm = FindObjectOfType<GameManager>();
