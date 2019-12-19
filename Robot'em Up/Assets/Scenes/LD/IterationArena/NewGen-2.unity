@@ -275,7 +275,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 49869884}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5397644, y: 0, z: -6.1376095}
+  m_LocalPosition: {x: -0.7446003, y: -0.39, z: -8.390806}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 380197658}
@@ -326,6 +326,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1656431289}
     m_Modifications:
+    - target: {fileID: 8060061600778237297, guid: 9e6831f724c1cef4a95cb4db8668b577,
+        type: 3}
+      propertyPath: m_Name
+      value: Cursors
+      objectReference: {fileID: 0}
     - target: {fileID: 8060061600778237296, guid: 9e6831f724c1cef4a95cb4db8668b577,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -430,11 +435,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8060061600778237297, guid: 9e6831f724c1cef4a95cb4db8668b577,
-        type: 3}
-      propertyPath: m_Name
-      value: Cursors
       objectReference: {fileID: 0}
     - target: {fileID: 8060061600778237299, guid: 9e6831f724c1cef4a95cb4db8668b577,
         type: 3}
@@ -947,7 +947,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 259781759}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.8, y: 1.98, z: -9.83}
+  m_LocalPosition: {x: 13.8, y: 1.98, z: -6.9}
   m_LocalScale: {x: 3, y: 4, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -999,13 +999,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c42b3c7f2f42f43bde92c41e39bdc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyArray:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  enemyArray: []
   turretArray: []
   wallBehindPlayer: {fileID: 1991603977}
   myVC: {fileID: 629529318}
@@ -1750,8 +1744,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ff4c02cb2745c54895bfbe91caf8cec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cornerA: {x: -24.10704, y: 0.45, z: -25.483847}
-  m_cornerB: {x: 23.02751, y: 0.45, z: 13.208626}
+  m_cornerA: {x: -24.51671, y: 0.060000002, z: -29.990236}
+  m_cornerB: {x: 23.02751, y: 0.060000002, z: 13.208626}
   minPlayersRequired: 2
   type: 0
   onZoneActivation:
@@ -1768,8 +1762,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.5711522, y: 1.2897491, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.5711522, y: 1.41, z: 1}
+  m_Center: {x: 0, y: -0.025, z: 0}
 --- !u!212 &459775956
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1813,7 +1807,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: -1.5711522, y: 1.2897491}
+  m_Size: {x: -1.5848076, y: 1.439962}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1827,7 +1821,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 459775953}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.5397644, y: -0.39, z: -6.1376095}
+  m_LocalPosition: {x: -0.7446003, y: -0.4, z: -8.390806}
   m_LocalScale: {x: 30, y: 30, z: 30}
   m_Children: []
   m_Father: {fileID: 1965198750}
@@ -3517,7 +3511,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010173506}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.15, y: 1.98, z: -9.83}
+  m_LocalPosition: {x: -12.15, y: 1.98, z: -6.9}
   m_LocalScale: {x: 3, y: 4, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3907,26 +3901,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: secondPawn
-      value: 
-      objectReference: {fileID: 839975549}
-    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 25.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 25.6
-      objectReference: {fileID: 0}
     - target: {fileID: 4824538873194744163, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: aimType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5564275353483555727, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: secondPawn
+      value: 
+      objectReference: {fileID: 839975549}
     - target: {fileID: 5419603750946610382, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_Material
@@ -3937,6 +3921,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4652725224206744737, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 25.6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
@@ -6619,6 +6613,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1005291879}
     m_Modifications:
+    - target: {fileID: 7361388671208415390, guid: d207957b19b86354891a0e8a519ffa45,
+        type: 3}
+      propertyPath: m_Name
+      value: WarningPanel
+      objectReference: {fileID: 0}
     - target: {fileID: 7361388671208415389, guid: d207957b19b86354891a0e8a519ffa45,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6723,11 +6722,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7361388671208415390, guid: d207957b19b86354891a0e8a519ffa45,
-        type: 3}
-      propertyPath: m_Name
-      value: WarningPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7361388671208415361, guid: d207957b19b86354891a0e8a519ffa45,
         type: 3}
