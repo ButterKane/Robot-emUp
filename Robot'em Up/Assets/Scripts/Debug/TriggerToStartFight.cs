@@ -25,14 +25,19 @@ public class TriggerToStartFight : MonoBehaviour
             if (timePassed / timeForWallToCome >= 1)
             {
                 wallBehindPlayer.position = pos2;
-                
-                for (int i = 0; i < enemyArray.Length; i++)
+                if (enemyArray.Length > 0)
                 {
-                    enemyArray[i].ChangingState(EnemyState.Idle);
+                    for (int i = 0; i < enemyArray.Length; i++)
+                    {
+                        enemyArray[i].ChangingState(EnemyState.Idle);
+                    }
                 }
-                for (int i = 0; i < turretArray.Length; i++)
+                if (turretArray.Length > 0)
                 {
-                    turretArray[i].ChangingState(TurretState.Idle);
+                    for (int i = 0; i < turretArray.Length; i++)
+                    {
+                        turretArray[i].ChangingState(TurretState.Idle);
+                    }
                 }
                 
                 myVC.m_Priority = 0;
