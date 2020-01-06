@@ -35,30 +35,30 @@ public class EnemyHealthBar : MonoBehaviour
     {
         if(Enemy != null)
         {
-            if (Enemy.Health < Enemy.MaxHealth)
+            if (Enemy.health < Enemy.maxHealth)
             {
                 ActivateHealthBar(true);
 
-                FillRect.sizeDelta = new Vector2(((float)Enemy.Health / Enemy.MaxHealth) * _initialWidth, _rect.height);
+                FillRect.sizeDelta = new Vector2(((float)Enemy.health / Enemy.maxHealth) * _initialWidth, _rect.height);
                 BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
-                _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
+                _self.position = _mainCamera.WorldToScreenPoint(Enemy.healthBarRef.position);
             }
-            if (Enemy.Health <= 0)
+            if (Enemy.health <= 0)
             {
                 Destroy(this.gameObject);
             }
         }
         else if(Turret != null)
         {
-            if (Turret.Health < Turret.MaxHealth)
+            if (Turret.health < Turret.maxHealth)
             {
                 ActivateHealthBar(true);
 
-                FillRect.sizeDelta = new Vector2(((float)Turret.Health / Turret.MaxHealth) * _initialWidth, _rect.height);
+                FillRect.sizeDelta = new Vector2(((float)Turret.health / Turret.maxHealth) * _initialWidth, _rect.height);
                 BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
-                _self.position = _mainCamera.WorldToScreenPoint(Turret.HealthBarRef.position);
+                _self.position = _mainCamera.WorldToScreenPoint(Turret.healthBarRef.position);
             }
-            if (Turret.Health <= 0)
+            if (Turret.health <= 0)
             {
                 Destroy(this.gameObject);
             }

@@ -30,8 +30,8 @@ public class CheatCodes : MonoBehaviour
         }
         if (playersInvicible && ActivateCheat)
         {
-            PlayerOne.IsInvincible = playersInvicible;
-            PlayerTwo.IsInvincible = playersInvicible;
+            PlayerOne.isInvincible_access = playersInvicible;
+            PlayerTwo.isInvincible_access = playersInvicible;
         }
     }
 
@@ -97,8 +97,8 @@ public class CheatCodes : MonoBehaviour
         playersInvicible = !playersInvicible;
         if (!playersInvicible)
         {
-            PlayerOne.IsInvincible = playersInvicible;
-            PlayerTwo.IsInvincible = playersInvicible;
+            PlayerOne.isInvincible_access = playersInvicible;
+            PlayerTwo.isInvincible_access = playersInvicible;
         }
     }
 

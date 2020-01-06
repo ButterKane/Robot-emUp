@@ -200,7 +200,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (collision.gameObject.GetComponent<PawnController>().IsInvincible == false)
+            if (collision.gameObject.GetComponent<PawnController>().isInvincible_access == false)
             {
                 Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
                 collision.gameObject.GetComponent<PawnController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);

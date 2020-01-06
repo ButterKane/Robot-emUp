@@ -18,14 +18,14 @@ public class LockManager : MonoBehaviour
 				return;
 			}
 		}
-        Canvas canvas = GameManager.mainCanvas;
+        Canvas internal_canvas = GameManager.mainCanvas;
 
-        if (canvas != null)
+        if (internal_canvas != null)
         {
-            AimLock newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
-            newLock.transform.SetParent(canvas.transform);
-            newLock.Init(_target, _hitboxSize);
-            lockedTargets.Add(newLock);
+            AimLock internal_newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
+            internal_newLock.transform.SetParent(internal_canvas.transform);
+            internal_newLock.Init(_target, _hitboxSize);
+            lockedTargets.Add(internal_newLock);
         }
     }
 
@@ -54,35 +54,35 @@ public class LockManager : MonoBehaviour
 	}
 	public static void LockTargetsInPath ( List<Vector3> _pathCoordinates, float _startValue )
 	{
-		List<Transform> foundTargets = new List<Transform>();
-		int startPoint = Mathf.RoundToInt((_startValue - 0.05f) * _pathCoordinates.Count);
-		startPoint = Mathf.Clamp(startPoint, 0, _pathCoordinates.Count - 1);
-		for (int i = startPoint; i < _pathCoordinates.Count - 1; i++)
+		List<Transform> internal_foundTargets = new List<Transform>();
+		int internal_startPoint = Mathf.RoundToInt((_startValue - 0.05f) * _pathCoordinates.Count);
+		internal_startPoint = Mathf.Clamp(internal_startPoint, 0, _pathCoordinates.Count - 1);
+		for (int i = internal_startPoint; i < _pathCoordinates.Count - 1; i++)
 		{
-			Vector3 direction = _pathCoordinates[i + 1] - _pathCoordinates[i];
-			RaycastHit[] hitObjects = Physics.RaycastAll(_pathCoordinates[i], direction, direction.magnitude);
-			List<RaycastHit> hitObjectsList = new List<RaycastHit>(hitObjects);
+			Vector3 internal_direction = _pathCoordinates[i + 1] - _pathCoordinates[i];
+			RaycastHit[] internal_hitObjects = Physics.RaycastAll(_pathCoordinates[i], internal_direction, internal_direction.magnitude);
+			List<RaycastHit> internal_hitObjectsList = new List<RaycastHit>(internal_hitObjects);
 			if (i > 1)
 			{
-				RaycastHit[] reverseHitObjects = Physics.RaycastAll(_pathCoordinates[i], -direction, direction.magnitude);
-				foreach (RaycastHit hit in reverseHitObjects)
+				RaycastHit[] internal_reverseHitObjects = Physics.RaycastAll(_pathCoordinates[i], -internal_direction, internal_direction.magnitude);
+				foreach (RaycastHit hit in internal_reverseHitObjects)
 				{
-					hitObjectsList.Add(hit);
+					internal_hitObjectsList.Add(hit);
 				}
 			}
-			foreach (RaycastHit hit in hitObjectsList)
+			foreach (RaycastHit hit in internal_hitObjectsList)
 			{
 				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
 				if (potentialTarget != null && potentialTarget.lockable)
 				{
-					foundTargets.Add(hit.transform);
+					internal_foundTargets.Add(hit.transform);
 					LockManager.LockTarget(hit.transform, potentialTarget.lockHitboxSize);
 				}
 			}
 		}
 		foreach (AimLock lockedTarget in lockedTargets)
 		{
-			if (!foundTargets.Contains(lockedTarget.linkedTarget))
+			if (!internal_foundTargets.Contains(lockedTarget.linkedTarget))
 			{
 				LockManager.UnlockTarget(lockedTarget);
 			}

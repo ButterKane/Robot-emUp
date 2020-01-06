@@ -22,21 +22,21 @@ public class EnemyAttack : MonoBehaviour
 
     public void LaunchAttack(Transform target)
     {
-        StartCoroutine(Attack(target));
+        StartCoroutine(Attack_C(target));
     }
 
-    public virtual IEnumerator Attack(Transform target)
+    public virtual IEnumerator Attack_C(Transform target)
     {
         _behaviourScript.EnemyState = EnemyState.Attacking;
 
-        _behaviourScript.Animator.SetTrigger("AttackTrigger");
+        _behaviourScript.animator.SetTrigger("AttackTrigger");
 
-        float waitTime = _behaviourScript.Animator.runtimeAnimatorController.animationClips.First(x => x.name == "Anticipation").length;
+        float waitTime = _behaviourScript.animator.runtimeAnimatorController.animationClips.First(x => x.name == "Anticipation").length;
 
         yield return new WaitForSeconds(waitTime);
         
-        _behaviourScript.Rb.AddForce(Vector3.up * AttackUpForce, ForceMode.Impulse);
-        _behaviourScript.Rb.AddForce((target.position - transform.position).normalized * AttackForwardForce, ForceMode.Impulse);
+        _behaviourScript.rb.AddForce(Vector3.up * AttackUpForce, ForceMode.Impulse);
+        _behaviourScript.rb.AddForce((target.position - transform.position).normalized * AttackForwardForce, ForceMode.Impulse);
 
         ResetAttackGlobals();
 

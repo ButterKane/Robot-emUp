@@ -66,61 +66,61 @@ public class CameraBehaviour : MonoBehaviour
 
 	void UpdateCombatCamera()
 	{
-		Vector3 middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
-		Vector3 directionToCenter = middlePosition - zone.GetCenterPosition();
-		float xAngle = Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), directionToCenter);
-		float yAngle = Vector3.Angle(zone.transform.TransformDirection(new Vector3(1, 0, 0)), directionToCenter);
+		Vector3 internal_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+		Vector3 internal_directionToCenter = internal_middlePosition - zone.GetCenterPosition();
+		float internal_xAngle = Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), internal_directionToCenter);
+		float internal_yAngle = Vector3.Angle(zone.transform.TransformDirection(new Vector3(1, 0, 0)), internal_directionToCenter);
 
-		float xDistance = Mathf.Abs(directionToCenter.magnitude * Mathf.Sin(xAngle * Mathf.Deg2Rad));
-		float yDistance = Mathf.Abs(directionToCenter.magnitude * Mathf.Sin(yAngle * Mathf.Deg2Rad));
+		float internal_xDistance = Mathf.Abs(internal_directionToCenter.magnitude * Mathf.Sin(internal_xAngle * Mathf.Deg2Rad));
+		float internal_yDistance = Mathf.Abs(internal_directionToCenter.magnitude * Mathf.Sin(internal_yAngle * Mathf.Deg2Rad));
 
-		int xDirection = 1;
-		int yDirection = 1;
+		int internal_xDirection = 1;
+		int internal_yDirection = 1;
 
-		float directionAngle = SwissArmyKnife.SignedAngleBetween(zone.transform.TransformDirection(new Vector3(0, -1, 0)), directionToCenter, Vector3.up);
-		if (directionAngle >= 0 && directionAngle < 90) { xDirection = -1; yDirection = -1; }
-		if (directionAngle >= 90 && directionAngle < 180) { xDirection = -1; yDirection = 1; }
-		if (directionAngle >= 180 && directionAngle < 270) { xDirection = 1; yDirection = 1; }
-		if (directionAngle >= 270 && directionAngle < 360) { xDirection = 1; yDirection = -1; }
+		float internal_directionAngle = SwissArmyKnife.SignedAngleBetween(zone.transform.TransformDirection(new Vector3(0, -1, 0)), internal_directionToCenter, Vector3.up);
+		if (internal_directionAngle >= 0 && internal_directionAngle < 90) { internal_xDirection = -1; internal_yDirection = -1; }
+		if (internal_directionAngle >= 90 && internal_directionAngle < 180) { internal_xDirection = -1; internal_yDirection = 1; }
+		if (internal_directionAngle >= 180 && internal_directionAngle < 270) { internal_xDirection = 1; internal_yDirection = 1; }
+		if (internal_directionAngle >= 270 && internal_directionAngle < 360) { internal_xDirection = 1; internal_yDirection = -1; }
 
-		Vector3 directionToCorner = zone.cornerA - zone.transform.position;
-		float xMaxDistance = directionToCorner.magnitude * Mathf.Sin(Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), directionToCorner) * Mathf.Deg2Rad);
-		float yMaxDistance = directionToCorner.magnitude * Mathf.Sin(Vector3.Angle(zone.transform.TransformDirection(new Vector3(1, 0, 0)), directionToCorner) * Mathf.Deg2Rad);
+		Vector3 internal_directionToCorner = zone.cornerA - zone.transform.position;
+		float internal_xMaxDistance = internal_directionToCorner.magnitude * Mathf.Sin(Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), internal_directionToCorner) * Mathf.Deg2Rad);
+		float internal_yMaxDistance = internal_directionToCorner.magnitude * Mathf.Sin(Vector3.Angle(zone.transform.TransformDirection(new Vector3(1, 0, 0)), internal_directionToCorner) * Mathf.Deg2Rad);
 
-		xDistance = (Mathf.Clamp(xDistance, 0, xMaxDistance) * xDirection) / xMaxDistance;
-		yDistance = (Mathf.Clamp(yDistance, 0, yMaxDistance) * yDirection) / yMaxDistance;
+		internal_xDistance = (Mathf.Clamp(internal_xDistance, 0, internal_xMaxDistance) * internal_xDirection) / internal_xMaxDistance;
+		internal_yDistance = (Mathf.Clamp(internal_yDistance, 0, internal_yMaxDistance) * internal_yDirection) / internal_yMaxDistance;
 
-		float wantedRotationAngle = Mathf.Lerp(-maxRotation, maxRotation, (xDistance + 1) / 2f);
-		wantedAngle = wantedRotationAngle;
-		currentDistanceX = xDistance;
-		currentDistanceY = yDistance;
+		float internal_wantedRotationAngle = Mathf.Lerp(-maxRotation, maxRotation, (internal_xDistance + 1) / 2f);
+		wantedAngle = internal_wantedRotationAngle;
+		currentDistanceX = internal_xDistance;
+		currentDistanceY = internal_yDistance;
 
-		Quaternion wantedRotation = Quaternion.Euler(defaultRotation.eulerAngles.x, defaultRotation.eulerAngles.y + wantedRotationAngle, defaultRotation.eulerAngles.z);
-		transform.localRotation = Quaternion.Lerp(transform.localRotation, wantedRotation, Time.deltaTime * rotationSpeed);
+		Quaternion internal_wantedRotation = Quaternion.Euler(defaultRotation.eulerAngles.x, defaultRotation.eulerAngles.y + internal_wantedRotationAngle, defaultRotation.eulerAngles.z);
+		transform.localRotation = Quaternion.Lerp(transform.localRotation, internal_wantedRotation, Time.deltaTime * rotationSpeed);
 		if (enableTranslation)
 		{
-			float wantedTranslation = Mathf.Lerp(-maxForwardTranslation, maxForwardTranslation, (yDistance + 1) / 2f);
-			Vector3 wantedPosition = new Vector3(defaultTranslation.x, defaultTranslation.y, defaultTranslation.z + wantedTranslation);
-			virtualCamera.transform.localPosition = Vector3.Lerp(virtualCamera.transform.localPosition, wantedPosition, Time.deltaTime * translationSpeed);
+			float internal_wantedTranslation = Mathf.Lerp(-maxForwardTranslation, maxForwardTranslation, (internal_yDistance + 1) / 2f);
+			Vector3 internal_wantedPosition = new Vector3(defaultTranslation.x, defaultTranslation.y, defaultTranslation.z + internal_wantedTranslation);
+			virtualCamera.transform.localPosition = Vector3.Lerp(virtualCamera.transform.localPosition, internal_wantedPosition, Time.deltaTime * translationSpeed);
 		}
 	}
 
 	void UpdateCircleCamera()
 	{
-		Vector3 middlePosition = Vector3.zero;
+		Vector3 internal_middlePosition = Vector3.zero;
 		if (GameManager.deadPlayers.Count > 0)
 		{
-			middlePosition = zone.GetPlayersInside()[0].transform.position;
+			internal_middlePosition = zone.GetPlayersInside()[0].transform.position;
 		} else
 		{
-			middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			internal_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
 		}
-		Vector3 directionToCenter = middlePosition - zone.GetCenterPosition();
-		Vector3 wantedPosition = middlePosition;
-		directionToCenter.y = 0;
-		Quaternion wantedRotation = Quaternion.LookRotation(-directionToCenter);
+		Vector3 internal_directionToCenter = internal_middlePosition - zone.GetCenterPosition();
+		Vector3 internal_wantedPosition = internal_middlePosition;
+		internal_directionToCenter.y = 0;
+		Quaternion internal_wantedRotation = Quaternion.LookRotation(-internal_directionToCenter);
 
-		transform.localPosition = Vector3.Lerp(transform.localPosition, wantedPosition, Time.deltaTime * translationSpeed);
-		transform.localRotation = Quaternion.Lerp(transform.localRotation, wantedRotation, Time.deltaTime * rotationSpeed);
+		transform.localPosition = Vector3.Lerp(transform.localPosition, internal_wantedPosition, Time.deltaTime * translationSpeed);
+		transform.localRotation = Quaternion.Lerp(transform.localRotation, internal_wantedRotation, Time.deltaTime * rotationSpeed);
 	}
 }

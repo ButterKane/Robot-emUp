@@ -29,7 +29,7 @@ public class TurretGenerator : MonoBehaviour
         for (int i = 0; i < SpawnedTurret.Count; i++)
         {
             TurretBehaviour item = (TurretBehaviour)SpawnedTurret[i];
-            if (item.Health < 0)
+            if (item.health < 0)
             {
                 SpawnedTurret.Remove(item);
             }

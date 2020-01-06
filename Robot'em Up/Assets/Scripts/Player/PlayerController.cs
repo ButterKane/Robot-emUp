@@ -270,7 +270,7 @@ public class PlayerController : PawnController, IHitable
 	}
 	public override void Damage ( int _amount )
 	{
-        if (!IsInvincible)
+        if (!isInvincible_access)
         {
 			FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
 			SoundManager.PlaySound("PlayerHitNoBump", transform.position);

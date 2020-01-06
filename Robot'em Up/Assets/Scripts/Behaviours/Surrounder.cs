@@ -57,7 +57,7 @@ public class Surrounder : MonoBehaviour
 
         foreach (var enemy in closestEnemies)
         {
-            enemy.ClosestSurroundPoint = null;
+            enemy.closestSurroundPoint = null;
 
             float closestDistance = Mathf.Infinity;
 
@@ -74,21 +74,21 @@ public class Surrounder : MonoBehaviour
                     {
                         closestDistance = (enemy.transform.position - pointsDic[i].position).magnitude; // We keep the distance in memory
 
-                        if (enemy.ClosestSurroundPoint) // if the enemy already had a closest point, make sure this point forgets the enemy as well
+                        if (enemy.closestSurroundPoint) // if the enemy already had a closest point, make sure this point forgets the enemy as well
                         {
-                            pointsScripts[KeyByValue(pointsDic, enemy.ClosestSurroundPoint)].closestEnemy = null;
+                            pointsScripts[KeyByValue(pointsDic, enemy.closestSurroundPoint)].closestEnemy = null;
                         }
 
                         pointsScripts[i].closestEnemy = enemy;
 
-                        enemy.ClosestSurroundPoint = pointsDic[i]; // attribute the closest surround point to the enemy
+                        enemy.closestSurroundPoint = pointsDic[i]; // attribute the closest surround point to the enemy
                     }
                 }
             }
 
-            if (enemy.ClosestSurroundPoint)
+            if (enemy.closestSurroundPoint)
             {
-                Debug.DrawLine(enemy.transform.position, enemy.ClosestSurroundPoint.transform.position, Color.blue, 1f) ;
+                Debug.DrawLine(enemy.transform.position, enemy.closestSurroundPoint.transform.position, Color.blue, 1f) ;
             }
         }
     }

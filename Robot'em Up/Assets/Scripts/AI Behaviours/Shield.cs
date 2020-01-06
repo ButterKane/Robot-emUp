@@ -4,23 +4,23 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour, IHitable
 {
-    public EnemyShield Enemy;
-    [SerializeField] private bool _lockable = false; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+    public EnemyShield enemy;
+    [SerializeField] private bool lockable_access = false; public bool lockable { get { return lockable_access; } set { lockable_access = value; } }
+	[SerializeField] private float lockHitboxSize_access; public float lockHitboxSize { get { return lockHitboxSize_access; } set { lockHitboxSize_access = value; } }
 
     private void Update()
     {
-        transform.position = Enemy.transform.position + Enemy.transform.forward * Enemy.SpwaningShieldFrontDistance + Vector3.up;
-        transform.LookAt(transform.position + Enemy.transform.forward);
+        transform.position = enemy.transform.position + enemy.transform.forward * enemy.spawningShieldFrontDistance + Vector3.up;
+        transform.LookAt(transform.position + enemy.transform.forward);
     }
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        if ((_impactVector.normalized + transform.forward.normalized).magnitude < (Enemy.AngleRangeForRebound / 63.5)) // This division makes it usable as a dot product
+        if ((_impactVector.normalized + transform.forward.normalized).magnitude < (enemy.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
         {
-            Vector3 newDirection = Vector3.Reflect(_impactVector, transform.forward);
-            Debug.DrawRay(transform.position, newDirection, Color.magenta, 10f);
-            newDirection.y = _impactVector.y;
-            _ball.Bounce(newDirection, 1f) ;
+            Vector3 internal_newDirection = Vector3.Reflect(_impactVector, transform.forward);
+            Debug.DrawRay(transform.position, internal_newDirection, Color.magenta, 10f);
+            internal_newDirection.y = _impactVector.y;
+            _ball.Bounce(internal_newDirection, 1f) ;
         }
     }
 

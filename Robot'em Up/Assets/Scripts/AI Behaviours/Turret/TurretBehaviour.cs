@@ -109,21 +109,21 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     void UpdateDistancesToPlayers()
     {
-        distanceWithPlayerOne = Vector3.Distance(_self.position, _playerOneTransform.position);
-        distanceWithPlayerTwo = Vector3.Distance(_self.position, _playerTwoTransform.position);
+        distanceWithPlayerOne = Vector3.Distance(self.position, playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(self.position, playerTwoTransform.position);
     }
 
     Transform GetClosestAndAvailablePlayer()
     {
-        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && _playerTwoPawnController.IsTargetable())
-            || !_playerOnePawnController.IsTargetable())
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
+            || !playerOnePawnController.IsTargetable())
         {
-            return _playerTwoTransform;
+            return playerTwoTransform;
         }
-        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && _playerOnePawnController.IsTargetable())
-            || !_playerTwoPawnController.IsTargetable())
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && playerOnePawnController.IsTargetable())
+            || !playerTwoPawnController.IsTargetable())
         {
-            return _playerOneTransform;
+            return playerOneTransform;
         }
         else
         {
@@ -140,9 +140,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayerTransform.position + focusedPlayerTransform.forward*focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - _self.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayerTransform.position + focusedPlayerTransform.forward*focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-        _self.rotation = Quaternion.Lerp(_self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
+        self.rotation = Quaternion.Lerp(self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
     public virtual void UpdateState()
@@ -153,10 +153,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretState.Attacking:
                 AttackingUpdateState();		
                 break;
+
             case TurretState.GettingOutOfGround:
                 break;
+
             case TurretState.Hiding:
                 break;
+
             case TurretState.Hidden:
                 timeBetweenCheck -= Time.deltaTime;
                 if (timeBetweenCheck <= 0)
@@ -164,8 +167,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                     CheckDistanceAndAdaptFocus();
                 }
                 break;
+
             case TurretState.Dying:
                 break;
+
             case TurretState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
                 if (timeBetweenCheck <= 0)
@@ -206,10 +211,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         switch (turretState)
         {
             case TurretState.Hiding:
-                Animator.SetTrigger("HidingTrigger");
+                animator.SetTrigger("HidingTrigger");
                 break;
             case TurretState.GettingOutOfGround:
-                Animator.SetTrigger("GettingOutOfGroundTrigger");
+                animator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
                 break;
@@ -217,7 +222,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 break;
             case TurretState.Attacking:
                 attackState = TurretAttackState.Anticipation;
-                Animator.SetTrigger("AnticipationTrigger");
+                animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + UnityEngine.Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 break;
@@ -240,16 +245,18 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 if (anticipationTime <= 0)
                 {
                     attackState = TurretAttackState.Attack;
-                    Animator.SetTrigger("AttackTrigger");
+                    animator.SetTrigger("AttackTrigger");
                 }
                 break;
+
             case TurretAttackState.Attack:
                 break;
+
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
                 if (restTime <= 0)
                 {
-                    Animator.SetTrigger("FromRestToIdleTrigger");
+                    animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
                 }
                 if(aimingCubeState != AimingCubeState.NotVisible)
@@ -261,10 +268,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(self.position, self.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
-            aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z / 2 * _self.forward);
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(self.position, hit.point));
+            aimingCubeTransform.position = self.position + self.up * .5f + (aimingCubeTransform.localScale.z / 2 * self.forward);
         }
     }
 
@@ -275,9 +282,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void LaunchProjectile()
     {
-        Vector3 spawnPosition;
-        spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
+        Vector3 internal_spawnPosition;
+        internal_spawnPosition = bulletSpawn.position;
+        spawnedBullet = Instantiate(bulletPrefab, internal_spawnPosition, Quaternion.LookRotation(transform.forward));
         FeedbackManager.SendFeedback("event.BasicTurretAttack", this);
         SoundManager.PlaySound("BasicTurretAttack", transform.position);
     }
@@ -307,7 +314,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
-        if (distanceWithPlayerOne < focusDistance && _playerOnePawnController.IsTargetable())
+        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable())
         {
             playerOneInRange = true;
         }
@@ -316,7 +323,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance && _playerTwoPawnController.IsTargetable())
+        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable())
         {
             playerTwoInRange = true;
         }
@@ -328,31 +335,31 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         //Unfocus player because of distance
         if (focusedPlayerTransform != null)
         {
-            if((focusedPlayerTransform == _playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !_playerOnePawnController.IsTargetable())) 
-                || ((focusedPlayerTransform == _playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !_playerTwoPawnController.IsTargetable()))))
+            if((focusedPlayerTransform == playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !playerOnePawnController.IsTargetable())) 
+                || ((focusedPlayerTransform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
             }
         }
 
         //Changing focus between the two
-        if((playerOneInRange && _playerOnePawnController.IsTargetable()) 
-            && (playerTwoInRange && _playerTwoPawnController.IsTargetable()) 
+        if((playerOneInRange && playerOnePawnController.IsTargetable()) 
+            && (playerTwoInRange && playerTwoPawnController.IsTargetable()) 
             && focusedPlayerTransform != null)
         {
-            if(focusedPlayerTransform == _playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if(focusedPlayerTransform == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
-                ChangingFocus(_playerTwoTransform);
+                ChangingFocus(playerTwoTransform);
             }
-            else if (focusedPlayerTransform == _playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPlayerTransform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
             {
-                ChangingFocus(_playerOneTransform);
+                ChangingFocus(playerOneTransform);
             }
         }
 
         //no focused yet ? Choose one
-        if(((playerOneInRange && _playerOnePawnController.IsTargetable()) 
-            || (playerTwoInRange && _playerTwoPawnController.IsTargetable())) 
+        if(((playerOneInRange && playerOnePawnController.IsTargetable()) 
+            || (playerTwoInRange && playerTwoPawnController.IsTargetable())) 
             && focusedPlayerTransform == null)
         {
             ChangingFocus(GetClosestAndAvailablePlayer());
@@ -361,9 +368,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void Die()
     {
-        GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(deathParticle, 1.5f);
+        GameObject internal_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        internal_deathParticle.transform.localScale *= deathParticleScale;
+        Destroy(internal_deathParticle, 1.5f);
 
         if (UnityEngine.Random.Range(0f, 1f) <= coreDropChances)
         {
@@ -376,68 +383,34 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         Destroy(gameObject);
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    new public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        switch (_source)
-        {
-            case DamageSource.Dunk:
-                _damages += 8; //pck ils subissent pas le bump
-                break;
-            case DamageSource.RedBarrelExplosion:
-                _damages += 8; //pck ils subissent pas le bump
-                break;
-            case DamageSource.Ball:
-                if (_ball != null)
-                {
-                    _ball.Explode(true);
-                }
-                EnergyManager.IncreaseEnergy(energyAmount);
-                break;
-        }
-
-        Health -= _damages;
-		if (Health <= 0)
+        base.OnHit(_ball,_impactVector,  _thrower, _damages, _source, _bumpModificators);
+		if (health <= 0)
         {
             Die();
         }
-        else
-        {
-            GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
-            hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(hitParticle, 1.5f);
-        }
     }
 
-    public virtual void ChangeAimingCubeState(AimingCubeState _NewState)
+    public virtual void ChangeAimingCubeState(AimingCubeState _newState)
     {
-        if (_NewState == AimingCubeState.Following)
+        if (_newState == AimingCubeState.Following)
         {
             aimingCubeRenderer.material.color = followingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
             forwardPredictionRatio = defaultForwardPredictionRatio + UnityEngine.Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
         }
-        else if(_NewState == AimingCubeState.Locking)
+        else if(_newState == AimingCubeState.Locking)
         {
             aimingCubeRenderer.material.color = lockingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeLockedScale;
         }
-        else if(_NewState == AimingCubeState.NotVisible)
+        else if(_newState == AimingCubeState.NotVisible)
         {
             aimingCubeTransform.localScale = Vector3.zero;
         }
-        aimingCubeState = _NewState;
-    }
-
-    protected virtual void DropCore()
-    {
-        GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
-        newCore.name = "Core of " + gameObject.name;
-        newCore.transform.position = transform.position;
-        Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
-        float throwForce = UnityEngine.Random.Range(minMaxDropForce.x, minMaxDropForce.y);
-        wantedDirectionAngle.y = throwForce * 0.035f;
-        newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)UnityEngine.Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+        aimingCubeState = _newState;
     }
 }
