@@ -246,6 +246,7 @@ public class WaveEditor : Editor
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
 		GUILayout.Space(30);
+		EditorUtility.SetDirty(target);
 	}
 
 	void AddWave()
