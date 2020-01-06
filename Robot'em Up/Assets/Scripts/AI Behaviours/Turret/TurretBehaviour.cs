@@ -44,11 +44,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     //[Space(2)]
     //[Header("Global")]
-    bool playerOneInRange;
-    bool playerTwoInRange;
-    float distanceWithPlayerOne;
-    float distanceWithPlayerTwo;
-    protected Transform focusedPlayerTransform = null;
     PawnController focusedPlayerPawnController;
     public bool arenaTurret;
 
@@ -140,7 +135,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayerTransform.position + focusedPlayerTransform.forward*focusedPlayerTransform.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - self.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - self.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         self.rotation = Quaternion.Lerp(self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
@@ -178,7 +173,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                     CheckDistanceAndAdaptFocus();
                     timeBetweenCheck = maxTimeBetweenCheck;
                 }
-                if(focusedPlayerTransform != null)
+                if(focusedPlayer != null)
                 {
                     ChangingState(TurretState.Attacking);
                 }
@@ -237,7 +232,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         switch (attackState)
         {
             case TurretAttackState.Anticipation:
-                if (focusedPlayerTransform != null)
+                if (focusedPlayer != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -291,16 +286,16 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     void ChangingFocus(Transform _newFocus)
     {
-        if(focusedPlayerTransform == null && _newFocus!=null)
+        if(focusedPlayer == null && _newFocus!=null)
         {
             ChangingState(TurretState.GettingOutOfGround);
         }
-        else if(focusedPlayerTransform != null && _newFocus == null)
+        else if(focusedPlayer != null && _newFocus == null)
         {
             ChangingState(TurretState.Hiding);
         }
 
-        focusedPlayerTransform = _newFocus;
+        focusedPlayer = _newFocus;
         if(_newFocus != null)
         {
             focusedPlayerPawnController = _newFocus.gameObject.GetComponent<PlayerController>();
@@ -333,10 +328,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
 
         //Unfocus player because of distance
-        if (focusedPlayerTransform != null)
+        if (focusedPlayer != null)
         {
-            if((focusedPlayerTransform == playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !playerOnePawnController.IsTargetable())) 
-                || ((focusedPlayerTransform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
+            if((focusedPlayer == playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !playerOnePawnController.IsTargetable())) 
+                || ((focusedPlayer == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
             }
@@ -345,13 +340,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         //Changing focus between the two
         if((playerOneInRange && playerOnePawnController.IsTargetable()) 
             && (playerTwoInRange && playerTwoPawnController.IsTargetable()) 
-            && focusedPlayerTransform != null)
+            && focusedPlayer != null)
         {
-            if(focusedPlayerTransform == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if(focusedPlayer == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerTwoTransform);
             }
-            else if (focusedPlayerTransform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPlayer == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerOneTransform);
             }
@@ -360,7 +355,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         //no focused yet ? Choose one
         if(((playerOneInRange && playerOnePawnController.IsTargetable()) 
             || (playerTwoInRange && playerTwoPawnController.IsTargetable())) 
-            && focusedPlayerTransform == null)
+            && focusedPlayer == null)
         {
             ChangingFocus(GetClosestAndAvailablePlayer());
         }

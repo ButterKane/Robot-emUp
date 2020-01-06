@@ -51,13 +51,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Separator("Tweakable variables")]
-    bool playerOneInRange;
-    bool playerTwoInRange;
+    protected bool playerOneInRange;
+    protected bool playerTwoInRange;
     public int maxHealth = 30;
     [System.NonSerialized] public int health;
-    float distanceWithPlayerOne;
-    float distanceWithPlayerTwo;
-    float distanceWithFocusedPlayer;
+    protected float distanceWithPlayerOne;
+    protected float distanceWithPlayerTwo;
+    protected float distanceWithFocusedPlayer;
     [System.NonSerialized] public Transform focusedPlayer = null;
     public float energyAmount = 1;
     public int damage = 10;
