@@ -7,6 +7,14 @@ public class TurretAnimationEvent : MonoBehaviour
     public TurretBehaviour myScript;
     bool canCallFollowingState = true;
 
+    private void Start()
+    {
+        if (myScript == null)
+        {
+            myScript = GetComponentInParent<TurretBehaviour>(); // supposedly, there is only one instance of TurretBehviour, in the top parent
+        }
+    }
+
     void FinishedPrepareAttack()
     {
         myScript.ChangingState(TurretState.Attacking);
