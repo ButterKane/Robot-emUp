@@ -35,12 +35,15 @@ public class Boss_WeakPoint : PuzzleActivable
                 DestroyWeakPoint();
                 Boss_Manager.i.DestroyAWeakPoint();
             }
-
-            PuzzleLink[] links = FindObjectsOfType<PuzzleLink>();
-            foreach (var item in links)
+            else
             {
-                item.chargingTime = -1f;
+                PuzzleLink[] links = FindObjectsOfType<PuzzleLink>();
+                foreach (var item in links)
+                {
+                    item.chargingTime = -1f;
+                }
             }
+            
         }
     }
 

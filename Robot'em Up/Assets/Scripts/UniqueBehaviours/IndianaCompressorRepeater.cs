@@ -65,7 +65,7 @@ public class IndianaCompressorRepeater : PuzzleRepeater
         }
         if (c.gameObject.tag == "Enemy")
         {
-            c.gameObject.GetComponent<EnemyBehaviour>().OnHit(null, Cube.transform.position - c.gameObject.transform.position, null, Damage, DamageSource.Dunk);
+            c.gameObject.GetComponent<EnemyBehaviour>().OnHit(null, Cube.transform.position - c.gameObject.transform.position, null, Damage, DamageSource.RedBarrelExplosion);
         }
     }
 }

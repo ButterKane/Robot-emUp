@@ -35,6 +35,8 @@ public class PassController : MonoBehaviour
 	[Separator("Reception settings")]
 	public float receptionMinDistance = 0.2f;
 	public float receptionMinDelay = 0.2f;
+	public float receptionExplosionRadius = 2f;
+	public int receptionExplosionDamage = 1;
 
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
@@ -98,7 +100,9 @@ public class PassController : MonoBehaviour
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates,0);
 			if (passPreviewInEditor)
-				PreviewPathInEditor(pathCoordinates);
+			{
+				//PreviewPathInEditor(pathCoordinates);
+			}
 		}
 
 	}
@@ -114,13 +118,36 @@ public class PassController : MonoBehaviour
 		{
 			if (ballTimeInHand > receptionMinDelay) { return; }
 		}
-		ball = mainBall;
+		ExecutePerfectReception(mainBall);
+	}
+
+	public void ExecutePerfectReception(BallBehaviour ball)
+	{
+		Receive(ball);
 		ChangePassState(PassState.Aiming);
 		EnablePassPreview();
+		StartCoroutine(ShootAfterDelay(receptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
-		mainBall.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnReception, -1, DamageModifierSource.PerfectReception));
-		FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
+		SoundManager.PlaySound("PerfectReception", transform.position, transform);
+		ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
+		ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
+		float lerpValue = (ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		Color newColor = ballDatas.colorOverDamage.Evaluate(lerpValue);
+		GameObject perfectFX = FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
+		ParticleColorer.ReplaceParticleColor(perfectFX, new Color(122f / 255f, 0, 122f / 255f), newColor);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
+		Collider[] hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
+		PawnController pawnController = GetComponent<PawnController>();
+		int i = 0;
+		while (i < hitColliders.Length)
+		{
+			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
+			if (potentialHitableObject != null)
+			{
+				potentialHitableObject.OnHit(ball, (hitColliders[i].transform.position - transform.position).normalized, pawnController, receptionExplosionDamage, DamageSource.PerfectReceptionExplosion);
+			}
+			i++;
+		}
 	}
 
 	//Used for generating the preview
@@ -169,7 +196,7 @@ public class PassController : MonoBehaviour
 		Vector3 firstPoint = startPosition;
 		Vector3 firstHandle = startPosition + _lookDirection.normalized * hanseLength;
 		Vector3 secondPoint = endPosition;
-		for (float i = 0; i < curveRaycastIteration; i++)
+		for (int i = 0; i < curveRaycastIteration; i++)
 		{
 			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
 			{
@@ -178,6 +205,31 @@ public class PassController : MonoBehaviour
 			else
 			{
 				coordinates.Add(Vector3.Lerp(firstPoint ,endPosition, i / curveRaycastIteration));
+			}
+			if (i > 0)
+			{
+				foreach (RaycastHit hito in Physics.RaycastAll(coordinates[i - 1], coordinates[i] - coordinates[i - 1], Vector3.Distance(coordinates[i], coordinates[i - 1]))) {
+					if (hito.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
+					{
+						coordinates.Add(hito.point);
+						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+						_direction = _direction.normalized * 10;
+						coordinates.Add(hito.point + _direction);
+						return coordinates;
+					}
+					else if (hito.collider.gameObject.GetComponentInParent<Shield>() != null)
+					{
+						Vector3 impactVector = (coordinates[i] - coordinates[i - 1]);
+						if ((impactVector.normalized + hito.collider.gameObject.transform.forward.normalized).magnitude >= (hito.collider.gameObject.GetComponentInParent<Shield>().Enemy.AngleRangeForRebound / 63.5f))
+						{
+							coordinates.Add(hito.point);
+							Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+							_direction = _direction.normalized * 10;
+							coordinates.Add(hito.point + _direction);
+							return coordinates;
+						}
+					}
+				}
 			}
 		}
 		return coordinates;
@@ -206,12 +258,20 @@ public class PassController : MonoBehaviour
 		return null;
 	}
 
+	public IEnumerator ShootAfterDelay(float _delay)
+	{
+		yield return new WaitForSeconds(_delay);
+		didPerfectReception = false;
+		Shoot();
+	}
 	public void Shoot()
 	{
 		if (!CanShoot()) { return; }
+		if (didPerfectReception) { return; }
+		FeedbackManager.SendFeedback("event.ThrowPass", this);
+		SoundManager.PlaySound("ThrowPass", transform.position, transform);
 		ChangePassState(PassState.Shooting);
-		if (ballTimeInHand >= receptionMinDelay) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); }
-		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
+		if (ballTimeInHand > receptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
 		currentPassCooldown = passCooldown;
 		BallBehaviour shotBall = ball;
 		ball = null;
@@ -226,10 +286,12 @@ public class PassController : MonoBehaviour
 				if (passPreview)
 				{
 					shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
+					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
 					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
+					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false,otherPlayer.transform.position - transform.position, Vector3.one * 5f);
 				}
             }
         }
@@ -238,11 +300,15 @@ public class PassController : MonoBehaviour
 			if (!passPreview)
 			{
 				if (otherPlayer != null)
+				{
 					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
+					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, otherPlayer.transform.position - transform.position, Vector3.one * 5f);
+				}
 			}
 			else // if aiming with right joystick
 			{
 				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
+				FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 			}
 		}
 		ChangePassState(PassState.None);
@@ -251,8 +317,9 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
+		FeedbackManager.SendFeedback("event.ReceiveBall", this) ;
+		SoundManager.PlaySound("BallReception", transform.position, transform);
 		CursorManager.SetBallPointerParent(transform);
-		linkedPlayer.Vibrate(0.15f, VibrationForce.Medium);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
 		ballTimeInHand = 0;

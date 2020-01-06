@@ -14,5 +14,4 @@ public class EnemyData
 	public string name;
 	public GameObject prefab;
 	public Color color;
-	public int powerLevel;
 }

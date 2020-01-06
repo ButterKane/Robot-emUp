@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Events;
 using UnityEngine.AI;
-
+using UnityEngine.UI;
 
 public enum EnemyState
 {
@@ -21,6 +22,7 @@ public enum WhatBumps
 {
     Pass,
     Dunk,
+    RedBarrel,
     Environment,
     Count
 }
@@ -28,13 +30,15 @@ public enum WhatBumps
 
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
-    public EnemyState State = EnemyState.Idle;
+    [System.NonSerialized] public EnemyState State = EnemyState.Idle;
 
     [Separator("References")]
     [SerializeField] protected Transform _self;
     public Rigidbody Rb;
     public Animator Animator;
     public NavMeshAgent navMeshAgent;
+    public Transform HealthBarRef;
+    public GameObject HealthBarPrefab;
 
 	[Space(2)]
     [Separator("Auto-assigned References")]
@@ -49,13 +53,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     bool playerOneInRange;
     bool playerTwoInRange;
     public int MaxHealth = 30;
-    public int Health;
+    [System.NonSerialized] public int Health;
     float distanceWithPlayerOne;
     float distanceWithPlayerTwo;
     float distanceWithFocusedPlayer;
-    public Transform focusedPlayer = null;
+    [System.NonSerialized] public Transform focusedPlayer = null;
     public float energyAmount = 1;
     public int damage = 10;
+	public float powerLevel = 1;
     [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool arenaRobot;
@@ -66,15 +71,20 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float unfocusDistance = 20;
     float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
-    public float maxTimeBetweenCheck;
+    public float maxTimeBetweenCheck = 0.25f;
 
     [Space(2)]
     [Header("Movement")]
-    [Range(3, 15)]
-    public float normalSpeed = 7;
-    public float normalAcceleration = 30;
-    private float moveMultiplicator;
+    public float NormalSpeed = 7; // This value is the one in the inspector, but in practice it is modified by the Random speed mod
+    [System.NonSerialized] public float ActualSpeed;
+    public float NormalAcceleration = 30;
+    public float RandomSpeedMod;
+    private float moveMultiplicator = 1;
     private int normalMoveMultiplicator = 1;
+    public float slowFromPass;
+    public float timeToRecoverSlowFromPass;
+    public float slowFromDunk;
+    public float timeToRecoverSlowFromDunk;
     public AnimationCurve speedRecoverCurve;
     private float staggerAvancement;
     private WhatBumps whatBumps;
@@ -118,6 +128,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     bool fallingTriggerLaunched;
     public float bumpRaycastDistance = 1;
     bool mustCancelBump;
+    public int DamageAfterBump;
 
     [Space(2)]
     [Header("FX References")]
@@ -128,7 +139,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Surrounding")]
-    public Transform ClosestSurroundPoint;
+    [System.NonSerialized] public Transform ClosestSurroundPoint;
     [Range(0, 1)]
     public float BezierCurveHeight = 0.5f;
     public float BezierDistanceToHeightRatio = 100f;
@@ -138,19 +149,23 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
+    [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
 
     
 
-    void Start()
+    protected void Start()
     {
         Health = MaxHealth;
         _self = transform;
+        ActualSpeed = NormalSpeed + Random.Range(-RandomSpeedMod, RandomSpeedMod);
         timeBetweenCheck = maxTimeBetweenCheck;
         _playerOneTransform = GameManager.playerOne.transform;
         _playerTwoTransform = GameManager.playerTwo.transform;
         _playerOnePawnController = _playerOneTransform.GetComponent<PlayerController>();
         _playerTwoPawnController = _playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
+        GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
+        healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
 
         if (arenaRobot)
         {
@@ -263,12 +278,22 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                     {
                         fallingTriggerLaunched = true;
                         Animator.SetTrigger("FallingTrigger");
+
+                        if (DamageAfterBump > 0)
+                        {
+                            Health -= DamageAfterBump;
+                        }
                     }
                 }
 
                 //when arrived on ground
                 else if (restDuration > 0)
                 {
+                    if (Health <= 0)
+                    {
+                        ChangingState(EnemyState.Dying);
+                    }
+
                     restDuration -= Time.deltaTime;
                     if (restDuration <= 0)
                     {
@@ -342,9 +367,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
+				onDeath.Invoke();
                 break;
         }
     }
+
+	public NavMeshAgent GetNavMeshAgent()
+	{
+		return navMeshAgent;
+	}
 
     public virtual void EnterBumpedState()
     {
@@ -366,8 +397,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         Animator.SetTrigger("AttackTrigger");
     }
 
-    public virtual void EnterAttackingState()
+    public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
+        SoundManager.PlaySound(attackSound, transform.position, transform);
         //attackDuration = maxAttackDuration;
         endOfAttackTriggerLaunched = false;
         attackInitialPosition = transform.position;
@@ -474,49 +506,76 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        Vector3 normalizedImpactVector;
+		SoundManager.PlaySound("EnemyHit", transform.position, transform);
+		Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
+        float BumpDistanceMod = 0.5f;
+        float BumpDurationMod = 0.5f;
+        float BumpRestDurationMod = 0.5f;
         switch (_source)
         {
             case DamageSource.Dunk:
+                DamageAfterBump = _damages;
                 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
+                if (_thrower.GetComponent<DunkController>() != null)
+                {
+                    DunkController controller = _thrower.GetComponent<DunkController>();
+                    BumpDistanceMod = controller.BumpDistanceMod;
+                    BumpDurationMod = controller.BumpDurationMod;
+                    BumpRestDurationMod = controller.BumpRestDurationMod;
+                }
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod); 
                 whatBumps = WhatBumps.Dunk;
                 break;
+
             case DamageSource.RedBarrelExplosion:
-				EnergyManager.IncreaseEnergy(energyAmount);
+                DamageAfterBump = _damages;
+                EnergyManager.IncreaseEnergy(energyAmount);
 				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized);
-                whatBumps = WhatBumps.Environment;
+                if (_bumpModificators != default(Vector3))
+                {
+                    BumpDistanceMod = _bumpModificators.x;
+                    BumpDurationMod = _bumpModificators.y;
+                    BumpRestDurationMod = _bumpModificators.z;
+                }
+                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);    // Need Explosion Data
+                whatBumps = WhatBumps.RedBarrel;
                 break;
+
             case DamageSource.Ball:
+                DamageAfterBump = 0;
+                FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
+				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
 				EnergyManager.IncreaseEnergy(energyAmount);
 				whatBumps = WhatBumps.Pass;
                 StartCoroutine(StaggeredCo(whatBumps));
-				break;
+                Health -= _damages;
+                if (Health <= 0)
+                {
+                    ChangingState(EnemyState.Dying);
+                }
+                break;
         }
-        Health -= _damages;
 
         if (_ball)
             _ball.Explode(true);
 
-        if (Health <= 0)
-        {
-            State = EnemyState.Dying;
-        }
-        else
-        {
             Animator.SetTrigger("HitTrigger");
             GameObject hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
             hitParticle.transform.localScale *= hitParticleScale;
             Destroy(hitParticle, 1f);
-        }
     }
 
-    protected virtual void Die()
+    public virtual void Die(string deathSound = "EnemyDeath")
     {
+        GameManager.i.enemyManager.enemies.Remove(this);
+
+        if (deathSound != null)
+        {
+            SoundManager.PlaySound(deathSound, transform.position, transform);
+        }
 		LockManager.UnlockTarget(this.transform);
         GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
         deathParticle.transform.localScale *= deathParticleScale;
@@ -525,7 +584,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 		{
 			DropCore();
 		}
-        GameManager.i.enemyManager.enemies.Remove(this);
+
         Destroy(gameObject);
     }
 
@@ -603,44 +662,52 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public IEnumerator StaggeredCo(WhatBumps? cause = default)
     {
-        // TODO: CHange the staggering values according to what bumps
+        float _timeToRecover = 0.5f;
         switch (cause)
         {
             case WhatBumps.Pass:
-                moveMultiplicator -= 0.5f;
+                moveMultiplicator -= slowFromPass;
+                _timeToRecover = timeToRecoverSlowFromPass;
                 // Fetch ball datas => speed reduction on pass
                 break;
             case WhatBumps.Dunk:
-                moveMultiplicator -= 0.5f;
+                moveMultiplicator -= slowFromDunk;
+                _timeToRecover = timeToRecoverSlowFromDunk;
                 // Fetch ball datas => speed reduction on dunk
                 break;
             case WhatBumps.Environment:
                 moveMultiplicator -= 0.5f;
+                _timeToRecover = 0.5f;
                 // Fetch environment datas => speed reduction
                 break;
             default:
                 moveMultiplicator -= 0.5f;
+                _timeToRecover = 0.5f;
                 Debug.Log("Default case: New speed multiplicator = 0.5");
                 break;
         }
 
-        float t = moveMultiplicator;
+        float _t = 0;
+        float _initialMoveMultiplicator = moveMultiplicator;
 
         while (moveMultiplicator < normalMoveMultiplicator)
         {
-            moveMultiplicator = normalMoveMultiplicator * speedRecoverCurve.Evaluate(t);
-            t += Time.deltaTime;
+            moveMultiplicator = _initialMoveMultiplicator + (normalMoveMultiplicator - _initialMoveMultiplicator) * speedRecoverCurve.Evaluate(_t);
+            _t += Time.deltaTime / _timeToRecover;
+            print(moveMultiplicator);
             yield return null;
         }
 
         moveMultiplicator = normalMoveMultiplicator;
     }
 
-    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection)
+    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
     {
-        bumpDistance = _bumpDistance;
-        bumpDuration = _bumpDuration;
-        restDuration = _restDuration;
+		FeedbackManager.SendFeedback("event.EnemyBumpedAway", this);
+		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
+		bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
+        bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
+        restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
         bumpDirection = _bumpDirection;
         ChangingState(EnemyState.Bumped);
     }

@@ -18,11 +18,11 @@ public class EventManager : MonoBehaviour
     {
         
     }
-    void OnGUI()
-    {
-        if (GUI.Button(new Rect(Screen.width - 100, 5, 100, 30), "Spawn Dummy"))
-        {
-            DummySpawn?.Invoke();
-        }
-    }
+    //void OnGUI()
+    //{
+    //    if (GUI.Button(new Rect(Screen.width - 100, 5, 100, 30), "Spawn Dummy"))
+    //    {
+    //        DummySpawn?.Invoke();
+    //    }
+    //}
 }

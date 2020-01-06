@@ -9,14 +9,17 @@ public class PuzzleMoveableWall : PuzzleActivable
     [ReadOnly] public Vector3 Pos1;
     [ReadOnly] public Vector3 Pos2;
     public Vector3 PositionModifier;
-    [Range(0, 10)]
+    [Range(0, 40)]
     public float speed;
     public enum MoveableWallState { Pos1, Pos2, OneToTwo, TwoToOne }
     public MoveableWallState state;
 
 
+    public bool stopImmediatly;
     private float journeyLength;
     private float startTime;
+    private float fractionOfJourney;
+    float distCovered;
 
     // Start is called before the first frame update
     void Awake()
@@ -32,8 +35,8 @@ public class PuzzleMoveableWall : PuzzleActivable
     {
         if (state == MoveableWallState.OneToTwo)
         {
-            float distCovered = (Time.time - startTime) * speed;
-            float fractionOfJourney = distCovered / journeyLength;
+            distCovered = (Time.time - startTime) * speed;
+            fractionOfJourney = distCovered / journeyLength;
             transform.position = Vector3.Lerp(Pos1, Pos2, fractionOfJourney);
             if (fractionOfJourney > 0.99f)
             {
@@ -49,8 +52,8 @@ public class PuzzleMoveableWall : PuzzleActivable
 
         if (state == MoveableWallState.TwoToOne)
         {
-            float distCovered = (Time.time - startTime) * speed;
-            float fractionOfJourney = distCovered / journeyLength;
+            distCovered = (Time.time - startTime) * speed;
+            fractionOfJourney = distCovered / journeyLength;
             transform.position = Vector3.Lerp(Pos2, Pos1, fractionOfJourney);
             if (fractionOfJourney > 0.99f)
             {
@@ -74,7 +77,6 @@ public class PuzzleMoveableWall : PuzzleActivable
         {
             state = MoveableWallState.OneToTwo;
             startTime = Time.time;
-
         }
         UpdateLights();
     }
@@ -86,6 +88,12 @@ public class PuzzleMoveableWall : PuzzleActivable
         {
             state = MoveableWallState.TwoToOne;
             startTime = Time.time;
+        }
+        if (stopImmediatly)
+        {
+            state = MoveableWallState.TwoToOne;
+            startTime = Time.time - (1 - fractionOfJourney) * journeyLength / speed;
+
         }
 
         UpdateLights();

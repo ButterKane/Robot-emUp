@@ -18,7 +18,7 @@ public class LockManager : MonoBehaviour
 				return;
 			}
 		}
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = GameManager.mainCanvas;
 
         if (canvas != null)
         {

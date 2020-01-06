@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 [ExecuteInEditMode]
 public class CameraZone : MonoBehaviour
@@ -14,9 +15,13 @@ public class CameraZone : MonoBehaviour
 	private Vector3 m_cornerB = new Vector3(30f, 0f, 30f);
 
 
+	public int minPlayersRequired = 2;
+	public CameraType type;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
-	private BoxCollider boxCollider;
+	private Collider genCollider;
+	private bool zoneActivated;
+	[HideInInspector] public UnityEvent onZoneActivation;
 
 	private List<PlayerController> playersInside;
 #if UNITY_EDITOR
@@ -43,23 +48,128 @@ public class CameraZone : MonoBehaviour
 			visualizer = GetComponent<SpriteRenderer>();
 		}
 		visualizer.transform.localRotation = Quaternion.Euler(new Vector3(-90, transform.localRotation.eulerAngles.y, transform.localRotation.eulerAngles.z));
-		visualizer.transform.localScale = new Vector3(30, 30, 30);
-		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/zoneVisualizer");
-		visualizer.drawMode = SpriteDrawMode.Tiled;
-		if (GetComponent<BoxCollider>() == null)
+		if (cameraPivot == null)
 		{
-			boxCollider = transform.gameObject.AddComponent<BoxCollider>();
-		} else
-		{
-			boxCollider = GetComponent<BoxCollider>();
+			cameraPivot = transform.parent.Find("Camera pivot");
 		}
-		boxCollider.isTrigger = true;
+
 		playersInside = new List<PlayerController>();
+	}
+
+	private void Start ()
+	{
+#if UNITY_EDITOR
+		EditorApplication.playModeStateChanged += RegenerateVisualizer;
+#endif
+	}
+#if UNITY_EDITOR
+	private void RegenerateVisualizer ( PlayModeStateChange state )
+	{
+		if (state == PlayModeStateChange.EnteredPlayMode)
+		{
+			switch (type)
+			{
+				case CameraType.Combat:
+					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/squareZoneVisualizerIngame");
+					break;
+				case CameraType.Circle:
+					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
+					break;
+			}
+		} else if (state == PlayModeStateChange.ExitingPlayMode)
+		{
+			switch (type)
+			{
+				case CameraType.Combat:
+					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
+					break;
+				case CameraType.Circle:
+					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
+					break;
+			}
+		}
+	}
+#endif
+
+	public void GenerateZone(CameraType _type) {
+		type = _type;
+		switch (type)
+		{
+			case CameraType.Combat:
+				GenerateCombatZone();
+				break;
+			case CameraType.Circle:
+				GenerateCircleZone();
+				break;
+		}
+		genCollider.isTrigger = true;
 	}
 
 	public virtual void Update ()
 	{
-		Vector3 wantedPosition = cornerA + ((cornerB- cornerA) / 2);
+		if (Application.isPlaying)
+		{
+			if (IsZoneActivated())
+			{
+				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) < minPlayersRequired)
+				{
+					DesactivateZone();
+				}
+			}
+			else
+			{
+				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
+				{
+					ActivateZone();
+				}
+			}
+		}
+		switch (type)
+		{
+			case CameraType.Combat:
+				UpdateCombatZone();
+				break;
+			case CameraType.Circle:
+				UpdateCircleZone();
+				break;
+		}
+	}
+
+	void GenerateCombatZone ()
+	{
+		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
+		visualizer.drawMode = SpriteDrawMode.Tiled;
+		visualizer.transform.localScale = new Vector3(30, 30, 30);
+		genCollider = GetComponent<Collider>();
+		if (genCollider == null)
+		{
+			genCollider = transform.gameObject.AddComponent<BoxCollider>();
+		}
+		else
+		{
+			genCollider = GetComponent<BoxCollider>();
+		}
+	}
+
+	void GenerateCircleZone()
+	{
+		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
+		visualizer.drawMode = SpriteDrawMode.Simple;
+		visualizer.transform.localScale = new Vector3(30, 30, 30);
+		genCollider = GetComponent<Collider>();
+		if (genCollider == null)
+		{
+			genCollider = transform.gameObject.AddComponent<CapsuleCollider>();
+		}
+		else
+		{
+			genCollider = GetComponent<CapsuleCollider>();
+		}
+	}
+
+	void UpdateCombatZone()
+	{
+		Vector3 wantedPosition = cornerA + ((cornerB - cornerA) / 2);
 		transform.position = new Vector3(wantedPosition.x, transform.position.y, wantedPosition.z);
 		if (visualizer != null)
 		{
@@ -73,18 +183,24 @@ public class CameraZone : MonoBehaviour
 			visualizer.size = new Vector3((sizeX * 2) / transform.localScale.x, (sizeY * 2) / transform.localScale.z, 1);
 			visualizer.transform.localRotation = Quaternion.Euler(new Vector3(-90, transform.localRotation.eulerAngles.y, 0));
 		}
-		if (cameraPivot == null)
-		{
-			cameraPivot = transform.parent.Find("Camera pivot");
-		}
 		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
 		{
 			cameraPivot.transform.position = wantedPosition;
 			cameraPivot.transform.localRotation = Quaternion.Euler(cameraPivot.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, cameraPivot.transform.localRotation.eulerAngles.z);
 		}
-		if (boxCollider != null)
+		if (genCollider != null)
 		{
-			boxCollider.size = new Vector3(Mathf.Abs(visualizer.size.x), Mathf.Abs(visualizer.size.y), 1); 
+			BoxCollider squareCollider = genCollider as BoxCollider;
+			squareCollider.size = new Vector3(Mathf.Abs(visualizer.size.x), Mathf.Abs(visualizer.size.y), 1);
+		}
+	}
+
+	void UpdateCircleZone ()
+	{
+		transform.position = visualizer.transform.position;
+		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
+		{
+			cameraPivot.transform.position = visualizer.transform.position;
 		}
 	}
 
@@ -106,6 +222,26 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
+	void ActivateZone()
+	{
+		zoneActivated = true;
+		onZoneActivation.Invoke();
+	}
+
+	void DesactivateZone()
+	{
+		zoneActivated = false;
+	}
+
+	public Vector3 GetCenterPosition()
+	{
+		return transform.position;
+	}
+
+	public bool IsZoneActivated()
+	{
+		return zoneActivated;
+	}
 	public List<PlayerController> GetPlayersInside()
 	{
 		if (playersInside.Count > 0)

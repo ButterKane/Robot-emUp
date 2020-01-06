@@ -32,7 +32,6 @@ public class EnergyManager : MonoBehaviour
 	public static float IncreaseEnergy ( float _amount )
 	{
 		wantedEnergy += _amount;
-		Debug.Log("Increasing energy");
 		wantedEnergy = ClampEnergy(wantedEnergy);
 		return wantedEnergy;
 	}

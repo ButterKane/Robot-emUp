@@ -27,7 +27,14 @@ public class Retriever : MonoBehaviour
 		playerController = GetComponentInParent<PlayerController>();
     }
 
-    private void OnTriggerStay(Collider other)
+	private void OnTriggerEnter ( Collider other )
+	{
+		if (other.tag == "Ball")
+		{
+			FeedbackManager.SendFeedback("event.MagnetAttractingBall", this);
+		}
+	}
+	private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
         {
@@ -52,6 +59,7 @@ public class Retriever : MonoBehaviour
 			if (!corePart.CanBePicked()) { return; }
 			if (corePart.linkedPawn != null)
 			{
+				SoundManager.PlaySound("PickUpOnePartOfItsBody", transform.position, transform);
 				corePart.Pick(playerController);
 				bool partsFound = false;
 				List<ReviveInformations> newList = new List<ReviveInformations>();
@@ -67,6 +75,7 @@ public class Retriever : MonoBehaviour
 						{
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
+							FeedbackManager.SendFeedback("event.PickUpTheLastPartOfBody", this);
 						}
 						else
 						{
@@ -85,7 +94,7 @@ public class Retriever : MonoBehaviour
 					newPart.linkedPlayer = (PlayerController)corePart.linkedPawn;
 					newPart.maxAmount = corePart.totalPartCount;
 					newPart.amount = 1;
-					newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), FindObjectOfType<Canvas>().transform).GetComponent<AssemblingPartPanel>();
+					newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
 					newPart.linkedPanel.revivedPlayer = newPart.linkedPlayer;
 					newPart.linkedPanel.revivingPlayer = playerController;
 					newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = newPart.amount + "/" + corePart.totalPartCount;

@@ -25,6 +25,7 @@ public class BallBehaviour : MonoBehaviour
 	[SerializeField] private List<Vector3> currentCurve;
 	[SerializeField] private Vector3 initialLookDirection;
 	[SerializeField] private List<DamageModifier> currentDamageModifiers;
+	[SerializeField] private List<SpeedCoef> currentSpeedModifiers;
 	[SerializeField] private Color currentColor;
 	[SerializeField] private bool teleguided;
 	[SerializeField] private float currentTimeFlying;
@@ -48,6 +49,7 @@ public class BallBehaviour : MonoBehaviour
 			instance = this;
 		}
 
+		currentSpeedModifiers = new List<SpeedCoef>();
 		currentDamageModifiers = new List<DamageModifier>();
 		rb = GetComponent<Rigidbody>();
         defaultLayer = gameObject.layer;
@@ -64,7 +66,7 @@ public class BallBehaviour : MonoBehaviour
 			currentTimeFlying += Time.deltaTime;
 		}
 		UpdateBallPosition();
-		UpdateDamageModifiers();
+		UpdateModifiers();
 	}
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
@@ -113,12 +115,16 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
+		SoundManager.PlaySound("BallRebound", transform.position, transform);
+		FeedbackManager.SendFeedback("event.ReboundOnWalls", this);
+		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
 		currentBounceCount++;
 		currentDirection = _newDirection;
 		currentDirection.y = 0;
 		currentSpeed = currentSpeed * _bounceSpeedMultiplier;
+		teleguided = false;
 		hitGameObjects.Clear();
 	}
 
@@ -160,26 +166,38 @@ public class BallBehaviour : MonoBehaviour
 		currentSpeed *= _coef;
 	}
 
-	void UpdateDamageModifiers ()
+	void UpdateModifiers ()
 	{
 		List<DamageModifier> newDamageModifierList = new List<DamageModifier>();
-		foreach (DamageModifier modifier in currentDamageModifiers)
+		foreach (DamageModifier damageModifier in currentDamageModifiers)
 		{
-			if (modifier.duration <= -1) { newDamageModifierList.Add(modifier); continue; }
-			modifier.duration -= Time.deltaTime;
-			if (modifier.duration > 0)
+			if (damageModifier.duration <= -1) { newDamageModifierList.Add(damageModifier); continue; }
+			damageModifier.duration -= Time.deltaTime;
+			if (damageModifier.duration > 0)
 			{
-				newDamageModifierList.Add(modifier);
+				newDamageModifierList.Add(damageModifier);
 			}
 		}
 		currentDamageModifiers = newDamageModifierList;
+
+		List<SpeedCoef> newSpeedModifierList = new List<SpeedCoef>();
+		foreach (SpeedCoef speedModifier in currentSpeedModifiers)
+		{
+			if (speedModifier.duration <= -1) { newSpeedModifierList.Add(speedModifier); continue; }
+			speedModifier.duration -= Time.deltaTime;
+			if (speedModifier.duration > 0)
+			{
+				newSpeedModifierList.Add(speedModifier);
+			}
+		}
+		currentSpeedModifiers = newSpeedModifierList;
 	}
 
 	void UpdateColor ()
 	{
 		if (currentBallDatas != null)
 		{
-			float lerpValue = GetCurrentDamageModifier()-1 / currentBallDatas.maxDamageModifier-1;
+			float lerpValue = (GetCurrentDamageModifier()-1) / (currentBallDatas.maxDamageModifierOnPerfectReception - 1);
 			Color newColor = currentBallDatas.colorOverDamage.Evaluate(lerpValue);
 			SetColor(newColor);
 		}
@@ -234,31 +252,74 @@ public class BallBehaviour : MonoBehaviour
 	public int GetCurrentDamages()
 	{
 		float damages = currentBallDatas.damages;
-		float totalModifier = 1;
-		foreach (DamageModifier modifier in currentDamageModifiers)
-		{
-			totalModifier *= modifier.multiplyCoef;
-		}
-		totalModifier = Mathf.Clamp(totalModifier, 0, currentBallDatas.maxDamageModifier);
-		return Mathf.RoundToInt(damages * totalModifier);
+		return Mathf.RoundToInt(damages * GetCurrentDamageModifier());
 	}
 
-	public float GetCurrentDamageModifier ()
+	public float GetCurrentDamageModifier()
 	{
-		float totalModifier = 1;
+		float perfectReceptionModifier = 1f;
+		float otherModifier = 1;
 		foreach (DamageModifier modifier in currentDamageModifiers)
 		{
-			totalModifier *= modifier.multiplyCoef;
+			if (modifier.source == DamageModifierSource.PerfectReception)
+			{
+				perfectReceptionModifier *= modifier.multiplyCoef;
+			}
+			else
+			{
+				otherModifier *= modifier.multiplyCoef;
+			}
 		}
-		return totalModifier;
+		perfectReceptionModifier = Mathf.Clamp(perfectReceptionModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
+		return (perfectReceptionModifier * otherModifier);
+	}
+
+	public float GetCurrentSpeedModifier()
+	{
+		float otherModifier = 1f;
+		float perfectReceptionModifier = 1f;
+		foreach (SpeedCoef modifier in currentSpeedModifiers)
+		{
+			if (modifier.reason == SpeedMultiplierReason.PerfectReception)
+			{
+				perfectReceptionModifier *= modifier.speedCoef;
+			} else
+			{
+				otherModifier *= modifier.speedCoef;
+			}
+		}
+		perfectReceptionModifier = Mathf.Clamp(perfectReceptionModifier, 0, currentBallDatas.maxSpeedMultiplierOnPerfectReception);
+		return perfectReceptionModifier * otherModifier;
 	}
 
 	void SetColor(Color _newColor)
 	{
-        // ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
+		if (trailFX != null)
+		{
+			ParticleColorer.ReplaceParticleColor(trailFX, new Color(122f / 255f, 0, 122f / 255f), _newColor);
+		}
+        ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
         currentColor = _newColor;
 	}
 
+	public SpeedCoef AddNewSpeedModifier(SpeedCoef _newModifier)
+	{
+		currentSpeedModifiers.Add(_newModifier);
+		return _newModifier;
+	}
+
+	public void RemoveSpeedModifier(SpeedMultiplierReason _source)
+	{
+		List<SpeedCoef> newModifierList = new List<SpeedCoef>();
+		foreach (SpeedCoef modifier in currentSpeedModifiers)
+		{
+			if (modifier.reason != _source)
+			{
+				newModifierList.Add(modifier);
+			}
+		}
+		currentSpeedModifiers = newModifierList;
+	}
 	public DamageModifier AddNewDamageModifier(DamageModifier _newModifier)
 	{
 		currentDamageModifiers.Add(_newModifier);
@@ -290,6 +351,8 @@ public class BallBehaviour : MonoBehaviour
 				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
+				FeedbackManager.SendFeedback("event.BallFallOnGround", this);
+				SoundManager.PlaySound("BallFallOnTheGround", transform.position, transform);
 				LockManager.UnlockAll();
 				break;
 			case BallState.Aimed:
@@ -304,6 +367,8 @@ public class BallBehaviour : MonoBehaviour
 				if (trailFX == null)
 				{
 					trailFX = FXManager.InstantiateFX(currentBallDatas.Trail, Vector3.zero, true, Vector3.zero, Vector3.one, transform);
+					UpdateColor();
+					trailFX.name = "FX_CoreTrail";
 				}
 				break;
 			case BallState.Held:
@@ -368,7 +433,7 @@ public class BallBehaviour : MonoBehaviour
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
 
-					RaycastHit[] hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
+					RaycastHit[] hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in hitColliders)
 					{
 						IHitable potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
@@ -377,26 +442,26 @@ public class BallBehaviour : MonoBehaviour
 							hitGameObjects.Add(potentialHitableObjectFound);
 							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
-						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || raycast.collider.gameObject.layer == LayerMask.NameToLayer("Player")) { break; }
-
-						if (!raycast.collider.isTrigger)
+						if (raycast.collider.GetComponentInParent<Shield>() != null) {
+							Debug.Log("Shield"); 
+						}
+						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
+						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
-							if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
-							{
-								Vector3 hitNormal = raycast.normal;
-								hitNormal.y = 0;
-								Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
-								newDirection.y = -currentDirection.y;
-								Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
-								FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, Vector3.zero, Vector3.one);
-								return;
-							}
-							else if (canHitWalls)
-							{
-								ChangeState(BallState.Grounded);
-								MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
-								return;
-							}
+							Vector3 hitNormal = raycast.normal;
+							hitNormal.y = 0;
+							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
+							newDirection.y = -currentDirection.y;
+							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
+							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, -currentDirection, Vector3.one * 2.75f);
+							FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
+							return;
+						}
+						else if (canHitWalls)
+						{
+							ChangeState(BallState.Grounded);
+							MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
+							return;
 						}
 					}
 					RaycastHit[] previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
@@ -410,8 +475,8 @@ public class BallBehaviour : MonoBehaviour
 						}
 					}
 				}
-				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
-				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier);
+				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
+				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
 				if (currentCurve == null && !teleguided && currentDistanceTravelled >= currentMaxDistance)
 				{
 					ChangeState(BallState.Grounded);
@@ -452,6 +517,11 @@ public class BallBehaviour : MonoBehaviour
 		transform.position = _transform.position;
 		transform.localScale = Vector3.one;
 		ballCoroutine = null;
+	}
+
+	public void PrintDecal(RaycastHit ray, Vector3 direction )
+	{
+		Debug.Log("Spawning decal");
 	}
 
 	public void ConvertCoordinatesToCurve(List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength)

@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using XInputDotNetPure;
 #pragma warning disable 0649
 
 public enum VibrationForce
 {
+    VeryHeavy,
 	Heavy,
 	Medium,
-	Light
+	Light,
+    VeryLight,
 }
 public enum DamageSource
 {
@@ -16,7 +19,8 @@ public enum DamageSource
 	Dunk,
 	DeathExplosion,
 	ReviveExplosion,
-	RedBarrelExplosion
+	RedBarrelExplosion,
+	PerfectReceptionExplosion
 }
 
 public enum DamageModifierSource
@@ -40,33 +44,39 @@ public class DamageModifier {
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager
-    [HideInInspector] public static GameManager i;
-    [HideInInspector] public LevelManager levelManager;
-    [HideInInspector] public InputManager inputManager;
-    [HideInInspector] public EventManager eventManager;
-    [HideInInspector] public EnemyManager enemyManager;
+    [System.NonSerialized] public static GameManager i;
+    [System.NonSerialized] public LevelManager levelManager;
+    [System.NonSerialized] public InputManager inputManager;
+    [System.NonSerialized]  public EventManager eventManager;
+    [System.NonSerialized]  public EnemyManager enemyManager;
 
-	[HideInInspector] public GameObject mainCameraGO;
-	[HideInInspector] public static PlayerController playerOne;
-	[HideInInspector] public static PlayerController playerTwo;
-	[HideInInspector] public BallBehaviour ball;
+	[System.NonSerialized]  public GameObject mainCameraGO;
+	[System.NonSerialized]  public static PlayerController playerOne;
+	[System.NonSerialized]  public static PlayerController playerTwo;
+    [System.NonSerialized] public BallBehaviour ball;
     public int ballDamage = 30;
     public List<GameObject> enemies;
 
 
-    [HideInInspector] public GameObject surrounderPlayerOne;
-    [HideInInspector] public GameObject surrounderPlayerTwo;
+    [System.NonSerialized] public GameObject surrounderPlayerOne;
+    [System.NonSerialized] public GameObject surrounderPlayerTwo;
+	public static Canvas mainCanvas;
 	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
+	private static MainMenu menu;
+	private static bool menuCalledOne = false;
+	private static bool menuCalledTwo = false;
+	private static bool deathPanelCalled = false;
 
-    [SerializeField]
+	[SerializeField]
     GameObject dummyPrefab;
     public GameObject ballPrefab;
 
 
     private void Awake()
     {
-        i = this;
+		Time.timeScale = 1f;
+		i = this;
 		deadPlayers = new List<PlayerController>();
 		//Auto assign players
 		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
@@ -86,6 +96,7 @@ public class GameManager : MonoBehaviour
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
+		FindMainCanvas();
 		LoadMomentumManager();
 		LoadEnergyManager();
 
@@ -102,6 +113,15 @@ public class GameManager : MonoBehaviour
 
 	private void Update ()
 	{
+		if (deadPlayers.Count >= 2 && !deathPanelCalled)
+		{
+			deathPanelCalled = true;
+			Instantiate(Resources.Load<GameObject>("Menu/RestartPanel"));
+		}
+		if (mainCanvas == null)
+		{
+			FindMainCanvas();
+		}
 		if (Input.GetKeyDown(KeyCode.B))
 		{
 			ResetBall();
@@ -110,22 +130,78 @@ public class GameManager : MonoBehaviour
 		{
 			ResetScene();
 		}
+		if (Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
+			{
+				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+			}
+		}
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+			if (SceneManager.GetActiveScene().buildIndex > 0)
+			{
+				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+			}
+		}
 		UpdateSceneLoader();
 	}
 
-	void LoadSceneByIndex(int index)
+	private void OnApplicationQuit ()
+	{
+		GamePad.SetVibration(PlayerIndex.One, 0, 0);
+		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+	}
+
+	public static void LoadSceneByIndex(int index)
 	{
 		SceneManager.LoadScene(index);
-		/*
-		SceneLoader sceneLoader = Resources.Load<SceneLoader>("editor/SceneLoader");
-		if (sceneLoader == null) { Debug.LogWarning("SceneLoader not found, can't load scene"); return; }
-		string sceneFound = sceneLoader.GetSceneByIndex(index);
-		if (sceneFound == "") { Debug.LogWarning("Scene with that ID doesn't exit"); return; }
-		SceneManager.LoadScene(sceneFound);
-		*/
+		GamePad.SetVibration(PlayerIndex.One, 0, 0);
+		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+		Time.timeScale = 1f;
+	}
+
+	public static void OpenLevelMenu()
+	{
+		Time.timeScale = 0f;
+		menu = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"), null).GetComponent<MainMenu>();
+	}
+
+	public static void CloseLevelMenu()
+	{
+		Time.timeScale = 1f;
+		Destroy(menu.gameObject);
 	}
 	void UpdateSceneLoader()
 	{
+		GamePadState state = GamePad.GetState(PlayerIndex.One);
+		for (int i = 0; i < 2; i++)
+		{
+			if (i == 0) { state = GamePad.GetState(PlayerIndex.One); }
+			if (i == 1) { state = GamePad.GetState(PlayerIndex.Two); }
+			if (state.Buttons.Start == ButtonState.Pressed)
+			{
+				if (i == 0) { if (menuCalledOne) { return; } }
+				if (i == 1) { if (menuCalledTwo) { return; } }
+				if (menu != null)
+				{
+					CloseLevelMenu();
+					if (i == 0) { menuCalledOne = true; }
+					if (i == 1) { menuCalledTwo = true; }
+				} else
+				{
+					OpenLevelMenu();
+					if (i == 0) { menuCalledOne = true; }
+					if (i == 1) { menuCalledTwo = true; }
+				}
+			}
+			if (state.Buttons.Start == ButtonState.Released)
+			{
+				if (i == 0) { menuCalledOne = false; }
+				if (i == 1) { menuCalledTwo = false; }
+			}
+		}
+
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
 			LoadSceneByIndex(0);
@@ -191,6 +267,16 @@ public class GameManager : MonoBehaviour
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
+	public void FindMainCanvas()
+	{
+		foreach (Canvas canvas in FindObjectsOfType<Canvas>())
+		{
+			if (canvas.renderMode != RenderMode.WorldSpace)
+			{
+				mainCanvas = canvas;
+			}
+		}
+	}
 	public static void ResetScene()
 	{
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -205,7 +291,7 @@ public class GameManager : MonoBehaviour
 		GameObject newBall = Instantiate(i.ballPrefab, null);
 		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
         i.ball = newBall.GetComponent<BallBehaviour>();
-		newBall.transform.position = new Vector3(0, 1f, 0);
+		newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
 	void LoadMomentumManager()

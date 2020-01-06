@@ -19,7 +19,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         ChangeState();
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         if (isActivated && ( type == typeForceField.blockTheBall | type == typeForceField.blockBallAndPlayer ))
         {
@@ -94,12 +94,16 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 
     public override void WhenDesactivate()
     {
+
+        SoundManager.PlaySound("ForceFieldDesactivate", transform.position, transform);
         isActivated = false;
         ChangeState();
     }
     
     public override void WhenActivate()
     {
+
+        SoundManager.PlaySound("ForceFieldActivate", transform.position, transform);
         isActivated = true;
         ChangeState();
     }

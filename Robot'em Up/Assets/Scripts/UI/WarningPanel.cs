@@ -47,8 +47,14 @@ public class WarningPanel : MonoBehaviour
 
 	public static void ClosePanel()
 	{
-		Debug.Log("Closing panel");
 		instance.animator.SetTrigger("Close");
+	}
+
+	public static void ClosePanelInstantly()
+	{
+		instance.vignette.intensity.value = 0;
+		instance.vignette.enabled.value = false;
+		instance.DisablePanel();
 	}
 
 	private void Update ()

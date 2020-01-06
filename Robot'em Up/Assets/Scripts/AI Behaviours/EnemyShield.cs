@@ -7,9 +7,19 @@ public class EnemyShield : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Shield Variables")]
-    public GameObject Shield;
+    public GameObject ShieldPrefab;
+    [System.NonSerialized] public GameObject Shield;
     public bool deactivateShieldWhenAttacking = true;
-    public float angleRangeForRebound { get { return angleRangeForRebound; } set { angleRangeForRebound = value; Shield.GetComponent<Shield>().angleRangeForRebound = value; } }  // The "field of view" angle of enemy. If incident angle of ball is within this, ball will rebound
+
+    // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
+    [Range(0,90)]
+    public float AngleRangeForRebound;
+
+    public float SpwaningShieldFrontDistance;
+
+    public Renderer[] Renderers;
+    public Color NormalColor = Color.blue;
+    public Color AttackingColor = Color.red;
 
     public bool IsShieldActivated {
         get { return isShieldActivated; }
@@ -23,21 +33,54 @@ public class EnemyShield : EnemyBehaviour
 
     [Space(2)]
     [Header("Attack")]
-    public float attackSpeed = 7;
+    public Vector2 minMaxAttackSpeed = new Vector2(7,15);
+    public AnimationCurve attackSpeedVariation;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
+    public float BumpOtherDistanceMod = 0.5f;
+    public float BumpOtherDurationMod = 0.2f;
+    public float BumpOtherRestDurationMod = 0.3f;
 
+    private new void Start()
+    {
+        base.Start();
+        Shield = Instantiate(ShieldPrefab);
+        Shield.GetComponent<Shield>().Enemy = this;
+    }
 
     // ATTACK
     public override void EnterPreparingAttackState()
     {
-        normalSpeed = navMeshAgent.speed;
-        normalAcceleration = navMeshAgent.acceleration;
+        ActualSpeed = navMeshAgent.speed;
+        NormalAcceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         Animator.SetTrigger("AttackTrigger");
-    }   
+
+        navMeshAgent.enabled = false;
+    }
+
+    public override void PreparingAttackState()
+    {
+        base.PreparingAttackState();
+        foreach (var renderer in Renderers)
+        {
+            renderer.material.SetColor("_Color", Color.Lerp(AttackingColor, NormalColor , anticipationTime));
+        }
+    }
+
+
+    public override void EnterAttackingState(string attackSound = "EnemyAttack")
+    {
+        attackSound = "EnemyShieldAttack";
+        base.EnterAttackingState();
+    }
 
     public override void AttackingState()
     {
+        if (!navMeshAgent.enabled)
+        {
+            navMeshAgent.enabled = true;
+        }
+
         if (deactivateShieldWhenAttacking)
         {
             IsShieldActivated = false;
@@ -55,7 +98,7 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            navMeshAgent.speed = attackSpeed;
+            navMeshAgent.speed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
 
@@ -67,22 +110,48 @@ public class EnemyShield : EnemyBehaviour
 
         if (attackTimeProgression >= 1)
         {
-            navMeshAgent.speed = normalSpeed;
-            navMeshAgent.acceleration = normalAcceleration;
+            navMeshAgent.speed = ActualSpeed;
+            navMeshAgent.acceleration = NormalAcceleration;
             IsShieldActivated = true;
             ChangingState(EnemyState.PauseAfterAttack);
+            Animator.SetTrigger("EndOfAttackTrigger");
+
+            navMeshAgent.enabled = false;
         }
-        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
+        /*else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
         {
             endOfAttackTriggerLaunched = true;
             Animator.SetTrigger("EndOfAttackTrigger");
+        }*/
+        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
+        {
+            float rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
+            foreach (var renderer in Renderers)
+            {
+                renderer.material.SetColor("_Color", Color.Lerp(NormalColor,  AttackingColor, rationalizedProgression)); // Time prgression isn't good
+            }
         }
     }
 
-    // BUMP
+    // Ususally called when hitting player
+    public void StopAttack()
+    {
+        navMeshAgent.SetDestination(_self.position);
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
+        Animator.SetTrigger("AttackTouchedTrigger");
+
+        navMeshAgent.enabled = false;
+    }
+
+    // BUMPED
     public override void EnterBumpedState()
     {
         IsShieldActivated = false;
+        foreach (var renderer in Renderers)
+        {
+            renderer.material.SetColor("_Color", NormalColor);
+        }
         base.EnterBumpedState();
     }
 
@@ -90,4 +159,11 @@ public class EnemyShield : EnemyBehaviour
     {
         IsShieldActivated = true;
     }
+
+    public override void Die(string deathSound = "EnemyDeath")
+    {
+        Destroy(Shield);
+        base.Die("EnemyShieldDeath");   // Override the death sound with the right one 
+    }
+
 }

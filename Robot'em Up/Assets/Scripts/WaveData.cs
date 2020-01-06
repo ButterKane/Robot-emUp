@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [System.Serializable]
 public class WaveData
@@ -8,15 +9,16 @@ public class WaveData
 	public AnimationCurve maxPowerLevel = new AnimationCurve();
 	public float duration = 20f;
 	public float pauseBeforeNextWave = 1f;
+	public UnityEvent onEndEvents;
 
-	public List<WaveEnemyProbability> currentEnemies = new List<WaveEnemyProbability>();
+	public List<WaveEnemy> currentEnemies = new List<WaveEnemy>();
 
 	public void SetEnemySpawnProbability(EnemyData _enemy, float _newProbability)
 	{
 		if (currentEnemies.Count <= 1) { return; }
 		float difference = 0f;
 		float otherTotal = 0;
-		foreach (WaveEnemyProbability wep in currentEnemies)
+		foreach (WaveEnemy wep in currentEnemies)
 		{
 			if (_enemy.name == wep.enemyType.name)
 			{
@@ -29,7 +31,7 @@ public class WaveData
 		}
 
 		//Reduce or improve all the other probabilities (So it keep a maximum of 1)
-		foreach (WaveEnemyProbability wep in currentEnemies)
+		foreach (WaveEnemy wep in currentEnemies)
 		{
 			if (_enemy.name != wep.enemyType.name)
 			{
@@ -52,18 +54,18 @@ public class WaveData
 		}
 	}
 
-	public void RemoveEnemySpawnProbability( WaveEnemyProbability _wep)
+	public void RemoveEnemySpawnProbability( WaveEnemy _wep)
 	{
 		float difference = _wep.probability;
 		currentEnemies.Remove(_wep);
 		float totalProba = 0;
-		foreach (WaveEnemyProbability wep in currentEnemies)
+		foreach (WaveEnemy wep in currentEnemies)
 		{
 			totalProba += wep.probability;
 		}
 
 		//Reduce or improve all the other probabilities (So it keep a maximum of 1)
-		foreach (WaveEnemyProbability wep in currentEnemies)
+		foreach (WaveEnemy wep in currentEnemies)
 		{
 			if (totalProba != 0)
 			{
@@ -79,8 +81,9 @@ public class WaveData
 }
 
 [System.Serializable]
-public class WaveEnemyProbability
+public class WaveEnemy
 {
 	public EnemyData enemyType;
 	public float probability;
+	public List<int> spawnIndexes;
 }

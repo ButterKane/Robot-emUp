@@ -14,6 +14,8 @@ public class MomentumData : ScriptableObject
 	public Vector2 ballDamageMultiplier;
 	public Vector2 enemySpeedMultiplier;
 	public Vector2 enemySpawnRateMultiplier;
+	public Vector2 vibrationMultiplier;
+	public Vector2 screenShakeMultiplier;
 
 	[Header("PostProcess settings")]
 	public Vector2 minMaxBloom;

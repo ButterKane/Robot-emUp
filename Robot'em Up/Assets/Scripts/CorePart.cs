@@ -51,14 +51,15 @@ public class CorePart : MonoBehaviour
 		RaycastHit hit;
 		if (Physics.Raycast(transform.position, Vector3.down, out hit, 1f, LayerMask.GetMask("Environment"))) {
 			grounded = true;
-			foreach (Collider collider in GetComponents<Collider>())
+			foreach (Collider collider in GetComponentsInChildren<Collider>())
 			{
 				if (!collider.isTrigger)
 				{
 					Destroy(collider);
 				}
 			}
-			animator.SetTrigger("showArrow");
+            if(animator != null) //if not an enemy core
+			    animator.SetTrigger("showArrow");
 			rb.isKinematic = true;
 		}
 	}
@@ -71,7 +72,8 @@ public class CorePart : MonoBehaviour
 
 	public void Pick(PlayerController _player)
 	{
-		animator.SetTrigger("pick");
+		if (animator != null)
+			animator.SetTrigger("pick");
 		picker = _player;
 	}
 }

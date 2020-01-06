@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
@@ -30,16 +31,27 @@ public class DunkController : MonoBehaviour
 	public float dunkDashDelay = 1f;
 
 	public float dunkSnapTreshold = 30f;
+	public float dunkCooldown = 3f;
+	public float dunkCancelFreezeDuration = 0.4f;
+
+    [SerializeField] private DunkState dunkState;
+
+    [Separator("Bump Variables")]
+    public float BumpDistanceMod = 1;
+    public float BumpDurationMod = 0.5f;
+    public float BumpRestDurationMod = 0.7f;
 
 
-	private Rigidbody rb;
-	[SerializeField] private DunkState dunkState;
+    private Rigidbody rb;
+	
 	private Coroutine jumpCoroutine;
 	private PassController passController;
 	private PawnController pawnController;
+	private PlayerController playerController;
 
 	private GameObject waitingFX;
 	private GameObject dashFX;
+	private float currentCD;
 
 	private void Awake ()
 	{
@@ -48,12 +60,27 @@ public class DunkController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 		passController = GetComponent<PassController>();
 		pawnController = GetComponent<PawnController>();
+		playerController = GetComponent<PlayerController>();
+	}
+
+	private void Update ()
+	{
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			jumpCoroutine = StartCoroutine(Dunk_C());
+		}
+		if (currentCD >= 0)
+		{
+			currentCD -= Time.deltaTime;
+		}
 	}
 
 	public void Explode ()
 	{
 		BallBehaviour ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
+		FeedbackManager.SendFeedback("event.DunkSmashingOnTheGround", this);
+		SoundManager.PlaySound("DunkOnGround", transform.position);
 		EnergyManager.DecreaseEnergy(1f);
 		Collider[] hitColliders = Physics.OverlapSphere(ball.transform.position, dunkExplosionRadius);
 		int i = 0;
@@ -85,7 +112,7 @@ public class DunkController : MonoBehaviour
 	}
 	public bool CanDunk ()
 	{
-		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null)
+		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null && GameManager.deadPlayers.Count <= 0 && currentCD <= 0)
 		{
 			return true;
 		}
@@ -106,6 +133,8 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkOnGround_C ()
 	{
 		ChangeState(DunkState.Receiving);
+		FeedbackManager.SendFeedback("event.CaughtTheBallForDunk", this);
+		SoundManager.PlaySound("CaughtBallForDunk", transform.position, transform);
 		yield return new WaitForSeconds(dunkDashDelay);
 		ChangeState(DunkState.Dashing);
 		yield return FallOnGround_C(dunkDashSpeed);
@@ -114,6 +143,12 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator DunkJump_C ()
 	{
+		if (playerController)
+		{
+			playerController.DisableInput();
+		}
+		FeedbackManager.SendFeedback("event.JumpForDunk", this);
+		SoundManager.PlaySound("JumpForDunk", transform.position, transform);
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		rb.isKinematic = true;
@@ -134,6 +169,7 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkWait_C ()
 	{
 		passController.EnableBallReception();
+		SoundManager.PlaySound("ReadyToCatchDunk", transform.position, transform);
 		ChangeState(DunkState.Waiting);
 		SnapController.SetSnappable(SnapType.Pass, this.gameObject, dunkSnapTreshold, dunkJumpFreezeDuration);
 		for (float i = 0; i < dunkJumpFreezeDuration; i += Time.deltaTime)
@@ -145,6 +181,7 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkCancel_C ()
 	{
 		ChangeState(DunkState.Canceling);
+		currentCD = dunkCooldown;
 		yield return FallOnGround_C(dunkCancelledFallSpeed);
 	}
 
@@ -162,6 +199,10 @@ public class DunkController : MonoBehaviour
 		else
 		{
 			StopAllCoroutines();
+			if (playerController)
+			{
+				playerController.EnableInput();
+			}
 			ChangeState(DunkState.None);
 		}
 
@@ -173,6 +214,11 @@ public class DunkController : MonoBehaviour
 		transform.position = endPosition;
 
 		ChangeState(DunkState.None);
+		if (playerController)
+		{
+			playerController.EnableInput();
+			playerController.FreezeTemporarly(dunkCancelFreezeDuration);
+		}
 		rb.isKinematic = false;
 		rb.useGravity = true;
 	}
@@ -197,7 +243,7 @@ public class DunkController : MonoBehaviour
 		switch (_newState)
 		{
 			case DunkState.Jumping:
-				FXManager.InstantiateFX(ballDatas.DunkJump, transform.position, false, Vector3.up, Vector3.one * 2);
+				FXManager.InstantiateFX(ballDatas.DunkJump, transform.position + new Vector3(0,0.1f,0), false, Vector3.up, Vector3.one * 2.5f);
 				playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
@@ -216,10 +262,6 @@ public class DunkController : MonoBehaviour
 				playerAnimator.SetTrigger("DunkTrigger");
 				break;
 			case DunkState.Explosing:
-				foreach (PlayerController player in FindObjectsOfType<PlayerController>())
-				{
-					player.Vibrate(0.3f, VibrationForce.Heavy);
-				}
 				if (dashFX != null)
 				{
 					Destroy(dashFX);

@@ -15,9 +15,11 @@ MonoBehaviour:
   maxPreviewDistance: 50
   moveSpeed: 5
   maxBounces: 2000
-  speedMultiplierOnBounce: 1
-  damageModifierOnReception: 1.2
-  maxDamageModifier: 5
+  speedMultiplierOnBounce: 0
+  speedMultiplierOnPerfectReception: 0.1
+  maxSpeedMultiplierOnPerfectReception: 4
+  damageModifierOnPerfectReception: 1
+  maxDamageModifierOnPerfectReception: 3
   damages: 1
   colorOverDamage:
     serializedVersion: 2
@@ -29,9 +31,9 @@ MonoBehaviour:
     key5: {r: 1, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 21627
-    ctime2: 43253
+    ctime0: 16384
+    ctime1: 32768
+    ctime2: 49151
     ctime3: 65535
     ctime4: 65535
     ctime5: 65535
@@ -45,12 +47,15 @@ MonoBehaviour:
     atime5: 0
     atime6: 0
     atime7: 0
-    m_Mode: 0
+    m_Mode: 1
     m_NumColorKeys: 4
     m_NumAlphaKeys: 2
+  hitDecal: {fileID: 2800000, guid: 079fc53cb2d249f4f8728b28f3b217b5, type: 3}
   Trail: {fileID: 8070202648864887483, guid: f0a61493435af3f40a62bd2ab386d6ce, type: 3}
   WallHit: {fileID: 3832623334191775734, guid: 235eb44efa78dd8488868d0efce15912, type: 3}
   ReceiveCore: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
+    type: 3}
+  ThrowCore: {fileID: 7728491280138033091, guid: 1363c37e69703564b9271a09208c1461,
     type: 3}
   LightExplosion: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
     type: 3}
