@@ -5,17 +5,16 @@ using MyBox;
 
 public class PuzzlePressurePlate : PuzzleActivator
 {
-    [ReadOnly]
-    public bool PawnHere;
+    [ReadOnly] public bool pawnHere;
     private BoxCollider boxCollider;
-    private List<PawnController> ListPawnsHere;
+    private List<PawnController> listPawnsHere;
 
 
     // Start is called before the first frame update
     void Awake()
     {
         boxCollider = GetComponent<BoxCollider>();
-        ListPawnsHere = new List<PawnController>();
+        listPawnsHere = new List<PawnController>();
     }
 
     // Update is called once per frame
@@ -26,16 +25,15 @@ public class PuzzlePressurePlate : PuzzleActivator
 
 
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-     
-        if (other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>())
         {
-            PawnHere = true;
+            pawnHere = true;
             transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
-            ListPawnsHere.Add(pawn);
+            listPawnsHere.Add(pawn);
             isActivated = true;
             ActivateLinkedObjects();
         }
@@ -44,17 +42,17 @@ public class PuzzlePressurePlate : PuzzleActivator
     }
 
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Remove(pawn);
-            if (ListPawnsHere.Count < 1)
+            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Remove(pawn);
+            if (listPawnsHere.Count < 1)
             {
                 isActivated = false;
                 DesactiveLinkedObjects();
-                PawnHere = false;
+                pawnHere = false;
                 transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
             }
         }

@@ -5,8 +5,8 @@ using UnityEngine;
 public class Shield : MonoBehaviour, IHitable
 {
     public EnemyShield enemy;
-    [SerializeField] private bool lockable_access = false; public bool lockable { get { return lockable_access; } set { lockable_access = value; } }
-	[SerializeField] private float lockHitboxSize_access; public float lockHitboxSize { get { return lockHitboxSize_access; } set { lockHitboxSize_access = value; } }
+    [SerializeField] private bool lockable = false; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
     private void Update()
     {

@@ -66,30 +66,30 @@ public class PuzzleEletricPlate : PuzzleActivable
         */
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>())
         {
             
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
-            PawnTrapped.Add(pawn);
+            PawnTrapped.Add(_pawn);
 
             if (!isActivated)
             {
-                pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+                _pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
             }
         }
 
     }
 
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            PawnTrapped.Remove(pawn);
+            PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
+            PawnTrapped.Remove(_pawn);
         }
 
     }
@@ -112,17 +112,17 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenDesactivate()
     {
-        bool checkAllConditionsCustom = true;
+        bool internal_checkAllConditionsCustom = true;
         
         foreach (var item in puzzleActivators)
         {
             if (item.isActivated)
             {
-                checkAllConditionsCustom = false;
+                internal_checkAllConditionsCustom = false;
             }
         }
         
-        if (checkAllConditionsCustom)
+        if (internal_checkAllConditionsCustom)
         {
 
             isActivated = false;
@@ -137,8 +137,5 @@ public class PuzzleEletricPlate : PuzzleActivable
             }
             myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
         }
-        
     }
-
-
 }

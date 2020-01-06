@@ -32,26 +32,26 @@ public class InputManager : MonoBehaviour
         mainCamTransform = GameManager.i.mainCameraGO.transform;
     }
 
-    public Vector3 GetMoveAbsoluteDirection(float xMove, float zMove)
+    public Vector3 GetMoveAbsoluteDirection(float _xMove, float _zMove)
     {
-        Vector3 moveDirection;
+        Vector3 internal_moveDirection;
 
-        moveDirection = new Vector3(xMove, 0, zMove).normalized;
+        internal_moveDirection = new Vector3(_xMove, 0, _zMove).normalized;
 
-        return moveDirection;
+        return internal_moveDirection;
     }
 
-    public Vector3 GetMoveAsViewedWithCamera(float xMove, float zMove)
+    public Vector3 GetMoveAsViewedWithCamera(float _xMove, float _zMove)
     {
-        Vector3 unrotatedMoveDirection = GetMoveAbsoluteDirection(xMove, zMove);
+        Vector3 internal_unrotatedMoveDirection = GetMoveAbsoluteDirection(_xMove, _zMove);
 
         // Flat down camera orientation. Only take the components that are parrallel to the ground 
-        Vector3 flattedCameraRight = new Vector3 (mainCamTransform.right.x,0 ,mainCamTransform.right.z);
-        Vector3 flattedCameraForward = new Vector3(mainCamTransform.forward.x, 0, mainCamTransform.forward.z);
+        Vector3 internal_flattedCameraRight = new Vector3 (mainCamTransform.right.x,0 ,mainCamTransform.right.z);
+        Vector3 internal_flattedCameraForward = new Vector3(mainCamTransform.forward.x, 0, mainCamTransform.forward.z);
 
-        Vector3 rotatedMoveDirection = (flattedCameraRight * unrotatedMoveDirection.x  + flattedCameraForward * unrotatedMoveDirection.z).normalized;
+        Vector3 internal_rotatedMoveDirection = (internal_flattedCameraRight * internal_unrotatedMoveDirection.x  + internal_flattedCameraForward * internal_unrotatedMoveDirection.z).normalized;
 
-        return rotatedMoveDirection;
+        return internal_rotatedMoveDirection;
     }
 
     

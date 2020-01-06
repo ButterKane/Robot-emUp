@@ -4,31 +4,31 @@ using UnityEngine;
 
 public class SurroundingPoint : MonoBehaviour
 {
-    public bool isOccupied
+    public bool isOccupied_access
     {
-        get { return _isOccupied; }
+        get { return isOccupied; }
         set
         {
-            _isOccupied = value;
+            isOccupied = value;
             if (value == true)
             {
                 StartCoroutine(TimerBeforeReset());
             }
         }
     }
+    private bool isOccupied;
 
     public EnemyBehaviour closestEnemy;
 
-    private bool _isOccupied;
 
     void Start()
     {
-        isOccupied = false;
+        isOccupied_access = false;
     }
 
     public IEnumerator TimerBeforeReset()
     {
         yield return new WaitForSeconds(1);
-        isOccupied = false;
+        isOccupied_access = false;
     }
 }

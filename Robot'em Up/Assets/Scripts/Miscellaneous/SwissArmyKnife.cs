@@ -4,36 +4,36 @@ using UnityEngine;
 
 public static class SwissArmyKnife
 {
-    public static Vector3 GetFlattedDownPosition(Vector3 vector, Vector3 self)
+    public static Vector3 GetFlattedDownPosition(Vector3 _vector, Vector3 _self)
     {
-        return new Vector3(vector.x, self.y, vector.z);
+        return new Vector3(_vector.x, _self.y, _vector.z);
     }
-    public static Vector3 GetFlattedDownDirection(Vector3 vector)
+    public static Vector3 GetFlattedDownDirection(Vector3 _vector)
     {
-        return new Vector3(vector.x, 0, vector.z);
+        return new Vector3(_vector.x, 0, _vector.z);
     }
 
-	public static Vector3 RotatePointAroundPivot ( Vector3 point, Vector3 pivot, Vector3 angles )
+	public static Vector3 RotatePointAroundPivot ( Vector3 _point, Vector3 _pivot, Vector3 _angles )
 	{
-		Vector3 dir = point - pivot; // get point direction relative to pivot
-		dir = Quaternion.Euler(angles) * dir; // rotate it
-		point = dir + pivot; // calculate rotated point
-		return point; // return it
+		Vector3 dir = _point - _pivot; // get point direction relative to pivot
+		dir = Quaternion.Euler(_angles) * dir; // rotate it
+		_point = dir + _pivot; // calculate rotated point
+		return _point; // return it
 	}
 
 
-	public static float GetAngleBetween2Vectors(Vector2 initial, Vector2 target) //Returns the angle between the two vectors
+	public static float GetAngleBetween2Vectors(Vector2 _initial, Vector2 _target) //Returns the angle between the two vectors
     {
-        Vector2 dir = initial - target;
+        Vector2 dir = _initial - _target;
         float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
         return angle;
     }
 
-	public static float SignedAngleBetween ( Vector3 a, Vector3 b, Vector3 n )
+	public static float SignedAngleBetween ( Vector3 _a, Vector3 _b, Vector3 _n )
 	{
 		// angle in [0,180]
-		float angle = Vector3.Angle(a, b);
-		float sign = Mathf.Sign(Vector3.Dot(n, Vector3.Cross(a, b)));
+		float angle = Vector3.Angle(_a, _b);
+		float sign = Mathf.Sign(Vector3.Dot(_n, Vector3.Cross(_a, _b)));
 
 		// angle in [-179,180]
 		float signed_angle = angle * sign;
@@ -44,30 +44,31 @@ public static class SwissArmyKnife
 		return angle360;
 	}
 
-	public static Vector3 GetMouseDirection(Camera camera, Vector3 objectPosition) //Returns the direction from the object to the mouse
+	public static Vector3 GetMouseDirection(Camera _camera, Vector3 _objectPosition) //Returns the direction from the object to the mouse
     {
-        Vector3 mousePosInWorld = Input.mousePosition;
-        mousePosInWorld.z = Vector3.Distance(objectPosition, camera.transform.position);
+        Vector3 internal_mousePosInWorld = Input.mousePosition;
+        internal_mousePosInWorld.z = Vector3.Distance(_objectPosition, _camera.transform.position);
+
         RaycastHit hit;
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit))
         {
-            mousePosInWorld.z = Vector3.Distance(camera.transform.position, hit.point);
+            internal_mousePosInWorld.z = Vector3.Distance(_camera.transform.position, hit.point);
         }
-        mousePosInWorld = camera.ScreenToWorldPoint(mousePosInWorld);
-        mousePosInWorld.y = objectPosition.y;
-        return (mousePosInWorld - objectPosition).normalized;
+        internal_mousePosInWorld = _camera.ScreenToWorldPoint(internal_mousePosInWorld);
+        internal_mousePosInWorld.y = _objectPosition.y;
+        return (internal_mousePosInWorld - _objectPosition).normalized;
     }
 
-    public static Vector3 GetBallisticVelocityVector(Vector3 start, Vector3 target, float angle, Vector3 planReference)
+    public static Vector3 GetBallisticVelocityVector(Vector3 _start, Vector3 _target, float _angle, Vector3 _planReference)
     {
-        Vector3 direction = target - start;
+        Vector3 direction = _target - _start;
 
         float h = direction.y;  // store "height" of start->target direction
         direction.y = 0;
 
         float distance = direction.magnitude;   // How far is the target from the start?
-        float a = angle * Mathf.Deg2Rad;        // What is the start angle of the parabola
+        float a = _angle * Mathf.Deg2Rad;        // What is the start angle of the parabola
         direction.y = distance * Mathf.Tan(a);  // => distance * (height/distanceToHeight)
         distance += h / Mathf.Tan(a);           // => distance += stored initial height(here will be 0) / (height/distanceToHeight) => distance += 0 (suppposedly in most cases)
 
@@ -76,45 +77,45 @@ public static class SwissArmyKnife
         return velocity * direction.normalized;
     }
 
-	public static Vector3 CubicBezierCurve ( Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t ) //P1 = startPoint, P2 = handle, P3 = second handle, P4 = endPoint, t = time (between 0f and 1f)
+	public static Vector3 CubicBezierCurve ( Vector3 _p0, Vector3 _p1, Vector3 _p2, Vector3 _p3, float _t ) //P1 = startPoint, P2 = handle, P3 = second handle, P4 = endPoint, t = time (between 0f and 1f)
 	{
-		float r = 1f - t;
+		float r = 1f - _t;
 		float f0 = r * r * r;
-		float f1 = r * r * t * 3;
-		float f2 = r * t * t * 3;
-		float f3 = t * t * t;
-		return f0 * p0 + f1 * p1 + f2 * p2 + f3 * p3;
+		float f1 = r * r * _t * 3;
+		float f2 = r * _t * _t * 3;
+		float f3 = _t * _t * _t;
+		return f0 * _p0 + f1 * _p1 + f2 * _p2 + f3 * _p3;
 	}
 
     /// <summary>
     /// Returns the distance traveled by an object following ballistic equation
     /// </summary>
-    /// <param name="initialSpeed"></param>
-    /// <param name="angle"></param>
-    /// <param name="initialHeight"></param>
+    /// <param name="_initialSpeed"></param>
+    /// <param name="_angle"></param>
+    /// <param name="_initialHeight"></param>
     /// <returns></returns>
-    public static float GetBallisticThrowLength(float initialSpeed, float angle, float initialHeight)
+    public static float GetBallisticThrowLength(float _initialSpeed, float _angle, float _initialHeight)
     {
         float g = 9.81f; // gravity
 
-        float radAngle = angle * Mathf.Deg2Rad; // converts the angle in degree to an angle in radians
+        float radAngle = _angle * Mathf.Deg2Rad; // converts the angle in degree to an angle in radians
 
-        if (initialHeight == 0)
+        if (_initialHeight == 0)
         {
-            return (Mathf.Pow(initialSpeed, 2) / g) * Mathf.Sin(2 * radAngle);  // if initialHieght = 0, use the simplified equation
+            return (Mathf.Pow(_initialSpeed, 2) / g) * Mathf.Sin(2 * radAngle);  // if initialHieght = 0, use the simplified equation
         }
 
         //  initial speed X cos(angle)
         //  __________________________
         //              g
 
-        float equationPart1 = (initialSpeed * Mathf.Cos(radAngle)) / g;
+        float equationPart1 = (_initialSpeed * Mathf.Cos(radAngle)) / g;
 
 
         //                                 _______________________________________________________
         //  initial speed X sin(angle) + \/ (initial speed X sin(angle))² + 2 X g X initial height    
 
-        float equationPart2 = initialSpeed * Mathf.Sin(radAngle) + Mathf.Sqrt(Mathf.Pow((initialSpeed * Mathf.Sin(radAngle)), 2) + (2 * g * initialHeight));
+        float equationPart2 = _initialSpeed * Mathf.Sin(radAngle) + Mathf.Sqrt(Mathf.Pow((_initialSpeed * Mathf.Sin(radAngle)), 2) + (2 * g * _initialHeight));
 
         return equationPart1 * equationPart2;
     }
@@ -122,15 +123,15 @@ public static class SwissArmyKnife
     /// <summary>
     /// Returns the time taken by an object to travel a given distance with ballistic equation
     /// </summary>
-    /// <param name="initialSpeed"></param>
-    /// <param name="angle"></param>
-    /// <param name="throwLength"></param>
+    /// <param name="_initialSpeed"></param>
+    /// <param name="_angle"></param>
+    /// <param name="_throwLength"></param>
     /// <returns></returns>
-    public static float GetBallisticThrowDuration(float initialSpeed, float angle, float throwLength)
+    public static float GetBallisticThrowDuration(float _initialSpeed, float _angle, float _throwLength)
     {
-        float radAngle = angle * Mathf.Deg2Rad; // converts the angle in degree to an angle in radians
+        float radAngle = _angle * Mathf.Deg2Rad; // converts the angle in degree to an angle in radians
 
-        return throwLength / (initialSpeed * Mathf.Cos(radAngle));
+        return _throwLength / (_initialSpeed * Mathf.Cos(radAngle));
     }
 
     

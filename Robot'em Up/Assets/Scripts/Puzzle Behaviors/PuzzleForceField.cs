@@ -5,8 +5,8 @@ using UnityEditor;
 
 public class PuzzleForceField : PuzzleActivable, IHitable
 {
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
     public typeForceField type = typeForceField.blockTheBall;
     public enum typeForceField { blockTheBall, blockBallAndPlayer, Flipper }
     private MeshRenderer meshRenderer;
@@ -25,7 +25,6 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         {
             _ball.ChangeSpeed(0);
         }
-
 
         if (isActivated && type == typeForceField.Flipper )
         {
@@ -94,7 +93,6 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 
     public override void WhenDesactivate()
     {
-
         SoundManager.PlaySound("ForceFieldDesactivate", transform.position, transform);
         isActivated = false;
         ChangeState();
@@ -102,12 +100,8 @@ public class PuzzleForceField : PuzzleActivable, IHitable
     
     public override void WhenActivate()
     {
-
         SoundManager.PlaySound("ForceFieldActivate", transform.position, transform);
         isActivated = true;
         ChangeState();
     }
-
-
-
 }

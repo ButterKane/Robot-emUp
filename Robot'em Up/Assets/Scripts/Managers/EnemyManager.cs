@@ -46,35 +46,35 @@ public class EnemyManager : MonoBehaviour
 
     public void GetMiddleOfEnemies()
     {
-        List<EnemyBehaviour> groupOne;
-        List<EnemyBehaviour> groupTwo;
+        List<EnemyBehaviour> internal_groupOne;
+        List<EnemyBehaviour> internal_groupTwo;
 
         groupOneMiddlePoint = new Vector3();
         groupTwoMiddlePoint = new Vector3();
 
-        SetGroupsOfEnemies(out groupOne, out groupTwo);
+        SetGroupsOfEnemies(out internal_groupOne, out internal_groupTwo);
 
-        enemyGroupOne = groupOne;   // list of enemies targeting player one, sorted from closest to farthest to player
-        enemyGroupTwo = groupTwo;   // same, but with the player two
+        enemyGroupOne = internal_groupOne;   // list of enemies targeting player one, sorted from closest to farthest to player
+        enemyGroupTwo = internal_groupTwo;   // same, but with the player two
 
-        for (int i = 0; i < groupOne.Count; i++)
+        for (int i = 0; i < internal_groupOne.Count; i++)
         {
-            groupOneMiddlePoint += groupOne[i].transform.position;
+            groupOneMiddlePoint += internal_groupOne[i].transform.position;
         }
 
-        for (int i = 0; i < groupTwo.Count; i++)
+        for (int i = 0; i < internal_groupTwo.Count; i++)
         {
-            groupTwoMiddlePoint += groupTwo[i].transform.position;
+            groupTwoMiddlePoint += internal_groupTwo[i].transform.position;
         }
 
-        groupOneMiddlePoint = new Vector3(groupOneMiddlePoint.x / groupOne.Count, groupOneMiddlePoint.y / groupOne.Count, groupOneMiddlePoint.z / groupOne.Count);
-        groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / groupTwo.Count, groupTwoMiddlePoint.y / groupTwo.Count, groupTwoMiddlePoint.z / groupTwo.Count);
+        groupOneMiddlePoint = new Vector3(groupOneMiddlePoint.x / internal_groupOne.Count, groupOneMiddlePoint.y / internal_groupOne.Count, groupOneMiddlePoint.z / internal_groupOne.Count);
+        groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / internal_groupTwo.Count, groupTwoMiddlePoint.y / internal_groupTwo.Count, groupTwoMiddlePoint.z / internal_groupTwo.Count);
     }
 
-    public void SetGroupsOfEnemies(out List<EnemyBehaviour> groupOne, out List<EnemyBehaviour> groupTwo)
+    public void SetGroupsOfEnemies(out List<EnemyBehaviour> internal_groupOne, out List<EnemyBehaviour> internal_groupTwo)
     {
-        groupOne = new List<EnemyBehaviour>();
-        groupTwo = new List<EnemyBehaviour>();
+        internal_groupOne = new List<EnemyBehaviour>();
+        internal_groupTwo = new List<EnemyBehaviour>();
 
         foreach (var enemy in enemies)
         {
@@ -82,59 +82,59 @@ public class EnemyManager : MonoBehaviour
             {
                 if (enemy.focusedPlayer.gameObject == playerOne.gameObject)
                 {
-                    groupOne.Add(enemy);
+                    internal_groupOne.Add(enemy);
                 }
                 else if (enemy.focusedPlayer.gameObject == playerTwo.gameObject)
                 {
-                    groupTwo.Add(enemy);
+                    internal_groupTwo.Add(enemy);
                 }
                 else { Debug.Log("The enemy " + enemy.name + " doesn't have a target"); }
             }
         }
 
-        groupOne = GetClosestEnemies(groupOne);
-        groupTwo = GetClosestEnemies(groupTwo);
+        internal_groupOne = GetClosestEnemies(internal_groupOne);
+        internal_groupTwo = GetClosestEnemies(internal_groupTwo);
     }
 
-    public List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> enemies)
+    public List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> _enemies)
     {
-        List<EnemyBehaviour> closeEnemies = new List<EnemyBehaviour>();
+        List<EnemyBehaviour> internal_closeEnemies = new List<EnemyBehaviour>();
 
-        if (enemies.Count < 0)
+        if (_enemies.Count < 0)
         {
             Debug.LogWarning("The groupe of enemy is empty");
             return null;
         }
 
-        enemies.Sort((a, b) =>
+        _enemies.Sort((a, b) =>
         {
-            var target = a.focusedPlayer;
-            var dstToA = (target.transform.position - a.transform.position).magnitude;
-            var dstToB = (target.transform.position - b.transform.position).magnitude;
+            var internal_target = a.focusedPlayer;
+            var internal_dstToA = (internal_target.transform.position - a.transform.position).magnitude;
+            var internal_dstToB = (internal_target.transform.position - b.transform.position).magnitude;
 
-            if (dstToA > dstToB) return 1;
-            else if (dstToA < dstToB) return -1;
+            if (internal_dstToA > internal_dstToB) return 1;
+            else if (internal_dstToA < internal_dstToB) return -1;
             else return 0;
         });
 
-        for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, enemies.Count); i++)
+        for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, _enemies.Count); i++)
         {
-            if (enemies[i] != null)
+            if (_enemies[i] != null)
             {
-                Debug.DrawRay(enemies[i].transform.position, Vector3.up * 3, Color.yellow);
-                closeEnemies.Add(enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
+                Debug.DrawRay(_enemies[i].transform.position, Vector3.up * 3, Color.yellow);
+                internal_closeEnemies.Add(_enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
             }
         }
 
-        return closeEnemies;
+        return internal_closeEnemies;
     }
 
     public void SpawnEnemies()
     {
         for (int i = 0; i < 3; i++)
         {
-            var newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
-            enemies.Add(newEnemy.GetComponent<EnemyBehaviour>());
+            var internal_newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
+            enemies.Add(internal_newEnemy.GetComponent<EnemyBehaviour>());
         }
     }
 }

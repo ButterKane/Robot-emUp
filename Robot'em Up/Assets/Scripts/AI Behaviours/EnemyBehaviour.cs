@@ -62,8 +62,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float energyAmount = 1;
     public int damage = 10;
 	public float powerLevel = 1;
-    [SerializeField] protected bool lockable_access; public bool lockable { get { return lockable_access; } set { lockable_access = value; } }
-	[SerializeField] protected float lockHitboxSize_access; public float lockHitboxSize { get { return lockHitboxSize_access; } set { lockHitboxSize_access = value; } }
+    [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	public bool arenaRobot;
 
 	[Space(2)]
@@ -167,7 +167,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
         GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.MainCanvas.transform);
-        healthBar.GetComponent<EnemyHealthBar>().Enemy = this;
+        healthBar.GetComponent<EnemyHealthBar>().enemy = this;
 
         if (arenaRobot)
         {

@@ -73,10 +73,10 @@ public class LockManager : MonoBehaviour
 			foreach (RaycastHit hit in internal_hitObjectsList)
 			{
 				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
-				if (potentialTarget != null && potentialTarget.lockable)
+				if (potentialTarget != null && potentialTarget.lockable_access)
 				{
 					internal_foundTargets.Add(hit.transform);
-					LockManager.LockTarget(hit.transform, potentialTarget.lockHitboxSize);
+					LockManager.LockTarget(hit.transform, potentialTarget.lockHitboxSize_access);
 				}
 			}
 		}

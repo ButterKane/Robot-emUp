@@ -7,16 +7,13 @@ public class PuzzleDoor : PuzzleActivable
     public bool open;
     public GameObject destroyWhenOpened;
 
-
     override public void WhenActivate()
     {
         isActivated = true;
         UpdateLights();
         //Debug.Log("Activate a door");
         DestroyTheDoor();
-
     }
-
 
     public void DestroyTheDoor()
     {

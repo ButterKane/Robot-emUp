@@ -13,7 +13,6 @@ public class PuzzleElevator : PuzzleActivable
     public enum ElevatorState { Down, Up, MovingDown, MovingUp }
     public ElevatorState state;
 
-    
     private float journeyLength;
     private float startTime;
 
@@ -22,7 +21,6 @@ public class PuzzleElevator : PuzzleActivable
     {
         startTime = Time.time;
         journeyLength = Vector3.Distance(downPosition, upPosition);
-
     }
 
     // Update is called once per frame
@@ -30,10 +28,10 @@ public class PuzzleElevator : PuzzleActivable
     {
         if (state == ElevatorState.MovingUp)
         {
-            float distCovered = (Time.time - startTime) * speed;
-            float fractionOfJourney = distCovered / journeyLength;
-            transform.position = Vector3.Lerp(downPosition, upPosition, fractionOfJourney);
-            if (fractionOfJourney > 0.99f)
+            float internal_distCovered = (Time.time - startTime) * speed;
+            float internal_fractionOfJourney = internal_distCovered / journeyLength;
+            transform.position = Vector3.Lerp(downPosition, upPosition, internal_fractionOfJourney);
+            if (internal_fractionOfJourney > 0.99f)
             {
                 state = ElevatorState.Up;
                 if (!isActivated)
@@ -47,10 +45,10 @@ public class PuzzleElevator : PuzzleActivable
 
         if (state == ElevatorState.MovingDown)
         {
-            float distCovered = (Time.time - startTime) * speed;
-            float fractionOfJourney = distCovered / journeyLength;
-            transform.position = Vector3.Lerp(upPosition, downPosition, fractionOfJourney);
-            if (fractionOfJourney > 0.99f)
+            float internal_distCovered = (Time.time - startTime) * speed;
+            float internal_fractionOfJourney = internal_distCovered / journeyLength;
+            transform.position = Vector3.Lerp(upPosition, downPosition, internal_fractionOfJourney);
+            if (internal_fractionOfJourney > 0.99f)
             {
                 state = ElevatorState.Down;
                 if (isActivated)
@@ -62,8 +60,6 @@ public class PuzzleElevator : PuzzleActivable
         }
 
     }
-
-
 
     override public void WhenActivate()
     {

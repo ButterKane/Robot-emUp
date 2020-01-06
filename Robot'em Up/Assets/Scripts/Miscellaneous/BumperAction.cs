@@ -15,24 +15,24 @@ public class BumperAction : MonoBehaviour
     public float randomDurationMod;
     public float randomRestDurationMod;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.gameObject.tag == "Enemy")
+        if (_other.gameObject.tag == "Enemy")
         {
-            EnemyBehaviour enemy = other.gameObject.GetComponent<EnemyBehaviour>();
-            if (enemy)
+            EnemyBehaviour internal_enemy = _other.gameObject.GetComponent<EnemyBehaviour>();
+            if (internal_enemy)
             {
-                Vector3 bumpDirection = SwissArmyKnife.GetFlattedDownDirection( enemy.transform.position - transform.position);
-                enemy.BumpMe(bumpDistance, bumpDuration, restDuration, bumpDirection, randomDistanceMod, randomDurationMod, randomRestDurationMod);
+                Vector3 internal_bumpDirection = SwissArmyKnife.GetFlattedDownDirection( internal_enemy.transform.position - transform.position);
+                internal_enemy.BumpMe(bumpDistance, bumpDuration, restDuration, internal_bumpDirection, randomDistanceMod, randomDurationMod, randomRestDurationMod);
             }
         }
-        if (other.gameObject.tag == " Player")
+        if (_other.gameObject.tag == " Player")
         {
-            PawnController player = other.gameObject.GetComponent<PawnController>();
-            if (player)
+            PawnController internal_player = _other.gameObject.GetComponent<PawnController>();
+            if (internal_player)
             {
-                Vector3 bumpDirection = SwissArmyKnife.GetFlattedDownDirection(player.transform.position - transform.position);
-                player.BumpMe(bumpDistance, bumpDuration, restDuration, bumpDirection, randomDistanceMod, randomDurationMod, randomRestDurationMod);
+                Vector3 bumpDirection = SwissArmyKnife.GetFlattedDownDirection(internal_player.transform.position - transform.position);
+                internal_player.BumpMe(bumpDistance, bumpDuration, restDuration, bumpDirection, randomDistanceMod, randomDurationMod, randomRestDurationMod);
             }
         }
     }

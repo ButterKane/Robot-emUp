@@ -8,9 +8,9 @@ public class PuzzleSwitch : PuzzleActivator
 {
     private MeshRenderer meshRenderer;
     private BoxCollider boxCollider;
-    private bool PlayerHere;
-    public GameObject InteractionHelper;
-    private List<PawnController> ListPawnsHere;
+    private bool playerHere;
+    public GameObject interactionHelper;
+    private List<PawnController> listPawnsHere;
 
 
     [ReadOnly]
@@ -27,19 +27,19 @@ public class PuzzleSwitch : PuzzleActivator
     {
         meshRenderer = GetComponent<MeshRenderer>();
         boxCollider = GetComponent<BoxCollider>();
-        PlayerHere = false;
+        playerHere = false;
         UpdateMaterial();
-        InteractionHelper.SetActive(false);
+        interactionHelper.SetActive(false);
         playerIndex = PlayerIndex.One;
         playerIndex2 = PlayerIndex.Two;
         state = GamePad.GetState(playerIndex);
         state2 = GamePad.GetState(playerIndex2);
-        ListPawnsHere = new List<PawnController>();
+        listPawnsHere = new List<PawnController>();
     }
     
     void Update()
     {
-           if (PlayerHere)
+           if (playerHere)
         {
             prevState = state;
             state = GamePad.GetState(playerIndex);
@@ -93,30 +93,30 @@ public class PuzzleSwitch : PuzzleActivator
     }
 
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.GetComponent<PlayerController>())
+        if (_other.GetComponent<PlayerController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Add(pawn);
-            PlayerHere = true;
+            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Add(pawn);
+            playerHere = true;
             if (puzzleData.showTuto)
             {
-                InteractionHelper.SetActive(true);
+                interactionHelper.SetActive(true);
             }
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.GetComponent<PlayerController>())
+        if (_other.GetComponent<PlayerController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Remove(pawn);
-            if (ListPawnsHere.Count < 1)
+            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Remove(pawn);
+            if (listPawnsHere.Count < 1)
             {
-                PlayerHere = false;
-                InteractionHelper.SetActive(false);
+                playerHere = false;
+                interactionHelper.SetActive(false);
             }
         }
     }

@@ -8,14 +8,14 @@ using UnityEditor;
 public class ToolRestrictor : MonoBehaviour
 {
 	public List<Tool> restrictedTools;
-	Tool LastTool = Tool.None;
+	Tool lastTool = Tool.None;
 	void OnDisable ()
 	{
-		Tools.current = LastTool;
+		Tools.current = lastTool;
 	}
 	private void OnEnable ()
 	{
-		LastTool = Tools.current;
+		lastTool = Tools.current;
 		Tools.current = Tool.None;
 	}
 }
