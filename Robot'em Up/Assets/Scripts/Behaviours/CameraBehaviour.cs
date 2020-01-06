@@ -83,7 +83,7 @@ public class CameraBehaviour : MonoBehaviour
 		if (internal_directionAngle >= 180 && internal_directionAngle < 270) { internal_xDirection = 1; internal_yDirection = 1; }
 		if (internal_directionAngle >= 270 && internal_directionAngle < 360) { internal_xDirection = 1; internal_yDirection = -1; }
 
-		Vector3 internal_directionToCorner = zone.cornerA - zone.transform.position;
+		Vector3 internal_directionToCorner = zone.cornerA_access - zone.transform.position;
 		float internal_xMaxDistance = internal_directionToCorner.magnitude * Mathf.Sin(Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), internal_directionToCorner) * Mathf.Deg2Rad);
 		float internal_yMaxDistance = internal_directionToCorner.magnitude * Mathf.Sin(Vector3.Angle(zone.transform.TransformDirection(new Vector3(1, 0, 0)), internal_directionToCorner) * Mathf.Deg2Rad);
 

@@ -50,11 +50,11 @@ public class PuzzleForceField : PuzzleActivable, IHitable
                 boxCollider.isTrigger = true;
                 if (isActivated)
                 {
-                    meshRenderer.material = puzzleData.M_Forcefield_Active;
+                    meshRenderer.material = puzzleData.m_forcefield_Active;
                 }
                 else
                 {
-                    meshRenderer.material = puzzleData.M_Forcefield_Desactivated;
+                    meshRenderer.material = puzzleData.m_forcefield_Desactivated;
                 }
 
                     break;
@@ -62,12 +62,12 @@ public class PuzzleForceField : PuzzleActivable, IHitable
                 if (isActivated)
                 {
                     boxCollider.isTrigger = false;
-                    meshRenderer.material = puzzleData.M_ForcefieldPlayers_Active;
+                    meshRenderer.material = puzzleData.m_forcefieldPlayers_Active;
                 }
                 else
                 {
                     boxCollider.isTrigger = true;
-                    meshRenderer.material = puzzleData.M_ForcefieldPlayers_Desactivated;
+                    meshRenderer.material = puzzleData.m_forcefieldPlayers_Desactivated;
 
                 }
                 break;
@@ -75,11 +75,11 @@ public class PuzzleForceField : PuzzleActivable, IHitable
                 boxCollider.isTrigger = true;
                 if (isActivated)
                 {
-                    meshRenderer.material = puzzleData.M_Forcefield_Flipper_Active;
+                    meshRenderer.material = puzzleData.m_forcefield_Flipper_Active;
                 }
                 else
                 {
-                    meshRenderer.material = puzzleData.M_Forcefield_Flipper_Desactivated;
+                    meshRenderer.material = puzzleData.m_forcefield_Flipper_Desactivated;
 
                 }
                 break;

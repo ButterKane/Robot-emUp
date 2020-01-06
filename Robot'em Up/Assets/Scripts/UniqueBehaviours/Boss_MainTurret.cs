@@ -7,7 +7,7 @@ public class Boss_MainTurret : MonoBehaviour
 {
     public float speed;
     public float multiplier;
-    public int DamageToPlayer;
+    public int damageToPlayer;
     // Start is called before the first frame update
     void Start()
     {
@@ -48,7 +48,7 @@ public class Boss_MainTurret : MonoBehaviour
         if (other.gameObject.GetComponent<PawnController>())
         {
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            pawn.Damage(DamageToPlayer);
+            pawn.Damage(damageToPlayer);
         }
 
 
@@ -56,7 +56,7 @@ public class Boss_MainTurret : MonoBehaviour
         {
 
             EnemyBehaviour ennemy = other.gameObject.GetComponent<EnemyBehaviour>();
-            ennemy.OnHit(null, Vector3.zero, null, DamageToPlayer, DamageSource.RedBarrelExplosion);
+            ennemy.OnHit(null, Vector3.zero, null, damageToPlayer, DamageSource.RedBarrelExplosion);
             
         }
 

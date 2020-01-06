@@ -6,7 +6,6 @@ public class Boss_WeakPoint : PuzzleActivable
 {
     // Start is called before the first frame update
 
-
     public int life = 1;
     public GameObject weakPointModel;
     public Boss_MainTurret mainTurret;

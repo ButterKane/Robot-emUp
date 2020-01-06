@@ -116,8 +116,8 @@ public class ZoneEditor
 		void EditCombatZone ( CameraZone zone)
 		{
 			EditorGUI.BeginChangeCheck();
-			Vector3 cornerA = Handles.FreeMoveHandle(zone.cornerA, Quaternion.identity, 1, Vector3.zero, Handles.SphereHandleCap);
-			Vector3 cornerB = Handles.FreeMoveHandle(zone.cornerB, Quaternion.identity, 1, Vector3.zero, Handles.SphereHandleCap);
+			Vector3 cornerA = Handles.FreeMoveHandle(zone.cornerA_access, Quaternion.identity, 1, Vector3.zero, Handles.SphereHandleCap);
+			Vector3 cornerB = Handles.FreeMoveHandle(zone.cornerB_access, Quaternion.identity, 1, Vector3.zero, Handles.SphereHandleCap);
 
 			if (Tools.current == Tool.Rotate)
 			{
@@ -139,8 +139,8 @@ public class ZoneEditor
 					cornerA = RotatePointAroundPivot(cornerA, zone.transform.position, new Vector3(0, deltaRotation * dir, 0));
 					cornerB = RotatePointAroundPivot(cornerB, zone.transform.position, new Vector3(0, deltaRotation * dir, 0));
 				}
-				zone.cornerA = cornerA;
-				zone.cornerB = cornerB;
+				zone.cornerA_access = cornerA;
+				zone.cornerB_access = cornerB;
 				zone.transform.localRotation = rot;
 				zone.Update();
 			}

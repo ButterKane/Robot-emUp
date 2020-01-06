@@ -84,11 +84,11 @@ public class PuzzleSwitch : PuzzleActivator
         UpdateLight();
         if (isActivated)
         {
-            meshRenderer.material = puzzleData.M_SwitchActivate;
+            meshRenderer.material = puzzleData.m_switchActivate;
         }
         else
         {
-            meshRenderer.material = puzzleData.M_SwitchDesactivate;
+            meshRenderer.material = puzzleData.m_switchDesactivate;
         }
     }
 

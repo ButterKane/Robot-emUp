@@ -166,7 +166,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
-        GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.MainCanvas.transform);
+        GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform);
         healthBar.GetComponent<EnemyHealthBar>().enemy = this;
 
         if (arenaRobot)

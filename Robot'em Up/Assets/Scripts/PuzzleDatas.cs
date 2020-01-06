@@ -21,30 +21,30 @@ public class PuzzleDatas : ScriptableObject
     public float timeCheckingDamageEletricPlate;
 
     [Header("FX")]
-	public GameObject Charging;
-    public GameObject Linked;
-    public GameObject Linking;
-    public GameObject LinkEnd;
-    public GameObject LinkStop;
-    public GameObject DoorOpening;
-    public GameObject ElectricPlateActivate;
-    public GameObject ElectricPlateDamage;
+	public GameObject charging;
+    public GameObject linked;
+    public GameObject linking;
+    public GameObject linkEnd;
+    public GameObject linkStop;
+    public GameObject doorOpening;
+    public GameObject electricPlateActivate;
+    public GameObject electricPlateDamage;
 
     [Header("Colors")]
-    public Color RepeaterActivate;
-    public Color RepeaterDesactivate;
+    public Color repeaterActivate;
+    public Color repeaterDesactivate;
 
     [Header("Materials")]
-    public Material M_Forcefield_Active;
-    public Material M_Forcefield_Desactivated;
-    public Material M_ForcefieldPlayers_Active;
-    public Material M_ForcefieldPlayers_Desactivated;
-    public Material M_Forcefield_Flipper_Active;
-    public Material M_Forcefield_Flipper_Desactivated;
-    public Material M_SwitchActivate;
-    public Material M_SwitchDesactivate;
-    public Material M_PuzzleElectreticPlate;
-    public Material M_PuzzleElectreticPlate_Activated;
+    public Material m_forcefield_Active;
+    public Material m_forcefield_Desactivated;
+    public Material m_forcefieldPlayers_Active;
+    public Material m_forcefieldPlayers_Desactivated;
+    public Material m_forcefield_Flipper_Active;
+    public Material m_forcefield_Flipper_Desactivated;
+    public Material m_switchActivate;
+    public Material m_switchDesactivate;
+    public Material m_puzzleElectreticPlate;
+    public Material m_puzzleElectreticPlate_Activated;
 
 
 }

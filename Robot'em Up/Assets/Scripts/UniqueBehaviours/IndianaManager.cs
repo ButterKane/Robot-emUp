@@ -8,7 +8,7 @@ public class IndianaManager : MonoBehaviour
 
     [Header("General")]
     public float totalLenght;
-    public int DamageToPawn;
+    public int damageToPawn;
     public Vector3 directionIndiania;
     public Vector3 startposition;
     [Header("State")]
@@ -31,8 +31,8 @@ public class IndianaManager : MonoBehaviour
     [Header("References - DO NOT TOUCH!")]
     public IndianaCamera indianaCamera;
     public GameObject prefabIndianaExplosion;
-    public GameObject InvisibleColliderForward;
-    public GameObject InvisibleColliderBackward;
+    public GameObject invisibleColliderForward;
+    public GameObject invisibleColliderBackward;
     private BoxCollider boxCollider;
 
     // Start is called before the first frame update
@@ -53,36 +53,36 @@ public class IndianaManager : MonoBehaviour
             if (currentTimer < 0)
             {
                 activated = false;
-                InvisibleColliderForward.SetActive(false);
-                InvisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3) * directionIndiania;
-                indianaCamera.OnRail = false;
+                invisibleColliderForward.SetActive(false);
+                invisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3) * directionIndiania;
+                indianaCamera.onRail = false;
             }
 
             
            if (currentTimerExplosion < 0)
             {
                 currentTimerExplosion = 1 / nbExplosionBySec;
-                int temproll = Random.Range(0, 3);
-                Vector3 wantedPosition;
-                if (temproll == 0)
+                int internal_temproll = Random.Range(0, 3);
+                Vector3 internal_wantedPosition;
+                if (internal_temproll == 0)
                 {
-                    wantedPosition = GameManager.playerOne.transform.position;
+                    internal_wantedPosition = GameManager.playerOne.transform.position;
                 }
-                else if (temproll == 1)
+                else if (internal_temproll == 1)
                 {
-                    wantedPosition = GameManager.playerTwo.transform.position;
+                    internal_wantedPosition = GameManager.playerTwo.transform.position;
                 }
                 else
                 {
-                    wantedPosition = Vector3.Lerp(GameManager.playerTwo.transform.position, GameManager.playerOne.transform.position, 0.5f);
+                    internal_wantedPosition = Vector3.Lerp(GameManager.playerTwo.transform.position, GameManager.playerOne.transform.position, 0.5f);
                 }
-                wantedPosition = new Vector3(wantedPosition.x + Random.Range(-maxDistancePlayer, maxDistancePlayer), wantedPosition.y, wantedPosition.z + Random.Range(-maxDistancePlayer, maxDistancePlayer));
-                IndianaExplosion newExplosion = Instantiate(prefabIndianaExplosion, wantedPosition, Quaternion.Euler(-90,0,0)).GetComponent<IndianaExplosion>();
-                newExplosion.myScale = Random.Range(minSizeExplosion, maxSizeExplosion);
-                newExplosion.waitTimeForExplosion = explosionWaitingTime;
-                newExplosion.indianaManager = this;
-                newExplosion.isBarrage = false;
-                newExplosion.Initiate();
+                internal_wantedPosition = new Vector3(internal_wantedPosition.x + Random.Range(-maxDistancePlayer, maxDistancePlayer), internal_wantedPosition.y, internal_wantedPosition.z + Random.Range(-maxDistancePlayer, maxDistancePlayer));
+                IndianaExplosion internal_newExplosion = Instantiate(prefabIndianaExplosion, internal_wantedPosition, Quaternion.Euler(-90,0,0)).GetComponent<IndianaExplosion>();
+                internal_newExplosion.myScale = Random.Range(minSizeExplosion, maxSizeExplosion);
+                internal_newExplosion.waitTimeForExplosion = explosionWaitingTime;
+                internal_newExplosion.indianaManager = this;
+                internal_newExplosion.isBarrage = false;
+                internal_newExplosion.Initiate();
             }
 
 
@@ -91,21 +91,21 @@ public class IndianaManager : MonoBehaviour
                 currentTimerExplosionBarrage = timeBarrage;
 
                 currentPositionMultiplier++;
-                InvisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
-                InvisibleColliderForward.transform.position = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
-                indianaCamera.RailPositionWanted = transform.position + (currentPositionMultiplier + 1 ) * directionIndiania;
+                invisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
+                invisibleColliderForward.transform.position = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
+                indianaCamera.railPositionWanted = transform.position + (currentPositionMultiplier + 1 ) * directionIndiania;
                 for (int j = 0; j < nbBarrage; j++)
                 {
                     for (int i = 0; i < nbExplosionByBarrage; i++)
                     {
-                        Vector3 wantedPosition = startposition + ( currentPositionMultiplier - j ) * directionIndiania;
-                        wantedPosition += directionBarrage * i;
-                        IndianaExplosion newExplosion = Instantiate(prefabIndianaExplosion, wantedPosition, Quaternion.Euler(-90, 0, 0)).GetComponent<IndianaExplosion>();
-                        newExplosion.myScale = maxSizeExplosion;
-                        newExplosion.waitTimeForExplosion = explosionWaitingTime;
-                        newExplosion.indianaManager = this;
-                        newExplosion.isBarrage = true;
-                        newExplosion.Initiate();
+                        Vector3 internal_wantedPosition = startposition + ( currentPositionMultiplier - j ) * directionIndiania;
+                        internal_wantedPosition += directionBarrage * i;
+                        IndianaExplosion internal_newExplosion = Instantiate(prefabIndianaExplosion, internal_wantedPosition, Quaternion.Euler(-90, 0, 0)).GetComponent<IndianaExplosion>();
+                        internal_newExplosion.myScale = maxSizeExplosion;
+                        internal_newExplosion.waitTimeForExplosion = explosionWaitingTime;
+                        internal_newExplosion.indianaManager = this;
+                        internal_newExplosion.isBarrage = true;
+                        internal_newExplosion.Initiate();
                     }
                 }
                 
@@ -115,9 +115,9 @@ public class IndianaManager : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.gameObject.GetComponent<PlayerController>())
+        if (_other.gameObject.GetComponent<PlayerController>())
         {
             StartingIndianaMoment();
         }
@@ -130,9 +130,9 @@ public class IndianaManager : MonoBehaviour
         activated = true;
         currentTimer = totalLenght;
         currentPositionMultiplier = 0;
-        indianaCamera.OnRail = true;
-        InvisibleColliderForward.SetActive(true);
-        indianaCamera.RailPositionWanted = transform.position + (currentPositionMultiplier) * directionIndiania; ;
+        indianaCamera.onRail = true;
+        invisibleColliderForward.SetActive(true);
+        indianaCamera.railPositionWanted = transform.position + (currentPositionMultiplier) * directionIndiania; ;
     }
 
 

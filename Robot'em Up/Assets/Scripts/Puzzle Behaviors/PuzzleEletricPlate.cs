@@ -23,7 +23,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         IdleFx = new List<GameObject>();
         boxCollider = GetComponent<BoxCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
     }
 
     void FixedUpdate()
@@ -100,7 +100,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         isActivated = true;
 
         UpdateLights();
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
 
 
         if (myFx != null)
@@ -127,7 +127,7 @@ public class PuzzleEletricPlate : PuzzleActivable
 
             isActivated = false;
             UpdateLights();
-            meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
+            meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
 
             Destroy(myFx);
 
@@ -135,7 +135,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             {
                 Destroy(myFx);
             }
-            myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+            myFx = FXManager.InstantiateFX(puzzleData.electricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
         }
     }
 }

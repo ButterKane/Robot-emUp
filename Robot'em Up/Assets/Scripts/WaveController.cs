@@ -102,30 +102,31 @@ public class WaveController : MonoBehaviour
 	public WaveEnemy GetRandomEnemy()
 	{
 		if (waveList[currentWaveIndex].currentEnemies.Count <= 0) { Debug.LogWarning("Wave can't instantiate enemies: no list defined"); return null; }
-		float pickChances = Random.value;
-		int chosenIndex = 0;
-		float cumulativeChances = waveList[currentWaveIndex].currentEnemies[chosenIndex].probability;
-		while (pickChances > cumulativeChances && chosenIndex < waveList[currentWaveIndex].currentEnemies.Count)
+		float internal_pickChances = Random.value;
+		int internal_chosenIndex = 0;
+		float internal_cumulativeChances = waveList[currentWaveIndex].currentEnemies[internal_chosenIndex].probability;
+
+		while (internal_pickChances > internal_cumulativeChances && internal_chosenIndex < waveList[currentWaveIndex].currentEnemies.Count)
 		{
-			chosenIndex++;
-			cumulativeChances += waveList[currentWaveIndex].currentEnemies[chosenIndex].probability;
+			internal_chosenIndex++;
+			internal_cumulativeChances += waveList[currentWaveIndex].currentEnemies[internal_chosenIndex].probability;
 		}
-		return waveList[currentWaveIndex].currentEnemies[chosenIndex];
+		return waveList[currentWaveIndex].currentEnemies[internal_chosenIndex];
 	}
 	public void InstantiateEnemy ( WaveEnemy _enemy )
 	{
 		if (_enemy.spawnIndexes.Count <= 0) { Debug.LogWarning("Can't spawn enemy: no spawn assigned"); return; }
-		GameObject newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
-		EnemyBehaviour enemyBehaviour = newEnemy.GetComponent<EnemyBehaviour>();
-		if (enemyBehaviour == null) { Destroy(newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
-		enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(enemyBehaviour); });
+		GameObject internal_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
+		EnemyBehaviour internal_enemyBehaviour = internal_newEnemy.GetComponent<EnemyBehaviour>();
+		if (internal_enemyBehaviour == null) { Destroy(internal_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
+		internal_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(internal_enemyBehaviour); });
 
-		int chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
-		chosenSpawnerIndex = _enemy.spawnIndexes[chosenSpawnerIndex];
-		enemyBehaviour.GetNavMeshAgent().enabled = false;
-		newEnemy.transform.position = spawnList[chosenSpawnerIndex].transform.position;
-		enemyBehaviour.GetNavMeshAgent().enabled = true;
-		currentEnemies.Add(enemyBehaviour);
+		int internal_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
+		internal_chosenSpawnerIndex = _enemy.spawnIndexes[internal_chosenSpawnerIndex];
+		internal_enemyBehaviour.GetNavMeshAgent().enabled = false;
+		internal_newEnemy.transform.position = spawnList[internal_chosenSpawnerIndex].transform.position;
+		internal_enemyBehaviour.GetNavMeshAgent().enabled = true;
+		currentEnemies.Add(internal_enemyBehaviour);
 		UpdateCurrentPowerLevel();
 	}
 

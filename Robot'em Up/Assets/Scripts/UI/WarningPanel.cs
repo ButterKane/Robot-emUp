@@ -17,12 +17,12 @@ public class WarningPanel : MonoBehaviour
 	private void Awake ()
 	{
 		instance = this;
-		PostProcessProfile postProcessVolumeProfile = Camera.main.GetComponent<PostProcessVolume>().profile;
-		if (!postProcessVolumeProfile.TryGetSettings(out vignette))
+		PostProcessProfile internal_postProcessVolumeProfile = Camera.main.GetComponent<PostProcessVolume>().profile;
+		if (!internal_postProcessVolumeProfile.TryGetSettings(out vignette))
 		{
-			postProcessVolumeProfile.AddSettings<Vignette>();
+			internal_postProcessVolumeProfile.AddSettings<Vignette>();
 		}
-		postProcessVolumeProfile.TryGetSettings(out vignette);
+		internal_postProcessVolumeProfile.TryGetSettings(out vignette);
 		vignette.color.value = vignetteColor;
 		animator = GetComponent<Animator>();
 		go = gameObject;
@@ -64,10 +64,10 @@ public class WarningPanel : MonoBehaviour
 
 	IEnumerator DisableVignette_C(float _disableDuration)
 	{
-		float vignetteCurrentIntensity = vignette.intensity.value;
+		float internal_vignetteCurrentIntensity = vignette.intensity.value;
 		for (float i = 0; i < _disableDuration; i+=Time.deltaTime)
 		{
-			vignette.intensity.value = Mathf.Lerp(vignetteCurrentIntensity, 0, i/ _disableDuration);
+			vignette.intensity.value = Mathf.Lerp(internal_vignetteCurrentIntensity, 0, i/ _disableDuration);
 			yield return new WaitForEndOfFrame();
 		}
 		instance.vignette.enabled.value = false;

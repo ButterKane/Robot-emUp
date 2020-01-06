@@ -33,7 +33,7 @@ public class PuzzleDoor : PuzzleActivable
         {
             //Debug.Log("Destroy a door");
             Destroy(destroyWhenOpened);
-            FXManager.InstantiateFX(puzzleData.Linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
+            FXManager.InstantiateFX(puzzleData.linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
         }
     }
 
