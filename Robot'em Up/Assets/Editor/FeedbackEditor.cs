@@ -383,7 +383,11 @@ public class FeedbackEditor : Editor
 		newFeedbackData.shakeData = null;
 		newFeedbackData.vibrationData = null;
 		newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
-		newFeedbackData.category = feedbackDatas.feedbackCategories[selectedCategoryIndex];
+		int categoryIndex = Mathf.Clamp(selectedCategoryIndex, 0, feedbackDatas.feedbackCategories.Count - 1);
+		if (feedbackDatas.feedbackCategories.Count > 0)
+		{
+			newFeedbackData.category = feedbackDatas.feedbackCategories[categoryIndex];
+		}
 		showPosition.Add(false);
 		feedbackDatas.feedbackList.Add(newFeedbackData);
 	}
