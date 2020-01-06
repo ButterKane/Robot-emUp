@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using System;
 #pragma warning disable 0649
 
 public enum TurretState
@@ -29,42 +30,20 @@ public enum AimingCubeState
     Locking,
 }
 
-public class TurretBehaviour : MonoBehaviour, IHitable
+public class TurretBehaviour : EnemyBehaviour, IHitable
 {
-    [Separator("References")]
-    [SerializeField] protected Transform _self;
-    public Rigidbody Rb;
-    public Animator Animator;
-    public Transform HealthBarRef;
-    public GameObject HealthBarPrefab;
-
     [Space(2)]
     [Separator("Auto-assigned References")]
-    public Transform Target;
-    private Transform _playerOneTransform;
-    private Transform _playerTwoTransform;
-    private PawnController _playerOnePawnController;
-    private PawnController _playerTwoPawnController;
+    public Transform target;
 
     [Space(2)]
     [Separator("Variables")]
-    [ReadOnly] public TurretState State;
-    [ReadOnly] public TurretAttackState attackState;
-    [ReadOnly] public AimingCubeState aimingCubeState;
+    public TurretState turretState;
+    [NonSerialized] public TurretAttackState attackState;
+    [NonSerialized] public AimingCubeState aimingCubeState;
 
-    [Space(2)]
-    [Header("Focus")]
-    public float focusDistance;
-    public float unfocusDistance;
-    public float maxTimeBetweenCheck;
-    protected float timeBetweenCheck;
-    public float distanceBeforeChangingPriority;
-
-    [Space(2)]
-    [Header("Global")]
-    public int MaxHealth = 100;
-    public int Health;
-    public float energyAmount;
+    //[Space(2)]
+    //[Header("Global")]
     bool playerOneInRange;
     bool playerTwoInRange;
     float distanceWithPlayerOne;
@@ -79,16 +58,11 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     float forwardPredictionRatio;
     public Vector2 minMaxRandomRangePredictionRatio;
     public float maxRotationSpeed;
-    public float maxAnticipationTime;
-    protected float anticipationTime;
     public float maxRestTime;
     public float randomRangeRestTime;
     protected float restTime;
     protected GameObject spawnedBullet;
     //public float restTimeBeforeAimingCubeUnlocked;
-
-    [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Header("Aiming Cube")]
@@ -111,34 +85,12 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
 
-    [Space(2)]
-    [Header("FXReferences")]
-    public GameObject deathParticlePrefab;
-    public float deathParticleScale;
-    public GameObject hitParticlePrefab;
-    public float hitParticleScale;
-
-    [Space(2)]
-    [Header("Death")]
-    public float coreDropChances = 1;
-    public Vector2 minMaxDropForce;
-    public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
-
-    public int hitCount { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-    void Start()
+    new void Start()
     {
-        _self = transform;
-        _playerOneTransform = GameManager.playerOne.transform;
-        _playerTwoTransform = GameManager.playerTwo.transform;
-        _playerOnePawnController = GameManager.playerOne.GetComponent<PawnController>();
-        _playerTwoPawnController = GameManager.playerTwo.GetComponent<PawnController>();
+        base.Start();
 
-        GameObject healthBar = Instantiate(HealthBarPrefab, CanvasManager.i.MainCanvas.transform);
-        healthBar.GetComponent<EnemyHealthBar>().Turret = this;
-
-        Health = MaxHealth;
-
+        hitSound = "TurretHit";
+        isBumpable = false;
         if (arenaTurret)
         {
             ChangingState(TurretState.WaitForCombatStart);
@@ -182,7 +134,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public void ChangingState(TurretState _newState)
     {
         ExitState();
-        State = _newState;
+        turretState = _newState;
         EnterState();
     }
 
@@ -196,7 +148,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public virtual void UpdateState()
     {
         //print("Global State : " + State);
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Attacking:
                 AttackingUpdateState();		
@@ -231,7 +183,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     public virtual void ExitState()
     {
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Hiding:
                 break;
@@ -251,7 +203,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
     public virtual void EnterState()
     {
         //print(State);
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Hiding:
                 Animator.SetTrigger("HidingTrigger");
@@ -267,7 +219,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
                 attackState = TurretAttackState.Anticipation;
                 Animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
-                restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
+                restTime = maxRestTime + UnityEngine.Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 break;
             case TurretState.Idle:
                 timeBetweenCheck = 0;
@@ -413,7 +365,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         deathParticle.transform.localScale *= deathParticleScale;
         Destroy(deathParticle, 1.5f);
 
-        if (Random.Range(0f, 1f) <= coreDropChances)
+        if (UnityEngine.Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();
         }
@@ -426,7 +378,6 @@ public class TurretBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        SoundManager.PlaySound("TurretHit", transform.position, transform);
         switch (_source)
         {
             case DamageSource.Dunk:
@@ -464,7 +415,7 @@ public class TurretBehaviour : MonoBehaviour, IHitable
             aimingCubeRenderer.material.color = followingAimingColor;
             aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
             aimingCubeTransform.localScale = aimingCubeDefaultScale;
-            forwardPredictionRatio = defaultForwardPredictionRatio + Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
+            forwardPredictionRatio = defaultForwardPredictionRatio + UnityEngine.Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
         }
         else if(_NewState == AimingCubeState.Locking)
         {
@@ -484,9 +435,9 @@ public class TurretBehaviour : MonoBehaviour, IHitable
         GameObject newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
         newCore.name = "Core of " + gameObject.name;
         newCore.transform.position = transform.position;
-        Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
-        float throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
+        Vector3 wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
+        float throwForce = UnityEngine.Random.Range(minMaxDropForce.x, minMaxDropForce.y);
         wantedDirectionAngle.y = throwForce * 0.035f;
-        newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+        newCore.GetComponent<CorePart>().Init(null, wantedDirectionAngle.normalized * throwForce, 1, (int)UnityEngine.Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
     }
 }

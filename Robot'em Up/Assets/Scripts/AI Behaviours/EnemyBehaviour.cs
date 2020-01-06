@@ -30,7 +30,7 @@ public enum WhatBumps
 
 public class EnemyBehaviour : MonoBehaviour, IHitable
 {
-    [System.NonSerialized] public EnemyState State = EnemyState.Idle;
+    [System.NonSerialized] public EnemyState EnemyState = EnemyState.Idle;
 
     [Separator("References")]
     [SerializeField] protected Transform _self;
@@ -39,13 +39,14 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public NavMeshAgent navMeshAgent;
     public Transform HealthBarRef;
     public GameObject HealthBarPrefab;
+    public string hitSound = "EnemyHit";
 
 	[Space(2)]
     [Separator("Auto-assigned References")]
-    [SerializeField] private Transform _playerOneTransform;
-    private PawnController _playerOnePawnController;
-    [SerializeField] private Transform _playerTwoTransform;
-    private PawnController _playerTwoPawnController;
+    [SerializeField] protected Transform _playerOneTransform;
+    protected PawnController _playerOnePawnController;
+    [SerializeField] protected Transform _playerTwoTransform;
+    protected PawnController _playerTwoPawnController;
 
 
     [Space(2)]
@@ -61,15 +62,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public float energyAmount = 1;
     public int damage = 10;
 	public float powerLevel = 1;
-    [SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+    [SerializeField] protected bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] protected float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 	public bool arenaRobot;
 
 	[Space(2)]
     [Header("Focus")]
     public float focusDistance = 18;
     public float unfocusDistance = 20;
-    float timeBetweenCheck = 0;
+    public float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
     public float maxTimeBetweenCheck = 0.25f;
 
@@ -114,6 +115,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     
     [Space(2)]
     [Header("Bump")]
+    public bool isBumpable = true;
     public float maxGettingUpDuration = 0.6f;
     public AnimationCurve bumpDistanceCurve;
     float bumpDistance;
@@ -194,7 +196,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     void UpdateState()
     {
-        switch (State)
+        switch (EnemyState)
         {
             case EnemyState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
@@ -336,7 +338,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         ExitState();
         EnterState(_newState);
-        State = _newState;
+        EnemyState = _newState;
     }
 
     void EnterState(EnemyState _newState)
@@ -452,7 +454,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     void ExitState()
     {
-        switch (State)
+        switch (EnemyState)
         {
             case EnemyState.Idle:
                 break;
@@ -508,40 +510,55 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-		SoundManager.PlaySound("EnemyHit", transform.position, transform);
+		SoundManager.PlaySound(hitSound, transform.position, transform);
 		Vector3 normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
         float BumpDistanceMod = 0.5f;
         float BumpDurationMod = 0.5f;
         float BumpRestDurationMod = 0.5f;
+
         switch (_source)
         {
             case DamageSource.Dunk:
-                DamageAfterBump = _damages;
-                normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                if (_thrower.GetComponent<DunkController>() != null)
+                if (isBumpable)
                 {
-                    DunkController controller = _thrower.GetComponent<DunkController>();
-                    BumpDistanceMod = controller.BumpDistanceMod;
-                    BumpDurationMod = controller.BumpDurationMod;
-                    BumpRestDurationMod = controller.BumpRestDurationMod;
+                    DamageAfterBump = _damages;
+                    normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                    if (_thrower.GetComponent<DunkController>() != null)
+                    {
+                        DunkController controller = _thrower.GetComponent<DunkController>();
+                        BumpDistanceMod = controller.BumpDistanceMod;
+                        BumpDurationMod = controller.BumpDurationMod;
+                        BumpRestDurationMod = controller.BumpRestDurationMod;
+                    }
+                    BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);
+                    whatBumps = WhatBumps.Dunk;
                 }
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod); 
-                whatBumps = WhatBumps.Dunk;
+                else
+                {
+                    Health -= _damages;
+                }
                 break;
 
             case DamageSource.RedBarrelExplosion:
-                DamageAfterBump = _damages;
-                EnergyManager.IncreaseEnergy(energyAmount);
-				normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                if (_bumpModificators != default(Vector3))
+                if (isBumpable)
                 {
-                    BumpDistanceMod = _bumpModificators.x;
-                    BumpDurationMod = _bumpModificators.y;
-                    BumpRestDurationMod = _bumpModificators.z;
+                    DamageAfterBump = _damages;
+                    EnergyManager.IncreaseEnergy(energyAmount);
+                    normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                    if (_bumpModificators != default(Vector3))
+                    {
+                        BumpDistanceMod = _bumpModificators.x;
+                        BumpDurationMod = _bumpModificators.y;
+                        BumpRestDurationMod = _bumpModificators.z;
+                    }
+                    BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod); 
+                    whatBumps = WhatBumps.RedBarrel;
                 }
-                BumpMe(10, 1, 1, normalizedImpactVector.normalized, BumpDistanceMod, BumpDurationMod, BumpRestDurationMod);    // Need Explosion Data
-                whatBumps = WhatBumps.RedBarrel;
+                else
+                {
+                    Health -= _damages;
+                }
                 break;
 
             case DamageSource.Ball:

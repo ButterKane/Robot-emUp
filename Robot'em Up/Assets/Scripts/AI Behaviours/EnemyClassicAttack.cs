@@ -22,7 +22,7 @@ public class EnemyClassicAttack : EnemyAttack
         hitSomething = false;
         Vector3 startPos = transform.position;
 
-        _behaviourScript.State = EnemyState.Attacking;
+        _behaviourScript.EnemyState = EnemyState.Attacking;
         Vector3 attackDirection = SwissArmyKnife.GetFlattedDownDirection((target.position - transform.position).normalized);
 
         yield return new WaitForSeconds(PreparationTimeBeforeAttack);  // wait the given time 

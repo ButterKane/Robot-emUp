@@ -27,7 +27,7 @@ public class EnemyAttack : MonoBehaviour
 
     public virtual IEnumerator Attack(Transform target)
     {
-        _behaviourScript.State = EnemyState.Attacking;
+        _behaviourScript.EnemyState = EnemyState.Attacking;
 
         _behaviourScript.Animator.SetTrigger("AttackTrigger");
 

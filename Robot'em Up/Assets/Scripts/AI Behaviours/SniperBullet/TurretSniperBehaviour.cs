@@ -49,7 +49,7 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void ExitState()
     {
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Hiding:
                 break;
@@ -73,7 +73,7 @@ public class TurretSniperBehaviour : TurretBehaviour
     public override void EnterState()
     {
         //print(State);
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Hiding:
                 Animator.SetTrigger("HidingTrigger");
