@@ -40,7 +40,7 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     public override void PreparingAttackState()
     {
-        ChangingState(EnemyState.Dying);
+        ChangeState(EnemyState.Dying);
         bodyRenderer.material = materialOnExplosion;
     }
 

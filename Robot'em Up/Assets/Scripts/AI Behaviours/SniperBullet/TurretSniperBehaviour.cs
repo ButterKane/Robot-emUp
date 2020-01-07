@@ -18,7 +18,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         internal_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, internal_spawnPosition, Quaternion.LookRotation(transform.forward));
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
-        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = self;
+        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
 
         FeedbackManager.SendFeedback("event.SniperTurretAttack", this);
         SoundManager.PlaySound("SniperTurretAttack", transform.position);
@@ -104,7 +104,7 @@ public class TurretSniperBehaviour : TurretBehaviour
     {
         bool internal_aimAtPlayer;
         
-        if(Physics.Raycast(self.position, self.forward, Vector3.Distance(self.position, focusedPlayer.position), layersToCheckToScale))
+        if(Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
         {
             internal_aimAtPlayer = false;
         }
@@ -114,10 +114,10 @@ public class TurretSniperBehaviour : TurretBehaviour
         }
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(self.position, self.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(self.position, hit.point));
-            aimingCubeTransform.position = self.position + self.up * .5f + (aimingCubeTransform.localScale.z / 2 * self.forward);
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
+            aimingCubeTransform.position = transform.position + transform.up * .5f + (aimingCubeTransform.localScale.z / 2 * transform.forward);
         }
 
         //Adapt PlayerFXRenderer

@@ -51,8 +51,8 @@ public class EnemyShield : EnemyBehaviour
     // ATTACK
     public override void EnterPreparingAttackState()
     {
-        actualSpeed = navMeshAgent.speed;
-        normalAcceleration = navMeshAgent.acceleration;
+        currentSpeed = navMeshAgent.speed;
+        acceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AttackTrigger");
 
@@ -91,7 +91,7 @@ public class EnemyShield : EnemyBehaviour
 
         //must stop ?
         int internal_attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-        if (Physics.Raycast(self.position, self.forward, attackRaycastDistance, internal_attackRaycastMask) && !mustCancelAttack)
+        if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, internal_attackRaycastMask) && !mustCancelAttack)
         {
             attackTimeProgression = whenToTriggerEndOfAttackAnim;
             mustCancelAttack = true;
@@ -103,18 +103,18 @@ public class EnemyShield : EnemyBehaviour
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
 
-            Vector3 internal_direction = Vector3.Lerp(self.forward, focusedPlayer.position - self.position, (maxRotationSpeed/360) *Time.deltaTime );
+            Vector3 internal_direction = Vector3.Lerp(transform.forward, focusedPlayer.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
 
-            Debug.DrawRay(self.position + internal_direction * 5, Vector3.up, Color.green, 2f);
-            navMeshAgent.SetDestination(self.position + internal_direction * 5);
+            Debug.DrawRay(transform.position + internal_direction * 5, Vector3.up, Color.green, 2f);
+            navMeshAgent.SetDestination(transform.position + internal_direction * 5);
         }
 
         if (attackTimeProgression >= 1)
         {
-            navMeshAgent.speed = actualSpeed;
-            navMeshAgent.acceleration = normalAcceleration;
+            navMeshAgent.speed = currentSpeed;
+            navMeshAgent.acceleration = acceleration;
             isShieldActivated_accesss = true;
-            ChangingState(EnemyState.PauseAfterAttack);
+            ChangeState(EnemyState.PauseAfterAttack);
             animator.SetTrigger("EndOfAttackTrigger");
 
             navMeshAgent.enabled = false;
@@ -137,7 +137,7 @@ public class EnemyShield : EnemyBehaviour
     // Ususally called when hitting player
     public void StopAttack()
     {
-        navMeshAgent.SetDestination(self.position);
+        navMeshAgent.SetDestination(transform.position);
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
         mustCancelAttack = true;
         animator.SetTrigger("AttackTouchedTrigger");

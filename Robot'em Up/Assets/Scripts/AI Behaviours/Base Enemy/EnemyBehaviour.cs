@@ -28,18 +28,13 @@ public enum WhatBumps
 }
 
 
-public class EnemyBehaviour : MonoBehaviour, IHitable
+public class EnemyBehaviour : PawnController, IHitable
 {
-    [System.NonSerialized] public EnemyState EnemyState = EnemyState.Idle;
+    [System.NonSerialized] public EnemyState enemyState = EnemyState.Idle;
 
     [Separator("References")]
-    [SerializeField] protected Transform self;
-    public Rigidbody rb;
-    public Animator animator;
-    public NavMeshAgent navMeshAgent;
     public Transform healthBarRef;
     public GameObject healthBarPrefab;
-    [System.NonSerialized] public string hitSound = "EnemyHit";
 
 	[Space(2)]
     [Separator("Auto-assigned References")]
@@ -53,13 +48,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     [Separator("Tweakable variables")]
     protected bool playerOneInRange;
     protected bool playerTwoInRange;
-    public int maxHealth = 30;
-    [System.NonSerialized] public int health;
     protected float distanceWithPlayerOne;
     protected float distanceWithPlayerTwo;
     protected float distanceWithFocusedPlayer;
     [System.NonSerialized] public Transform focusedPlayer = null;
-    public float energyAmount = 1;
+    public float energyGainedOnHit = 1;
     public int damage = 10;
 	public float powerLevel = 1;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
@@ -76,18 +69,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     [Space(2)]
     [Header("Movement")]
-    public float normalSpeed = 7; // This value is the one in the inspector, but in practice it is modified by the Random speed mod
-    [System.NonSerialized] public float actualSpeed;
-    public float normalAcceleration = 30;
     public float randomSpeedMod;
-    private float moveMultiplicator = 1;
-    private int normalMoveMultiplicator = 1;
-    public float slowFromPass;
+    public float speedMultiplierFromPassHit;
     public float timeToRecoverSlowFromPass;
-    public float slowFromDunk;
+    public float speedMultiplierFromDunkHit;
     public float timeToRecoverSlowFromDunk;
-    public AnimationCurve speedRecoverCurve;
-    private float staggerAvancement;
     private WhatBumps whatBumps;
 
     [Space(2)]
@@ -112,32 +98,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
-    
-    [Space(2)]
-    [Header("Bump")]
-    public bool isBumpable = true;
-    public float maxGettingUpDuration = 0.6f;
-    public AnimationCurve bumpDistanceCurve;
-    float bumpDistance;
-    float bumpDuration;
-    float restDuration;
-    float gettingUpDuration;
-    Vector3 bumpInitialPosition;
-    Vector3 bumpDestinationPosition;
-    Vector3 bumpDirection;
-    float bumpTimeProgression;
-    [Range(0, 1)] public float whenToTriggerFallingAnim;
-    bool fallingTriggerLaunched;
-    public float bumpRaycastDistance = 1;
-    bool mustCancelBump;
-    public int damageAfterBump;
-
-    [Space(2)]
-    [Header("FX References")]
-    public GameObject deathParticlePrefab;
-    public float deathParticleScale = 2;
-    public GameObject hitParticlePrefab;
-    public float hitParticleScale = 3;
 
     [Space(2)]
     [Header("Surrounding")]
@@ -153,13 +113,8 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
 
-    
-
     protected void Start()
     {
-        health = maxHealth;
-        self = transform;
-        actualSpeed = normalSpeed + Random.Range(-randomSpeedMod, randomSpeedMod);
         timeBetweenCheck = maxTimeBetweenCheck;
         playerOneTransform = GameManager.playerOne.transform;
         playerTwoTransform = GameManager.playerTwo.transform;
@@ -171,11 +126,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (arenaRobot)
         {
-            ChangingState(EnemyState.WaitForCombatStart);
+            ChangeState(EnemyState.WaitForCombatStart);
         }
         else
         {
-            ChangingState(EnemyState.Idle);
+            ChangeState(EnemyState.Idle);
         }
     }
 
@@ -183,20 +138,26 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     {
         UpdateDistancesToPlayers();
         UpdateState();
-        UpdateAnimatorBlendTree();
+		UpdateSpeed();
     }
 
-    private void UpdateAnimatorBlendTree()
+	void UpdateSpeed()
+	{
+		if (navMeshAgent != null)
+		{
+			navMeshAgent.speed = moveSpeed * GetSpeedCoef();
+		}
+	}
+
+    public override void UpdateAnimatorBlendTree()
     {
-        if (animator != null)
-        {
-            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
-        }
+		base.UpdateAnimatorBlendTree();
+		animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
     }
 
     void UpdateState()
     {
-        switch (EnemyState)
+        switch (enemyState)
         {
             case EnemyState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
@@ -207,7 +168,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 }
                 if (focusedPlayer != null)
                 {
-                    ChangingState(EnemyState.Following);
+                    ChangeState(EnemyState.Following);
                 }
                 break;
 
@@ -227,11 +188,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
                     if (closestSurroundPoint != null)
                     {
-                        float internal_distanceToPointRatio = (1 + (self.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+                        float internal_distanceToPointRatio = (1 + (transform.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
 
-                        Vector3 internal_p0 = self.position;    // The starting point
+                        Vector3 internal_p0 = transform.position;    // The starting point
 
-                        Vector3 internal_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, self.position);  // The destination
+                        Vector3 internal_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
 
                         float internal_angle = Vector3.SignedAngle(internal_p2 - internal_p0, focusedPlayer.transform.position - internal_p0, Vector3.up);
 
@@ -251,67 +212,10 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
                     if (distanceWithFocusedPlayer <= distanceToAttack)
                     {
-                        ChangingState(EnemyState.PreparingAttack);
+                        ChangeState(EnemyState.PreparingAttack);
                     }
                 }
                 break;
-
-            case EnemyState.Bumped:
-                if (bumpTimeProgression < 1)
-                {
-                    bumpTimeProgression += Time.deltaTime / bumpDuration;
-
-                    //must stop ?
-                    int bumpRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-                    if (Physics.Raycast(self.position, bumpDirection, bumpRaycastDistance, bumpRaycastMask) && !mustCancelBump)
-                    {
-                        mustCancelBump = true;
-                        bumpTimeProgression = whenToTriggerFallingAnim;
-                    }
-
-                    //move !
-                    if (!mustCancelBump)
-                    {
-                        rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression)));
-                    }
-
-                    //trigger end anim
-                    if (bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
-                    {
-                        fallingTriggerLaunched = true;
-                        animator.SetTrigger("FallingTrigger");
-
-                        if (damageAfterBump > 0)
-                        {
-                            health -= damageAfterBump;
-                        }
-                    }
-                }
-
-                //when arrived on ground
-                else if (restDuration > 0)
-                {
-                    if (health <= 0)
-                    {
-                        ChangingState(EnemyState.Dying);
-                    }
-
-                    restDuration -= Time.deltaTime;
-                    if (restDuration <= 0)
-                    {
-                        animator.SetTrigger("StandingUpTrigger");
-                    }
-                }
-
-                //time to get up
-                else if (gettingUpDuration > 0)
-                {
-                    gettingUpDuration -= Time.deltaTime;
-                    if (gettingUpDuration <= 0)
-                        ChangingState(EnemyState.Following);
-                }
-                break;
-
             case EnemyState.ChangingFocus:
                 break;
 
@@ -327,7 +231,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 timePauseAfterAttack -= Time.deltaTime;
                 if (timePauseAfterAttack <= 0)
                 {
-                    ChangingState(EnemyState.Idle);
+                    ChangeState(EnemyState.Idle);
                 }
                 break;
 
@@ -337,11 +241,11 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-    public void ChangingState(EnemyState _newState)
+    public void ChangeState(EnemyState _newState)
     {
         ExitState();
         EnterState(_newState);
-        EnemyState = _newState;
+        enemyState = _newState;
     }
 
     void EnterState(EnemyState _newState)
@@ -377,20 +281,9 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         }
     }
 
-	public NavMeshAgent GetNavMeshAgent()
-	{
-		return navMeshAgent;
-	}
-
     public virtual void EnterBumpedState()
     {
-        transform.rotation = Quaternion.LookRotation(-bumpDirection);
-        gettingUpDuration = maxGettingUpDuration;
-        fallingTriggerLaunched = false;
         navMeshAgent.enabled = false;
-        bumpTimeProgression = 0;
-        bumpInitialPosition = transform.position;
-        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
         animator.SetTrigger("BumpTrigger");
         mustCancelBump = false;
     }
@@ -422,7 +315,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
         anticipationTime -= Time.deltaTime;
         if (anticipationTime <= 0)
         {
-            ChangingState(EnemyState.Attacking);
+            ChangeState(EnemyState.Attacking);
         }
     }
 
@@ -433,7 +326,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         //must stop ?
         int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-        if (Physics.Raycast(self.position, self.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
+        if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
         {
             attackTimeProgression = whenToTriggerEndOfAttackAnim;
             mustCancelAttack = true;
@@ -446,7 +339,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
         if (attackTimeProgression >= 1)
         {
-            ChangingState(EnemyState.PauseAfterAttack);
+            ChangeState(EnemyState.PauseAfterAttack);
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
         {
@@ -457,7 +350,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     void ExitState()
     {
-        switch (EnemyState)
+        switch (enemyState)
         {
             case EnemyState.Idle:
                 break;
@@ -482,15 +375,15 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public virtual void ExitBumpedState()
     {
-        StartCoroutine(Staggered_C(whatBumps));
+        Staggered(whatBumps);
     }
 
     void UpdateDistancesToPlayers()
     {
-        distanceWithPlayerOne = Vector3.Distance(self.position, playerOneTransform.position);
-        distanceWithPlayerTwo = Vector3.Distance(self.position, playerTwoTransform.position);
+        distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
         if (focusedPlayer != null)
-            distanceWithFocusedPlayer = Vector3.Distance(self.position, focusedPlayer.position);
+            distanceWithFocusedPlayer = Vector3.Distance(transform.position, focusedPlayer.position);
     }
 
     Transform GetClosestAndAvailablePlayer()
@@ -513,7 +406,6 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-		SoundManager.PlaySound(hitSound, transform.position, transform);
 		Vector3 internal_normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
         float internal_BumpDistanceMod = 0.5f;
@@ -539,7 +431,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 }
                 else
                 {
-                    health -= _damages;
+                    currentHealth -= _damages;
                 }
                 break;
 
@@ -547,7 +439,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 if (isBumpable)
                 {
                     damageAfterBump = _damages;
-                    EnergyManager.IncreaseEnergy(energyAmount);
+                    EnergyManager.IncreaseEnergy(energyGainedOnHit);
                     internal_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_bumpModificators != default(Vector3))
                     {
@@ -560,7 +452,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 }
                 else
                 {
-                    health -= _damages;
+					currentHealth -= _damages;
                 }
                 break;
 
@@ -568,13 +460,13 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
                 damageAfterBump = 0;
                 FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
 				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
-				EnergyManager.IncreaseEnergy(energyAmount);
+				EnergyManager.IncreaseEnergy(energyGainedOnHit);
 				whatBumps = WhatBumps.Pass;
-                StartCoroutine(Staggered_C(whatBumps));
-                health -= _damages;
-                if (health <= 0)
+                Staggered(whatBumps);
+				currentHealth -= _damages;
+                if (currentHealth <= 0)
                 {
-                    ChangingState(EnemyState.Dying);
+                    ChangeState(EnemyState.Dying);
                 }
                 break;
         }
@@ -597,8 +489,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
             SoundManager.PlaySound(deathSound, transform.position, transform);
         }
 		LockManager.UnlockTarget(this.transform);
-        GameObject internal_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        internal_deathParticle.transform.localScale *= deathParticleScale;
+		GameObject internal_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
         Destroy(internal_deathParticle, 1.5f);
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
@@ -678,64 +569,39 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
+		AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
     }
 
-    public IEnumerator Staggered_C(WhatBumps? cause = default)
+    public void Staggered(WhatBumps? cause = default)
     {
-        float internal_timeToRecover = 0.5f;
-
         switch (cause)
         {
             case WhatBumps.Pass:
-                moveMultiplicator -= slowFromPass;
-                internal_timeToRecover = timeToRecoverSlowFromPass;
-                // Fetch ball datas => speed reduction on pass
+				AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
                 break;
             case WhatBumps.Dunk:
-                moveMultiplicator -= slowFromDunk;
-                internal_timeToRecover = timeToRecoverSlowFromDunk;
-                // Fetch ball datas => speed reduction on dunk
+				AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
                 break;
             case WhatBumps.Environment:
-                moveMultiplicator -= 0.5f;
-                internal_timeToRecover = 0.5f;
-                // Fetch environment datas => speed reduction
+				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
                 break;
             default:
-                moveMultiplicator -= 0.5f;
-                internal_timeToRecover = 0.5f;
-                Debug.Log("Default case: New speed multiplicator = 0.5");
+				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
                 break;
         }
-
-        float internal_time = 0;
-        float internal_initialMoveMultiplicator = moveMultiplicator;
-
-        while (moveMultiplicator < normalMoveMultiplicator)
-        {
-            moveMultiplicator = internal_initialMoveMultiplicator + (normalMoveMultiplicator - internal_initialMoveMultiplicator) * speedRecoverCurve.Evaluate(internal_time);
-            internal_time += Time.deltaTime / internal_timeToRecover;
-            print(moveMultiplicator);
-            yield return null;
-        }
-
-        moveMultiplicator = normalMoveMultiplicator;
     }
 
-    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration,  Vector3 _bumpDirection,  float randomDistanceMod, float randomDurationMod, float randomRestDurationMod)
-    {
+	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
+	{
 		FeedbackManager.SendFeedback("event.EnemyBumpedAway", this);
 		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
-		bumpDistance = _bumpDistance + Random.Range(-randomDistanceMod, randomDistanceMod);
-        bumpDuration = _bumpDuration + Random.Range(-randomDurationMod, randomDurationMod);
-        restDuration = _restDuration + Random.Range(-randomRestDurationMod, randomRestDurationMod);
-        bumpDirection = _bumpDirection;
-        ChangingState(EnemyState.Bumped);
-    }
+		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
+		ChangeState(EnemyState.Bumped);
+	}
 
     IEnumerator WaitABit_C(float _duration)
     {
         yield return new WaitForSeconds(_duration);
-        ChangingState(EnemyState.Following);
+        ChangeState(EnemyState.Following);
     }
 }

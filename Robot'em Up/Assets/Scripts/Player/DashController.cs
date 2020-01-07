@@ -13,7 +13,7 @@ public class DashController : MonoBehaviour
 	[Separator("General Settings")]
 	public float minDistance = 2f;
 	public float maxDistance = 3f;
-	public float speed = 10f;
+	public float speed = 10.1f;
 	public int maxStackAmount = 3;
 
 	public bool unstoppableDash;

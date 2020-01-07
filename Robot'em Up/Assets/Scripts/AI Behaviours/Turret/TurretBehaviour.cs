@@ -84,7 +84,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     {
         base.Start();
 
-        hitSound = "TurretHit";
+		onHitSound = "TurretHit";
         isBumpable = false;
         if (arenaTurret)
         {
@@ -104,8 +104,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     void UpdateDistancesToPlayers()
     {
-        distanceWithPlayerOne = Vector3.Distance(self.position, playerOneTransform.position);
-        distanceWithPlayerTwo = Vector3.Distance(self.position, playerTwoTransform.position);
+        distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
     }
 
     Transform GetClosestAndAvailablePlayer()
@@ -135,9 +135,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - self.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - transform.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-        self.rotation = Quaternion.Lerp(self.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
+		transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
     public virtual void UpdateState()
@@ -263,10 +263,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(self.position, self.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(self.position, hit.point));
-            aimingCubeTransform.position = self.position + self.up * .5f + (aimingCubeTransform.localScale.z / 2 * self.forward);
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
+            aimingCubeTransform.position = transform.position + transform.up * .5f + (aimingCubeTransform.localScale.z / 2 * transform.forward);
         }
     }
 
@@ -381,7 +381,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     new public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         base.OnHit(_ball,_impactVector,  _thrower, _damages, _source, _bumpModificators);
-		if (health <= 0)
+		if (currentHealth <= 0)
         {
             Die();
         }

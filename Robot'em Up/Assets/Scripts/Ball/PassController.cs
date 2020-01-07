@@ -20,11 +20,13 @@ public enum PassState
 }
 public class PassController : MonoBehaviour
 {
-	[Separator("General settings")]
+    [Separator("Private references")]
+    [SerializeField] private Transform handTransform;
+    [SerializeField] private BallDatas ballDatas;
+
+    [Separator("General settings")]
 	public bool passPreviewInEditor;
 	public PassMode passMode;
-	public Transform handTransform;
-	public BallDatas ballDatas;
 	public float passCooldown;
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
@@ -44,22 +46,25 @@ public class PassController : MonoBehaviour
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMinAngle = 10;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float hanseLength;
 
-	private PlayerController linkedPlayer;
+    // Auto-assigned References
+    private PlayerController linkedPlayer;
 	private PlayerController otherPlayer;
 	private DunkController linkedDunkController;
-	private BallBehaviour ball;
-	private LineRenderer lineRenderer;
+    private LineRenderer lineRenderer;
+    private Animator animator;
+
+
+    private BallBehaviour ball;
 	private List<Vector3> pathCoordinates;
 	private bool passPreview;
-	[ReadOnly] public PassState passState;
 	private float currentPassCooldown;
-	private Animator animator;
 	private bool canReceive;
 	private float ballTimeInHand;
 	private bool didPerfectReception;
 	private PassState previousState;
+    [ReadOnly] public PassState passState;
 
-	private void Awake ()
+    private void Awake ()
 	{
 		lineRenderer = GetComponent<LineRenderer>();
 		linkedPlayer = GetComponent<PlayerController>();
