@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using MyBox;
 
 public enum LinkState
 {
@@ -15,26 +15,24 @@ public enum LinkState
 [RequireComponent(typeof(PawnController))]
 public class LinkController : MonoBehaviour
 {
-	[Header("Settings")]
-	public PawnController firstPawn;
-	public PawnController secondPawn;
+	[Separator("General Settings")]
+	[ReadOnly] public PawnController firstPawn;
+	[ReadOnly] public PawnController secondPawn;
 
 	public float maxDistanceBeforeShowing = 10f;
 	public float maxDistanceBeforeSlowing = 12f;
 	public float maxDistanceBeforeBreaking = 14f;
 	public float distanceBeforeRebuilding = 10f;
-
-	public Gradient linkColor;
-
 	public float maxSlowCoef = 0.2f;
-
 	public float damagesPerSecWithoutLink = 1f;
 
 	public AnimationCurve slowCoefCurve;
-	public AnimationCurve opacityFadeCurve;
 
+	[Separator("Visuals")]
+	public Gradient linkColor;
 	public Material linkMaterial;
 	public float linkWidth;
+	public AnimationCurve opacityFadeCurve;
 
 	private GameObject linkGameObject;
 	private LineRenderer lineRenderer;

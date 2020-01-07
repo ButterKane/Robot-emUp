@@ -42,7 +42,7 @@ public class SpeedCoef
 
 public class PawnController : MonoBehaviour
 {
-    [Header("General settings")]
+	[Separator("General settings")]
 	public int maxHealth;
     public bool isInvincible_access
     {

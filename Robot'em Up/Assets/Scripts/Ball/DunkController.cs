@@ -16,7 +16,7 @@ public enum DunkState
 }
 public class DunkController : MonoBehaviour
 {
-	[Header("Settings")]
+	[Separator("General settings")]
 	public float dunkJumpHeight = 5f;
 	public float dunkJumpLength = 1f;
 	public float dunkJumpDuration = 2f;
@@ -34,9 +34,9 @@ public class DunkController : MonoBehaviour
 	public float dunkCooldown = 3f;
 	public float dunkCancelFreezeDuration = 0.4f;
 
-    [SerializeField] private DunkState dunkState;
+	[ReadOnly] [SerializeField] private DunkState dunkState;
 
-    [Separator("Bump Variables")]
+    [Separator("Bump settings")]
     public float bumpDistanceMod = 1;
     public float bumpDurationMod = 0.5f;
     public float bumpRestDurationMod = 0.7f;

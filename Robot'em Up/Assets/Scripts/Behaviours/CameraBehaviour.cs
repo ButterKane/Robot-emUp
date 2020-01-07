@@ -7,6 +7,7 @@ using MyBox;
 public enum CameraType { Combat, Adventure, Circle}
 public class CameraBehaviour : MonoBehaviour
 {
+	[Separator("General settings")]
 	public int defaultPriority = 9;
 	public int enabledPriority = 11;
 	public float maxRotation = 40;
@@ -17,12 +18,12 @@ public class CameraBehaviour : MonoBehaviour
 	public bool enableTranslation = true;
 
 	[Separator("Debug values")]
-	public float wantedAngle;
-	public float currentDistanceX;
-	public float currentDistanceY;
+	[ReadOnly] public float wantedAngle;
+	[ReadOnly] public float currentDistanceX;
+	[ReadOnly] public float currentDistanceY;
 
-	public CameraType type;
-	public CameraZone zone;
+	[ReadOnly] public CameraType type;
+	[ReadOnly] public CameraZone zone;
 	private CinemachineVirtualCamera virtualCamera;
 	private Quaternion defaultRotation;
 	private Vector3 defaultTranslation;
