@@ -320,17 +320,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3493b39309a3d5f4f97a6fae11f414c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 373019035910456879}
-  rb: {fileID: 373019035910456883}
-  animator: {fileID: 373019037066540610}
+  maxHealth: 30
+  invincibilityTime: 1
+  onHitSound: 
+  onDeathSound: 
+  jumpForce: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minWalkSpeed: 0.1
+  moveSpeed: 7
+  acceleration: 30
+  movingDrag: 0.4
+  idleDrag: 0.4
+  onGroundGravityMultiplyer: 0
+  deadzone: 0.2
+  turnSpeed: 0.25
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
+  deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
+  deathParticleScale: 2
+  hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
+  hitParticleScale: 3
+  isBumpable: 1
+  maxGettingUpDuration: 0.6
+  bumpDistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  whenToTriggerFallingAnim: 0.9
+  bumpRaycastDistance: 1
   navMeshAgent: {fileID: 373019035910456886}
   healthBarRef: {fileID: 1286583807845663263}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  maxHealth: 30
-  energyAmount: 0.065
+  energyGainedOnHit: 1
   damage: 10
   powerLevel: 1
   lockable: 0
@@ -341,8 +393,6 @@ MonoBehaviour:
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
-  normalSpeed: 7
-  normalAcceleration: 30
   randomSpeedMod: 0
   slowFromPass: 0
   timeToRecoverSlowFromPass: 0
@@ -389,39 +439,7 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
-  isBumpable: 1
-  maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0.9
-  bumpRaycastDistance: 1
   damageAfterBump: 0
-  deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
-  hitParticleScale: 3
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 0.1
