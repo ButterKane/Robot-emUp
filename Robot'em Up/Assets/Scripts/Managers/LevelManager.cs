@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    [HideInInspector] public static LevelManager i;
+    public static LevelManager i;
 
     private void Awake()
     {
@@ -19,7 +19,6 @@ public class LevelManager : MonoBehaviour
     }
 
     // Start is called before the first frame update
-
     void Start()
     {
         

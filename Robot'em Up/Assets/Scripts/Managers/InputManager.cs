@@ -1,17 +1,18 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [HideInInspector] public static InputManager i;
+    public static InputManager i;
 
-    [Header("Settings")]
+    [Separator("Settings")]
     public bool inputDisabled;
     public float minJoystickStrength = 0.1f;
 
+    // Auto-Assigned References
     Transform mainCamTransform;
-
 
     private void Start()
     {

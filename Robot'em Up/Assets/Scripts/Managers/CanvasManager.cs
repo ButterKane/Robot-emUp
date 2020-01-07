@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class CanvasManager : MonoBehaviour
     public static CanvasManager i; 
 
     public Canvas mainCanvasPrefab;
-    public Canvas mainCanvas;
+    [NonSerialized] public Canvas mainCanvas;
 
     private void Awake()
     {

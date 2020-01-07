@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -44,33 +46,36 @@ public class DamageModifier {
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager
-    [System.NonSerialized] public static GameManager i;
-    [System.NonSerialized] public LevelManager levelManager;
-    [System.NonSerialized] public InputManager inputManager;
-    [System.NonSerialized]  public EnemyManager enemyManager;
-
-	[System.NonSerialized]  public GameObject mainCameraGO;
-	[System.NonSerialized]  public static PlayerController playerOne;
-	[System.NonSerialized]  public static PlayerController playerTwo;
-    [System.NonSerialized] public BallBehaviour ball;
+    public static GameManager i;
+    
+    [Separator ("Public variables")] 
     public int ballDamage = 30;
-    public List<GameObject> enemies;
-
-
-    [System.NonSerialized] public GameObject surrounderPlayerOne;
-    [System.NonSerialized] public GameObject surrounderPlayerTwo;
-	public static Canvas mainCanvas;
-	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
-	private static MainMenu menu;
-	private static bool menuCalledOne = false;
-	private static bool menuCalledTwo = false;
-	private static bool deathPanelCalled = false;
-
-	[SerializeField]
-    GameObject dummyPrefab;
     public GameObject ballPrefab;
 
+    [Separator("Private variables")]
+    [SerializeField]
+    GameObject dummyPrefab;
+
+    // Auto-Assigned References
+    [NonSerialized] public GameObject surrounderPlayerOne;
+    [NonSerialized] public GameObject surrounderPlayerTwo;
+    public static Canvas mainCanvas;
+    public static List<PlayerController> deadPlayers;
+
+    private static MainMenu menu;
+    private static bool menuCalledOne = false;
+    private static bool menuCalledTwo = false;
+    private static bool deathPanelCalled = false;
+
+    [NonSerialized] public LevelManager levelManager;
+    [NonSerialized] public InputManager inputManager;
+    [NonSerialized] public EnemyManager enemyManager;
+
+    [NonSerialized] public GameObject mainCameraGO;
+    [NonSerialized] public static PlayerController playerOne;
+    [NonSerialized] public static PlayerController playerTwo;
+    [NonSerialized] public BallBehaviour ball;
 
     private void Awake()
     {
