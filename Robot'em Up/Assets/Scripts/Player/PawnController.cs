@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using MyBox;
+using UnityEngine.AI;
 
 public enum MoveState
 {
@@ -22,7 +23,11 @@ public enum SpeedMultiplierReason
 	Freeze,
 	Reviving,
 	Dash,
-	PerfectReception
+	PerfectReception,
+	Pass,
+	Environment,
+	Dunk,
+	Unknown
 }
 
 public class SpeedCoef
@@ -128,6 +133,8 @@ public class PawnController : MonoBehaviour
 	private bool frozen;
 	private bool isPlayer;
 	protected bool targetable;
+	protected int damageAfterBump;
+	protected NavMeshAgent navMeshAgent;
 
 	protected PassController passController;
 
@@ -144,6 +151,11 @@ public class PawnController : MonoBehaviour
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
+		navMeshAgent = GetComponent<NavMeshAgent>();
+		if( navMeshAgent == null)
+		{
+			navMeshAgent = GetComponentInChildren<NavMeshAgent>();
+		}
 		currentHealth = maxHealth;
 		targetable = true;
 		if (GetComponent<PlayerController>() != null)
@@ -241,6 +253,11 @@ public class PawnController : MonoBehaviour
 	public void SetLookInput(Vector3 _direction)
 	{
 		lookInput = _direction;
+	}
+
+	public NavMeshAgent GetNavMesh()
+	{
+		return navMeshAgent;
 	}
 
 	public void Climb()
@@ -507,7 +524,8 @@ public class PawnController : MonoBehaviour
         restDuration = _restDuration + Random.Range(-_randomRestDurationMod, _randomRestDurationMod);
         bumpDirection = _bumpDirection;
 
-        bumpInitialPosition = transform.position;
+		bumpTimeProgression = 0;
+		bumpInitialPosition = transform.position;
         bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
 
         transform.rotation = Quaternion.LookRotation(-bumpDirection);
@@ -588,35 +606,45 @@ public class PawnController : MonoBehaviour
             //move !
             if (!internal_mustCancelBump)
             {
-                transform.position = Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(internal_bumpTimeProgression));
+                rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(internal_bumpTimeProgression)));
             }
 
             //trigger end anim
             if (internal_bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
             {
                 fallingTriggerLaunched = true;
-                //Animator.SetTrigger("FallingTrigger");
-            }
+                animator.SetTrigger("FallingTrigger");
+				if (damageAfterBump > 0)
+				{
+					currentHealth -= damageAfterBump;
+				}
+			}
             yield return null;
         }
 
-        //when arrived on ground
-        if (restDuration > 0)
-        {
-            restDuration -= Time.deltaTime;
-            if (restDuration <= 0)
-            {
-                //Animator.SetTrigger("StandingUpTrigger");
-            }
-        }
+		//when arrived on ground
+		while (restDuration > 0)
+		{
+			restDuration -= Time.deltaTime;
+			if (restDuration <= 0)
+			{
+				animator.SetTrigger("StandingUpTrigger");
+			}
+			yield return null;
+		}
 
         //time to get up
-        if (gettingUpDuration > 0)
+        while (gettingUpDuration > 0)
         {
-            gettingUpDuration -= Time.deltaTime;
-            //if (gettingUpDuration <= 0)
-            //ChangingState(EnemyState.Following);
-        }
+			gettingUpDuration -= Time.deltaTime;
+            if (gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
+			{
+				EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
+				enemy.ChangeState(EnemyState.Following);
+				enemy.ExitBumpedState();
+			}
+			yield return null;
+		}
 
         yield return new WaitForSeconds(1);
     }

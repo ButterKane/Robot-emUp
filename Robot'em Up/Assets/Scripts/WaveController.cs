@@ -123,9 +123,9 @@ public class WaveController : MonoBehaviour
 
 		int internal_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
 		internal_chosenSpawnerIndex = _enemy.spawnIndexes[internal_chosenSpawnerIndex];
-		internal_enemyBehaviour.GetNavMeshAgent().enabled = false;
+		internal_enemyBehaviour.GetNavMesh().enabled = false;
 		internal_newEnemy.transform.position = spawnList[internal_chosenSpawnerIndex].transform.position;
-		internal_enemyBehaviour.GetNavMeshAgent().enabled = true;
+		internal_enemyBehaviour.GetNavMesh().enabled = true;
 		currentEnemies.Add(internal_enemyBehaviour);
 		UpdateCurrentPowerLevel();
 	}

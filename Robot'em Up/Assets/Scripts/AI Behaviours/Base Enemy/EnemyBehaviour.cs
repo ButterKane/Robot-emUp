@@ -30,10 +30,9 @@ public enum WhatBumps
 
 public class EnemyBehaviour : PawnController, IHitable
 {
-    [System.NonSerialized] public EnemyState EnemyState = EnemyState.Idle;
+    [System.NonSerialized] public EnemyState enemyState = EnemyState.Idle;
 
     [Separator("References")]
-    public NavMeshAgent navMeshAgent;
     public Transform healthBarRef;
     public GameObject healthBarPrefab;
 
@@ -71,14 +70,10 @@ public class EnemyBehaviour : PawnController, IHitable
     [Space(2)]
     [Header("Movement")]
     public float randomSpeedMod;
-    private float moveMultiplicator = 1;
-    private int normalMoveMultiplicator = 1;
-    public float slowFromPass;
+    public float speedMultiplierFromPassHit;
     public float timeToRecoverSlowFromPass;
-    public float slowFromDunk;
+    public float speedMultiplierFromDunkHit;
     public float timeToRecoverSlowFromDunk;
-    public AnimationCurve speedRecoverCurve;
-    private float staggerAvancement;
     private WhatBumps whatBumps;
 
     [Space(2)]
@@ -103,10 +98,6 @@ public class EnemyBehaviour : PawnController, IHitable
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
-    
-    [Space(2)]
-    [Separator("Bump")]
-    public int damageAfterBump;
 
     [Space(2)]
     [Header("Surrounding")]
@@ -124,8 +115,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
     protected void Start()
     {
-        currentHealth = maxHealth;
-        currentSpeed = moveSpeed + Random.Range(-randomSpeedMod, randomSpeedMod);
         timeBetweenCheck = maxTimeBetweenCheck;
         playerOneTransform = GameManager.playerOne.transform;
         playerTwoTransform = GameManager.playerTwo.transform;
@@ -149,20 +138,26 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         UpdateDistancesToPlayers();
         UpdateState();
-        UpdateAnimatorBlendTree();
+		UpdateSpeed();
     }
 
-    private void UpdateAnimatorBlendTree()
+	void UpdateSpeed()
+	{
+		if (navMeshAgent != null)
+		{
+			navMeshAgent.speed = moveSpeed * GetSpeedCoef();
+		}
+	}
+
+    public override void UpdateAnimatorBlendTree()
     {
-        if (animator != null)
-        {
-            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
-        }
+		base.UpdateAnimatorBlendTree();
+		animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
     }
 
     void UpdateState()
     {
-        switch (EnemyState)
+        switch (enemyState)
         {
             case EnemyState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
@@ -221,63 +216,6 @@ public class EnemyBehaviour : PawnController, IHitable
                     }
                 }
                 break;
-
-            case EnemyState.Bumped:
-                if (bumpTimeProgression < 1)
-                {
-                    bumpTimeProgression += Time.deltaTime / bumpDuration;
-
-                    //must stop ?
-                    int bumpRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-                    if (Physics.Raycast(transform.position, bumpDirection, bumpRaycastDistance, bumpRaycastMask) && !mustCancelBump)
-                    {
-                        mustCancelBump = true;
-                        bumpTimeProgression = whenToTriggerFallingAnim;
-                    }
-
-                    //move !
-                    if (!mustCancelBump)
-                    {
-                        rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(bumpTimeProgression)));
-                    }
-
-                    //trigger end anim
-                    if (bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
-                    {
-                        fallingTriggerLaunched = true;
-                        animator.SetTrigger("FallingTrigger");
-
-                        if (damageAfterBump > 0)
-                        {
-                            Damage(damageAfterBump);
-                        }
-                    }
-                }
-
-                //when arrived on ground
-                else if (restDuration > 0)
-                {
-                    if (currentHealth <= 0)
-                    {
-                        ChangeState(EnemyState.Dying);
-                    }
-
-                    restDuration -= Time.deltaTime;
-                    if (restDuration <= 0)
-                    {
-                        animator.SetTrigger("StandingUpTrigger");
-                    }
-                }
-
-                //time to get up
-                else if (gettingUpDuration > 0)
-                {
-                    gettingUpDuration -= Time.deltaTime;
-                    if (gettingUpDuration <= 0)
-                        ChangeState(EnemyState.Following);
-                }
-                break;
-
             case EnemyState.ChangingFocus:
                 break;
 
@@ -307,7 +245,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         ExitState();
         EnterState(_newState);
-        EnemyState = _newState;
+        enemyState = _newState;
     }
 
     void EnterState(EnemyState _newState)
@@ -343,20 +281,9 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-	public NavMeshAgent GetNavMeshAgent()
-	{
-		return navMeshAgent;
-	}
-
     public virtual void EnterBumpedState()
     {
-        transform.rotation = Quaternion.LookRotation(-bumpDirection);
-        gettingUpDuration = maxGettingUpDuration;
-        fallingTriggerLaunched = false;
         navMeshAgent.enabled = false;
-        bumpTimeProgression = 0;
-        bumpInitialPosition = transform.position;
-        bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
         animator.SetTrigger("BumpTrigger");
         mustCancelBump = false;
     }
@@ -423,7 +350,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     void ExitState()
     {
-        switch (EnemyState)
+        switch (enemyState)
         {
             case EnemyState.Idle:
                 break;
@@ -448,7 +375,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void ExitBumpedState()
     {
-        StartCoroutine(Staggered_C(whatBumps));
+        Staggered(whatBumps);
     }
 
     void UpdateDistancesToPlayers()
@@ -535,7 +462,7 @@ public class EnemyBehaviour : PawnController, IHitable
 				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
 				EnergyManager.IncreaseEnergy(energyGainedOnHit);
 				whatBumps = WhatBumps.Pass;
-                StartCoroutine(Staggered_C(whatBumps));
+                Staggered(whatBumps);
 				currentHealth -= _damages;
                 if (currentHealth <= 0)
                 {
@@ -642,48 +569,26 @@ public class EnemyBehaviour : PawnController, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
+		AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
     }
 
-    public IEnumerator Staggered_C(WhatBumps? cause = default)
+    public void Staggered(WhatBumps? cause = default)
     {
-        float internal_timeToRecover = 0.5f;
-
         switch (cause)
         {
             case WhatBumps.Pass:
-                moveMultiplicator -= slowFromPass;
-                internal_timeToRecover = timeToRecoverSlowFromPass;
-                // Fetch ball datas => speed reduction on pass
+				AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
                 break;
             case WhatBumps.Dunk:
-                moveMultiplicator -= slowFromDunk;
-                internal_timeToRecover = timeToRecoverSlowFromDunk;
-                // Fetch ball datas => speed reduction on dunk
+				AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
                 break;
             case WhatBumps.Environment:
-                moveMultiplicator -= 0.5f;
-                internal_timeToRecover = 0.5f;
-                // Fetch environment datas => speed reduction
+				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
                 break;
             default:
-                moveMultiplicator -= 0.5f;
-                internal_timeToRecover = 0.5f;
-                Debug.Log("Default case: New speed multiplicator = 0.5");
+				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
                 break;
         }
-
-        float internal_time = 0;
-        float internal_initialMoveMultiplicator = moveMultiplicator;
-
-        while (moveMultiplicator < normalMoveMultiplicator)
-        {
-            moveMultiplicator = internal_initialMoveMultiplicator + (normalMoveMultiplicator - internal_initialMoveMultiplicator) * speedRecoverCurve.Evaluate(internal_time);
-            internal_time += Time.deltaTime / internal_timeToRecover;
-            print(moveMultiplicator);
-            yield return null;
-        }
-
-        moveMultiplicator = normalMoveMultiplicator;
     }
 
 	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )

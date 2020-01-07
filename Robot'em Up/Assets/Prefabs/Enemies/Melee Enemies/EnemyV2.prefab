@@ -377,7 +377,6 @@ MonoBehaviour:
   whenToTriggerFallingAnim: 0.9
   bumpRaycastDistance: 1
   rb: {fileID: 0}
-  navMeshAgent: {fileID: 373019035910456886}
   healthBarRef: {fileID: 1286583807845663263}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -395,16 +394,10 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
-  slowFromPass: 0
-  timeToRecoverSlowFromPass: 0
-  slowFromDunk: 0
-  timeToRecoverSlowFromDunk: 0
-  speedRecoverCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  slowFromPass: 0.6
+  timeToRecoverSlowFromPass: 0.5
+  slowFromDunk: 0.4
+  timeToRecoverSlowFromDunk: 1
   distanceToAttack: 5
   maxAnticipationTime: 0.5
   rotationSpeedPreparingAttack: 0.2
@@ -440,7 +433,6 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
-  damageAfterBump: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 0.1
