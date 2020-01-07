@@ -20,7 +20,7 @@ public enum PassState
 }
 public class PassController : MonoBehaviour
 {
-	[Separator("Global settings")]
+	[Separator("General settings")]
 	public bool passPreviewInEditor;
 	public PassMode passMode;
 	public Transform handTransform;
@@ -51,7 +51,7 @@ public class PassController : MonoBehaviour
 	private LineRenderer lineRenderer;
 	private List<Vector3> pathCoordinates;
 	private bool passPreview;
-	public PassState passState;
+	[ReadOnly] public PassState passState;
 	private float currentPassCooldown;
 	private Animator animator;
 	private bool canReceive;

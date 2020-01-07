@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 public enum DashState
 {
@@ -9,7 +10,7 @@ public enum DashState
 }
 public class DashController : MonoBehaviour
 {
-	[Header("Settings")]
+	[Separator("General Settings")]
 	public float minDistance = 2f;
 	public float maxDistance = 3f;
 	public float speed = 10f;
@@ -26,9 +27,17 @@ public class DashController : MonoBehaviour
 
 	public float UIFadeDuration = 0.5f;
 	public float UIFadeDelay = 1.5f;
-	public DashState state;
 
-	public Transform visuals;
+	[Separator("Clone Settings")]
+	public Transform clonedVisuals;
+	public float clonePerSec = 10f;
+	public float cloneDuration = 0.5f;
+	public Material cloneMaterial;
+
+	[Separator("FX")]
+	public GameObject dashTrail;
+	public GameObject startDashFX;
+	public GameObject endDashFX;
 
 	private PawnController linkedPawn;
 	private float currentUseCooldown;
@@ -36,14 +45,7 @@ public class DashController : MonoBehaviour
 	private int currentStackAmount;
 	private GameObject currentDashFX;
 
-	public float clonePerSec = 10f;
-	public float cloneDuration = 0.5f;
-
-	public Material cloneMaterial;
-
-	public GameObject dashTrail;
-	public GameObject startDashFX;
-	public GameObject endDashFX;
+	[ReadOnly] public DashState state;
 	private void Awake ()
 	{
 		linkedPawn = GetComponent<PawnController>();
@@ -119,8 +121,8 @@ public class DashController : MonoBehaviour
 
 	void GenerateClone()
 	{
-		GameObject internal_clone = Instantiate(visuals.gameObject);
-		Transform[] internal_childTransforms = visuals.GetComponentsInChildren<Transform>();
+		GameObject internal_clone = Instantiate(clonedVisuals.gameObject);
+		Transform[] internal_childTransforms = clonedVisuals.GetComponentsInChildren<Transform>();
 		Transform[] internal_cloneChildTransforms = internal_clone.GetComponentsInChildren<Transform>();
 		for (int i = 0; i < internal_childTransforms.Length; i++)
 		{

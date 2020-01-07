@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 public enum BallState {
 	Grounded, //The ball is on the ground
@@ -10,25 +11,25 @@ public enum BallState {
 }
 public class BallBehaviour : MonoBehaviour
 {
-	[Header("Ball informations (Only debug, don't change)")]
+	[Separator("Ball variables")]
 	[Space(2)]
-	[SerializeField] private Vector3 currentDirection;
-	[SerializeField] private float currentMaxDistance;
-	[SerializeField] private float currentDistanceTravelled;
-	[SerializeField] private float currentSpeed;
-    [SerializeField] private BallState currentState;
-	[SerializeField] private BallDatas currentBallDatas;
-	[SerializeField] private int currentBounceCount;
-	[SerializeField] private PawnController currentThrower;
-	 public bool canBounce;
-	[SerializeField] private bool canHitWalls;
-	[SerializeField] private List<Vector3> currentCurve;
-	[SerializeField] private Vector3 initialLookDirection;
-	[SerializeField] private List<DamageModifier> currentDamageModifiers;
-	[SerializeField] private List<SpeedCoef> currentSpeedModifiers;
-	[SerializeField] private Color currentColor;
-	[SerializeField] private bool teleguided;
-	[SerializeField] private float currentTimeFlying;
+	[ReadOnly] [SerializeField] private Vector3 currentDirection;
+	[ReadOnly] [SerializeField] private float currentMaxDistance;
+	[ReadOnly] [SerializeField] private float currentDistanceTravelled;
+	[ReadOnly] [SerializeField] private float currentSpeed;
+	[ReadOnly] [SerializeField] private BallState currentState;
+	[ReadOnly] [SerializeField] private BallDatas currentBallDatas;
+	[ReadOnly] [SerializeField] private int currentBounceCount;
+	[ReadOnly] [SerializeField] private PawnController currentThrower;
+	[ReadOnly] public bool canBounce;
+	[ReadOnly] [SerializeField] private bool canHitWalls;
+	[ReadOnly] [SerializeField] private List<Vector3> currentCurve;
+	[ReadOnly] [SerializeField] private Vector3 initialLookDirection;
+	[ReadOnly] [SerializeField] private List<DamageModifier> currentDamageModifiers;
+	[ReadOnly] [SerializeField] private List<SpeedCoef> currentSpeedModifiers;
+	[ReadOnly] [SerializeField] private Color currentColor;
+	[ReadOnly] [SerializeField] private bool teleguided;
+	[ReadOnly] [SerializeField] private float currentTimeFlying;
 
 	private Collider col;
 	private Rigidbody rb;
