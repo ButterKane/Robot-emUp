@@ -7,8 +7,8 @@ public class EnemyRedBarrel : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Red Barrel Death variables")]
-    [SerializeField] GameObject buildUpExplosionFX;
-    [SerializeField] GameObject explosionFX;
+    [SerializeField] GameObject buildUpExplosionFX = null;
+    [SerializeField] GameObject explosionFX = null;
     public float explosionRadius = 3f;
     public int explosionDamage = 10;
     public float buildUpBeforeExplosion = 0.5f;

@@ -12,29 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ae1881f85ce524a80896da20b3a312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _self: {fileID: 6181108247738804001}
-  Rb: {fileID: 6181108247738804029}
-  Animator: {fileID: 6181108246780876620}
+  self: {fileID: 6181108247738804001}
+  rb: {fileID: 6181108247738804029}
+  animator: {fileID: 6181108246780876620}
   navMeshAgent: {fileID: 6181108247738804024}
-  HealthBarRef: {fileID: 4697345455816352529}
-  HealthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+  healthBarRef: {fileID: 4697345455816352529}
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
-  _playerOneTransform: {fileID: 0}
-  _playerTwoTransform: {fileID: 0}
-  MaxHealth: 30
+  playerOneTransform: {fileID: 0}
+  playerTwoTransform: {fileID: 0}
+  maxHealth: 30
   energyAmount: 0.13
   damage: 15
   powerLevel: 4
-  _lockable: 1
-  _lockHitboxSize: 1
+  lockable: 0
+  lockHitboxSize: 0
   arenaRobot: 0
   focusDistance: 40
   unfocusDistance: 50
+  timeBetweenCheck: 0
   distanceBeforeChangingPriority: 6
   maxTimeBetweenCheck: 0.25
-  NormalSpeed: 7
-  NormalAcceleration: 30
-  RandomSpeedMod: 0
+  normalSpeed: 7
+  normalAcceleration: 30
+  randomSpeedMod: 0
   slowFromPass: 0
   timeToRecoverSlowFromPass: 0
   slowFromDunk: 0
@@ -80,6 +81,7 @@ MonoBehaviour:
   hitBoxOffset: {x: 0.5, y: 1, z: 0}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2
@@ -107,27 +109,24 @@ MonoBehaviour:
     m_RotationOrder: 4
   whenToTriggerFallingAnim: 0.9
   bumpRaycastDistance: 1
-  DamageAfterBump: 0
+  damageAfterBump: 0
   deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
   hitParticleScale: 3
-  BezierCurveHeight: 0.5
-  BezierDistanceToHeightRatio: 100
+  bezierCurveHeight: 0.5
+  bezierDistanceToHeightRatio: 100
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 15, y: 15}
-  ShieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
+  shieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
     type: 3}
   deactivateShieldWhenAttacking: 0
-  AngleRangeForRebound: 70
-  SpwaningShieldFrontDistance: 2.5
-  Renderers:
-  - {fileID: 6181108246780876594}
-  - {fileID: 6181108247639220607}
-  - {fileID: 6181108248183470284}
-  NormalColor: {r: 0, g: 0, b: 1, a: 1}
-  AttackingColor: {r: 1, g: 0, b: 0, a: 1}
+  angleRangeForRebound: 0
+  spawningShieldFrontDistance: 0
+  renderers: []
+  normalColor: {r: 0, g: 0, b: 1, a: 1}
+  attackingColor: {r: 1, g: 0, b: 0, a: 1}
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
@@ -164,11 +163,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
-      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -249,6 +243,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.2147
       objectReference: {fileID: 0}
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
+      objectReference: {fileID: 0}
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Speed
@@ -259,27 +263,22 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 0.84
       objectReference: {fileID: 0}
-    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Radius
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
+    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -312,27 +311,9 @@ NavMeshAgent:
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &6181108246780876594 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
 --- !u!95 &6181108246780876620 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &6181108247639220607 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &6181108248183470284 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}
