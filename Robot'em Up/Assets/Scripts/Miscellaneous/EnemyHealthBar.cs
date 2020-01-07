@@ -21,6 +21,10 @@ public class EnemyHealthBar : MonoBehaviour
     {
         _self = GetComponent<RectTransform>();
         _mainCamera = Camera.main;
+        if (fillRect == null)
+        {
+            fillRect = GetComponentInChildren<RectTransform>();
+        }
         _rect = fillRect.rect;
         _initialWidth = _rect.width;
 

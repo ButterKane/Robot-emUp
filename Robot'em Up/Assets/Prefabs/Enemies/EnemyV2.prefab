@@ -320,29 +320,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3493b39309a3d5f4f97a6fae11f414c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _self: {fileID: 373019035910456879}
-  Rb: {fileID: 373019035910456883}
-  Animator: {fileID: 373019037066540610}
+  self: {fileID: 373019035910456879}
+  rb: {fileID: 373019035910456883}
+  animator: {fileID: 373019037066540610}
   navMeshAgent: {fileID: 373019035910456886}
-  HealthBarRef: {fileID: 1286583807845663263}
-  HealthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+  healthBarRef: {fileID: 1286583807845663263}
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
-  _playerOneTransform: {fileID: 0}
-  _playerTwoTransform: {fileID: 0}
-  MaxHealth: 30
+  playerOneTransform: {fileID: 0}
+  playerTwoTransform: {fileID: 0}
+  maxHealth: 30
   energyAmount: 0.065
   damage: 10
   powerLevel: 1
-  _lockable: 1
-  _lockHitboxSize: 2
+  lockable: 0
+  lockHitboxSize: 0
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
+  timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
-  NormalSpeed: 7
-  NormalAcceleration: 30
-  RandomSpeedMod: 0
+  normalSpeed: 7
+  normalAcceleration: 30
+  randomSpeedMod: 0
   slowFromPass: 0
   timeToRecoverSlowFromPass: 0
   slowFromDunk: 0
@@ -388,6 +389,7 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2
@@ -415,13 +417,13 @@ MonoBehaviour:
     m_RotationOrder: 4
   whenToTriggerFallingAnim: 0.9
   bumpRaycastDistance: 1
-  DamageAfterBump: 0
+  damageAfterBump: 0
   deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
   deathParticleScale: 2
   hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
   hitParticleScale: 3
-  BezierCurveHeight: 0.5
-  BezierDistanceToHeightRatio: 100
+  bezierCurveHeight: 0.5
+  bezierDistanceToHeightRatio: 100
   coreDropChances: 0.1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}

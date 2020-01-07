@@ -411,7 +411,7 @@ public class PlayerController : PawnController, IHitable
 		UnFreeze();
 	}
 
-	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
 		if (_source == DamageSource.Ball) { return; }
 		switch (_source)

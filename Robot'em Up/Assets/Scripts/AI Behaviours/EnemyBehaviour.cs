@@ -39,7 +39,7 @@ public class EnemyBehaviour : MonoBehaviour, IHitable
     public NavMeshAgent navMeshAgent;
     public Transform healthBarRef;
     public GameObject healthBarPrefab;
-    public string hitSound = "EnemyHit";
+    [System.NonSerialized] public string hitSound = "EnemyHit";
 
 	[Space(2)]
     [Separator("Auto-assigned References")]
