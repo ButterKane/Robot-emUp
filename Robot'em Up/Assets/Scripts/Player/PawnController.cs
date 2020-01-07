@@ -205,7 +205,6 @@ public class PawnController : MonoBehaviour
 		{
 			accelerationTimer += Time.fixedDeltaTime;
 			if (moveState == MoveState.Blocked) { return; }
-			Debug.Log(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed * GetSpeedCoef()) * acceleration));
 			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed * GetSpeedCoef()) * acceleration), ForceMode.Acceleration);
 			customDrag = movingDrag;
 		} else
