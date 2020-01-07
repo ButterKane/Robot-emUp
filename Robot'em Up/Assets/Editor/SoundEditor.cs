@@ -20,15 +20,15 @@ public class SoundEditor : Editor
 		soundDatas = (SoundDatas)target;
 		this.serializedObject.Update();
 
-		GUIStyle headerStyle = new GUIStyle(EditorStyles.helpBox);
-		headerStyle.alignment = TextAnchor.MiddleCenter;
-		headerStyle.fontSize = 20;
-		headerStyle.fontStyle = FontStyle.Bold;
+		GUIStyle internal_headerStyle = new GUIStyle(EditorStyles.helpBox);
+		internal_headerStyle.alignment = TextAnchor.MiddleCenter;
+		internal_headerStyle.fontSize = 20;
+		internal_headerStyle.fontStyle = FontStyle.Bold;
 
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Global settings", headerStyle);
+			GUILayout.Box("Global settings", internal_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -40,7 +40,7 @@ public class SoundEditor : Editor
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Sound datas", headerStyle);
+			GUILayout.Box("Sound datas", internal_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -144,16 +144,16 @@ public class SoundEditor : Editor
 
 	void AddSound()
 	{
-		SoundData newSoundData = new SoundData();
-		newSoundData.soundName = "New sound " + (soundDatas.soundList.Count + 1);
-		newSoundData.soundList = new List<Sound>();
+		SoundData internal_newSoundData = new SoundData();
+		internal_newSoundData.soundName = "New sound " + (soundDatas.soundList.Count + 1);
+		internal_newSoundData.soundList = new List<Sound>();
 		Sound newSound = new Sound();
 		newSound.playChances = 1f;
-		newSoundData.soundList.Add(newSound);
-		soundDatas.soundList.Add(newSoundData);
+		internal_newSoundData.soundList.Add(newSound);
+		soundDatas.soundList.Add(internal_newSoundData);
 	}
 
-	void PlaySoundInEditor ( AudioClip clip, int startSample = 0, bool loop = false )
+	void PlaySoundInEditor ( AudioClip _clip, int _startSample = 0, bool _loop = false )
 	{
 		StopAllClips();
 		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
@@ -167,7 +167,7 @@ public class SoundEditor : Editor
 		);
 		method.Invoke(
 			null,
-			new object[] { clip, startSample, loop }
+			new object[] { _clip, _startSample, _loop }
 		);
 	}
 

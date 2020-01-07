@@ -9,10 +9,10 @@ public class IndianaCompressorRepeater : PuzzleRepeater
     public LineRenderer magneticField;
     public Transform startPoint;
     public Transform endPoint;
-    public float fallSpeed;
-    public float reloadSpeed;
+    public float fallSpeed = 0.3f;
+    public float reloadSpeed = 1.5f;
     private bool mustReload;
-    public int damage;
+    public int damage = 1;
 
     // Start is called before the first frame update
     public override void Start()
