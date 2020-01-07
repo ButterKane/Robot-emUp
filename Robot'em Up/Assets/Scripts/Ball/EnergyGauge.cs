@@ -23,15 +23,15 @@ public class EnergyGauge : MonoBehaviour
 	}
 	public void UpdateGauge()
 	{
-		float currentValue = EnergyManager.GetEnergy();
+		float internal_currentValue = EnergyManager.GetEnergy();
 		gaugeFillLerped.fillAmount = Mathf.Lerp(gaugeFillLerped.fillAmount, EnergyManager.GetDisplayedEnergy(), Time.deltaTime * 8);
 		gaugeFillRay.fillAmount = gaugeFillLerped.fillAmount;
 
-		if (Mathf.Abs(currentValue - previousValue) >= 0.1f)
+		if (Mathf.Abs(internal_currentValue - previousValue) >= 0.1f)
 		{
 			transform.DOShakeScale(0.1f, 0.1f).OnComplete(ResetScale);
 		}
-		previousValue = currentValue;
+		previousValue = internal_currentValue;
 
 		if (EnergyManager.GetEnergy() >= 0.99f)
 		{

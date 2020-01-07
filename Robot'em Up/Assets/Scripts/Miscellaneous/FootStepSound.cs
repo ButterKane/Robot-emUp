@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class FootStepSound : MonoBehaviour
 {
-	public void PlayFootstepSound(AnimationEvent evt)
+	public void PlayFootstepSound(AnimationEvent _evt)
 	{
-		if (evt.animatorClipInfo.weight > 0.5)
+		if (_evt.animatorClipInfo.weight > 0.5)
 		{
 			FeedbackManager.SendFeedback("event.WalkingOnGround", this);
 			SoundManager.PlaySound("WalkingOnGround", transform.position);

@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class EnemyHealthBar : MonoBehaviour
 {
-    [SerializeField] private RectTransform FillRect;
-    public EnemyBehaviour Enemy;
+    [SerializeField] private RectTransform fillRect;
+    public EnemyBehaviour enemy;
     public TurretBehaviour Turret;
     public Gradient healthBarGradient;
     private float _initialWidth;
@@ -21,11 +21,15 @@ public class EnemyHealthBar : MonoBehaviour
     {
         _self = GetComponent<RectTransform>();
         _mainCamera = Camera.main;
-        _rect = FillRect.rect;
+        if (fillRect == null)
+        {
+            fillRect = GetComponentInChildren<RectTransform>();
+        }
+        _rect = fillRect.rect;
         _initialWidth = _rect.width;
 
         BarBackground = GetComponent<RawImage>();
-        BarFill = FillRect.GetComponent<RawImage>();
+        BarFill = fillRect.GetComponent<RawImage>();
 
         ActivateHealthBar(false);
     }
@@ -33,32 +37,32 @@ public class EnemyHealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Enemy != null)
+        if(enemy != null)
         {
-            if (Enemy.Health < Enemy.MaxHealth)
+            if (enemy.health < enemy.maxHealth)
             {
                 ActivateHealthBar(true);
 
-                FillRect.sizeDelta = new Vector2(((float)Enemy.Health / Enemy.MaxHealth) * _initialWidth, _rect.height);
-                BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
-                _self.position = _mainCamera.WorldToScreenPoint(Enemy.HealthBarRef.position);
+                fillRect.sizeDelta = new Vector2(((float)enemy.health / enemy.maxHealth) * _initialWidth, _rect.height);
+                BarFill.color = healthBarGradient.Evaluate(fillRect.sizeDelta.magnitude / _initialWidth);
+                _self.position = _mainCamera.WorldToScreenPoint(enemy.healthBarRef.position);
             }
-            if (Enemy.Health <= 0)
+            if (enemy.health <= 0)
             {
                 Destroy(this.gameObject);
             }
         }
         else if(Turret != null)
         {
-            if (Turret.Health < Turret.MaxHealth)
+            if (Turret.health < Turret.maxHealth)
             {
                 ActivateHealthBar(true);
 
-                FillRect.sizeDelta = new Vector2(((float)Turret.Health / Turret.MaxHealth) * _initialWidth, _rect.height);
-                BarFill.color = healthBarGradient.Evaluate(FillRect.sizeDelta.magnitude / _initialWidth);
-                _self.position = _mainCamera.WorldToScreenPoint(Turret.HealthBarRef.position);
+                fillRect.sizeDelta = new Vector2(((float)Turret.health / Turret.maxHealth) * _initialWidth, _rect.height);
+                BarFill.color = healthBarGradient.Evaluate(fillRect.sizeDelta.magnitude / _initialWidth);
+                _self.position = _mainCamera.WorldToScreenPoint(Turret.healthBarRef.position);
             }
-            if (Turret.Health <= 0)
+            if (Turret.health <= 0)
             {
                 Destroy(this.gameObject);
             }
@@ -70,9 +74,9 @@ public class EnemyHealthBar : MonoBehaviour
             
     }
 
-    void ActivateHealthBar(bool value)
+    void ActivateHealthBar(bool _value)
     {
-        BarBackground.enabled = value;
-        BarFill.enabled = value;
+        BarBackground.enabled = _value;
+        BarFill.enabled = _value;
     }
 }

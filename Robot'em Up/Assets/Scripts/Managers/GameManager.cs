@@ -258,7 +258,7 @@ public class GameManager : MonoBehaviour
 
 	private void OnEnable()
     {
-        EventManager.DummySpawn += SpawnDummy;
+        EventManager.dummySpawn += SpawnDummy;
     }
 
     void SpawnDummy()
@@ -288,10 +288,10 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(ball.gameObject);
 		}
-		GameObject newBall = Instantiate(i.ballPrefab, null);
-		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
-        i.ball = newBall.GetComponent<BallBehaviour>();
-		newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
+		GameObject internal_newBall = Instantiate(i.ballPrefab, null);
+		BallBehaviour.instance = internal_newBall.GetComponent<BallBehaviour>();
+        i.ball = internal_newBall.GetComponent<BallBehaviour>();
+		internal_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
 	void LoadMomentumManager()

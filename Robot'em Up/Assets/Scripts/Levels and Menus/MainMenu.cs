@@ -25,11 +25,11 @@ public class MainMenu : MonoBehaviour
 	void SelectButton(Button _button)
 	{
 		selectedButton = _button;
-		RectTransform buttonTransform = _button.GetComponent<RectTransform>();
-		if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), buttonTransform); }
-		selectorArrow.rectTransform.position = _button.transform.position + ((Vector3.right * buttonTransform.sizeDelta.x / 2 * buttonTransform.localScale.x) + Vector3.right * (100 * selectorArrow.transform.localScale.x)) * transform.localScale.x;
-		selectorOutline.rectTransform.position = buttonTransform.position;
-		selectorOutline.rectTransform.sizeDelta = new Vector2(buttonTransform.sizeDelta.x * (buttonTransform.localScale.x / selectorOutline.rectTransform.localScale.x) * 0.8f, buttonTransform.sizeDelta.y * (buttonTransform.localScale.y / selectorOutline.rectTransform.localScale.y) * 0.6f);
+		RectTransform internal_buttonTransform = _button.GetComponent<RectTransform>();
+		if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), internal_buttonTransform); }
+		selectorArrow.rectTransform.position = _button.transform.position + ((Vector3.right * internal_buttonTransform.sizeDelta.x / 2 * internal_buttonTransform.localScale.x) + Vector3.right * (100 * selectorArrow.transform.localScale.x)) * transform.localScale.x;
+		selectorOutline.rectTransform.position = internal_buttonTransform.position;
+		selectorOutline.rectTransform.sizeDelta = new Vector2(internal_buttonTransform.sizeDelta.x * (internal_buttonTransform.localScale.x / selectorOutline.rectTransform.localScale.x) * 0.8f, internal_buttonTransform.sizeDelta.y * (internal_buttonTransform.localScale.y / selectorOutline.rectTransform.localScale.y) * 0.6f);
 		selectedButtonIndex = buttons.IndexOf(_button);
 	}
 
@@ -80,12 +80,12 @@ public class MainMenu : MonoBehaviour
 	}
 	private void Update ()
 	{
-		GamePadState state = GamePad.GetState(PlayerIndex.One);
+		GamePadState internal_state = GamePad.GetState(PlayerIndex.One);
 		for (int i = 0; i < 2; i++)
 		{
-			if (i == 0) { state = GamePad.GetState(PlayerIndex.One); }
-			if (i == 1) { state = GamePad.GetState(PlayerIndex.Two); }
-			if (state.ThumbSticks.Left.Y > 0)
+			if (i == 0) { internal_state = GamePad.GetState(PlayerIndex.One); }
+			if (i == 1) { internal_state = GamePad.GetState(PlayerIndex.Two); }
+			if (internal_state.ThumbSticks.Left.Y > 0)
 			{
 				if (i == 0 )
 				{
@@ -103,7 +103,7 @@ public class MainMenu : MonoBehaviour
 					}
 				}
 			}
-			else if (state.ThumbSticks.Left.Y < 0)
+			else if (internal_state.ThumbSticks.Left.Y < 0)
 			{
 				if (i == 0)
 				{
@@ -132,7 +132,7 @@ public class MainMenu : MonoBehaviour
 					waitForJoystickResetTwo = false;
 				}
 			}
-			if (state.Buttons.A == ButtonState.Pressed)
+			if (internal_state.Buttons.A == ButtonState.Pressed)
 			{
 				if (i == 0) { if (waitForAResetOne) { return; } else { selectedButton.onClick.Invoke(); waitForAResetOne = true; } }
 				if (i == 1) { if (waitForAResetTwo) { return; } else { selectedButton.onClick.Invoke(); waitForAResetTwo = true; } }
@@ -141,20 +141,20 @@ public class MainMenu : MonoBehaviour
 				if (i ==0) { waitForAResetOne = false; }
 				if (i == 1) { waitForAResetTwo = false; }
 			}
-			if (state.Buttons.B == ButtonState.Pressed)
+			if (internal_state.Buttons.B == ButtonState.Pressed)
 			{
 				CloseLevelSelector();
 			}
 			if (enableRBandRTButtons)
 			{
-				if (state.Buttons.RightShoulder == ButtonState.Pressed)
+				if (internal_state.Buttons.RightShoulder == ButtonState.Pressed)
 				{
 					if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
 					{
 						GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
 					}
 				}
-				if (state.Buttons.LeftShoulder == ButtonState.Pressed)
+				if (internal_state.Buttons.LeftShoulder == ButtonState.Pressed)
 				{
 					if (SceneManager.GetActiveScene().buildIndex > 0)
 					{
@@ -191,28 +191,28 @@ public class MainMenu : MonoBehaviour
 	public void CenterScrollOnItem ( ScrollRect _scroll, RectTransform _target )
 	{
 		// Item is here
-		RectTransform scrollTransform = _scroll.GetComponent<RectTransform>();
-		Mask mask = scrollTransform.GetComponentInChildren<Mask>();
-		var itemCenterPositionInScroll = GetWorldPointInWidget(scrollTransform, GetWidgetWorldPoint(_target));
+		RectTransform internal_scrollTransform = _scroll.GetComponent<RectTransform>();
+		Mask internal_mask = internal_scrollTransform.GetComponentInChildren<Mask>();
+		var internal_itemCenterPositionInScroll = GetWorldPointInWidget(internal_scrollTransform, GetWidgetWorldPoint(_target));
 		// But must be here
-		var targetPositionInScroll = GetWorldPointInWidget(scrollTransform, GetWidgetWorldPoint(mask.rectTransform));
+		var internal_targetPositionInScroll = GetWorldPointInWidget(internal_scrollTransform, GetWidgetWorldPoint(internal_mask.rectTransform));
 		// So it has to move this distance
-		var difference = targetPositionInScroll - itemCenterPositionInScroll;
-		difference.z = 0f;
+		var internal_difference = internal_targetPositionInScroll - internal_itemCenterPositionInScroll;
+		internal_difference.z = 0f;
 
 		//clear axis data that is not enabled in the scrollrect
 		if (!_scroll.horizontal)
 		{
-			difference.x = 0f;
+			internal_difference.x = 0f;
 		}
 		if (!_scroll.vertical)
 		{
-			difference.y = 0f;
+			internal_difference.y = 0f;
 		}
 
 		var normalizedDifference = new Vector2(
-			difference.x / (_scroll.content.rect.size.x - scrollTransform.rect.size.x),
-			difference.y / (_scroll.content.rect.size.y - scrollTransform.rect.size.y));
+			internal_difference.x / (_scroll.content.rect.size.x - internal_scrollTransform.rect.size.x),
+			internal_difference.y / (_scroll.content.rect.size.y - internal_scrollTransform.rect.size.y));
 
 		var newNormalizedPosition = _scroll.normalizedPosition - normalizedDifference;
 		if (_scroll.movementType != ScrollRect.MovementType.Unrestricted)
@@ -224,15 +224,15 @@ public class MainMenu : MonoBehaviour
 		_scroll.normalizedPosition = newNormalizedPosition;
 	}
 
-	private Vector3 GetWidgetWorldPoint ( RectTransform target )
+	private Vector3 GetWidgetWorldPoint ( RectTransform _target )
 	{
 		//pivot position + item size has to be included
 		var pivotOffset = new Vector3(
-			(0.5f - target.pivot.x) * target.rect.size.x,
-			(0.5f - target.pivot.y) * target.rect.size.y,
+			(0.5f - _target.pivot.x) * _target.rect.size.x,
+			(0.5f - _target.pivot.y) * _target.rect.size.y,
 			0f);
-		var localPosition = target.localPosition + pivotOffset;
-		return target.parent.TransformPoint(localPosition);
+		var localPosition = _target.localPosition + pivotOffset;
+		return _target.parent.TransformPoint(localPosition);
 	}
 	private Vector3 GetWorldPointInWidget ( RectTransform target, Vector3 worldPoint )
 	{

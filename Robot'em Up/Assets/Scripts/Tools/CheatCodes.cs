@@ -6,19 +6,19 @@ using UnityEngine;
 
 public class CheatCodes : MonoBehaviour
 {
-    public bool ActivateCheat;
-    [ConditionalField(nameof(ActivateCheat))] public GameObject BallPrefab;
-    [ConditionalField(nameof(ActivateCheat))] public PlayerController PlayerOne;
-    [ConditionalField(nameof(ActivateCheat))] public PlayerController PlayerTwo;
-    [ConditionalField(nameof(ActivateCheat))] public bool playersInvicible;
+    public bool activateCheat;
+    [ConditionalField(nameof(activateCheat))] public GameObject ballPrefab;
+    [ConditionalField(nameof(activateCheat))] public PlayerController playerOne;
+    [ConditionalField(nameof(activateCheat))] public PlayerController playerTwo;
+    [ConditionalField(nameof(activateCheat))] public bool playersInvicible;
     private bool isInvincibilityToggled = false;
 
 
     private void Start()
     {
-        BallPrefab = GameManager.i.ballPrefab;
-        PlayerOne = GameManager.playerOne;
-        PlayerTwo = GameManager.playerTwo;
+        ballPrefab = GameManager.i.ballPrefab;
+        playerOne = GameManager.playerOne;
+        playerTwo = GameManager.playerTwo;
         playersInvicible = false;
     }
 
@@ -26,20 +26,20 @@ public class CheatCodes : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Quote)) // "²"
         {
-            ActivateCheat = !ActivateCheat;
+            activateCheat = !activateCheat;
         }
-        if (playersInvicible && ActivateCheat)
+        if (playersInvicible && activateCheat)
         {
-            PlayerOne.IsInvincible = playersInvicible;
-            PlayerTwo.IsInvincible = playersInvicible;
+            playerOne.isInvincible_access = playersInvicible;
+            playerTwo.isInvincible_access = playersInvicible;
         }
     }
 
     void OnGUI()
     {
-        Color normalColor = GUI.color;
+        Color internal_normalColor = GUI.color;
 
-        if (ActivateCheat)
+        if (activateCheat)
         {
             if (GUI.Button(new Rect(10, 10, 60, 25), "TP Ball"))
             {
@@ -56,7 +56,7 @@ public class CheatCodes : MonoBehaviour
                 ToggleInvicibility();
             }
 
-            GUI.backgroundColor = normalColor;
+            GUI.backgroundColor = internal_normalColor;
 
             if (GUI.Button(new Rect(10, 70, 100, 25), "Charge Energy"))
             {
@@ -88,7 +88,7 @@ public class CheatCodes : MonoBehaviour
             Destroy(GameManager.i.ball);
         }
 
-        Instantiate(BallPrefab, PlayerOne.transform.position, Quaternion.identity);
+        Instantiate(ballPrefab, playerOne.transform.position, Quaternion.identity);
     }
 
     public void ToggleInvicibility()
@@ -97,8 +97,8 @@ public class CheatCodes : MonoBehaviour
         playersInvicible = !playersInvicible;
         if (!playersInvicible)
         {
-            PlayerOne.IsInvincible = playersInvicible;
-            PlayerTwo.IsInvincible = playersInvicible;
+            playerOne.isInvincible_access = playersInvicible;
+            playerTwo.isInvincible_access = playersInvicible;
         }
     }
 
@@ -109,26 +109,26 @@ public class CheatCodes : MonoBehaviour
 
     public IEnumerator KillEnemies()
     {
-        List<EnemyBehaviour> enemies = EnemyManager.i.enemies;
-        int count = enemies.Count;
+        List<EnemyBehaviour> internal_enemies = EnemyManager.i.enemies;
+        int count = internal_enemies.Count;
         for (int i = 0; i < count; i++)
         {
-            Debug.Log("destroying " + enemies[0]);
-            if (enemies[0].transform.GetComponent<EnemyRedBarrel>())
+            Debug.Log("destroying " + internal_enemies[0]);
+            if (internal_enemies[0].transform.GetComponent<EnemyRedBarrel>())
             {
-                EnemyBehaviour temp = enemies[0];
+                EnemyBehaviour temp = internal_enemies[0];
                 EnemyManager.i.enemies.Remove(temp);
                 Destroy(temp.gameObject);
             }
             else
             {
-                enemies[0].Die(); 
+                internal_enemies[0].Die(); 
             }
             yield return null;
         }
 
-        TurretBehaviour[] turrets = FindObjectsOfType<TurretBehaviour>();
-        foreach(var turret in turrets)
+        TurretBehaviour[] internal_turrets = FindObjectsOfType<TurretBehaviour>();
+        foreach(var turret in internal_turrets)
         {
             turret.Die();
             yield return null;

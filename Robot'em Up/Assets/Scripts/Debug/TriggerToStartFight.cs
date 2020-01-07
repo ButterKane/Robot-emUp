@@ -46,9 +46,9 @@ public class TriggerToStartFight : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.CompareTag("Player") && !wallShouldMove)
+        if (_other.CompareTag("Player") && !wallShouldMove)
         {
             wallShouldMove = true;
         }

@@ -86,17 +86,17 @@ public class PassController : MonoBehaviour
 
 		if (passPreview)
 		{
-			bool snapped = false;
+			bool internal_snapped = false;
 			switch (passMode)
 			{
 				case PassMode.Bounce:
-					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out snapped), ballDatas.maxPreviewDistance);
+					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out internal_snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
 					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer.transform, linkedPlayer.GetLookInput());
 					break;
 			}
-			if (snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
+			if (internal_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates,0);
 			if (passPreviewInEditor)
@@ -109,42 +109,42 @@ public class PassController : MonoBehaviour
 	public void TryReception() //Player tries to do a perfect reception
 	{
 		if (didPerfectReception) { return; }
-		BallBehaviour mainBall = BallBehaviour.instance;
-		if (mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
+		BallBehaviour internal_mainBall = BallBehaviour.instance;
+		if (internal_mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
 		if (ball == null)
 		{
-			if (Vector3.Distance(handTransform.position, mainBall.transform.position) > receptionMinDistance) { return; }
+			if (Vector3.Distance(handTransform.position, internal_mainBall.transform.position) > receptionMinDistance) { return; }
 		} else
 		{
 			if (ballTimeInHand > receptionMinDelay) { return; }
 		}
-		ExecutePerfectReception(mainBall);
+		ExecutePerfectReception(internal_mainBall);
 	}
 
-	public void ExecutePerfectReception(BallBehaviour ball)
+	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
-		Receive(ball);
+		Receive(_ball);
 		ChangePassState(PassState.Aiming);
 		EnablePassPreview();
-		StartCoroutine(ShootAfterDelay(receptionMinDelay - ballTimeInHand));
+		StartCoroutine(ShootAfterDelay_C(receptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
 		SoundManager.PlaySound("PerfectReception", transform.position, transform);
-		ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
-		ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
-		float lerpValue = (ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
-		Color newColor = ballDatas.colorOverDamage.Evaluate(lerpValue);
-		GameObject perfectFX = FXManager.InstantiateFX(ballDatas.PerfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
-		ParticleColorer.ReplaceParticleColor(perfectFX, new Color(122f / 255f, 0, 122f / 255f), newColor);
+		_ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
+		_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
+		float internal_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		Color internal_newColor = ballDatas.colorOverDamage.Evaluate(internal_lerpValue);
+		GameObject internal_perfectFX = FXManager.InstantiateFX(ballDatas.perfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
+		ParticleColorer.ReplaceParticleColor(internal_perfectFX, new Color(122f / 255f, 0, 122f / 255f), internal_newColor);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
-		Collider[] hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
-		PawnController pawnController = GetComponent<PawnController>();
+		Collider[] internal_hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
+		PawnController internal_pawnController = GetComponent<PawnController>();
 		int i = 0;
-		while (i < hitColliders.Length)
+		while (i < internal_hitColliders.Length)
 		{
-			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
-			if (potentialHitableObject != null)
+			IHitable internal_potentialHitableObject = internal_hitColliders[i].GetComponentInParent<IHitable>();
+			if (internal_potentialHitableObject != null)
 			{
-				potentialHitableObject.OnHit(ball, (hitColliders[i].transform.position - transform.position).normalized, pawnController, receptionExplosionDamage, DamageSource.PerfectReceptionExplosion);
+				internal_potentialHitableObject.OnHit(_ball, (internal_hitColliders[i].transform.position - transform.position).normalized, internal_pawnController, receptionExplosionDamage, DamageSource.PerfectReceptionExplosion);
 			}
 			i++;
 		}
@@ -154,20 +154,20 @@ public class PassController : MonoBehaviour
 	public List<Vector3> GetBouncingPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
 	{
 		RaycastHit hit;
-		float remainingLength = _maxLength;
-		List<Vector3> pathCoordinates = new List<Vector3>();
-		pathCoordinates.Add(_startPosition);
+		float internal_remainingLength = _maxLength;
+		List<Vector3> internal_pathCoordinates = new List<Vector3>();
+		internal_pathCoordinates.Add(_startPosition);
 
-		while (remainingLength > 0)
+		while (internal_remainingLength > 0)
 		{
-			Vector3 actualPosition = pathCoordinates[pathCoordinates.Count - 1];
-			if (Physics.Raycast(actualPosition, _direction, out hit, remainingLength, ~0, QueryTriggerInteraction.Ignore))
+			Vector3 internal_actualPosition = internal_pathCoordinates[internal_pathCoordinates.Count - 1];
+			if (Physics.Raycast(internal_actualPosition, _direction, out hit, internal_remainingLength, ~0, QueryTriggerInteraction.Ignore))
 			{
-				Debug.DrawRay(actualPosition, hit.normal, Color.red);
+				Debug.DrawRay(internal_actualPosition, hit.normal, Color.red);
 				_direction = Vector3.Reflect(_direction, hit.normal);
 				Debug.DrawRay(hit.point, _direction, Color.blue);
-				pathCoordinates.Add(hit.point);
-				remainingLength -= Vector3.Distance(actualPosition, hit.point);
+				internal_pathCoordinates.Add(hit.point);
+				internal_remainingLength -= Vector3.Distance(internal_actualPosition, hit.point);
 				if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Environment"))
 				{
 					break;
@@ -175,64 +175,64 @@ public class PassController : MonoBehaviour
 				if (hit.collider.isTrigger) { continue; }
 			} else
 			{
-				pathCoordinates.Add(actualPosition + _direction * remainingLength);
-				remainingLength = 0;
+				internal_pathCoordinates.Add(internal_actualPosition + _direction * internal_remainingLength);
+				internal_remainingLength = 0;
 			}
 		}
 
-		return pathCoordinates;
+		return internal_pathCoordinates;
 	}
 
 	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, Transform _target, Vector3 _lookDirection)
 	{
 		//Get the middle position for the curve
-		Vector3 startPosition = _startPosition;
-		Vector3 endPosition = _target.transform.position + Vector3.up;
-		Vector3 direction = endPosition - startPosition;
-		float lookDirectionAngle = Vector3.SignedAngle(new Vector3(direction.x, 0, direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
-		List<Vector3> coordinates = new List<Vector3>();
+		Vector3 internal_startPosition = _startPosition;
+		Vector3 internal_endPosition = _target.transform.position + Vector3.up;
+		Vector3 internal_direction = internal_endPosition - internal_startPosition;
+		float internal_lookDirectionAngle = Vector3.SignedAngle(new Vector3(internal_direction.x, 0, internal_direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
+		List<Vector3> internal_coordinates = new List<Vector3>();
 		_lookDirection.y = 0;
 
-		Vector3 firstPoint = startPosition;
-		Vector3 firstHandle = startPosition + _lookDirection.normalized * hanseLength;
-		Vector3 secondPoint = endPosition;
+		Vector3 internal_firstPoint = internal_startPosition;
+		Vector3 internal_firstHandle = internal_startPosition + _lookDirection.normalized * hanseLength;
+		Vector3 internal_secondPoint = internal_endPosition;
 		for (int i = 0; i < curveRaycastIteration; i++)
 		{
-			if (Mathf.Abs(lookDirectionAngle) > curveMinAngle)
+			if (Mathf.Abs(internal_lookDirectionAngle) > curveMinAngle)
 			{
-				coordinates.Add(SwissArmyKnife.CubicBezierCurve(firstPoint, firstHandle, secondPoint, secondPoint, i / curveRaycastIteration));
+				internal_coordinates.Add(SwissArmyKnife.CubicBezierCurve(internal_firstPoint, internal_firstHandle, internal_secondPoint, internal_secondPoint, i / curveRaycastIteration));
 			}
 			else
 			{
-				coordinates.Add(Vector3.Lerp(firstPoint ,endPosition, i / curveRaycastIteration));
+				internal_coordinates.Add(Vector3.Lerp(internal_firstPoint ,internal_endPosition, i / curveRaycastIteration));
 			}
 			if (i > 0)
 			{
-				foreach (RaycastHit hito in Physics.RaycastAll(coordinates[i - 1], coordinates[i] - coordinates[i - 1], Vector3.Distance(coordinates[i], coordinates[i - 1]))) {
+				foreach (RaycastHit hito in Physics.RaycastAll(internal_coordinates[i - 1], internal_coordinates[i] - internal_coordinates[i - 1], Vector3.Distance(internal_coordinates[i], internal_coordinates[i - 1]))) {
 					if (hito.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
 					{
-						coordinates.Add(hito.point);
-						Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+						internal_coordinates.Add(hito.point);
+						Vector3 _direction = Vector3.Reflect(internal_coordinates[i] - internal_coordinates[i - 1], hito.normal);
 						_direction = _direction.normalized * 10;
-						coordinates.Add(hito.point + _direction);
-						return coordinates;
+						internal_coordinates.Add(hito.point + _direction);
+						return internal_coordinates;
 					}
 					else if (hito.collider.gameObject.GetComponentInParent<Shield>() != null)
 					{
-						Vector3 impactVector = (coordinates[i] - coordinates[i - 1]);
-						if ((impactVector.normalized + hito.collider.gameObject.transform.forward.normalized).magnitude >= (hito.collider.gameObject.GetComponentInParent<Shield>().Enemy.AngleRangeForRebound / 63.5f))
+						Vector3 impactVector = (internal_coordinates[i] - internal_coordinates[i - 1]);
+						if ((impactVector.normalized + hito.collider.gameObject.transform.forward.normalized).magnitude >= (hito.collider.gameObject.GetComponentInParent<Shield>().enemy.angleRangeForRebound / 63.5f))
 						{
-							coordinates.Add(hito.point);
-							Vector3 _direction = Vector3.Reflect(coordinates[i] - coordinates[i - 1], hito.normal);
+							internal_coordinates.Add(hito.point);
+							Vector3 _direction = Vector3.Reflect(internal_coordinates[i] - internal_coordinates[i - 1], hito.normal);
 							_direction = _direction.normalized * 10;
-							coordinates.Add(hito.point + _direction);
-							return coordinates;
+							internal_coordinates.Add(hito.point + _direction);
+							return internal_coordinates;
 						}
 					}
 				}
 			}
 		}
-		return coordinates;
+		return internal_coordinates;
 	}
 
 	public void Aim()
@@ -258,7 +258,7 @@ public class PassController : MonoBehaviour
 		return null;
 	}
 
-	public IEnumerator ShootAfterDelay(float _delay)
+	public IEnumerator ShootAfterDelay_C(float _delay)
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
@@ -273,7 +273,7 @@ public class PassController : MonoBehaviour
 		ChangePassState(PassState.Shooting);
 		if (ballTimeInHand > receptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
 		currentPassCooldown = passCooldown;
-		BallBehaviour shotBall = ball;
+		BallBehaviour internal_shotBall = ball;
 		ball = null;
 		didPerfectReception = false;
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
@@ -285,13 +285,13 @@ public class PassController : MonoBehaviour
             {
 				if (passPreview)
 				{
-					shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
-					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
+					internal_shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
+					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
-					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
-					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false,otherPlayer.transform.position - transform.position, Vector3.one * 5f);
+					internal_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
+					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false,otherPlayer.transform.position - transform.position, Vector3.one * 5f);
 				}
             }
         }
@@ -301,14 +301,14 @@ public class PassController : MonoBehaviour
 			{
 				if (otherPlayer != null)
 				{
-					shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
-					FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, otherPlayer.transform.position - transform.position, Vector3.one * 5f);
+					internal_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
+					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, otherPlayer.transform.position - transform.position, Vector3.one * 5f);
 				}
 			}
 			else // if aiming with right joystick
 			{
-				shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
-				FXManager.InstantiateFX(ballDatas.ThrowCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
+				internal_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
+				FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 			}
 		}
 		ChangePassState(PassState.None);
@@ -350,13 +350,13 @@ public class PassController : MonoBehaviour
 
 	void ChangeColor ( Color _newColor )
 	{
-		Color newStartColor = _newColor;
-		newStartColor.a = lineRenderer.startColor.a;
-		lineRenderer.startColor = newStartColor;
+		Color internal_newStartColor = _newColor;
+		internal_newStartColor.a = lineRenderer.startColor.a;
+		lineRenderer.startColor = internal_newStartColor;
 
-		Color newEndColor = _newColor;
-		newEndColor.a = lineRenderer.endColor.a;
-		lineRenderer.endColor = newEndColor;
+		Color internal_newEndColor = _newColor;
+		internal_newEndColor.a = lineRenderer.endColor.a;
+		lineRenderer.endColor = internal_newEndColor;
 	}
 
 	public void ResetPreviewColor()
@@ -417,10 +417,10 @@ public class PassController : MonoBehaviour
 	{
 		for (int i = 0; i < _pathCoordinates.Count - 1; i++)
 		{
-			Vector3 actualPosition = _pathCoordinates[i];
-			Vector3 nextPosition = _pathCoordinates[i + 1];
-			Vector3 dir = nextPosition - actualPosition;
-			Debug.DrawRay(actualPosition, dir, Color.yellow);
+			Vector3 internal_actualPosition = _pathCoordinates[i];
+			Vector3 internal_nextPosition = _pathCoordinates[i + 1];
+			Vector3 internal_dir = internal_nextPosition - internal_actualPosition;
+			Debug.DrawRay(internal_actualPosition, internal_dir, Color.yellow);
 		}
 	}
 
@@ -432,14 +432,14 @@ public class PassController : MonoBehaviour
 		lineRenderer.materials[0].mainTextureScale = new Vector3(distance * (1f/lineRenderer.startWidth), 1, 1);
 	}
 
-	private float GetPathTotalLength(List<Vector3> pathCoordinates)
+	private float GetPathTotalLength(List<Vector3> _pathCoordinates)
 	{
 		float totalLength = 0;
-		for (int i = 0; i < pathCoordinates.Count - 1; i++)
+		for (int i = 0; i < _pathCoordinates.Count - 1; i++)
 		{
-			Vector3 actualPosition = pathCoordinates[i];
-			Vector3 nextPosition = pathCoordinates[i + 1];
-			totalLength += Vector3.Distance(actualPosition, nextPosition);
+			Vector3 internal_actualPosition = _pathCoordinates[i];
+			Vector3 internal_nextPosition = _pathCoordinates[i + 1];
+			totalLength += Vector3.Distance(internal_actualPosition, internal_nextPosition);
 		}
 		return totalLength;
 	}

@@ -45,8 +45,8 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
     float distanceWithFocusedPlayer;
     Transform focusedPlayer = null;
 	public float energyAmount;
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+	[SerializeField] private bool _lockable; public bool lockable_access { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize_access { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Header("Focus")]

@@ -5,14 +5,14 @@ using UnityEngine.UI;
 
 public class CursorManager : MonoBehaviour
 {
-	public GameObject BallPointerPrefab;
+	public GameObject ballPointerPrefab;
 	private static GameObject ballPointer;
 	private static Transform ballPointerParent;
 
     // Start is called before the first frame update
     void Start()
     {
-		ballPointer = Instantiate(BallPointerPrefab);
+		ballPointer = Instantiate(ballPointerPrefab);
 		ballPointer.SetActive(false);
     }
 
@@ -38,15 +38,15 @@ public class CursorManager : MonoBehaviour
 		}
 	}
 
-	public static void SetBallPointerParent(Transform newParent)
+	public static void SetBallPointerParent(Transform _newParent)
 	{
-		if (newParent == null) {
+		if (_newParent == null) {
 			ShowBallPointer(false);
 			ballPointerParent = null;
 		} else
 		{
 			ShowBallPointer(true);
-			ballPointerParent = newParent;
+			ballPointerParent = _newParent;
 		}
 	}
 }

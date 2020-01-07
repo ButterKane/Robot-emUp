@@ -22,16 +22,16 @@ public class TurretBasicBullet : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
         //print(other.tag);
-        if(other.tag == "Player")
+        if(_other.tag == "Player")
         {
-            other.GetComponent<PawnController>().Damage(damageDealt);
+            _other.GetComponent<PawnController>().Damage(damageDealt);
             Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
             Destroy(gameObject);
         }
-        else if(other.tag == "Environment")
+        else if(_other.tag == "Environment")
         {
             Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
             Destroy(gameObject);

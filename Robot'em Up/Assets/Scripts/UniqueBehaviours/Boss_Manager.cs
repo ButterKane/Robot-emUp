@@ -19,7 +19,7 @@ public class Boss_Manager : MonoBehaviour
     public List<Boss_WeakPoint> weakPoints;
     public Text winningMessage;
     public Text inversionMessage;
-    public Slider pyramidHeath;
+    public Slider pyramidHealth;
 
     private void Awake()
     {
@@ -37,15 +37,15 @@ public class Boss_Manager : MonoBehaviour
 
     public void CheckIfWeakpointsAreAlive()
     {
-        bool temp = true;
+        bool internal_weakpointsAlive = true;
         foreach (var item in weakPoints)
         {
             if (item.life > 0)
             {
-                temp = false;
+                internal_weakpointsAlive = false;
             }
         }
-        if (temp)
+        if (internal_weakpointsAlive)
         {
             difficulty = 0;
             winningMessage.gameObject.SetActive(true);
@@ -61,7 +61,7 @@ public class Boss_Manager : MonoBehaviour
     
     void Update()
     {
-        int temp_var = 0;
+        int internal_temporaryHealth = 0;
         showInversionMessage -= Time.deltaTime;
         if (showInversionMessage < 0)
         {
@@ -71,17 +71,17 @@ public class Boss_Manager : MonoBehaviour
         {
             if (item.life > 0)
             {
-                temp_var++;
+                internal_temporaryHealth++;
             }
         }
-        if (temp_var < 1)
+        if (internal_temporaryHealth < 1)
         {
-            pyramidHeath.gameObject.SetActive(false);
+            pyramidHealth.gameObject.SetActive(false);
         }
-        pyramidHeath.value = temp_var;
+        pyramidHealth.value = internal_temporaryHealth;
 
-        int totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
-        int totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
+        int internal_totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
+        int internal_totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
         if (GameManager.playerOne.currentHealth < 1 | GameManager.playerTwo.currentHealth < 1)
         {
             OnePlayerLeft = true;
@@ -91,11 +91,11 @@ public class Boss_Manager : MonoBehaviour
             OnePlayerLeft = false;
         }
 
-        if (totalHealth / totalmaxHealth > 1.2)
+        if (internal_totalHealth / internal_totalmaxHealth > 1.2)
         {
             difficulty += Time.deltaTime / divisorSpeedDifficulty;
         }
-        else if (totalHealth / totalmaxHealth > 0.6)
+        else if (internal_totalHealth / internal_totalmaxHealth > 0.6)
             {
             difficulty -= Time.deltaTime / divisorSpeedDifficulty;
 

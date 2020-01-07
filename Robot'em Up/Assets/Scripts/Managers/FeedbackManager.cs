@@ -13,6 +13,13 @@ public class VibrationData
 }
 
 [System.Serializable]
+public class SoundPlayData
+{
+	public string soundName;
+	public bool attachToTarget;
+}
+
+[System.Serializable]
 public class FeedbackData
 {
 	public string eventName; //Each event will trigger specific feedbacks (Vibration or screenShake
@@ -21,6 +28,9 @@ public class FeedbackData
 	public bool shakeDataInited;
 	public bool vibrationDataInited;
 	public bool eventCalled = false;
+	public FeedbackEventCategory category;
+	public SoundPlayData soundData;
+	public bool soundDataInited;
 }
 
 public class FeedbackManager
@@ -48,6 +58,16 @@ public class FeedbackManager
 					break;
 
 			}
+		}
+		if (feedback.soundData != null && feedback.soundDataInited)
+		{
+			Component target = _target as Component;
+			Transform parent = null;
+			if (feedback.soundData.attachToTarget)
+			{
+				parent = target.transform;
+			}
+			SoundManager.PlaySound(feedback.soundData.soundName, target.transform.position, parent);
 		}
 	}
 

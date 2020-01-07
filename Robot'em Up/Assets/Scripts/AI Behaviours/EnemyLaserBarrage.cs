@@ -8,11 +8,11 @@ public class EnemyLaserBarrage : EnemyBehaviour
     [Space(2)]
     [Separator("Big Laser Attack Variables")]
     public bool isFiring =  true;
-    public GameObject LaserLineGO;
-    private GameObject LaserLineInstance;
-    private LineRenderer LaserLine;
-    public float LaserThickness = 3f;
-    private float LaserLength;
+    public GameObject laserLineGO;
+    private GameObject laserLineInstance;
+    private LineRenderer laserLine;
+    public float laserThickness = 3f;
+    private float laserLength;
 
     public override void AttackingState()
     {
@@ -20,24 +20,24 @@ public class EnemyLaserBarrage : EnemyBehaviour
         if (isFiring)
         {
             // Detection Part
-            float thickness = LaserThickness; //<-- Desired thickness here.
-            Vector3 origin = transform.position + transform.forward * 0.5f;
-            Vector3 direction = transform.TransformDirection(Vector3.forward);
+            float internal_thickness = laserThickness; //<-- Desired thickness here.
+            Vector3 internal_origin = transform.position + transform.forward * 0.5f;
+            Vector3 internal_direction = transform.TransformDirection(Vector3.forward);
             RaycastHit hit;
-            if (Physics.SphereCast(origin, thickness, direction, out hit))
+            if (Physics.SphereCast(internal_origin, internal_thickness, internal_direction, out hit))
             {
                 Debug.Log("hit " + hit.collider.name);
-                LaserLength = (hit.point - origin).magnitude;
+                laserLength = (hit.point - internal_origin).magnitude;
             }
 
             // Visual Part
-            if (LaserLineInstance == null)
+            if (laserLineInstance == null)
             {
-                LaserLineInstance = Instantiate(LaserLineGO, transform);
-                LaserLine = LaserLineInstance.GetComponent<LineRenderer>();
+                laserLineInstance = Instantiate(laserLineGO, transform);
+                laserLine = laserLineInstance.GetComponent<LineRenderer>();
             }
-            LaserLineInstance.transform.position = transform.position + new Vector3(transform.forward.x * 0.5f, 0.5f, transform.forward.z * 0.5f);
-            LaserLine.SetPosition(1, new Vector3(LaserLine.GetPosition(1).x, LaserLine.GetPosition(1).y, LaserLength));
+            laserLineInstance.transform.position = transform.position + new Vector3(transform.forward.x * 0.5f, 0.5f, transform.forward.z * 0.5f);
+            laserLine.SetPosition(1, new Vector3(laserLine.GetPosition(1).x, laserLine.GetPosition(1).y, laserLength));
         }
             
         //}

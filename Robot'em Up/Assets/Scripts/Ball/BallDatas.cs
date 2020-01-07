@@ -19,19 +19,19 @@ public class BallDatas : ScriptableObject
 	public Texture2D hitDecal;
 
 	[Header("FX")]
-	public GameObject Trail;
-	public GameObject WallHit;
-	public GameObject ReceiveCore;
-	public GameObject ThrowCore;
+	public GameObject trail;
+	public GameObject wallHit;
+	public GameObject receiveCore;
+	public GameObject throwCore;
 
-	public GameObject LightExplosion;
-	public GameObject HeavyExplosion;
+	public GameObject lightExplosion;
+	public GameObject heavyExplosion;
 
-	public GameObject DunkJump;
-	public GameObject DunkExplosion;
-	public GameObject DunkIdle;
-	public GameObject DunkDash;
-	public GameObject DunkReceiving;
+	public GameObject dunkJump;
+	public GameObject dunkExplosion;
+	public GameObject dunkIdle;
+	public GameObject dunkDash;
+	public GameObject dunkReceiving;
 
-	public GameObject PerfectReception;
+	public GameObject perfectReception;
 }

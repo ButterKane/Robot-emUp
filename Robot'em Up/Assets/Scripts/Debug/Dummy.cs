@@ -5,18 +5,18 @@ using UnityEngine;
 using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
 	public GameObject deathFX;
-	private int _hitCount;
+	private int hitCount;
 	private Vector3 initialScale;
-	public int hitCount { 
+	public int hitCount_access { 
 		get { 
-			return _hitCount; 
+			return hitCount; 
 		}
 		set { 
-			_hitCount = value; 
+			hitCount = value; 
 		}
 	}
 
@@ -24,7 +24,7 @@ public class Dummy : MonoBehaviour, IHitable
 	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
-		hitCount++;
+		hitCount_access++;
 		if (_ball != null)
 		{
 			_ball.Explode(true);
@@ -34,7 +34,7 @@ public class Dummy : MonoBehaviour, IHitable
         {
             EnergyManager.IncreaseEnergy(0.2f);
         }
-		if (_hitCount >= maxHealth) { FXManager.InstantiateFX(deathFX, transform.position, false, Vector3.forward, Vector3.one); Destroy(this.gameObject); }
+		if (hitCount >= maxHealth) { FXManager.InstantiateFX(deathFX, transform.position, false, Vector3.forward, Vector3.one); Destroy(this.gameObject); }
 
 		//Fonctions utile
 		//_ball.Bounce();

@@ -37,9 +37,9 @@ public class DunkController : MonoBehaviour
     [SerializeField] private DunkState dunkState;
 
     [Separator("Bump Variables")]
-    public float BumpDistanceMod = 1;
-    public float BumpDurationMod = 0.5f;
-    public float BumpRestDurationMod = 0.7f;
+    public float bumpDistanceMod = 1;
+    public float bumpDurationMod = 0.5f;
+    public float bumpRestDurationMod = 0.7f;
 
 
     private Rigidbody rb;
@@ -77,19 +77,19 @@ public class DunkController : MonoBehaviour
 
 	public void Explode ()
 	{
-		BallBehaviour ball = passController.GetBall();
+		BallBehaviour internal_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
 		FeedbackManager.SendFeedback("event.DunkSmashingOnTheGround", this);
 		SoundManager.PlaySound("DunkOnGround", transform.position);
 		EnergyManager.DecreaseEnergy(1f);
-		Collider[] hitColliders = Physics.OverlapSphere(ball.transform.position, dunkExplosionRadius);
+		Collider[] internal_hitColliders = Physics.OverlapSphere(internal_ball.transform.position, dunkExplosionRadius);
 		int i = 0;
-		while (i < hitColliders.Length)
+		while (i < internal_hitColliders.Length)
 		{
-			IHitable potentialHitableObject = hitColliders[i].GetComponentInParent<IHitable>();
-			if (potentialHitableObject != null)
+			IHitable internal_potentialHitableObject = internal_hitColliders[i].GetComponentInParent<IHitable>();
+			if (internal_potentialHitableObject != null)
 			{
-				potentialHitableObject.OnHit(ball, (hitColliders[i].transform.position - transform.position).normalized, pawnController, dunkDamages, DamageSource.Dunk);
+				internal_potentialHitableObject.OnHit(internal_ball, (internal_hitColliders[i].transform.position - transform.position).normalized, pawnController, dunkDamages, DamageSource.Dunk);
 			}
 			i++;
 		}
@@ -154,16 +154,16 @@ public class DunkController : MonoBehaviour
 		rb.isKinematic = true;
 		rb.useGravity = false;
 
-		Vector3 startPosition = transform.position;
-		Vector3 endPosition = startPosition + Vector3.up * dunkJumpHeight + transform.forward * dunkJumpLength;
+		Vector3 internal_startPosition = transform.position;
+		Vector3 internal_endPosition = internal_startPosition + Vector3.up * dunkJumpHeight + transform.forward * dunkJumpLength;
 
 		for (float i = 0; i < dunkJumpDuration; i += Time.deltaTime)
 		{
-			transform.position = Vector3.Lerp(startPosition, endPosition, i / dunkJumpDuration);
+			transform.position = Vector3.Lerp(internal_startPosition, internal_endPosition, i / dunkJumpDuration);
 			yield return new WaitForEndOfFrame();
 		}
 
-		transform.position = endPosition;
+		transform.position = internal_endPosition;
 	}
 
 	IEnumerator DunkWait_C ()
@@ -187,14 +187,14 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator FallOnGround_C ( float _speed )
 	{
-		Vector3 startPosition = transform.position;
-		Vector3 endPosition = startPosition;
+		Vector3 internal_startPosition = transform.position;
+		Vector3 internal_endPosition = internal_startPosition;
 
 		//Raycast to the ground to find end position
 		RaycastHit hit;
-		if (Physics.Raycast(startPosition, Vector3.down * 50, out hit, Mathf.Infinity, LayerMask.GetMask("Environment")))
+		if (Physics.Raycast(internal_startPosition, Vector3.down * 50, out hit, Mathf.Infinity, LayerMask.GetMask("Environment")))
 		{
-			endPosition = hit.point;
+			internal_endPosition = hit.point;
 		}
 		else
 		{
@@ -206,12 +206,12 @@ public class DunkController : MonoBehaviour
 			ChangeState(DunkState.None);
 		}
 
-		for (float i = 0; i < Vector3.Distance(startPosition, endPosition); i += Time.deltaTime * _speed)
+		for (float i = 0; i < Vector3.Distance(internal_startPosition, internal_endPosition); i += Time.deltaTime * _speed)
 		{
-			transform.position = Vector3.Lerp(startPosition, endPosition, i / Vector3.Distance(startPosition, endPosition));
+			transform.position = Vector3.Lerp(internal_startPosition, internal_endPosition, i / Vector3.Distance(internal_startPosition, internal_endPosition));
 			yield return new WaitForEndOfFrame();
 		}
-		transform.position = endPosition;
+		transform.position = internal_endPosition;
 
 		ChangeState(DunkState.None);
 		if (playerController)
@@ -235,38 +235,38 @@ public class DunkController : MonoBehaviour
 	}
 	private void ChangeState ( DunkState _newState )
 	{
-		BallDatas ballDatas = passController.GetBallDatas();
-		BallBehaviour ball = passController.GetBall();
-		Transform handTransform = passController.GetHandTransform();
-		Animator playerAnimator = pawnController.GetAnimator();
+		BallDatas internal_ballDatas = passController.GetBallDatas();
+		BallBehaviour internal_ball = passController.GetBall();
+		Transform internal_handTransform = passController.GetHandTransform();
+		Animator internal_playerAnimator = pawnController.GetAnimator();
 
 		switch (_newState)
 		{
 			case DunkState.Jumping:
-				FXManager.InstantiateFX(ballDatas.DunkJump, transform.position + new Vector3(0,0.1f,0), false, Vector3.up, Vector3.one * 2.5f);
-				playerAnimator.SetTrigger("PrepareDunkTrigger");
+				FXManager.InstantiateFX(internal_ballDatas.dunkJump, transform.position + new Vector3(0,0.1f,0), false, Vector3.up, Vector3.one * 2.5f);
+				internal_playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
 				Destroy(waitingFX);
-				dashFX = FXManager.InstantiateFX(ballDatas.DunkDash, ball.transform.position, false, Vector3.zero, Vector3.one, ball.transform);
+				dashFX = FXManager.InstantiateFX(internal_ballDatas.dunkDash, internal_ball.transform.position, false, Vector3.zero, Vector3.one, internal_ball.transform);
 				break;
 			case DunkState.Waiting:
-				waitingFX = FXManager.InstantiateFX(ballDatas.DunkIdle, handTransform.position, false, Vector3.zero, Vector3.one, handTransform);
+				waitingFX = FXManager.InstantiateFX(internal_ballDatas.dunkIdle, internal_handTransform.position, false, Vector3.zero, Vector3.one, internal_handTransform);
 				break;
 			case DunkState.Canceling:
-				playerAnimator.SetTrigger("DunkMissedTrigger");
+				internal_playerAnimator.SetTrigger("DunkMissedTrigger");
 				Destroy(waitingFX);
 				break;
 			case DunkState.Receiving:
-				FXManager.InstantiateFX(ballDatas.DunkReceiving, ball.transform.position, false, Vector3.zero, Vector3.one, ball.transform);
-				playerAnimator.SetTrigger("DunkTrigger");
+				FXManager.InstantiateFX(internal_ballDatas.dunkReceiving, internal_ball.transform.position, false, Vector3.zero, Vector3.one, internal_ball.transform);
+				internal_playerAnimator.SetTrigger("DunkTrigger");
 				break;
 			case DunkState.Explosing:
 				if (dashFX != null)
 				{
 					Destroy(dashFX);
 				}
-				FXManager.InstantiateFX(ballDatas.DunkExplosion, ball.transform.position, false, Vector3.zero, Vector3.one);
+				FXManager.InstantiateFX(internal_ballDatas.dunkExplosion, internal_ball.transform.position, false, Vector3.zero, Vector3.one);
 				break;
 		}
 		dunkState = _newState;

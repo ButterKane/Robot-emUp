@@ -56,8 +56,8 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     public float focusChangeWaitTime = 0.5f;
     public float focusChangeSpeed = 2f;
     public AnimationCurve ChangeFocusSpeedCurve;
-	[SerializeField] private bool _lockable; public bool lockable { get { return _lockable; } set { _lockable = value; } }
-	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
+	[SerializeField] private bool _lockable; public bool lockable_access { get { return _lockable; } set { _lockable = value; } }
+	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize_access { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
 	[Space(2)]
     [Separator("Surrounding Variables")]
@@ -200,7 +200,7 @@ public class EnemyBehaviourV1 : MonoBehaviour, IHitable
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (collision.gameObject.GetComponent<PawnController>().IsInvincible == false)
+            if (collision.gameObject.GetComponent<PawnController>().isInvincible_access == false)
             {
                 Vector3 newCollisionPoint = new Vector3(collision.GetContact(0).point.x, collision.gameObject.transform.position.y, collision.GetContact(0).point.z); // Make sure the impact is "leveled" and not with a y angle
                 collision.gameObject.GetComponent<PawnController>().Push((newCollisionPoint - _self.position).normalized, PushForce, newCollisionPoint);

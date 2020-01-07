@@ -4,27 +4,27 @@ using UnityEngine;
 
 public class IndianaCompressorRepeater : PuzzleRepeater
 {
-    public GameObject Cube;
-    public Transform Piston;
-    public LineRenderer MagneticField;
-    public Transform StartPoint;
-    public Transform EndPoint;
-    public float FallSpeed;
-    public float ReloadSpeed;
+    public GameObject cube;
+    public Transform piston;
+    public LineRenderer magneticField;
+    public Transform startPoint;
+    public Transform endPoint;
+    public float fallSpeed;
+    public float reloadSpeed;
     private bool mustReload;
-    public int Damage;
+    public int damage;
 
     // Start is called before the first frame update
     public override void Start()
     {
-        Cube.transform.position = StartPoint.position;
+        cube.transform.position = startPoint.position;
         timeSpeedChange = speedChange;
     }
 
     // Update is called once per frame
     void Update()
     {
-        MagneticField.SetPosition(1, new Vector3(0, Cube.transform.position.y - Piston.position.y, 0));
+        magneticField.SetPosition(1, new Vector3(0, cube.transform.position.y - piston.position.y, 0));
 
         timeSpeedChange -= Time.deltaTime;
 
@@ -39,8 +39,8 @@ public class IndianaCompressorRepeater : PuzzleRepeater
 
     public override void ActivatedAction()
     {
-        Cube.transform.Translate(Vector3.down * FallSpeed); // LErp from strat to end at down speed
-        if (Cube.transform.position.y <= EndPoint.position.y )
+        cube.transform.Translate(Vector3.down * fallSpeed); // LErp from strat to end at down speed
+        if (cube.transform.position.y <= endPoint.position.y )
         {
             mustReload = true;
         }
@@ -48,24 +48,24 @@ public class IndianaCompressorRepeater : PuzzleRepeater
 
     public override void DeactivatedAction()
     {
-        Cube.transform.Translate(Vector3.up * ReloadSpeed); // LErp from end to start at slower up speed
-        if (Cube.transform.position.y >= StartPoint.position.y)
+        cube.transform.Translate(Vector3.up * reloadSpeed); // LErp from end to start at slower up speed
+        if (cube.transform.position.y >= startPoint.position.y)
         {
             timeSpeedChange = speedChange;
             mustReload = false;
         }
     }
 
-    public void DetectedTouch(Collider c)
+    public void DetectedTouch(Collider _other)
     {
         /// TODO: Change the damage source for each one
-        if (c.gameObject.tag == "Player")
+        if (_other.gameObject.tag == "Player")
         {
-            c.gameObject.GetComponent<IHitable>().OnHit(null, Cube.transform.position - c.gameObject.transform.position, null, Damage, DamageSource.RedBarrelExplosion);
+            _other.gameObject.GetComponent<IHitable>().OnHit(null, cube.transform.position - _other.gameObject.transform.position, null, damage, DamageSource.RedBarrelExplosion);
         }
-        if (c.gameObject.tag == "Enemy")
+        if (_other.gameObject.tag == "Enemy")
         {
-            c.gameObject.GetComponent<EnemyBehaviour>().OnHit(null, Cube.transform.position - c.gameObject.transform.position, null, Damage, DamageSource.RedBarrelExplosion);
+            _other.gameObject.GetComponent<EnemyBehaviour>().OnHit(null, cube.transform.position - _other.gameObject.transform.position, null, damage, DamageSource.RedBarrelExplosion);
         }
     }
 }

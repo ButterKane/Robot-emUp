@@ -7,12 +7,12 @@ public class TutoHelper : MonoBehaviour
 
     public PuzzleDatas puzzleData;
     public GameObject myText;
-    private List<PawnController> ListPawnsHere;
+    private List<PawnController> listPawnsHere;
     // Start is called before the first frame update
     void Start()
     {
         myText.gameObject.SetActive(false);
-        ListPawnsHere = new List<PawnController>();
+        listPawnsHere = new List<PawnController>();
     }
 
     // Update is called once per frame
@@ -22,12 +22,12 @@ public class TutoHelper : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.GetComponent<PlayerController>())
+        if (_other.GetComponent<PlayerController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Add(pawn);
+            PawnController internal_pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Add(internal_pawn);
             if (puzzleData.showTuto)
             {
                 myText.SetActive(true);
@@ -35,13 +35,13 @@ public class TutoHelper : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.GetComponent<PlayerController>())
+        if (_other.GetComponent<PlayerController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Remove(pawn);
-            if (ListPawnsHere.Count < 1)
+            PawnController internal_pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Remove(internal_pawn);
+            if (listPawnsHere.Count < 1)
             {
                 myText.SetActive(false);
             }

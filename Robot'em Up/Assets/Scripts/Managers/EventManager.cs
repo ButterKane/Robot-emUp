@@ -5,7 +5,7 @@ using UnityEngine;
 public class EventManager : MonoBehaviour
 {
     public delegate void ButtonAction();
-    public static event ButtonAction DummySpawn;
+    public static event ButtonAction dummySpawn;
 
     // Start is called before the first frame update
     void Start()

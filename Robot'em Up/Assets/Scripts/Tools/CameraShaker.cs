@@ -16,37 +16,37 @@ public class CameraShaker : MonoBehaviour
 			cameraShaker = new GameObject().AddComponent<ShakeEffect>();
 			cameraShaker.gameObject.name = "Camera Shaker";
 		}
-		ShakeData shakeData = new ShakeData(_intensity, _duration, _frequency);
+		ShakeData internal_shakeData = new ShakeData(_intensity, _duration, _frequency);
 		if (currentShake != null)
 		{
 			if (_intensity > currentShake.intensity)
 			{
 				shakeList.Add(currentShake);
-				currentShake = shakeData;
-				shakeList.Add(shakeData);
+				currentShake = internal_shakeData;
+				shakeList.Add(internal_shakeData);
 			} else
 			{
-				shakeList.Add(shakeData);
+				shakeList.Add(internal_shakeData);
 			}
 		} else
 		{
-			currentShake = shakeData;
-			shakeList.Add(shakeData);
+			currentShake = internal_shakeData;
+			shakeList.Add(internal_shakeData);
 		}
 	}
 
 	public static void UpdateShakes()
 	{
-		List<ShakeData> newShakeData = new List<ShakeData>();
+		List<ShakeData> internal_newShakeData = new List<ShakeData>();
 		foreach (ShakeData shakeData in shakeList)
 		{
 			shakeData.durationLeft -= Time.deltaTime;
 			if (shakeData.durationLeft > 0)
 			{
-				newShakeData.Add(shakeData);
+				internal_newShakeData.Add(shakeData);
 			}
 		}
-		shakeList = newShakeData;
+		shakeList = internal_newShakeData;
 		if (currentShake != null && currentShake.durationLeft <= 0) { shakeList.Remove(currentShake); currentShake = GetNextShakeData(); }
 	}
 
@@ -56,17 +56,17 @@ public class CameraShaker : MonoBehaviour
 		{
 			return null;
 		}
-		ShakeData biggestShake = shakeList[0];
-		float biggestValue = shakeList[0].intensity;
+		ShakeData internal_biggestShake = shakeList[0];
+		float internal_biggestValue = shakeList[0].intensity;
 		foreach (ShakeData shakeData in shakeList)
 		{
-			if (shakeData.intensity > biggestValue)
+			if (shakeData.intensity > internal_biggestValue)
 			{
-				biggestValue = shakeData.intensity;
-				biggestShake = shakeData;
+				internal_biggestValue = shakeData.intensity;
+				internal_biggestShake = shakeData;
 			}
 		}
-		return biggestShake;
+		return internal_biggestShake;
 	}
 }
 
@@ -101,21 +101,25 @@ public class ShakeEffect : MonoBehaviour {
 
 	public CinemachineVirtualCamera GetVirtualCamera()
 	{
-		CinemachineBrain brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
-		if (brain == null) { return null; }
-		ICinemachineCamera virtualCameraEnum = brain.ActiveVirtualCamera;
-		if (virtualCameraEnum == null) { return null; }
-		GameObject virtualCamGO = brain.ActiveVirtualCamera.VirtualCameraGameObject;
-		if (virtualCamGO == null) { return null; }
-		CinemachineVirtualCamera _virtualCam = virtualCamGO.GetComponent<CinemachineVirtualCamera>();
-		if (_virtualCam == null) { return null; }
-		_perlin = _virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+		CinemachineBrain internal_brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
+		if (internal_brain == null) { return null; }
+
+		ICinemachineCamera internal_virtualCameraEnum = internal_brain.ActiveVirtualCamera;
+		if (internal_virtualCameraEnum == null) { return null; }
+
+		GameObject internal_virtualCamGO = internal_brain.ActiveVirtualCamera.VirtualCameraGameObject;
+		if (internal_virtualCamGO == null) { return null; }
+
+		CinemachineVirtualCamera internal_virtualCam = internal_virtualCamGO.GetComponent<CinemachineVirtualCamera>();
+		if (internal_virtualCam == null) { return null; }
+
+		_perlin = internal_virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 		if (_perlin == null)
 		{
-			_perlin = _virtualCam.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+			_perlin = internal_virtualCam.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 			_perlin.m_NoiseProfile = Resources.Load("NoiseProfile") as NoiseSettings;
 		}
-		return _virtualCam;
+		return internal_virtualCam;
 	}
 
 	private void Update ()
@@ -126,8 +130,8 @@ public class ShakeEffect : MonoBehaviour {
 		CameraShaker.UpdateShakes();
 		if (currentShake != null)
 		{
-			float momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.screenShakeMultiplier);
-			_perlin.m_AmplitudeGain = currentShake.intensity * momentumMultiplier;
+			float internal_momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.screenShakeMultiplier);
+			_perlin.m_AmplitudeGain = currentShake.intensity * internal_momentumMultiplier;
 			_perlin.m_FrequencyGain = currentShake.frequency;
 		} else
 		{

@@ -14,11 +14,11 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void LaunchProjectile()
     {
-        Vector3 spawnPosition;
-        spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.LookRotation(transform.forward));
-        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayerTransform;
-        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = _self;
+        Vector3 internal_spawnPosition;
+        internal_spawnPosition = bulletSpawn.position;
+        spawnedBullet = Instantiate(bulletPrefab, internal_spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
+        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = self;
 
         FeedbackManager.SendFeedback("event.SniperTurretAttack", this);
         SoundManager.PlaySound("SniperTurretAttack", transform.position);
@@ -26,9 +26,9 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void Die()
     {
-        GameObject deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(deathParticle, 1.5f);
+        GameObject internal_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        internal_deathParticle.transform.localScale *= deathParticleScale;
+        Destroy(internal_deathParticle, 1.5f);
 
         if (Random.Range(0f, 1f) <= coreDropChances)
         {
@@ -49,7 +49,7 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void ExitState()
     {
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Hiding:
                 break;
@@ -73,13 +73,13 @@ public class TurretSniperBehaviour : TurretBehaviour
     public override void EnterState()
     {
         //print(State);
-        switch (State)
+        switch (turretState)
         {
             case TurretState.Hiding:
-                Animator.SetTrigger("HidingTrigger");
+                animator.SetTrigger("HidingTrigger");
                 break;
             case TurretState.GettingOutOfGround:
-                Animator.SetTrigger("GettingOutOfGroundTrigger");
+                animator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
                 break;
@@ -88,7 +88,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             case TurretState.Attacking:
                 //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
-                Animator.SetTrigger("AnticipationTrigger");
+                animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 //VARIABLES FXs--------------------------------------
@@ -102,22 +102,22 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void AttackingUpdateState()
     {
-        bool _aimAtPlayer;
+        bool internal_aimAtPlayer;
         
-        if(Physics.Raycast(_self.position, _self.forward, Vector3.Distance(_self.position, focusedPlayerTransform.position), layersToCheckToScale))
+        if(Physics.Raycast(self.position, self.forward, Vector3.Distance(self.position, focusedPlayer.position), layersToCheckToScale))
         {
-            _aimAtPlayer = false;
+            internal_aimAtPlayer = false;
         }
         else
         {
-            _aimAtPlayer = true;
+            internal_aimAtPlayer = true;
         }
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(_self.position, _self.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(self.position, self.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(_self.position, hit.point));
-            aimingCubeTransform.position = _self.position + _self.up * .5f + (aimingCubeTransform.localScale.z / 2 * _self.forward);
+            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(self.position, hit.point));
+            aimingCubeTransform.position = self.position + self.up * .5f + (aimingCubeTransform.localScale.z / 2 * self.forward);
         }
 
         //Adapt PlayerFXRenderer
@@ -127,9 +127,9 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
                 //ADAPT FXs
-                if (_aimAtPlayer)
+                if (internal_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayerTransform.position;
+                    aimingAtPlayerFXTransform.position = focusedPlayer.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
@@ -141,7 +141,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 }
 
                 //ROTATE TOWARDS PLAYER
-                if (focusedPlayerTransform != null)
+                if (focusedPlayer != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -154,7 +154,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 if (anticipationTime <= 0)
                 {
                     attackState = TurretAttackState.Attack;
-                    Animator.SetTrigger("AttackTrigger");
+                    animator.SetTrigger("AttackTrigger");
                     // reset FX variables before attacking ! --------------------------------------------------------------------------
                     aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 10);
                     aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.yellow);
@@ -164,9 +164,9 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Attack:
                 //ADAPT FXs----------------------------------
-                if (_aimAtPlayer)
+                if (internal_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayerTransform.position;
+                    aimingAtPlayerFXTransform.position = focusedPlayer.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
@@ -177,7 +177,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
                 //ROTATE TOWARDS PLAYER-------------------------------------
-                if (focusedPlayerTransform != null)
+                if (focusedPlayer != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -188,7 +188,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
                 if (restTime <= 0)
                 {
-                    Animator.SetTrigger("FromRestToIdleTrigger");
+                    animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
                 }
 
@@ -197,7 +197,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                     ChangeAimingCubeState(AimingCubeState.NotVisible);
                 }
 
-                if (focusedPlayerTransform != null)
+                if (focusedPlayer != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -211,8 +211,8 @@ public class TurretSniperBehaviour : TurretBehaviour
         switch (aimingCubeState)
         {
             case AimingCubeState.Following:
-                float randomFloat = Random.Range(0f, 1f);
-                if (randomFloat>0.5f)
+                float internal_randomFloat = Random.Range(0f, 1f);
+                if (internal_randomFloat>0.5f)
                 {
                     aimingCubeTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.x, minMaxFollowingAimingCubeScale.x, aimingCubeTransform.localScale.z);
                 }
