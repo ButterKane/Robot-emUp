@@ -270,6 +270,11 @@ public class PlayerController : PawnController, IHitable
 		}
 	}
 
+	public override void UpdateAnimatorBlendTree ()
+	{
+		base.UpdateAnimatorBlendTree();
+		animator.SetFloat("IdleRunningBlend", currentSpeed / moveSpeed);
+	}
 	public override void Damage ( int _amount )
 	{
         if (!isInvincible_access)
@@ -420,5 +425,11 @@ public class PlayerController : PawnController, IHitable
 				Damage(_damages);
 				break;
 		}
+	}
+
+	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
+	{
+		FeedbackManager.SendFeedback("event.PlayerBumpedAway", this);
+		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
 	}
 }
