@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
     [System.NonSerialized] public static GameManager i;
     [System.NonSerialized] public LevelManager levelManager;
     [System.NonSerialized] public InputManager inputManager;
-    [System.NonSerialized]  public EventManager eventManager;
     [System.NonSerialized]  public EnemyManager enemyManager;
 
 	[System.NonSerialized]  public GameObject mainCameraGO;
@@ -91,7 +90,6 @@ public class GameManager : MonoBehaviour
 		}
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
-        if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
@@ -255,11 +253,6 @@ public class GameManager : MonoBehaviour
 	//        playerTwo.GetComponent<PlayerControllerAlex>().otherPlayer = playerTwo.GetComponent<PlayerControllerAlex>().ballTarget = playerOne.transform;
 	//    }
 	//}
-
-	private void OnEnable()
-    {
-        EventManager.dummySpawn += SpawnDummy;
-    }
 
     void SpawnDummy()
     {

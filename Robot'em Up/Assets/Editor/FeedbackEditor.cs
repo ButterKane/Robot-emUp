@@ -13,7 +13,7 @@ public class FeedbackEditor : Editor
 	string[] categoryOptions;
 	int selectedCategoryIndex;
 	List<string> soundList;
-	string myText = "";
+
 	private void OnEnable ()
 	{
 		feedbackDatas = (FeedbackDatas)target;
