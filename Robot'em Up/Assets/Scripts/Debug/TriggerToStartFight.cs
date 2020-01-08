@@ -29,7 +29,7 @@ public class TriggerToStartFight : MonoBehaviour
                 {
                     for (int i = 0; i < enemyArray.Length; i++)
                     {
-                        enemyArray[i].ChangingState(EnemyState.Idle);
+                        enemyArray[i].ChangeState(EnemyState.Idle);
                     }
                 }
                 if (turretArray.Length > 0)

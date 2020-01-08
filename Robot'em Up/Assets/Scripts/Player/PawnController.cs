@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using MyBox;
+using UnityEngine.AI;
 
 public enum MoveState
 {
@@ -22,7 +23,11 @@ public enum SpeedMultiplierReason
 	Freeze,
 	Reviving,
 	Dash,
-	PerfectReception
+	PerfectReception,
+	Pass,
+	Environment,
+	Dunk,
+	Unknown
 }
 
 public class SpeedCoef
@@ -44,7 +49,7 @@ public class PawnController : MonoBehaviour
 {
 	[Separator("General settings")]
 	public int maxHealth;
-    public bool isInvincible_access
+   public bool isInvincible_access
     {
         get { return _isInvincible; }
         set
@@ -56,6 +61,8 @@ public class PawnController : MonoBehaviour
 	private bool _isInvincible;
     public float invincibilityTime = 1;
     private IEnumerator invincibilityCoroutine;
+	public string onHitSound = "";
+	public string onDeathSound = "";
 
 	[Space(2)]
 	[Separator("Movement settings")]
@@ -63,8 +70,8 @@ public class PawnController : MonoBehaviour
     public AnimationCurve accelerationCurve;
 
 	[Tooltip("Minimum required speed to go to walking state")] public float minWalkSpeed = 0.1f;
-	public float maxSpeed;
-	public float maxAcceleration = 10;
+	public float moveSpeed = 10;
+	public float acceleration = 10;
 
     [Space(2)]
     public float movingDrag = .4f;
@@ -73,7 +80,7 @@ public class PawnController : MonoBehaviour
 	public float deadzone = 0.2f;
 	[Range(0.01f, 1f)] public float turnSpeed = .25f;
 
-	[Header("Climb settings")]
+	[Separator("Climb settings")]
 	public float timeBeforeClimb = 0.2f;
 	public float minDistanceToClimb = 1f;
 	public float climbDuration = 0.5f;
@@ -81,22 +88,29 @@ public class PawnController : MonoBehaviour
 	public float climbForwardPushForce = 450f;
 	public float climbUpwardPushForce = 450f;
 
-    [Space(2)]
+	[Separator("FX")]
+	public GameObject deathParticlePrefab;
+	public float deathParticleScale = 2;
+	public GameObject hitParticlePrefab;
+	public float hitParticleScale = 3;
+
+	[Space(2)]
     [Separator("Bumped Values")]
-    public float maxGettingUpDuration = 0.6f;
+	public bool isBumpable = true;
+	public float maxGettingUpDuration = 0.6f;
     public AnimationCurve bumpDistanceCurve;
-    float bumpDistance;
-    float bumpDuration;
-    float restDuration;
-    float gettingUpDuration;
-    Vector3 bumpInitialPosition;
-    Vector3 bumpDestinationPosition;
-    Vector3 bumpDirection;
-    float bumpTimeProgression;
+    protected float bumpDistance;
+	protected float bumpDuration;
+	protected float restDuration;
+	protected float gettingUpDuration;
+	protected Vector3 bumpInitialPosition;
+	protected Vector3 bumpDestinationPosition;
+	protected Vector3 bumpDirection;
+	protected float bumpTimeProgression;
     [Range(0, 1)] public float whenToTriggerFallingAnim = 0.302f;
-    bool fallingTriggerLaunched;
+	protected bool fallingTriggerLaunched;
     public float bumpRaycastDistance = 1;
-    bool mustCancelBump;
+	protected bool mustCancelBump;
 
     [Space(2)]
     [Header("Debug (Don't change)")]
@@ -107,18 +121,20 @@ public class PawnController : MonoBehaviour
     private Quaternion turnRotation;
 	private float customDrag;
 	private float customGravity;
-	private float speed;
+	protected float currentSpeed;
     [System.NonSerialized] public int currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
 	private float climbingHoldTime;
-	private Rigidbody rb;
-	protected Animator animator;
+	public Rigidbody rb;
+	[System.NonSerialized] public Animator animator;
 	private Vector3 initialScale;
 	private bool frozen;
 	private bool isPlayer;
 	protected bool targetable;
+	protected int damageAfterBump;
+	protected NavMeshAgent navMeshAgent;
 
 	protected PassController passController;
 
@@ -127,7 +143,7 @@ public class PawnController : MonoBehaviour
 
 	public virtual void Awake()
     {
-		initialScale = transform.Find("Model").transform.localScale;
+		initialScale = transform.localScale;
         isInvincible_access = false;
         invincibilityCoroutine = null;
         customGravity = onGroundGravityMultiplyer;
@@ -135,6 +151,11 @@ public class PawnController : MonoBehaviour
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
+		navMeshAgent = GetComponent<NavMeshAgent>();
+		if( navMeshAgent == null)
+		{
+			navMeshAgent = GetComponentInChildren<NavMeshAgent>();
+		}
 		currentHealth = maxHealth;
 		targetable = true;
 		if (GetComponent<PlayerController>() != null)
@@ -196,7 +217,7 @@ public class PawnController : MonoBehaviour
 		{
 			accelerationTimer += Time.fixedDeltaTime;
 			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / maxSpeed * GetSpeedCoef()) * maxAcceleration), ForceMode.Acceleration);
+			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed * GetSpeedCoef()) * acceleration), ForceMode.Acceleration);
 			customDrag = movingDrag;
 		} else
 		{
@@ -220,18 +241,23 @@ public class PawnController : MonoBehaviour
 
     void Move()
     {
-        if (moveState == MoveState.Blocked) { speed = 0; return; }
+        if (moveState == MoveState.Blocked) { currentSpeed = 0; return; }
         Vector3 myVel = rb.velocity;
         myVel.y = 0;
-        myVel = Vector3.ClampMagnitude(myVel, maxSpeed * GetSpeedCoef());
+        myVel = Vector3.ClampMagnitude(myVel, moveSpeed * GetSpeedCoef());
         myVel.y = rb.velocity.y;
         rb.velocity = myVel;
-        speed = rb.velocity.magnitude;
+        currentSpeed = rb.velocity.magnitude;
     }
 
 	public void SetLookInput(Vector3 _direction)
 	{
 		lookInput = _direction;
+	}
+
+	public NavMeshAgent GetNavMesh()
+	{
+		return navMeshAgent;
 	}
 
 	public void Climb()
@@ -357,7 +383,12 @@ public class PawnController : MonoBehaviour
 
     public virtual void Kill()
     {
-        Destroy(this.gameObject);
+		if (onDeathSound != "")
+		{
+			SoundManager.PlaySound(onDeathSound, transform.position);
+		}
+		LockManager.UnlockTarget(transform);
+		Destroy(this.gameObject);
     }
 
     public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
@@ -379,13 +410,17 @@ public class PawnController : MonoBehaviour
             invincibilityCoroutine = InvicibleFrame_C();
             StartCoroutine(invincibilityCoroutine);
             currentHealth -= _amount;
+			if (onHitSound != "")
+			{
+				SoundManager.PlaySound(onHitSound, transform.position, transform);
+			}
             if (currentHealth <= 0)
             {
                 Kill();
             }
             float internal_scaleForce = ((float)_amount / (float)maxHealth) * 3f;
             internal_scaleForce = Mathf.Clamp(internal_scaleForce, 0.3f, 1f);
-			transform.Find("Model").transform.DOShakeScale(1f, internal_scaleForce).OnComplete(ResetScale);
+			transform.DOShakeScale(1f, internal_scaleForce).OnComplete(ResetScale);
 			if (GetComponent<PlayerController>() != null)
             {
                 MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
@@ -476,18 +511,21 @@ public class PawnController : MonoBehaviour
     {
         isInvincible_access = _state;
     }
+	public virtual void UpdateAnimatorBlendTree ()
+	{
+		if (animator == null) { return; }
+	}
 
-    public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod)
+	public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod)
     {
-        FeedbackManager.SendFeedback("event.PlayerBumpedAway", this);
-        SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
-
+		if (!isBumpable) { return; }
         bumpDistance = _bumpDistance + Random.Range(-_randomDistanceMod, _randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-_randomDurationMod, _randomDurationMod);
         restDuration = _restDuration + Random.Range(-_randomRestDurationMod, _randomRestDurationMod);
         bumpDirection = _bumpDirection;
 
-        bumpInitialPosition = transform.position;
+		bumpTimeProgression = 0;
+		bumpInitialPosition = transform.position;
         bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
 
         transform.rotation = Quaternion.LookRotation(-bumpDirection);
@@ -495,20 +533,11 @@ public class PawnController : MonoBehaviour
         fallingTriggerLaunched = false;
 
         StartCoroutine(Bump_C());
-        //Animator.SetTrigger("BumpTrigger");
-        //ChangingState(MoveState.Bumped);
     }
     #endregion
 
     #region Private functions
 
-    private void UpdateAnimatorBlendTree()
-    {
-		if (animator != null)
-		{
-			animator.SetFloat("IdleRunningBlend", speed / maxSpeed);
-		}
-    }
 
 	Collider CheckForLedge()
 	{
@@ -577,35 +606,45 @@ public class PawnController : MonoBehaviour
             //move !
             if (!internal_mustCancelBump)
             {
-                transform.position = Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(internal_bumpTimeProgression));
+                rb.MovePosition(Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(internal_bumpTimeProgression)));
             }
 
             //trigger end anim
             if (internal_bumpTimeProgression >= whenToTriggerFallingAnim && !fallingTriggerLaunched)
             {
                 fallingTriggerLaunched = true;
-                //Animator.SetTrigger("FallingTrigger");
-            }
+                animator.SetTrigger("FallingTrigger");
+				if (damageAfterBump > 0)
+				{
+					currentHealth -= damageAfterBump;
+				}
+			}
             yield return null;
         }
 
-        //when arrived on ground
-        if (restDuration > 0)
-        {
-            restDuration -= Time.deltaTime;
-            if (restDuration <= 0)
-            {
-                //Animator.SetTrigger("StandingUpTrigger");
-            }
-        }
+		//when arrived on ground
+		while (restDuration > 0)
+		{
+			restDuration -= Time.deltaTime;
+			if (restDuration <= 0)
+			{
+				animator.SetTrigger("StandingUpTrigger");
+			}
+			yield return null;
+		}
 
         //time to get up
-        if (gettingUpDuration > 0)
+        while (gettingUpDuration > 0)
         {
-            gettingUpDuration -= Time.deltaTime;
-            //if (gettingUpDuration <= 0)
-            //ChangingState(EnemyState.Following);
-        }
+			gettingUpDuration -= Time.deltaTime;
+            if (gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
+			{
+				EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
+				enemy.ChangeState(EnemyState.Following);
+				enemy.ExitBumpedState();
+			}
+			yield return null;
+		}
 
         yield return new WaitForSeconds(1);
     }

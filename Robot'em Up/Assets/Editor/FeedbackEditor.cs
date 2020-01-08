@@ -13,7 +13,7 @@ public class FeedbackEditor : Editor
 	string[] categoryOptions;
 	int selectedCategoryIndex;
 	List<string> soundList;
-	string myText = "";
+
 	private void OnEnable ()
 	{
 		feedbackDatas = (FeedbackDatas)target;
@@ -49,12 +49,12 @@ public class FeedbackEditor : Editor
 	}
 	void RecalculateCategoryOptions()
 	{
-		List<string> categoryOptionsList = new List<string>();
+		List<string> internal_categoryOptionsList = new List<string>();
 		for (int i = 0; i < feedbackDatas.feedbackCategories.Count; i++)
 		{
-			categoryOptionsList.Add(feedbackDatas.feedbackCategories[i].displayName);
+			internal_categoryOptionsList.Add(feedbackDatas.feedbackCategories[i].displayName);
 		}
-		categoryOptions = categoryOptionsList.ToArray();
+		categoryOptions = internal_categoryOptionsList.ToArray();
 		return;
 	}
 	public override void OnInspectorGUI ()
@@ -63,25 +63,25 @@ public class FeedbackEditor : Editor
 
 		this.serializedObject.Update();
 
-		GUIStyle headerStyle = new GUIStyle(EditorStyles.helpBox);
-		headerStyle.alignment = TextAnchor.MiddleCenter;
-		headerStyle.fontSize = 20;
-		headerStyle.fontStyle = FontStyle.Bold;
+		GUIStyle internal_headerStyle = new GUIStyle(EditorStyles.helpBox);
+		internal_headerStyle.alignment = TextAnchor.MiddleCenter;
+		internal_headerStyle.fontSize = 20;
+		internal_headerStyle.fontStyle = FontStyle.Bold;
 
-		GUIStyle buttonStyle = new GUIStyle(EditorStyles.miniButton);
-		buttonStyle.alignment = TextAnchor.MiddleCenter;
-		buttonStyle.fontSize = 20;
-		buttonStyle.fontStyle = FontStyle.Bold;
+		GUIStyle internal_buttonStyle = new GUIStyle(EditorStyles.miniButton);
+		internal_buttonStyle.alignment = TextAnchor.MiddleCenter;
+		internal_buttonStyle.fontSize = 20;
+		internal_buttonStyle.fontStyle = FontStyle.Bold;
 
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Global settings", headerStyle);
+			GUILayout.Box("Global settings", internal_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
 
-			if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", buttonStyle, GUILayout.Height(100)))
+			if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", internal_buttonStyle, GUILayout.Height(100)))
 			{
 				foreach (FeedbackData feedbackData in feedbackDatas.feedbackList)
 				{
@@ -101,7 +101,7 @@ public class FeedbackEditor : Editor
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Events", headerStyle);
+			GUILayout.Box("Events", internal_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -109,10 +109,10 @@ public class FeedbackEditor : Editor
 			EditorGUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			GUILayout.Label("Display events of category: ", EditorStyles.largeLabel);
-			List<string> categoryOptionsWithAll = categoryOptions.ToList();
-			categoryOptionsWithAll.Add("All");
+			List<string> internal_categoryOptionsWithAll = categoryOptions.ToList();
+			internal_categoryOptionsWithAll.Add("All");
 
-			selectedCategoryIndex = EditorGUILayout.Popup(selectedCategoryIndex, categoryOptionsWithAll.ToArray());
+			selectedCategoryIndex = EditorGUILayout.Popup(selectedCategoryIndex, internal_categoryOptionsWithAll.ToArray());
 
 			GUILayout.FlexibleSpace();
 			EditorGUILayout.EndHorizontal();
@@ -121,19 +121,19 @@ public class FeedbackEditor : Editor
 			{
 				if (selectedCategoryIndex < feedbackDatas.feedbackCategories.Count && feedbackDatas.feedbackCategories[selectedCategoryIndex] != feedbackDatas.feedbackList[i].category) { continue; }
 				GUI.color = new Color(0.8f, 0.8f, 0.8f);
-				FeedbackData feedbackData = feedbackDatas.feedbackList[i];
+				FeedbackData internal_feedbackData = feedbackDatas.feedbackList[i];
 				GUILayout.BeginVertical(EditorStyles.helpBox);
 					{
 					GUILayout.BeginHorizontal();
 					showPosition[i] = EditorGUILayout.Foldout(showPosition[i], feedbackDatas.feedbackList[i].eventName);
-					GUI.color = feedbackData.category.displayColor;
+					GUI.color = internal_feedbackData.category.displayColor;
 					int index = EditorGUILayout.Popup(GetCategoryIndex(feedbackDatas.feedbackList[i].category), categoryOptions);
 					if (index != -1)
 					{
 						feedbackDatas.feedbackList[i].category = feedbackDatas.feedbackCategories[index];
 					}
 					GUI.color = new Color(0.8f, 0.8f, 0.8f);
-					if (feedbackData.eventCalled)
+					if (internal_feedbackData.eventCalled)
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_max"), GUILayout.Height(20), GUILayout.Width(20));
 					}
@@ -147,7 +147,7 @@ public class FeedbackEditor : Editor
 					{
 
 						GUILayout.BeginHorizontal();
-						feedbackData.eventName = EditorGUILayout.TextField(feedbackData.eventName);
+						internal_feedbackData.eventName = EditorGUILayout.TextField(internal_feedbackData.eventName);
 						GUILayout.EndHorizontal();
 
 						EditorGUILayout.BeginHorizontal();
@@ -160,11 +160,11 @@ public class FeedbackEditor : Editor
 							GUILayout.FlexibleSpace();
 							GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(100), GUILayout.Width(EditorGUIUtility.currentViewWidth / 2 - 25));
 							{
-								if (!feedbackData.vibrationDataInited)
+								if (!internal_feedbackData.vibrationDataInited)
 								{
-									if (GUILayout.Button("Add vibrations", buttonStyle, GUILayout.Height(100)))
+									if (GUILayout.Button("Add vibrations", internal_buttonStyle, GUILayout.Height(100)))
 									{
-										AddVibration(feedbackData);
+										AddVibration(internal_feedbackData);
 									}
 								}
 								else
@@ -179,7 +179,7 @@ public class FeedbackEditor : Editor
 									Rect crossRect = new Rect(rect.x + (EditorGUIUtility.currentViewWidth / 2) - 55, rect.y, 20, 20);
 									if (GUI.Button(crossRect, EditorGUIUtility.IconContent("winbtn_win_close")))
 									{
-										RemoveVibration(feedbackData);
+										RemoveVibration(internal_feedbackData);
 									}
 
 									EditorGUILayout.BeginHorizontal();
@@ -205,11 +205,11 @@ public class FeedbackEditor : Editor
 
 							GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(100), GUILayout.Width(EditorGUIUtility.currentViewWidth / 2 - 25));
 							{
-								if (!feedbackData.shakeDataInited)
+								if (!internal_feedbackData.shakeDataInited)
 								{
-									if (GUILayout.Button("Add screenShake", buttonStyle, GUILayout.Height(100)))
+									if (GUILayout.Button("Add screenShake", internal_buttonStyle, GUILayout.Height(100)))
 									{
-										AddScreenshake(feedbackData);
+										AddScreenshake(internal_feedbackData);
 									}
 								}
 								else
@@ -224,7 +224,7 @@ public class FeedbackEditor : Editor
 									Rect crossRect = new Rect(rect.x + (EditorGUIUtility.currentViewWidth / 2) - 55, rect.y, 20, 20);
 									if (GUI.Button(crossRect, EditorGUIUtility.IconContent("winbtn_win_close")))
 									{
-										RemoveScreenshake(feedbackData);
+										RemoveScreenshake(internal_feedbackData);
 									}
 
 									EditorGUILayout.BeginHorizontal();
@@ -253,11 +253,11 @@ public class FeedbackEditor : Editor
 
 						GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(100), GUILayout.Width(EditorGUIUtility.currentViewWidth - 50));
 						{
-							if (!feedbackData.soundDataInited)
+							if (!internal_feedbackData.soundDataInited)
 							{
-								if (GUILayout.Button("Add sound", buttonStyle, GUILayout.Height(100)))
+								if (GUILayout.Button("Add sound", internal_buttonStyle, GUILayout.Height(100)))
 								{
-									AddSound(feedbackData);
+									AddSound(internal_feedbackData);
 								}
 							}
 							else
@@ -272,18 +272,18 @@ public class FeedbackEditor : Editor
 								Rect crossRect = new Rect(rect.x + EditorGUIUtility.currentViewWidth - 85, rect.y, 20, 20);
 								if (GUI.Button(crossRect, EditorGUIUtility.IconContent("winbtn_win_close")))
 								{
-									RemoveSound(feedbackData);
+									RemoveSound(internal_feedbackData);
 								}
 								EditorGUILayout.BeginHorizontal();
 								{
 									GUILayout.Label("Sound Name: ", GUILayout.Width(100));
-									feedbackData.soundData.soundName = EditorExtend.TextFieldAutoComplete(feedbackData.soundData.soundName, soundList.ToArray(), maxShownCount: 10, levenshteinDistance: 0.5f);
+									internal_feedbackData.soundData.soundName = EditorExtend.TextFieldAutoComplete(internal_feedbackData.soundData.soundName, soundList.ToArray(), maxShownCount: 10, levenshteinDistance: 0.5f);
 								}
 								EditorGUILayout.EndHorizontal();
 								EditorGUILayout.BeginHorizontal();
 								{
 									GUILayout.Label("Attach to target: ", GUILayout.Width(100));
-									feedbackData.soundData.attachToTarget = EditorGUILayout.Toggle(feedbackData.soundData.attachToTarget);
+									internal_feedbackData.soundData.attachToTarget = EditorGUILayout.Toggle(internal_feedbackData.soundData.attachToTarget);
 								}
 								EditorGUILayout.EndHorizontal();
 							}
@@ -326,7 +326,7 @@ public class FeedbackEditor : Editor
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Categories", headerStyle);
+			GUILayout.Box("Categories", internal_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -379,17 +379,17 @@ public class FeedbackEditor : Editor
 
 	public void AddEvent()
 	{
-		FeedbackData newFeedbackData = new FeedbackData();
-		newFeedbackData.shakeData = null;
-		newFeedbackData.vibrationData = null;
-		newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
+		FeedbackData internal_newFeedbackData = new FeedbackData();
+		internal_newFeedbackData.shakeData = null;
+		internal_newFeedbackData.vibrationData = null;
+		internal_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
 		int categoryIndex = Mathf.Clamp(selectedCategoryIndex, 0, feedbackDatas.feedbackCategories.Count - 1);
 		if (feedbackDatas.feedbackCategories.Count > 0)
 		{
-			newFeedbackData.category = feedbackDatas.feedbackCategories[categoryIndex];
+			internal_newFeedbackData.category = feedbackDatas.feedbackCategories[categoryIndex];
 		}
 		showPosition.Add(false);
-		feedbackDatas.feedbackList.Add(newFeedbackData);
+		feedbackDatas.feedbackList.Add(internal_newFeedbackData);
 	}
 
 	public void AddCategory()
@@ -431,7 +431,7 @@ public class FeedbackEditor : Editor
 
 	bool IsEventCalled(string _eventName)
 	{
-		bool stringFound = false;
+		bool internal_stringFound = false;
 		string[] assetPaths = AssetDatabase.GetAllAssetPaths();
 		foreach (string assetPath in assetPaths)
 		{
@@ -439,10 +439,10 @@ public class FeedbackEditor : Editor
 			{
 				if (File.ReadAllText(assetPath).Contains(_eventName))
 				{
-					stringFound = true;
+					internal_stringFound = true;
 				}
 			}
 		}
-		return stringFound;
+		return internal_stringFound;
 	}
 }

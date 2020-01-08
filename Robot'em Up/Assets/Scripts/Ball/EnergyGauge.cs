@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using MyBox;
 #pragma warning disable 0649
 
 public class EnergyGauge : MonoBehaviour
 {
+    [Separator("References")]
 	[SerializeField] private Color defaultGaugeColor;
 	[SerializeField] private Color fullGaugeColor;
 

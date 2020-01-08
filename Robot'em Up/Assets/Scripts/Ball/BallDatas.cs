@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BallData", menuName = "GameDatas/Ball", order = 1)]
 public class BallDatas : ScriptableObject
 {
-	[Header("Global settings")]
+	[Separator("Global settings")]
 	public float maxPreviewDistance;
 	public float moveSpeed;
 	public int maxBounces;
@@ -18,7 +19,7 @@ public class BallDatas : ScriptableObject
 	public Gradient colorOverDamage;
 	public Texture2D hitDecal;
 
-	[Header("FX")]
+	[Separator("FX")]
 	public GameObject trail;
 	public GameObject wallHit;
 	public GameObject receiveCore;

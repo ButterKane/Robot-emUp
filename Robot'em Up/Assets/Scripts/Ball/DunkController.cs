@@ -22,19 +22,22 @@ public class DunkController : MonoBehaviour
 	public float dunkJumpDuration = 2f;
 	public float dunkJumpFreezeDuration = 1f;
 
+    [Space(15)]
 	public float dunkDashSpeed = 5f;
 	public float dunkExplosionRadius = 10f;
 	public int dunkDamages = 30;
 	public float dunkProjectionForce = 10f;
 
-	public float dunkCancelledFallSpeed = 2f;
+    [Space(15)]
+    public float dunkCancelledFallSpeed = 2f;
 	public float dunkDashDelay = 1f;
 
-	public float dunkSnapTreshold = 30f;
+    [Space(15)]
+    public float dunkSnapTreshold = 30f;
 	public float dunkCooldown = 3f;
 	public float dunkCancelFreezeDuration = 0.4f;
 
-	[ReadOnly] [SerializeField] private DunkState dunkState;
+	private DunkState dunkState;
 
     [Separator("Bump settings")]
     public float bumpDistanceMod = 1;
@@ -42,6 +45,7 @@ public class DunkController : MonoBehaviour
     public float bumpRestDurationMod = 0.7f;
 
 
+    // Auto-assigned References
     private Rigidbody rb;
 	
 	private Coroutine jumpCoroutine;

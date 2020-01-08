@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,21 +8,20 @@ public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager i;
 
-    [Header("References")]
+    [Separator("References")]
     public GameObject enemyPrefab;
     public List<Transform> enemySpawnPoints;
 
-    [Space(2)]
-    [Header("Auto-assigned References")]
-    public PlayerController playerOne;
-    public PlayerController playerTwo;
-    public GameObject enemyCurrentlyAttacking = null;
-    public List<EnemyBehaviour> enemies;
+    // Auto-Assigned References
+    [NonSerialized] public PlayerController playerOne;
+    [NonSerialized] public PlayerController playerTwo;
 
-    public List<EnemyBehaviour> enemyGroupOne;
-    public List<EnemyBehaviour> enemyGroupTwo;
-    public Vector3 groupOneMiddlePoint;
-    public Vector3 groupTwoMiddlePoint;
+    [NonSerialized] public List<EnemyBehaviour> enemies;
+
+    [NonSerialized] public List<EnemyBehaviour> enemyGroupOne;
+    [NonSerialized] public List<EnemyBehaviour> enemyGroupTwo;
+    [NonSerialized] public Vector3 groupOneMiddlePoint;
+    [NonSerialized] public Vector3 groupTwoMiddlePoint;
 
     private void Awake()
     {
