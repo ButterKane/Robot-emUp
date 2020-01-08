@@ -17,27 +17,27 @@ public class LevelSelector : MonoBehaviour
 		for (int i = 1; i <= SceneManager.sceneCountInBuildSettings-1; i++)
 		{
 			int x = i;
-			GameObject internal_newButton = new GameObject();
-			internal_newButton.name = "Button[" + SceneManager.GetSceneByBuildIndex(x).name + "]";
-			Image internal_image = internal_newButton.AddComponent<Image>();
-			internal_image.sprite = Resources.Load<Sprite>("Menu/default_button");
-			RectTransform internal_buttonTransform = internal_newButton.GetComponent<RectTransform>();
-			internal_buttonTransform.sizeDelta = new Vector2(200, 50);
+			GameObject i_newButton = new GameObject();
+			i_newButton.name = "Button[" + SceneManager.GetSceneByBuildIndex(x).name + "]";
+			Image i_image = i_newButton.AddComponent<Image>();
+			i_image.sprite = Resources.Load<Sprite>("Menu/default_button");
+			RectTransform i_buttonTransform = i_newButton.GetComponent<RectTransform>();
+			i_buttonTransform.sizeDelta = new Vector2(200, 50);
 
-			internal_newButton.AddComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(x)) ;
-			internal_newButton.transform.SetParent(transform.Find("Viewport").transform.Find("Content"));
+			i_newButton.AddComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(x)) ;
+			i_newButton.transform.SetParent(transform.Find("Viewport").transform.Find("Content"));
 
-			GameObject internal_buttonText = new GameObject();
-			internal_buttonText.transform.SetParent(internal_newButton.transform);
-			Text internal_newText = internal_buttonText.AddComponent<Text>();
-			internal_newText.alignment = TextAnchor.MiddleCenter;
-			internal_newText.rectTransform.sizeDelta = new Vector2(internal_buttonTransform.sizeDelta.x*0.7f, internal_buttonTransform.sizeDelta.y * 0.5f);
-			internal_newText.text = GetSceneNameFromBuildIndex(x);
-			internal_newText.resizeTextMinSize = 1;
-			internal_newText.resizeTextForBestFit = true;
-			internal_newText.font = buttonFont;
+			GameObject i_buttonText = new GameObject();
+			i_buttonText.transform.SetParent(i_newButton.transform);
+			Text i_newText = i_buttonText.AddComponent<Text>();
+			i_newText.alignment = TextAnchor.MiddleCenter;
+			i_newText.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x*0.7f, i_buttonTransform.sizeDelta.y * 0.5f);
+			i_newText.text = GetSceneNameFromBuildIndex(x);
+			i_newText.resizeTextMinSize = 1;
+			i_newText.resizeTextForBestFit = true;
+			i_newText.font = buttonFont;
 
-			buttons.Add(internal_newButton.GetComponent<Button>());
+			buttons.Add(i_newButton.GetComponent<Button>());
 		}
 	}
 

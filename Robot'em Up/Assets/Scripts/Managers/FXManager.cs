@@ -11,22 +11,22 @@ public class FXManager : MonoBehaviour
 			Debug.Log("Warning: No FX assigned");
 			return null;
 		}
-		GameObject internal_newFX = Instantiate(_fx);
+		GameObject i_newFX = Instantiate(_fx);
 		if (_parent != null)
 		{
-			internal_newFX.transform.SetParent(_parent);
+			i_newFX.transform.SetParent(_parent);
 		}
 		if (_useLocalPosition) {
-			internal_newFX.transform.localPosition = _position;
+			i_newFX.transform.localPosition = _position;
 		} else
 		{
-			internal_newFX.transform.position = _position;
+			i_newFX.transform.position = _position;
 		}
 		if (_direction != Vector3.zero)
 		{
-			internal_newFX.transform.forward = _direction;
+			i_newFX.transform.forward = _direction;
 		}
-		internal_newFX.transform.localScale = new Vector3(internal_newFX.transform.localScale.x * _sizeMultiplier.x, internal_newFX.transform.localScale.y * _sizeMultiplier.y, internal_newFX.transform.localScale.z * _sizeMultiplier.z);
-		return internal_newFX;
+		i_newFX.transform.localScale = new Vector3(i_newFX.transform.localScale.x * _sizeMultiplier.x, i_newFX.transform.localScale.y * _sizeMultiplier.y, i_newFX.transform.localScale.z * _sizeMultiplier.z);
+		return i_newFX;
 	}
 }

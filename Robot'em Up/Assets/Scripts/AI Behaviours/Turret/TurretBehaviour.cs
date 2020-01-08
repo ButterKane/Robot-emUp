@@ -277,9 +277,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void LaunchProjectile()
     {
-        Vector3 internal_spawnPosition;
-        internal_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, internal_spawnPosition, Quaternion.LookRotation(transform.forward));
+        Vector3 i_spawnPosition;
+        i_spawnPosition = bulletSpawn.position;
+        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
         FeedbackManager.SendFeedback("event.BasicTurretAttack", this);
         SoundManager.PlaySound("BasicTurretAttack", transform.position);
     }
@@ -363,9 +363,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void Die()
     {
-        GameObject internal_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        internal_deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(internal_deathParticle, 1.5f);
+        GameObject i_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
+        i_deathParticle.transform.localScale *= deathParticleScale;
+        Destroy(i_deathParticle, 1.5f);
 
         if (UnityEngine.Random.Range(0f, 1f) <= coreDropChances)
         {

@@ -37,10 +37,10 @@ public class PuzzleActivator : MonoBehaviour
 
     public virtual void ActivateLinkedObjects()
     {
-        PuzzleActivable[] internal_activables = FindObjectsOfType<PuzzleActivable>();
+        PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
         //Debug.Log("Find call ");
 
-        foreach (var item in internal_activables)
+        foreach (var item in i_activables)
         {
             if (item.needAllConditions == false)
             {
@@ -75,9 +75,9 @@ public class PuzzleActivator : MonoBehaviour
 
     public virtual void DesactiveLinkedObjects()
     {
-        PuzzleActivable[] internal_activables = FindObjectsOfType<PuzzleActivable>();
+        PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
 
-        foreach (var item in internal_activables)
+        foreach (var item in i_activables)
         {
             if (item.needAllConditions == false)
             {

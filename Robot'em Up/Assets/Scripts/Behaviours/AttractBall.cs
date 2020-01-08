@@ -50,12 +50,12 @@ public class AttractBall : MonoBehaviour
 		}
 		if (_other.tag == "Ball")
 		{
-			BallBehaviour internal_ball = _other.GetComponent<BallBehaviour>();
-			if (internal_ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || internal_ball.GetState() != BallState.Flying) { return; }
-			if (internal_ball.GetCurrentThrower() == playerController && (internal_ball.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || internal_ball.GetTimeFlying() < passController.delayBeforePickingOwnBall )) { return; }
+			BallBehaviour i_ball = _other.GetComponent<BallBehaviour>();
+			if (i_ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || i_ball.GetState() != BallState.Flying) { return; }
+			if (i_ball.GetCurrentThrower() == playerController && (i_ball.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ball.GetTimeFlying() < passController.delayBeforePickingOwnBall )) { return; }
 
-			ballInside = internal_ball;
-			ballInitialDirection = internal_ball.GetCurrentDirection();
+			ballInside = i_ball;
+			ballInitialDirection = i_ball.GetCurrentDirection();
 		}
 	}
 	private void OnTriggerStay(Collider _other)
@@ -66,16 +66,16 @@ public class AttractBall : MonoBehaviour
 		}
 		if (_other.tag == "Ball")
         {
-			BallBehaviour internal_ball = _other.GetComponent<BallBehaviour>();
-			if (internal_ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || internal_ball.GetState() != BallState.Flying) { return; }
-			if (internal_ball.GetCurrentThrower() == playerController && (internal_ball.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || internal_ball.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+			BallBehaviour i_ball = _other.GetComponent<BallBehaviour>();
+			if (i_ball.GetCurrentDistanceTravelled() <= magnetRadius + 2 || i_ball.GetState() != BallState.Flying) { return; }
+			if (i_ball.GetCurrentThrower() == playerController && (i_ball.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ball.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
 
-			float internal_attractionForce = Vector3.Distance(_other.transform.position, transform.position);
-			internal_attractionForce = internal_attractionForce / magnetRadius; //Normalize attractionForce
-			internal_attractionForce = 1 - attractionCurve.Evaluate(internal_attractionForce);
+			float i_attractionForce = Vector3.Distance(_other.transform.position, transform.position);
+			i_attractionForce = i_attractionForce / magnetRadius; //Normalize attractionForce
+			i_attractionForce = 1 - attractionCurve.Evaluate(i_attractionForce);
 
-			Vector3 internal_newDirection = Vector3.Lerp(ballInitialDirection, transform.position - internal_ball.transform.position, internal_attractionForce);
-			internal_ball.ChangeDirection(internal_newDirection);
+			Vector3 i_newDirection = Vector3.Lerp(ballInitialDirection, transform.position - i_ball.transform.position, i_attractionForce);
+			i_ball.ChangeDirection(i_newDirection);
 		}
     }
 
@@ -87,8 +87,8 @@ public class AttractBall : MonoBehaviour
 		}
 		if (_other.tag == "Ball")
 		{
-			BallBehaviour internal_ball = _other.GetComponent<BallBehaviour>();
-			if (ballInside == internal_ball)
+			BallBehaviour i_ball = _other.GetComponent<BallBehaviour>();
+			if (ballInside == i_ball)
 			{
 				ballInside = null;
 			}

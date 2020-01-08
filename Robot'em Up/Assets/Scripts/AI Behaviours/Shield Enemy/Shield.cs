@@ -17,10 +17,10 @@ public class Shield : MonoBehaviour, IHitable
     {
         if ((_impactVector.normalized + transform.forward.normalized).magnitude < (enemy.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
         {
-            Vector3 internal_newDirection = Vector3.Reflect(_impactVector, transform.forward);
-            Debug.DrawRay(transform.position, internal_newDirection, Color.magenta, 10f);
-            internal_newDirection.y = _impactVector.y;
-            _ball.Bounce(internal_newDirection, 1f) ;
+            Vector3 i_newDirection = Vector3.Reflect(_impactVector, transform.forward);
+            Debug.DrawRay(transform.position, i_newDirection, Color.magenta, 10f);
+            i_newDirection.y = _impactVector.y;
+            _ball.Bounce(i_newDirection, 1f) ;
         }
     }
 

@@ -26,10 +26,10 @@ public class TurretGenerator : MonoBehaviour
     {
         for (int i = 0; i < spawnedTurret.Count; i++)
         {
-            TurretBehaviour internal_item = (TurretBehaviour)spawnedTurret[i];
-            if (internal_item.currentHealth < 0)
+            TurretBehaviour i_item = (TurretBehaviour)spawnedTurret[i];
+            if (i_item.currentHealth < 0)
             {
-                spawnedTurret.Remove(internal_item);
+                spawnedTurret.Remove(i_item);
             }
         }
 
@@ -40,9 +40,9 @@ public class TurretGenerator : MonoBehaviour
         if (currentTimer <= 0)
         {
             currentTimer = waitingTimeForNextEnemy + Random.Range(-randomLenghtTime, randomLenghtTime);
-            var internal_newinst = Instantiate(listOfTurretPrefabToSpawn[Random.Range(0, listOfTurretPrefabToSpawn.Count)], transform.position, Quaternion.identity);
-            internal_newinst.transform.position = new Vector3(internal_newinst.transform.position.x + Random.Range(-1f,1), internal_newinst.transform.position.y, internal_newinst.transform.position.z + Random.Range(-1f, 1));
-            spawnedTurret.Add(internal_newinst);
+            var i_newinst = Instantiate(listOfTurretPrefabToSpawn[Random.Range(0, listOfTurretPrefabToSpawn.Count)], transform.position, Quaternion.identity);
+            i_newinst.transform.position = new Vector3(i_newinst.transform.position.x + Random.Range(-1f,1), i_newinst.transform.position.y, i_newinst.transform.position.z + Random.Range(-1f, 1));
+            spawnedTurret.Add(i_newinst);
         }
     }
 

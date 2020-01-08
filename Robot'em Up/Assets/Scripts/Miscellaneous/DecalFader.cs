@@ -19,12 +19,12 @@ public class DecalFader : MonoBehaviour
 	IEnumerator Fade_C ()
 	{
 		yield return new WaitForSeconds(fadeDelay);
-		Color internal_startColor = material.color;
-		Color internal_endColor = internal_startColor;
-		internal_endColor.a = 0;
+		Color i_startColor = material.color;
+		Color i_endColor = i_startColor;
+		i_endColor.a = 0;
 		for (float i = 0; i < fadeDuration; i+=Time.deltaTime)
 		{
-			material.color = Color.Lerp(internal_startColor, internal_endColor, i / fadeDuration);
+			material.color = Color.Lerp(i_startColor, i_endColor, i / fadeDuration);
 			yield return null;
 		}
 		Destroy(gameObject);

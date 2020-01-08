@@ -26,8 +26,8 @@ public class TutoHelper : MonoBehaviour
     {
         if (_other.GetComponent<PlayerController>())
         {
-            PawnController internal_pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Add(internal_pawn);
+            PawnController i_pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Add(i_pawn);
             if (puzzleData.showTuto)
             {
                 myText.SetActive(true);
@@ -39,8 +39,8 @@ public class TutoHelper : MonoBehaviour
     {
         if (_other.GetComponent<PlayerController>())
         {
-            PawnController internal_pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Remove(internal_pawn);
+            PawnController i_pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Remove(i_pawn);
             if (listPawnsHere.Count < 1)
             {
                 myText.SetActive(false);

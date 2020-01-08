@@ -112,17 +112,17 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenDesactivate()
     {
-        bool internal_checkAllConditionsCustom = true;
+        bool i_checkAllConditionsCustom = true;
         
         foreach (var item in puzzleActivators)
         {
             if (item.isActivated)
             {
-                internal_checkAllConditionsCustom = false;
+                i_checkAllConditionsCustom = false;
             }
         }
         
-        if (internal_checkAllConditionsCustom)
+        if (i_checkAllConditionsCustom)
         {
 
             isActivated = false;

@@ -58,16 +58,16 @@ public class EnemyRedBarrel : EnemyBehaviour
         animator.SetTrigger("DeathTrigger");
         SoundManager.PlaySound("RedBarrelExplosionAnticipation", transform.position, transform);
 
-        GameObject internal_hitParticle = Instantiate(buildUpExplosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
-        internal_hitParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
+        GameObject i_hitParticle = Instantiate(buildUpExplosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
+        i_hitParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
 
         //hitParticle.transform.localScale = 3f;
         explosionRadiusTransform.gameObject.SetActive(true);
-        float internal_time = 0;
-        while (internal_time < 1)
+        float i_time = 0;
+        while (i_time < 1)
         {
-            explosionGrowingRenderer.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, internal_time);
-            internal_time += Time.deltaTime/ buildUpBeforeExplosion;
+            explosionGrowingRenderer.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, i_time);
+            i_time += Time.deltaTime/ buildUpBeforeExplosion;
 
             //Color flicker on death
             if (Random.Range(0f, 1f) > 0.5f)
@@ -79,22 +79,22 @@ public class EnemyRedBarrel : EnemyBehaviour
         }
         //yield return new WaitForSeconds(buildUpBeforeExplosion);
         
-        GameObject internal_explosionParticle = Instantiate(explosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
-        internal_explosionParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
+        GameObject i_explosionParticle = Instantiate(explosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
+        i_explosionParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
 
-        Collider[] internal_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
+        Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
         int i = 0;
-        while (i < internal_hitColliders.Length)
+        while (i < i_hitColliders.Length)
         {
-            IHitable potentialHitableObject = internal_hitColliders[i].GetComponent<IHitable>();
+            IHitable potentialHitableObject = i_hitColliders[i].GetComponent<IHitable>();
             if (potentialHitableObject != null)
             {
-                potentialHitableObject.OnHit(null, (internal_hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
+                potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
             }
             i++;
         }
 
-        Destroy(internal_explosionParticle, 1f);
+        Destroy(i_explosionParticle, 1f);
         FeedbackManager.SendFeedback("event.RedBarrelExplosion", this);
         SoundManager.PlaySound("RedBarrelExplosion", transform.position, transform);
         base.Die();

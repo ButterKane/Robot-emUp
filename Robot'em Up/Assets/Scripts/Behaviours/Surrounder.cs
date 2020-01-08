@@ -59,7 +59,7 @@ public class Surrounder : MonoBehaviour
         {
             enemy.closestSurroundPoint = null;
 
-            float internal_closestDistance = Mathf.Infinity;
+            float i_closestDistance = Mathf.Infinity;
 
             for (int i = 0; i < pointsDic.Count; i++)
             {
@@ -70,9 +70,9 @@ public class Surrounder : MonoBehaviour
 
                 if (pointsScripts[i].closestEnemy == null)
                 {
-                    if ((enemy.transform.position - pointsDic[i].position).magnitude < internal_closestDistance)
+                    if ((enemy.transform.position - pointsDic[i].position).magnitude < i_closestDistance)
                     {
-                        internal_closestDistance = (enemy.transform.position - pointsDic[i].position).magnitude; // We keep the distance in memory
+                        i_closestDistance = (enemy.transform.position - pointsDic[i].position).magnitude; // We keep the distance in memory
 
                         if (enemy.closestSurroundPoint) // if the enemy already had a closest point, make sure this point forgets the enemy as well
                         {
@@ -96,11 +96,11 @@ public class Surrounder : MonoBehaviour
     public void DeactivateUnreachablePoints()
     {
         RaycastHit hit;
-        int internal_layerMask = 1 << 12; // Layer 12 = Environment
+        int i_layerMask = 1 << 12; // Layer 12 = Environment
 
         for (int i = 0; i < pointsScripts.Count; i++)
         {
-            if (Physics.Raycast(transform.position, pointsScripts[i].transform.position - transform.position, out hit, (pointsScripts[i].transform.position - transform.position).magnitude, internal_layerMask))
+            if (Physics.Raycast(transform.position, pointsScripts[i].transform.position - transform.position, out hit, (pointsScripts[i].transform.position - transform.position).magnitude, i_layerMask))
             {
                 pointsScripts[i].gameObject.SetActive(false);
             }
@@ -113,16 +113,16 @@ public class Surrounder : MonoBehaviour
 
     public int KeyByValue(Dictionary<int, Transform> _dict, Transform _val)
     {
-        int internal_key = default;
+        int i_key = default;
         foreach (KeyValuePair<int, Transform> pair in _dict)
         {
             if (EqualityComparer<Transform>.Default.Equals(pair.Value, _val))
             {
-                internal_key = pair.Key;
+                i_key = pair.Key;
                 break;
             }
         }
-        return internal_key;
+        return i_key;
     }
 
     public void StayOnPlayerPos()
@@ -133,22 +133,22 @@ public class Surrounder : MonoBehaviour
 
     public void FaceEnemyMiddlePoint()
     {
-        Vector3 internal_pointToFace = new Vector3();
+        Vector3 i_pointToFace = new Vector3();
 
         if (playerTransform == GameManager.playerOne.transform)
         {
-            internal_pointToFace = GameManager.i.enemyManager.groupOneMiddlePoint;
+            i_pointToFace = GameManager.i.enemyManager.groupOneMiddlePoint;
             closestEnemies = GameManager.i.enemyManager.enemyGroupOne;
         }
         else if (playerTransform == GameManager.playerTwo.transform)
         {
-            internal_pointToFace = GameManager.i.enemyManager.groupTwoMiddlePoint;
+            i_pointToFace = GameManager.i.enemyManager.groupTwoMiddlePoint;
             closestEnemies = GameManager.i.enemyManager.enemyGroupTwo;
         }
 
-        if ((internal_pointToFace - transform.position).magnitude > minimalDistanceToFollow)
+        if ((i_pointToFace - transform.position).magnitude > minimalDistanceToFollow)
         {
-            transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(internal_pointToFace, transform.position));
+            transform.LookAt(SwissArmyKnife.GetFlattedDownPosition(i_pointToFace, transform.position));
         }
 
 
