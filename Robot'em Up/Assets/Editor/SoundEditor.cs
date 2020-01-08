@@ -61,7 +61,7 @@ public class SoundEditor : Editor
 
 							if (GUILayout.Button(EditorGUIUtility.IconContent("Animation.Play"), GUILayout.Width(20), GUILayout.Height(20)))
 							{
-								PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
+								SoundManager.PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
 							}
 							GUILayout.Label("Play Chances", GUILayout.Width(100));
 							EditorGUI.BeginChangeCheck();
@@ -151,40 +151,5 @@ public class SoundEditor : Editor
 		newSound.playChances = 1f;
 		i_newSoundData.soundList.Add(newSound);
 		soundDatas.soundList.Add(i_newSoundData);
-	}
-
-	void PlaySoundInEditor ( AudioClip _clip, int _startSample = 0, bool _loop = false )
-	{
-		StopAllClips();
-		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
-		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
-		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
-			"PlayClip",
-			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
-			null,
-			new System.Type[] { typeof(AudioClip), typeof(int), typeof(bool) },
-			null
-		);
-		method.Invoke(
-			null,
-			new object[] { _clip, _startSample, _loop }
-		);
-	}
-
-	void StopAllClips ()
-	{
-		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
-		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
-		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
-			"StopAllClips",
-			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
-			null,
-			new System.Type[] { },
-			null
-		);
-		method.Invoke(
-			null,
-			new object[] { }
-		);
 	}
 }

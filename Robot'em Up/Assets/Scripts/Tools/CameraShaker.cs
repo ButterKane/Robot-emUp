@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
+[ExecuteAlways]
 public class CameraShaker : MonoBehaviour
 {
 	public static List<ShakeData> shakeList = new List<ShakeData>();
 	public static ShakeData currentShake;
 	public static ShakeEffect cameraShaker;
+
+	public static void ShakeEditorCamera (Camera _camera, float _intensity, float _duration, float _frequency)
+	{
+		EditorCameraShaker shaker = _camera.gameObject.AddComponent<EditorCameraShaker>();
+		shaker.Init(_duration, _intensity, _frequency);
+	}
 
 	public static void ShakeCamera ( float _intensity, float _duration, float _frequency )
 	{
@@ -138,5 +145,27 @@ public class ShakeEffect : MonoBehaviour {
 			_perlin.m_AmplitudeGain = 0;
 			_perlin.m_FrequencyGain = 0;
 		}
+	}
+}
+
+[ExecuteInEditMode]
+public class EditorCameraShaker : MonoBehaviour
+{
+	public void Init (float _duration, float _intensity, float _frequency)
+	{
+		StartCoroutine(ShakeEditorCamera_C(_duration, _intensity, _frequency));
+	}
+
+	IEnumerator ShakeEditorCamera_C(float _duration, float _intensity, float _frequency)
+	{
+		Vector3 initialPosition = transform.position;
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			transform.position = initialPosition+ Random.insideUnitSphere * _intensity * 0.1f;
+			yield return null;
+		}
+		transform.position = initialPosition;
+		DestroyImmediate(this);
+		yield return null;
 	}
 }

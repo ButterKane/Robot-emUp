@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using XInputDotNetPure;
 
 
 public enum VibrationTarget { TargetedPlayer, BothPlayers}
@@ -49,12 +50,12 @@ public class FeedbackManager
 					PlayerController player = target.GetComponent<PlayerController>();
 					if (player != null)
 					{
-						player.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
+						VibrationManager.Vibrate(player.playerIndex,feedback.vibrationData.duration, feedback.vibrationData.force);
 					}
 					break;
 				case VibrationTarget.BothPlayers:
-					GameManager.playerOne.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
-					GameManager.playerTwo.Vibrate(feedback.vibrationData.duration, feedback.vibrationData.force);
+					VibrationManager.Vibrate(PlayerIndex.One,feedback.vibrationData.duration, feedback.vibrationData.force);
+					VibrationManager.Vibrate(PlayerIndex.Two, feedback.vibrationData.duration, feedback.vibrationData.force);
 					break;
 
 			}

@@ -7,14 +7,6 @@ using UnityEngine.SceneManagement;
 using XInputDotNetPure;
 #pragma warning disable 0649
 
-public enum VibrationForce
-{
-    VeryHeavy,
-	Heavy,
-	Medium,
-	Light,
-    VeryLight,
-}
 public enum DamageSource
 {
 	Ball,

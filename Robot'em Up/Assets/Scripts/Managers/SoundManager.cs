@@ -1,6 +1,7 @@
 ﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 [System.Serializable]
 public class SoundData
@@ -133,5 +134,44 @@ public class SoundManager
 			i_cumulativeChances += _soundData.soundList[i_chosenIndex].playChances;
 		}
 		return _soundData.soundList[i_chosenIndex].clip;
+	}
+
+	public static void PlaySoundInEditor ( string soundName )
+	{
+		PlaySoundInEditor(SoundManager.GetSoundClip(SoundManager.GetSoundData(soundName)));
+	}
+	public static void PlaySoundInEditor ( AudioClip _clip, int _startSample = 0, bool _loop = false )
+	{
+		StopAllClips();
+		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
+		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
+			"PlayClip",
+			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+			null,
+			new System.Type[] { typeof(AudioClip), typeof(int), typeof(bool) },
+			null
+		);
+		method.Invoke(
+			null,
+			new object[] { _clip, _startSample, _loop }
+		);
+	}
+
+	public static void StopAllClips ()
+	{
+		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
+		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
+			"StopAllClips",
+			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+			null,
+			new System.Type[] { },
+			null
+		);
+		method.Invoke(
+			null,
+			new object[] { }
+		);
 	}
 }

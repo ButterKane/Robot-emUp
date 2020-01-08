@@ -4,6 +4,7 @@ using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
 
+[ExecuteAlways]
 public class PlayerController : PawnController, IHitable
 {
 	[Space(2)]
@@ -57,7 +58,9 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void Update ()
 	{
-		if (!inputDisabled) { GetInput(); }
+		#if !UNITY_EDITOR
+			if (!inputDisabled) { GetInput(); }
+		#endif
 	}
 	void GetInput ()
 	{
@@ -69,11 +72,6 @@ public class PlayerController : PawnController, IHitable
 		{
 			KeyboardInput();
 		}
-	}
-
-	public void Vibrate ( float _duration, VibrationForce _force )
-	{
-		StartCoroutine(Vibrate_C(_duration, _force));
 	}
 
 	void GamepadInput ()
@@ -229,34 +227,6 @@ public class PlayerController : PawnController, IHitable
 	public Vector3 GetLookInput()
 	{
 		return lookInput;
-	}
-
-	IEnumerator Vibrate_C ( float _duration, VibrationForce _force )
-	{
-		float i_momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.vibrationMultiplier);
-		for (float i = 0; i < _duration; i += Time.deltaTime)
-		{
-			switch (_force)
-			{
-                case VibrationForce.VeryLight:
-                    GamePad.SetVibration(playerIndex, 0.1f* i_momentumMultiplier, 0.1f* i_momentumMultiplier);
-                    break;
-				case VibrationForce.Light:
-					GamePad.SetVibration(playerIndex, 0.2f* i_momentumMultiplier, 0.2f* i_momentumMultiplier);
-					break;
-				case VibrationForce.Medium:
-					GamePad.SetVibration(playerIndex, 0.3f* i_momentumMultiplier, 0.3f* i_momentumMultiplier);
-					break;
-				case VibrationForce.Heavy:
-					GamePad.SetVibration(playerIndex, 0.4f* i_momentumMultiplier, 0.4f* i_momentumMultiplier);
-					break;
-                case VibrationForce.VeryHeavy:
-                    GamePad.SetVibration(playerIndex, 0.5f* i_momentumMultiplier, 0.5f* i_momentumMultiplier);
-                    break;
-			}
-			yield return new WaitForEndOfFrame();
-		}
-		GamePad.SetVibration(playerIndex, 0f, 0f);
 	}
 
 	public override void Heal ( int _amount )

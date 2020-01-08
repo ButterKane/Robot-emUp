@@ -301,6 +301,16 @@ public class FeedbackEditor : Editor
 						GUILayout.EndHorizontal();
 						GUILayout.Space(10);
 
+						GUILayout.BeginHorizontal();
+						GUILayout.FlexibleSpace();
+						if (GUILayout.Button("Preview", GUILayout.Width(100), GUILayout.Height(20)))
+						{
+							PreviewFeedback(feedbackDatas.feedbackList[i]);
+							return;
+						}
+						GUILayout.FlexibleSpace();
+						GUILayout.EndHorizontal();
+
 					}
 					GUILayout.EndVertical();
 				}
@@ -375,6 +385,16 @@ public class FeedbackEditor : Editor
 		{
 			EditorUtility.SetDirty(target);
 		}
+	}
+
+	public void PreviewFeedback(FeedbackData _data)
+	{
+		if (FeedbackPreviewer.instance == null)
+		{
+			FeedbackPreviewer previewWindow = ScriptableObject.CreateInstance<FeedbackPreviewer>();
+			previewWindow.Show();
+		}
+		FeedbackPreviewer.instance.PreviewFeedback(_data);
 	}
 
 	public void AddEvent()
