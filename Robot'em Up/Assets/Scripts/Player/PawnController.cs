@@ -51,14 +51,14 @@ public class PawnController : MonoBehaviour
 	public int maxHealth;
    public bool isInvincible_access
     {
-        get { return _isInvincible; }
+        get { return isInvincible; }
         set
         {
-            _isInvincible = value;
+            isInvincible = value;
         }
     }
 
-	private bool _isInvincible;
+	private bool isInvincible;
     public float invincibilityTime = 1;
     private IEnumerator invincibilityCoroutine;
 	public string onHitEvent = "";
@@ -73,7 +73,7 @@ public class PawnController : MonoBehaviour
 	public float moveSpeed = 10;
 	public float acceleration = 10;
 
-    [Space(2)]
+    [Space(7)]
     public float movingDrag = .4f;
     public float idleDrag = .4f;
     public float onGroundGravityMultiplyer;
@@ -113,7 +113,7 @@ public class PawnController : MonoBehaviour
 	protected bool mustCancelBump;
 
     [Space(2)]
-    [Header("Debug (Don't change)")]
+    [Separator("Debug (Don't change)")]
     [System.NonSerialized] public MoveState moveState;
 	private float accelerationTimer;
     protected Vector3 moveInput;
@@ -179,7 +179,6 @@ public class PawnController : MonoBehaviour
 	}
 
     #region Movement
-
     void CheckMoveState()
     {
         if (moveState == MoveState.Blocked) { return; }

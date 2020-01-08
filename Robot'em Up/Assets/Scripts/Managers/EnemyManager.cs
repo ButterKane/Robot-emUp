@@ -16,7 +16,9 @@ public class EnemyManager : MonoBehaviour
     [NonSerialized] public PlayerController playerOne;
     [NonSerialized] public PlayerController playerTwo;
 
-    [NonSerialized] public List<EnemyBehaviour> enemies;
+    [ReadOnly] public List<EnemyBehaviour> enemies;
+    [NonSerialized] public List<EnemyBehaviour> enemiesThatSurround;
+    
 
     [NonSerialized] public List<EnemyBehaviour> enemyGroupOne;
     [NonSerialized] public List<EnemyBehaviour> enemyGroupTwo;
@@ -77,7 +79,7 @@ public class EnemyManager : MonoBehaviour
         i_groupOne = new List<EnemyBehaviour>();
         i_groupTwo = new List<EnemyBehaviour>();
 
-        foreach (var enemy in enemies)
+        foreach (var enemy in enemiesThatSurround)
         {
             if (enemy.focusedPlayer != null)
             {
@@ -135,7 +137,7 @@ public class EnemyManager : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             var i_newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
-            enemies.Add(i_newEnemy.GetComponent<EnemyBehaviour>());
+            enemiesThatSurround.Add(i_newEnemy.GetComponent<EnemyBehaviour>());
         }
     }
 }

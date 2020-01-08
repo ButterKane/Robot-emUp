@@ -59,7 +59,7 @@ public class EnemyBehaviour : PawnController, IHitable
 	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	public bool arenaRobot;
 
-	[Space(2)]
+	[Space(3)]
     [Header("Focus")]
     public float focusDistance = 18;
     public float unfocusDistance = 20;
@@ -67,7 +67,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public float distanceBeforeChangingPriority = 3;
     public float maxTimeBetweenCheck = 0.25f;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Movement")]
     public float randomSpeedMod;
     public float speedMultiplierFromPassHit;
@@ -76,7 +76,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public float timeToRecoverSlowFromDunk;
     private WhatBumps whatBumps;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Attack")]
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
@@ -99,14 +99,15 @@ public class EnemyBehaviour : PawnController, IHitable
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Surrounding")]
     [System.NonSerialized] public Transform closestSurroundPoint;
     [Range(0, 1)]
+    public bool canSurroundPlayer;
     public float bezierCurveHeight = 0.5f;
     public float bezierDistanceToHeightRatio = 100f;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Death")]
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
@@ -121,6 +122,7 @@ public class EnemyBehaviour : PawnController, IHitable
         playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
+        if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
         GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform);
         healthBar.GetComponent<EnemyHealthBar>().enemy = this;
 
@@ -482,7 +484,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
 	public override void Kill ()
 	{
-		GameManager.i.enemyManager.enemies.Remove(GetComponent<EnemyBehaviour>());
+		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		GameObject i_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
 		Destroy(i_deathParticle, 1.5f);
 		if (Random.Range(0f, 1f) <= coreDropChances)
