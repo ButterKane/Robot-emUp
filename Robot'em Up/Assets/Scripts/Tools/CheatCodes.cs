@@ -122,7 +122,7 @@ public class CheatCodes : MonoBehaviour
             }
             else
             {
-                i_enemies[0].Die(); 
+                i_enemies[0].Kill(); 
             }
             yield return null;
         }

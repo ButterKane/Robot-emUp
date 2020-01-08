@@ -161,10 +161,10 @@ public class EnemyShield : EnemyBehaviour
         isShieldActivated_accesss = true;
     }
 
-    public override void Die(string deathSound = "EnemyDeath")
+    public override void Kill()
     {
         Destroy(shield);
-        base.Die("EnemyShieldDeath");   // Override the death sound with the right one 
+        base.Kill();   // Override the death sound with the right one 
     }
 
 }

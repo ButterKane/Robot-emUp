@@ -44,7 +44,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         bodyRenderer.material = materialOnExplosion;
     }
 
-    public override void Die(string deathSound = "EnemyDeath")
+    public override void Kill()
     {
         if (Explosion_C == null)
         {
@@ -97,7 +97,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         Destroy(i_explosionParticle, 1f);
         FeedbackManager.SendFeedback("event.RedBarrelExplosion", this);
         SoundManager.PlaySound("RedBarrelExplosion", transform.position, transform);
-        base.Die();
+        base.Kill();
     }
 
     

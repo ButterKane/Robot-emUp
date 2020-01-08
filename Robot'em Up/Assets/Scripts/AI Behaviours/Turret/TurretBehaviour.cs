@@ -83,8 +83,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     new void Start()
     {
         base.Start();
-
-		onHitSound = "TurretHit";
         isBumpable = false;
         if (arenaTurret)
         {

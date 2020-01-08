@@ -236,7 +236,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.Dying:
-                Die();
+                Kill();
                 break;
         }
     }
@@ -480,25 +480,17 @@ public class EnemyBehaviour : PawnController, IHitable
             Destroy(i_hitParticle, 1f);
     }
 
-    public virtual void Die(string deathSound = "EnemyDeath")
-    {
-        GameManager.i.enemyManager.enemies.Remove(this);
-
-        if (deathSound != null)
-        {
-            SoundManager.PlaySound(deathSound, transform.position, transform);
-        }
-		LockManager.UnlockTarget(this.transform);
+	public override void Kill ()
+	{
+		GameManager.i.enemyManager.enemies.Remove(GetComponent<EnemyBehaviour>());
 		GameObject i_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
-        Destroy(i_deathParticle, 1.5f);
+		Destroy(i_deathParticle, 1.5f);
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
 		}
-
-        Destroy(gameObject);
-    }
-
+		base.Kill();
+	}
 	protected void DropCore()
 	{
 		GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
