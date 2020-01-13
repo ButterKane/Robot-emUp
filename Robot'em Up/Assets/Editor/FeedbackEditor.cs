@@ -290,6 +290,66 @@ public class FeedbackEditor : Editor
 						}
 						GUILayout.EndVertical();
 
+						/*	public GameObject vfxPrefab;
+	public Vector3 offset;
+	public Vector3 scaleMultiplier;
+	public VFXDirection direction;
+	public float spawnDelay;
+	public bool attachToTarget;
+	*/
+
+						GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(100), GUILayout.Width(EditorGUIUtility.currentViewWidth - 50));
+						{
+							if (!i_feedbackData.vfxDataInited)
+							{
+								if (GUILayout.Button("Add VFX", i_buttonStyle, GUILayout.Height(100)))
+								{
+									AddVFX(i_feedbackData);
+								}
+							}
+							else
+							{
+								EditorGUILayout.BeginHorizontal();
+								GUILayout.FlexibleSpace();
+								GUILayout.Label("VFX", EditorStyles.largeLabel);
+								GUILayout.FlexibleSpace();
+								EditorGUILayout.EndHorizontal();
+
+								Rect rect = GUILayoutUtility.GetLastRect();
+								Rect crossRect = new Rect(rect.x + EditorGUIUtility.currentViewWidth - 85, rect.y, 20, 20);
+								if (GUI.Button(crossRect, EditorGUIUtility.IconContent("winbtn_win_close")))
+								{
+									RemoveVFX(i_feedbackData);
+								}
+								EditorGUILayout.BeginHorizontal();
+								SerializedProperty m_prefab = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.vfxPrefab");
+								GUILayout.Label("Prefab: ", GUILayout.Width(100));
+								EditorGUILayout.PropertyField(m_prefab, GUIContent.none);
+								EditorGUILayout.EndHorizontal();
+
+								EditorGUILayout.BeginHorizontal();
+								SerializedProperty m_offset = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.offset");
+								GUILayout.Label("Offset: ", GUILayout.Width(100));
+								EditorGUILayout.PropertyField(m_offset, GUIContent.none);
+
+								SerializedProperty m_scaleMultiplier = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.scaleMultiplier");
+								GUILayout.Label("Scale: ", GUILayout.Width(100));
+								EditorGUILayout.PropertyField(m_scaleMultiplier, GUIContent.none);
+								EditorGUILayout.EndHorizontal();
+
+								EditorGUILayout.BeginHorizontal();
+								SerializedProperty m_direction = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.direction");
+								GUILayout.Label("Direction: ", GUILayout.Width(150));
+								EditorGUILayout.PropertyField(m_direction, GUIContent.none);
+
+								SerializedProperty m_attachToTarget = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.attachToTarget");
+								GUILayout.Label("Attach to target: ", GUILayout.Width(100));
+								EditorGUILayout.PropertyField(m_attachToTarget, GUIContent.none);
+								EditorGUILayout.EndHorizontal();
+							}
+						}
+						GUILayout.EndVertical();
+
 						GUILayout.BeginHorizontal();
 						GUILayout.FlexibleSpace();
 						if (GUILayout.Button("Delete", GUILayout.Width(100), GUILayout.Height(20)))
@@ -403,6 +463,8 @@ public class FeedbackEditor : Editor
 		i_newFeedbackData.shakeData = null;
 		i_newFeedbackData.vibrationData = null;
 		i_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
+		i_newFeedbackData.soundData = null;
+		i_newFeedbackData.vfxData = null;
 		int categoryIndex = Mathf.Clamp(selectedCategoryIndex, 0, feedbackDatas.feedbackCategories.Count - 1);
 		if (feedbackDatas.feedbackCategories.Count > 0)
 		{
@@ -417,6 +479,16 @@ public class FeedbackEditor : Editor
 		FeedbackEventCategory newCategory = new FeedbackEventCategory();
 		feedbackDatas.feedbackCategories.Add(newCategory);
 		RecalculateCategoryOptions();
+	}
+
+	void AddVFX(FeedbackData _data )
+	{
+		_data.vfxDataInited = true;
+	}
+
+	void RemoveVFX(FeedbackData _data)
+	{
+		_data.vfxDataInited = false;
 	}
 
 	void AddSound(FeedbackData _data)
