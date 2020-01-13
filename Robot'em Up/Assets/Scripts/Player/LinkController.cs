@@ -59,14 +59,14 @@ public class LinkController : MonoBehaviour
 
     GameObject GenerateLinkHolder()
 	{
-		GameObject internal_newLinkHolder = new GameObject();
-		internal_newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
-		internal_newLinkHolder.transform.SetParent(firstPawn.transform.parent);
-		lineRenderer = internal_newLinkHolder.AddComponent<LineRenderer>();
+		GameObject i_newLinkHolder = new GameObject();
+		i_newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
+		i_newLinkHolder.transform.SetParent(firstPawn.transform.parent);
+		lineRenderer = i_newLinkHolder.AddComponent<LineRenderer>();
 		lineRenderer.material = linkMaterial;
 		lineRenderer.startWidth = linkWidth;
 		lineRenderer.endWidth = linkWidth;
-		return internal_newLinkHolder;
+		return i_newLinkHolder;
 	}
 
 	private void Update ()
@@ -106,10 +106,10 @@ public class LinkController : MonoBehaviour
 		if (linkGameObject != null)
 		{
 			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; WarningPanel.ClosePanelInstantly(); linkIsBroke = false; return;}
-			float internal_linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
+			float i_linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
 			if (!linkIsBroke)
 			{
-				if (internal_linkLength < maxDistanceBeforeBreaking)
+				if (i_linkLength < maxDistanceBeforeBreaking)
 				{
 					//Hide link
 					lineRenderer.positionCount = 2;
@@ -121,13 +121,13 @@ public class LinkController : MonoBehaviour
 					lineRenderer.endColor = transparentColor;
 					ChangeLinkState(LinkState.Hidden);
 				}
-				if (internal_linkLength >= maxDistanceBeforeShowing && internal_linkLength < maxDistanceBeforeSlowing)
+				if (i_linkLength >= maxDistanceBeforeShowing && i_linkLength < maxDistanceBeforeSlowing)
 				{
 					//Show link
 					lineRenderer.positionCount = 2;
 					lineRenderer.SetPosition(0, firstPawn.GetCenterPosition());
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
-					float lerpValue = (maxDistanceBeforeSlowing - internal_linkLength) / (maxDistanceBeforeSlowing - maxDistanceBeforeShowing);
+					float lerpValue = (maxDistanceBeforeSlowing - i_linkLength) / (maxDistanceBeforeSlowing - maxDistanceBeforeShowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
 					Color transparentColor = linkColor.Evaluate(0);
 					transparentColor.a = 0.1f;
@@ -135,12 +135,12 @@ public class LinkController : MonoBehaviour
 					lineRenderer.endColor = Color.Lerp(transparentColor, linkColor.Evaluate(0), lerpValue);
 					ChangeLinkState(LinkState.Showing);
 				}
-				if (internal_linkLength >= maxDistanceBeforeSlowing && internal_linkLength < maxDistanceBeforeBreaking)
+				if (i_linkLength >= maxDistanceBeforeSlowing && i_linkLength < maxDistanceBeforeBreaking)
 				{
 					lineRenderer.positionCount = 2;
 					lineRenderer.SetPosition(0, firstPawn.GetCenterPosition());
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
-					float lerpValue = (maxDistanceBeforeBreaking - internal_linkLength) / (maxDistanceBeforeBreaking - maxDistanceBeforeSlowing);
+					float lerpValue = (maxDistanceBeforeBreaking - i_linkLength) / (maxDistanceBeforeBreaking - maxDistanceBeforeSlowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
 					lineRenderer.startColor = linkColor.Evaluate(lerpValue);
 					lineRenderer.endColor = linkColor.Evaluate(lerpValue);
@@ -158,7 +158,7 @@ public class LinkController : MonoBehaviour
 					secondPawn.AddSpeedCoef(new SpeedCoef(FsSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
 					ChangeLinkState(LinkState.Slowing);
 				}
-				if (internal_linkLength >= maxDistanceBeforeBreaking)
+				if (i_linkLength >= maxDistanceBeforeBreaking)
 				{
 					//Break link
 					lineRenderer.positionCount = 0;
@@ -168,7 +168,7 @@ public class LinkController : MonoBehaviour
 			}
 			else
 			{
-				if (internal_linkLength <= distanceBeforeRebuilding)
+				if (i_linkLength <= distanceBeforeRebuilding)
 				{
 					//Rebuild link
 					linkIsBroke = false;

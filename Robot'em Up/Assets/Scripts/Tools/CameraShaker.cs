@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
+[ExecuteAlways]
 public class CameraShaker : MonoBehaviour
 {
 	public static List<ShakeData> shakeList = new List<ShakeData>();
 	public static ShakeData currentShake;
 	public static ShakeEffect cameraShaker;
+
+	public static void ShakeEditorCamera (Camera _camera, float _intensity, float _duration, float _frequency)
+	{
+		EditorCameraShaker shaker = _camera.gameObject.AddComponent<EditorCameraShaker>();
+		shaker.Init(_duration, _intensity, _frequency);
+	}
 
 	public static void ShakeCamera ( float _intensity, float _duration, float _frequency )
 	{
@@ -16,37 +23,37 @@ public class CameraShaker : MonoBehaviour
 			cameraShaker = new GameObject().AddComponent<ShakeEffect>();
 			cameraShaker.gameObject.name = "Camera Shaker";
 		}
-		ShakeData internal_shakeData = new ShakeData(_intensity, _duration, _frequency);
+		ShakeData i_shakeData = new ShakeData(_intensity, _duration, _frequency);
 		if (currentShake != null)
 		{
 			if (_intensity > currentShake.intensity)
 			{
 				shakeList.Add(currentShake);
-				currentShake = internal_shakeData;
-				shakeList.Add(internal_shakeData);
+				currentShake = i_shakeData;
+				shakeList.Add(i_shakeData);
 			} else
 			{
-				shakeList.Add(internal_shakeData);
+				shakeList.Add(i_shakeData);
 			}
 		} else
 		{
-			currentShake = internal_shakeData;
-			shakeList.Add(internal_shakeData);
+			currentShake = i_shakeData;
+			shakeList.Add(i_shakeData);
 		}
 	}
 
 	public static void UpdateShakes()
 	{
-		List<ShakeData> internal_newShakeData = new List<ShakeData>();
+		List<ShakeData> i_newShakeData = new List<ShakeData>();
 		foreach (ShakeData shakeData in shakeList)
 		{
 			shakeData.durationLeft -= Time.deltaTime;
 			if (shakeData.durationLeft > 0)
 			{
-				internal_newShakeData.Add(shakeData);
+				i_newShakeData.Add(shakeData);
 			}
 		}
-		shakeList = internal_newShakeData;
+		shakeList = i_newShakeData;
 		if (currentShake != null && currentShake.durationLeft <= 0) { shakeList.Remove(currentShake); currentShake = GetNextShakeData(); }
 	}
 
@@ -56,17 +63,17 @@ public class CameraShaker : MonoBehaviour
 		{
 			return null;
 		}
-		ShakeData internal_biggestShake = shakeList[0];
-		float internal_biggestValue = shakeList[0].intensity;
+		ShakeData i_biggestShake = shakeList[0];
+		float i_biggestValue = shakeList[0].intensity;
 		foreach (ShakeData shakeData in shakeList)
 		{
-			if (shakeData.intensity > internal_biggestValue)
+			if (shakeData.intensity > i_biggestValue)
 			{
-				internal_biggestValue = shakeData.intensity;
-				internal_biggestShake = shakeData;
+				i_biggestValue = shakeData.intensity;
+				i_biggestShake = shakeData;
 			}
 		}
-		return internal_biggestShake;
+		return i_biggestShake;
 	}
 }
 
@@ -101,25 +108,25 @@ public class ShakeEffect : MonoBehaviour {
 
 	public CinemachineVirtualCamera GetVirtualCamera()
 	{
-		CinemachineBrain internal_brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
-		if (internal_brain == null) { return null; }
+		CinemachineBrain i_brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
+		if (i_brain == null) { return null; }
 
-		ICinemachineCamera internal_virtualCameraEnum = internal_brain.ActiveVirtualCamera;
-		if (internal_virtualCameraEnum == null) { return null; }
+		ICinemachineCamera i_virtualCameraEnum = i_brain.ActiveVirtualCamera;
+		if (i_virtualCameraEnum == null) { return null; }
 
-		GameObject internal_virtualCamGO = internal_brain.ActiveVirtualCamera.VirtualCameraGameObject;
-		if (internal_virtualCamGO == null) { return null; }
+		GameObject i_virtualCamGO = i_brain.ActiveVirtualCamera.VirtualCameraGameObject;
+		if (i_virtualCamGO == null) { return null; }
 
-		CinemachineVirtualCamera internal_virtualCam = internal_virtualCamGO.GetComponent<CinemachineVirtualCamera>();
-		if (internal_virtualCam == null) { return null; }
+		CinemachineVirtualCamera i_virtualCam = i_virtualCamGO.GetComponent<CinemachineVirtualCamera>();
+		if (i_virtualCam == null) { return null; }
 
-		_perlin = internal_virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+		_perlin = i_virtualCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 		if (_perlin == null)
 		{
-			_perlin = internal_virtualCam.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+			_perlin = i_virtualCam.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 			_perlin.m_NoiseProfile = Resources.Load("NoiseProfile") as NoiseSettings;
 		}
-		return internal_virtualCam;
+		return i_virtualCam;
 	}
 
 	private void Update ()
@@ -130,13 +137,35 @@ public class ShakeEffect : MonoBehaviour {
 		CameraShaker.UpdateShakes();
 		if (currentShake != null)
 		{
-			float internal_momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.screenShakeMultiplier);
-			_perlin.m_AmplitudeGain = currentShake.intensity * internal_momentumMultiplier;
+			float i_momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.screenShakeMultiplier);
+			_perlin.m_AmplitudeGain = currentShake.intensity * i_momentumMultiplier;
 			_perlin.m_FrequencyGain = currentShake.frequency;
 		} else
 		{
 			_perlin.m_AmplitudeGain = 0;
 			_perlin.m_FrequencyGain = 0;
 		}
+	}
+}
+
+[ExecuteInEditMode]
+public class EditorCameraShaker : MonoBehaviour
+{
+	public void Init (float _duration, float _intensity, float _frequency)
+	{
+		StartCoroutine(ShakeEditorCamera_C(_duration, _intensity, _frequency));
+	}
+
+	IEnumerator ShakeEditorCamera_C(float _duration, float _intensity, float _frequency)
+	{
+		Vector3 initialPosition = transform.position;
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			transform.position = initialPosition+ Random.insideUnitSphere * _intensity * 0.1f;
+			yield return null;
+		}
+		transform.position = initialPosition;
+		DestroyImmediate(this);
+		yield return null;
 	}
 }

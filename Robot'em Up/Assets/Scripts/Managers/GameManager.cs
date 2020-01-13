@@ -7,14 +7,6 @@ using UnityEngine.SceneManagement;
 using XInputDotNetPure;
 #pragma warning disable 0649
 
-public enum VibrationForce
-{
-    VeryHeavy,
-	Heavy,
-	Medium,
-	Light,
-    VeryLight,
-}
 public enum DamageSource
 {
 	Ball,
@@ -286,10 +278,10 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(ball.gameObject);
 		}
-		GameObject internal_newBall = Instantiate(i.ballPrefab, null);
-		BallBehaviour.instance = internal_newBall.GetComponent<BallBehaviour>();
-        i.ball = internal_newBall.GetComponent<BallBehaviour>();
-		internal_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
+		GameObject i_newBall = Instantiate(i.ballPrefab, null);
+		BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
+        i.ball = i_newBall.GetComponent<BallBehaviour>();
+		i_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
 	void LoadMomentumManager()

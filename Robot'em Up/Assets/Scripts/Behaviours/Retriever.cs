@@ -38,36 +38,36 @@ public class Retriever : MonoBehaviour
     {
         if (other.tag == "Ball")
         {
-			BallBehaviour internal_ballBehaviour = other.GetComponent<BallBehaviour>();
-			if (internal_ballBehaviour.GetState() == BallState.Grounded || internal_ballBehaviour.GetState() == BallState.Flying)
+			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
+			if (i_ballBehaviour.GetState() == BallState.Grounded || i_ballBehaviour.GetState() == BallState.Flying)
 			{
-				if (internal_ballBehaviour.GetState() == BallState.Flying)
+				if (i_ballBehaviour.GetState() == BallState.Flying)
 				{
-					if (internal_ballBehaviour.GetCurrentThrower() == playerController && (internal_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || internal_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
-					passController.Receive(internal_ballBehaviour);
+					if (i_ballBehaviour.GetCurrentThrower() == playerController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+					passController.Receive(i_ballBehaviour);
 				}
 				else
 				{
-					passController.Receive(internal_ballBehaviour);
+					passController.Receive(i_ballBehaviour);
 				}
 			}
         }
 		if (other.tag == "CorePart")
 		{
-			CorePart internal_corePart = other.GetComponent<CorePart>();
-			if (!internal_corePart.grounded) { return; }
-			if (!internal_corePart.CanBePicked()) { return; }
-			if (internal_corePart.linkedPawn != null)
+			CorePart i_corePart = other.GetComponent<CorePart>();
+			if (!i_corePart.grounded) { return; }
+			if (!i_corePart.CanBePicked()) { return; }
+			if (i_corePart.linkedPawn != null)
 			{
 				SoundManager.PlaySound("PickUpOnePartOfItsBody", transform.position, transform);
-				internal_corePart.Pick(playerController);
-				bool internal_partsFound = false;
+				i_corePart.Pick(playerController);
+				bool i_partsFound = false;
 				List<ReviveInformations> newList = new List<ReviveInformations>();
 				foreach (ReviveInformations parts in retrievedParts)
 				{
-					if (parts.linkedPlayer == internal_corePart.linkedPawn)
+					if (parts.linkedPlayer == i_corePart.linkedPawn)
 					{
-						internal_partsFound = true;
+						i_partsFound = true;
 						parts.amount++;
 						parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
 						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
@@ -88,17 +88,17 @@ public class Retriever : MonoBehaviour
 					}
 				}
 				retrievedParts = newList;
-				if (!internal_partsFound)
+				if (!i_partsFound)
 				{
-					ReviveInformations internal_newPart = new ReviveInformations();
-					internal_newPart.linkedPlayer = (PlayerController)internal_corePart.linkedPawn;
-					internal_newPart.maxAmount = internal_corePart.totalPartCount;
-					internal_newPart.amount = 1;
-					internal_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
-					internal_newPart.linkedPanel.revivedPlayer = internal_newPart.linkedPlayer;
-					internal_newPart.linkedPanel.revivingPlayer = playerController;
-					internal_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = internal_newPart.amount + "/" + internal_corePart.totalPartCount;
-					retrievedParts.Add(internal_newPart);
+					ReviveInformations i_newPart = new ReviveInformations();
+					i_newPart.linkedPlayer = (PlayerController)i_corePart.linkedPawn;
+					i_newPart.maxAmount = i_corePart.totalPartCount;
+					i_newPart.amount = 1;
+					i_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
+					i_newPart.linkedPanel.revivedPlayer = i_newPart.linkedPlayer;
+					i_newPart.linkedPanel.revivingPlayer = playerController;
+					i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + i_corePart.totalPartCount;
+					retrievedParts.Add(i_newPart);
 				}
 			} else
 			{
@@ -106,8 +106,8 @@ public class Retriever : MonoBehaviour
 
 				if (playerController.GetHealth() < playerController.GetMaxHealth())
 				{
-					internal_corePart.Pick(playerController);
-									playerController.Heal(internal_corePart.healthValue);
+					i_corePart.Pick(playerController);
+									playerController.Heal(i_corePart.healthValue);
 				}
 			}
 		}

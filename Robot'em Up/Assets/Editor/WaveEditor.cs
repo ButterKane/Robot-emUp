@@ -39,11 +39,11 @@ public class WaveEditor : Editor
 		{
 			GUILayout.BeginVertical(EditorStyles.helpBox);
 			GUI.color = Color.gray;
-			GUIStyle internal_headerStyle = new GUIStyle(EditorStyles.helpBox);
-			internal_headerStyle.alignment = TextAnchor.MiddleCenter;
-			internal_headerStyle.fontSize = 20;
-			internal_headerStyle.fontStyle = FontStyle.Bold;
-			GUILayout.Box("Global settings", internal_headerStyle);
+			GUIStyle i_headerStyle = new GUIStyle(EditorStyles.helpBox);
+			i_headerStyle.alignment = TextAnchor.MiddleCenter;
+			i_headerStyle.fontSize = 20;
+			i_headerStyle.fontStyle = FontStyle.Bold;
+			GUILayout.Box("Global settings", i_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			SerializedProperty m_startOnTriggerEnter = serializedObject.FindProperty("startOnTriggerEnter");
@@ -57,7 +57,7 @@ public class WaveEditor : Editor
 
 			GUILayout.BeginVertical(EditorStyles.helpBox);
 			GUI.color = Color.gray;
-			GUILayout.Box("Spawns", internal_headerStyle);
+			GUILayout.Box("Spawns", i_headerStyle);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
 			List<SpawnInformation> updatedList = new List<SpawnInformation>();
@@ -119,40 +119,40 @@ public class WaveEditor : Editor
 		}
 		for (int i = 0; i < waveEditor.waveList.Count; i++)
 		{
-			WaveData internal_waveData = waveEditor.waveList[i];
+			WaveData i_waveData = waveEditor.waveList[i];
 			GUILayout.BeginVertical(EditorStyles.helpBox);
 			GUI.color = Color.gray;
 			GUILayout.BeginHorizontal();
-			GUIStyle internal_headerStyle = new GUIStyle(EditorStyles.helpBox);
-			internal_headerStyle.alignment = TextAnchor.MiddleCenter;
-			internal_headerStyle.fontSize = 20;
-			internal_headerStyle.fontStyle = FontStyle.Bold;
-			GUILayout.Box("Wave " + (i + 1).ToString(), internal_headerStyle);
+			GUIStyle i_headerStyle = new GUIStyle(EditorStyles.helpBox);
+			i_headerStyle.alignment = TextAnchor.MiddleCenter;
+			i_headerStyle.fontSize = 20;
+			i_headerStyle.fontStyle = FontStyle.Bold;
+			GUILayout.Box("Wave " + (i + 1).ToString(), i_headerStyle);
 			GUI.color = Color.white;
 			if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(30), GUILayout.Height(30)))
 			{
-				waveEditor.waveList.Remove(internal_waveData);
+				waveEditor.waveList.Remove(i_waveData);
 			}
 			GUILayout.EndHorizontal();
 
 			//"Wave global settings" panel
 			GUILayout.Label("Global settings", EditorStyles.centeredGreyMiniLabel);
-			internal_waveData.maxPowerLevel = EditorGUILayout.CurveField("Max power level", internal_waveData.maxPowerLevel);
-			internal_waveData.duration = EditorGUILayout.FloatField("Duration", internal_waveData.duration) ;
-			internal_waveData.pauseBeforeNextWave = EditorGUILayout.FloatField("Pause before next wave", internal_waveData.pauseBeforeNextWave);
+			i_waveData.maxPowerLevel = EditorGUILayout.CurveField("Max power level", i_waveData.maxPowerLevel);
+			i_waveData.duration = EditorGUILayout.FloatField("Duration", i_waveData.duration) ;
+			i_waveData.pauseBeforeNextWave = EditorGUILayout.FloatField("Pause before next wave", i_waveData.pauseBeforeNextWave);
 
 			//"Wave enemy ratio visualizers" panel
 			GUILayout.Space(10);
 			GUILayout.Label("Enemy spawn chances", EditorStyles.centeredGreyMiniLabel);
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
-			for (int y = 0; y < internal_waveData.currentEnemies.Count; y++)
+			for (int y = 0; y < i_waveData.currentEnemies.Count; y++)
 			{
 				GUIStyle visualizerStyle = new GUIStyle(GUI.skin.textField);
-				GUI.color = internal_waveData.currentEnemies[y].enemyType.color;
+				GUI.color = i_waveData.currentEnemies[y].enemyType.color;
 				visualizerStyle.alignment = TextAnchor.MiddleCenter;
-				GUILayout.TextField(internal_waveData.currentEnemies[y].enemyType.name, visualizerStyle, GUILayout.Width(300 * internal_waveData.currentEnemies[y].probability), GUILayout.Height(30));
-				GUI.color = internal_waveData.currentEnemies[y].enemyType.color;
+				GUILayout.TextField(i_waveData.currentEnemies[y].enemyType.name, visualizerStyle, GUILayout.Width(300 * i_waveData.currentEnemies[y].probability), GUILayout.Height(30));
+				GUI.color = i_waveData.currentEnemies[y].enemyType.color;
 			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
@@ -161,10 +161,10 @@ public class WaveEditor : Editor
 			//"Current enemies" panel
 			GUI.color = Color.white;
 			GUILayout.BeginVertical();
-			for (int y = 0; y < internal_waveData.currentEnemies.Count; y++)
+			for (int y = 0; y < i_waveData.currentEnemies.Count; y++)
 			{
 				GUILayout.BeginHorizontal();
-				GUI.color = internal_waveData.currentEnemies[y].enemyType.color;
+				GUI.color = i_waveData.currentEnemies[y].enemyType.color;
 				GUILayout.Label(EditorGUIUtility.IconContent("Canvas Icon"), GUILayout.Width(30), GUILayout.Height(30));
 				GUI.color = Color.white;
 				GUILayout.BeginVertical();
@@ -172,15 +172,15 @@ public class WaveEditor : Editor
 				GUILayout.Box("Power level: "+waveEditor.waveList[i].currentEnemies[y].enemyType.prefab.GetComponent<EnemyBehaviour>().powerLevel, EditorStyles.centeredGreyMiniLabel);
 				GUILayout.EndVertical();
 				EditorGUI.BeginChangeCheck();
-				float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(internal_waveData.currentEnemies[y].probability * 100f) / 100f, 0f, 1f);
+				float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(i_waveData.currentEnemies[y].probability * 100f) / 100f, 0f, 1f);
 				if (EditorGUI.EndChangeCheck())
 				{
-					internal_waveData.SetEnemySpawnProbability(internal_waveData.currentEnemies[y].enemyType, probaSliderValue);
+					i_waveData.SetEnemySpawnProbability(i_waveData.currentEnemies[y].enemyType, probaSliderValue);
 				}
 				if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
 				{
-					internal_waveData.RemoveEnemySpawnProbability(internal_waveData.currentEnemies[y]);
-					UpdateAvailableEnemies(internal_waveData);
+					i_waveData.RemoveEnemySpawnProbability(i_waveData.currentEnemies[y]);
+					UpdateAvailableEnemies(i_waveData);
 					return;
 				}
 				for (int z = 0; z < waveEditor.spawnList.Count; z++) {
@@ -188,16 +188,16 @@ public class WaveEditor : Editor
 					GUIStyle buttonStyle = new GUIStyle(EditorStyles.boldLabel);
 					if (GUILayout.Button(Resources.Load<Texture2D>("WaveToolSprites/WhiteSquareTransparentBorder"), buttonStyle, GUILayout.Width(30), GUILayout.Height(30)))
 					{
-						if (internal_waveData.currentEnemies[y].spawnIndexes.Contains(z))
+						if (i_waveData.currentEnemies[y].spawnIndexes.Contains(z))
 						{
-							internal_waveData.currentEnemies[y].spawnIndexes.Remove(z);
+							i_waveData.currentEnemies[y].spawnIndexes.Remove(z);
 						} else
 						{
-							internal_waveData.currentEnemies[y].spawnIndexes.Add(z);
+							i_waveData.currentEnemies[y].spawnIndexes.Add(z);
 						}
 					}
 					GUI.color = Color.white;
-					if (internal_waveData.currentEnemies[y].spawnIndexes.Contains(z))
+					if (i_waveData.currentEnemies[y].spawnIndexes.Contains(z))
 					{
 						GUI.Label(GUILayoutUtility.GetLastRect(), Resources.Load<Texture2D>("WaveToolSprites/WhiteOutline"));
 					}
@@ -208,17 +208,17 @@ public class WaveEditor : Editor
 			GUILayout.EndVertical();
 
 			//"Add enemy" panel
-			if (enemyAvailable[internal_waveData] != null)
+			if (enemyAvailable[i_waveData] != null)
 			{
-				if (enemyAvailable[internal_waveData].Length > 0)
+				if (enemyAvailable[i_waveData].Length > 0)
 				{
 					GUILayout.Space(10);
 					GUILayout.Label("Add enemy type", EditorStyles.centeredGreyMiniLabel );
 					GUILayout.BeginHorizontal();
-					enemyFoldoutIndex[internal_waveData] = EditorGUILayout.Popup(enemyFoldoutIndex[internal_waveData], EnemyListToString(enemyAvailable[internal_waveData]));
+					enemyFoldoutIndex[i_waveData] = EditorGUILayout.Popup(enemyFoldoutIndex[i_waveData], EnemyListToString(enemyAvailable[i_waveData]));
 					if (GUILayout.Button("Add"))
 					{
-						AddEnemy(internal_waveData, enemyFoldoutIndex[internal_waveData]);
+						AddEnemy(i_waveData, enemyFoldoutIndex[i_waveData]);
 					}
 					GUILayout.EndHorizontal();
 				}
@@ -251,15 +251,15 @@ public class WaveEditor : Editor
 
 	void AddWave()
 	{
-		WaveData internal_newWave = new WaveData();
-		AnimationCurve internal_newCurve = new AnimationCurve();
-		internal_newCurve.AddKey(new Keyframe(0, 1));
-		internal_newCurve.AddKey(new Keyframe(1, 1));
-		internal_newWave.maxPowerLevel = internal_newCurve;
-		waveEditor.waveList.Add(internal_newWave);
-		enemyFoldoutIndex.Add(internal_newWave, 0);
-		enemyAvailable.Add(internal_newWave, new EnemyData[0]);
-		UpdateAvailableEnemies(internal_newWave);
+		WaveData i_newWave = new WaveData();
+		AnimationCurve i_newCurve = new AnimationCurve();
+		i_newCurve.AddKey(new Keyframe(0, 1));
+		i_newCurve.AddKey(new Keyframe(1, 1));
+		i_newWave.maxPowerLevel = i_newCurve;
+		waveEditor.waveList.Add(i_newWave);
+		enemyFoldoutIndex.Add(i_newWave, 0);
+		enemyAvailable.Add(i_newWave, new EnemyData[0]);
+		UpdateAvailableEnemies(i_newWave);
 	}
 
 	void UpdateAvailableEnemies(WaveData _wave)
@@ -270,36 +270,36 @@ public class WaveEditor : Editor
 	void AddEnemy ( WaveData _wave, int _index)  
 	{
 		if (enemyAvailable[_wave][_index] == null) { return; }
-		WaveEnemy internal_newWEP = new WaveEnemy();
-		internal_newWEP.enemyType = enemyAvailable[_wave][_index];
+		WaveEnemy i_newWEP = new WaveEnemy();
+		i_newWEP.enemyType = enemyAvailable[_wave][_index];
 		if (_wave.currentEnemies.Count <= 0)
 		{
-			internal_newWEP.probability = 1;
+			i_newWEP.probability = 1;
 		} else
 		{
-			internal_newWEP.probability = 0;
+			i_newWEP.probability = 0;
 		}
-		internal_newWEP.spawnIndexes = new List<int>();
-		_wave.currentEnemies.Add(internal_newWEP);
+		i_newWEP.spawnIndexes = new List<int>();
+		_wave.currentEnemies.Add(i_newWEP);
 		UpdateAvailableEnemies(_wave); 
 	}
 
 	void AddSpawn()
 	{
-		GameObject internal_newSpawn = new GameObject();
-		internal_newSpawn.name = "Wave-Spawn [" + (waveEditor.spawnList.Count + 1) + "]";
-		internal_newSpawn.transform.SetParent(waveEditor.transform);
-		internal_newSpawn.transform.position = waveEditor.GetComponentInChildren<CameraZone>().GetCenterPosition();
+		GameObject i_newSpawn = new GameObject();
+		i_newSpawn.name = "Wave-Spawn [" + (waveEditor.spawnList.Count + 1) + "]";
+		i_newSpawn.transform.SetParent(waveEditor.transform);
+		i_newSpawn.transform.position = waveEditor.GetComponentInChildren<CameraZone>().GetCenterPosition();
 		Texture2D tex = EditorGUIUtility.IconContent("sv_label_0").image as Texture2D; 
 		Type editorGUIUtilityType = typeof(EditorGUIUtility);
 		BindingFlags bindingFlags = BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic;
-		object[] args = new object[] { internal_newSpawn, tex };
+		object[] args = new object[] { i_newSpawn, tex };
 		editorGUIUtilityType.InvokeMember("SetIconForObject", bindingFlags, null, null, args);
-		SpawnInformation internal_newSpawnInf = new SpawnInformation();
-		internal_newSpawnInf.transform = internal_newSpawn.transform;
-		internal_newSpawnInf.customName = "SpawnName";
-		internal_newSpawnInf.color = Color.white;
-		waveEditor.spawnList.Add(internal_newSpawnInf);
+		SpawnInformation i_newSpawnInf = new SpawnInformation();
+		i_newSpawnInf.transform = i_newSpawn.transform;
+		i_newSpawnInf.customName = "SpawnName";
+		i_newSpawnInf.color = Color.white;
+		waveEditor.spawnList.Add(i_newSpawnInf);
 		this.serializedObject.Update();
 	}
 
@@ -319,24 +319,24 @@ public class WaveEditor : Editor
 
 	public EnemyData[] GetAvailableEnemies(WaveData _waveData)
 	{
-		EnemyDatas internal_totalEnemies = enemyDatas;
-		int enemyCount = internal_totalEnemies.enemyDatas.Count - _waveData.currentEnemies.Count;
+		EnemyDatas i_totalEnemies = enemyDatas;
+		int enemyCount = i_totalEnemies.enemyDatas.Count - _waveData.currentEnemies.Count;
 		if (enemyCount <= 0) { return new EnemyData[0]; }
-		EnemyData[] internal_availableEnemiesList = new EnemyData[enemyCount]; 
-		List<EnemyData> internal_unavailableEnemiesList = new List<EnemyData>();
+		EnemyData[] i_availableEnemiesList = new EnemyData[enemyCount]; 
+		List<EnemyData> i_unavailableEnemiesList = new List<EnemyData>();
 		foreach (WaveEnemy wep in _waveData.currentEnemies)
 		{
-			internal_unavailableEnemiesList.Add(wep.enemyType);
+			i_unavailableEnemiesList.Add(wep.enemyType);
 		}
 		int index = 0;
-		for (int i = 0; i < internal_totalEnemies.enemyDatas.Count; i++)
+		for (int i = 0; i < i_totalEnemies.enemyDatas.Count; i++)
 		{
-			if (IsEnemyAvailable(internal_totalEnemies.enemyDatas[i], internal_unavailableEnemiesList)) {
-				internal_availableEnemiesList[index] = internal_totalEnemies.enemyDatas[i];
+			if (IsEnemyAvailable(i_totalEnemies.enemyDatas[i], i_unavailableEnemiesList)) {
+				i_availableEnemiesList[index] = i_totalEnemies.enemyDatas[i];
 				index++;
 			}
 		}
-		return internal_availableEnemiesList;
+		return i_availableEnemiesList;
 	}
 
 	public bool IsEnemyAvailable(EnemyData _enemy, List<EnemyData> _unavailableList)

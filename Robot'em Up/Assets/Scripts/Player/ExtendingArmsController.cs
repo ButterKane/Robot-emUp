@@ -88,9 +88,9 @@ public class ExtendingArmsController : MonoBehaviour
 		}
 		if (aimType != ExtendingArmsAimType.TwinStick) { return; }
 		if (!throwDirectionIndicator.activeSelf) { throwDirectionIndicator.SetActive(true); }
-		Vector3 internal_flattedDirection = SwissArmyKnife.GetFlattedDownPosition(_direction, Vector3.zero).normalized;
-		throwDirectionIndicator.transform.forward = internal_flattedDirection;
-		throwDirection = internal_flattedDirection;
+		Vector3 i_flattedDirection = SwissArmyKnife.GetFlattedDownPosition(_direction, Vector3.zero).normalized;
+		throwDirectionIndicator.transform.forward = i_flattedDirection;
+		throwDirection = i_flattedDirection;
 
 		//Update second indicator position
 		secondDirectionIndicator.transform.localPosition = new Vector3(0, 0, Vector3.Distance(startTransform.position, currentEndPosition));
@@ -169,10 +169,10 @@ public class ExtendingArmsController : MonoBehaviour
 
 	private void InstantiateLineRenderer()
 	{
-		GameObject internal_lineRendererObj = new GameObject();
-		internal_lineRendererObj.name = "ExtendingArmsRenderer";
-		internal_lineRendererObj.transform.SetParent(this.transform);
-		lineRenderer = internal_lineRendererObj.AddComponent<LineRenderer>();
+		GameObject i_lineRendererObj = new GameObject();
+		i_lineRendererObj.name = "ExtendingArmsRenderer";
+		i_lineRendererObj.transform.SetParent(this.transform);
+		lineRenderer = i_lineRendererObj.AddComponent<LineRenderer>();
 		lineRenderer.startWidth = armWidth;
 		lineRenderer.endWidth = armWidth;
 		lineRenderer.startColor = armColor;
@@ -182,11 +182,11 @@ public class ExtendingArmsController : MonoBehaviour
 
 	private bool TryToAttachArm()
 	{
-		Collider[] internal_colliderFound = Physics.OverlapSphere(armTransform.position, armRadius, LayerMask.GetMask("Environment"));
-		if (internal_colliderFound.Length > 0)
+		Collider[] i_colliderFound = Physics.OverlapSphere(armTransform.position, armRadius, LayerMask.GetMask("Environment"));
+		if (i_colliderFound.Length > 0)
 		{
-			armTransform.SetParent(internal_colliderFound[0].transform, true);
-			armTransform.position = internal_colliderFound[0].ClosestPointOnBounds(armTransform.position);
+			armTransform.SetParent(i_colliderFound[0].transform, true);
+			armTransform.position = i_colliderFound[0].ClosestPointOnBounds(armTransform.position);
 			return true;
 		}
 		return false;
@@ -195,13 +195,13 @@ public class ExtendingArmsController : MonoBehaviour
 	IEnumerator ExtendArm_C(Vector3 _direction)
 	{
 		ChangeState(ArmState.Extending);
-		Vector3 internal_startPosition = startTransform.position;
-		Vector3 internal_endPosition = currentEndPosition;
+		Vector3 i_startPosition = startTransform.position;
+		Vector3 i_endPosition = currentEndPosition;
 		armTransform.SetParent(null, true);
-		for (float i = 0; i < 1; i += Time.deltaTime * forwardSpeed / Vector3.Distance(internal_startPosition, internal_endPosition))
+		for (float i = 0; i < 1; i += Time.deltaTime * forwardSpeed / Vector3.Distance(i_startPosition, i_endPosition))
 		{
-			armTransform.position = Vector3.Lerp(internal_startPosition, internal_endPosition, i / 1f);
-			armTransform.transform.forward = internal_endPosition - armTransform.position;
+			armTransform.position = Vector3.Lerp(i_startPosition, i_endPosition, i / 1f);
+			armTransform.transform.forward = i_endPosition - armTransform.position;
 			if (TryToAttachArm())
 			{
 				ChangeState(ArmState.Extended);
@@ -209,7 +209,7 @@ public class ExtendingArmsController : MonoBehaviour
 			}
 			yield return new WaitForEndOfFrame();
 		}
-		armTransform.position = internal_endPosition;
+		armTransform.position = i_endPosition;
 		if (TryToAttachArm())
 		{
 			StartCoroutine(RetractArm_C());
@@ -224,18 +224,18 @@ public class ExtendingArmsController : MonoBehaviour
 
 		if (armTransform.parent != null) //Something got grabbed
 		{
-			Vector3 internal_direction = (armTransform.position - pawnController.transform.position).normalized;
-			Vector3 internal_startPosition = pawnController.transform.position;
-			Vector3 internal_endPosition = armTransform.position - (internal_direction * maxDistanceFromWall);
-			if (Vector3.Distance(internal_startPosition, internal_endPosition) <= 3) { CancelRetraction(); StopAllCoroutines(); }
+			Vector3 i_direction = (armTransform.position - pawnController.transform.position).normalized;
+			Vector3 i_startPosition = pawnController.transform.position;
+			Vector3 i_endPosition = armTransform.position - (i_direction * maxDistanceFromWall);
+			if (Vector3.Distance(i_startPosition, i_endPosition) <= 3) { CancelRetraction(); StopAllCoroutines(); }
 			yield return new WaitForSeconds(freezeDuration);
 			pawnController.Freeze();
 
-			for (float i = 0; i < 1f; i+= Time.deltaTime * dragSpeed / Vector3.Distance(internal_startPosition, internal_endPosition))
+			for (float i = 0; i < 1f; i+= Time.deltaTime * dragSpeed / Vector3.Distance(i_startPosition, i_endPosition))
 			{
 				yield return new WaitForEndOfFrame();
-				pawnController.transform.position = Vector3.Lerp(internal_startPosition, internal_endPosition, i / 1f);
-				if (Physics.Raycast(pawnController.transform.position, internal_direction.normalized, 1f, LayerMask.GetMask("Environment")))
+				pawnController.transform.position = Vector3.Lerp(i_startPosition, i_endPosition, i / 1f);
+				if (Physics.Raycast(pawnController.transform.position, i_direction.normalized, 1f, LayerMask.GetMask("Environment")))
 				{
 					Debug.Log("Cancelled grab");
 					CancelRetraction();
@@ -243,15 +243,15 @@ public class ExtendingArmsController : MonoBehaviour
 				}
 			}
 			pawnController.UnFreeze();
-			pawnController.transform.position = internal_endPosition;
+			pawnController.transform.position = i_endPosition;
 		} else //Nothing got grabbed
 		{
-			Vector3 internal_startPosition = armTransform.position;
-			for (float i = 0; i < 1; i += Time.deltaTime * retractionSpeed / Vector3.Distance(internal_startPosition, startTransform.position))
+			Vector3 i_startPosition = armTransform.position;
+			for (float i = 0; i < 1; i += Time.deltaTime * retractionSpeed / Vector3.Distance(i_startPosition, startTransform.position))
 			{
 				yield return new WaitForEndOfFrame();
-				armTransform.position = Vector3.Lerp(internal_startPosition, startTransform.position, i / 1f);
-				armTransform.transform.forward = startTransform.position - internal_startPosition;
+				armTransform.position = Vector3.Lerp(i_startPosition, startTransform.position, i / 1f);
+				armTransform.transform.forward = startTransform.position - i_startPosition;
 			}
 		}
 		CancelRetraction();

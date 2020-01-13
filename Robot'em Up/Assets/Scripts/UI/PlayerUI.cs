@@ -96,20 +96,20 @@ public class PlayerUI : MonoBehaviour
 	void UpdateHealth()
 	{
 		currentHealth = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
-		float internal_healthLerpSpeed = healthLossLerpSpeed;
+		float i_healthLerpSpeed = healthLossLerpSpeed;
 		if (currentHealth > displayedHealth)
 		{
-			internal_healthLerpSpeed = healthGainLerpSpeed;
+			i_healthLerpSpeed = healthGainLerpSpeed;
 		}
-		displayedHealth = Mathf.Lerp(displayedHealth, currentHealth, Time.deltaTime * internal_healthLerpSpeed);
+		displayedHealth = Mathf.Lerp(displayedHealth, currentHealth, Time.deltaTime * i_healthLerpSpeed);
 		displayedHealth = Mathf.Clamp(displayedHealth, 0f, 1f);
 		healthText.text = "" + Mathf.RoundToInt((displayedHealth * 100f)).ToString() + "%";
 
-		float internal_evaluateTime = 1f - Mathf.Clamp(displayedHealth - (displayedHealth % healthGradientInterpolationRate), 0f, 1f);
-		healthText.color = healthColorGradient.Evaluate(internal_evaluateTime);
+		float i_evaluateTime = 1f - Mathf.Clamp(displayedHealth - (displayedHealth % healthGradientInterpolationRate), 0f, 1f);
+		healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
 
-		float internal_HealthNormalized = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
-		if (internal_HealthNormalized < healthAlwaysDisplayedTreshold && internal_HealthNormalized > 0)
+		float i_HealthNormalized = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
+		if (i_HealthNormalized < healthAlwaysDisplayedTreshold && i_HealthNormalized > 0)
 		{
 			if (!panelShowedPermanently.Contains(healthPanel))
 			{
@@ -123,12 +123,12 @@ public class PlayerUI : MonoBehaviour
 
 	void UpdateDashBars()
 	{
-		float internal_totalFillAmount = dashController.GetCurrentStackAmount() + (dashController.GetCurrentStackCooldown() / dashController.stackCooldown);
+		float i_totalFillAmount = dashController.GetCurrentStackAmount() + (dashController.GetCurrentStackCooldown() / dashController.stackCooldown);
 		for (int i = 0; i < dashStacks.Count; i++)
 		{
-			float fillAmount = Mathf.Clamp(internal_totalFillAmount, 0f, 1f);
+			float fillAmount = Mathf.Clamp(i_totalFillAmount, 0f, 1f);
 			dashStacks[i].fillAmount = fillAmount;
-			internal_totalFillAmount -= fillAmount;
+			i_totalFillAmount -= fillAmount;
 		}
 	}
 
@@ -138,78 +138,78 @@ public class PlayerUI : MonoBehaviour
 		playerCanvas.transform.SetParent(this.transform);
 		playerCanvas.renderMode = RenderMode.WorldSpace;
 		playerCanvas.name = "PlayerCanvas";
-		RectTransform internal_canvasRT = playerCanvas.GetComponent<RectTransform>();
-		internal_canvasRT.sizeDelta = new Vector2(panelWidth, panelHeight);
-		internal_canvasRT.pivot = new Vector2(0.5f, 0f);
+		RectTransform i_canvasRT = playerCanvas.GetComponent<RectTransform>();
+		i_canvasRT.sizeDelta = new Vector2(panelWidth, panelHeight);
+		i_canvasRT.pivot = new Vector2(0.5f, 0f);
 		playerCanvas.transform.localPosition = new Vector3(0, pawnController.GetHeight() + panelDistanceToPlayer, 0);
 		playerCanvas.gameObject.AddComponent<Billboard>();
-		VerticalLayoutGroup internal_vlg = playerCanvas.gameObject.AddComponent<VerticalLayoutGroup>();
-		internal_vlg.childAlignment = TextAnchor.LowerCenter;
-		internal_vlg.childForceExpandHeight = false;
-		internal_vlg.childForceExpandWidth = false;
-		internal_vlg.childScaleHeight = true;
-		internal_vlg.childControlHeight = false;
-		internal_vlg.childControlWidth = false;
+		VerticalLayoutGroup i_vlg = playerCanvas.gameObject.AddComponent<VerticalLayoutGroup>();
+		i_vlg.childAlignment = TextAnchor.LowerCenter;
+		i_vlg.childForceExpandHeight = false;
+		i_vlg.childForceExpandWidth = false;
+		i_vlg.childScaleHeight = true;
+		i_vlg.childControlHeight = false;
+		i_vlg.childControlWidth = false;
 	}
 
 	void GenerateHealthPanel()
 	{
 		healthPanel = new GameObject();
 		healthPanel.name = "HealthPanel";
-		RectTransform internal_healthRT = healthPanel.AddComponent<RectTransform>();
+		RectTransform i_healthRT = healthPanel.AddComponent<RectTransform>();
 		healthText = healthPanel.AddComponent<TextMeshProUGUI>();
 		healthPanel.transform.SetParent(playerCanvas.transform);
 		healthPanel.transform.localRotation = Quaternion.identity;
 		healthPanel.transform.localPosition = Vector3.zero;
-		internal_healthRT.sizeDelta = new Vector2(panelWidth, panelWidth / 2f);
-		internal_healthRT.localScale = new Vector3(1f, 1f, 1f) * healthFontSize;
+		i_healthRT.sizeDelta = new Vector2(panelWidth, panelWidth / 2f);
+		i_healthRT.localScale = new Vector3(1f, 1f, 1f) * healthFontSize;
 		healthText.fontSize = (int)healthFontSize;
 		healthText.font = healthFont;
 		healthText.alignment = TMPro.TextAlignmentOptions.Center;
 		healthPanel.SetActive(false);
-		internal_healthRT.pivot = new Vector2(0.5f, 0f);
+		i_healthRT.pivot = new Vector2(0.5f, 0f);
 	}
 
 	void GenerateDashBars()
 	{
 		dashPanel = new GameObject();
 		dashPanel.name = "DashUI";
-		RectTransform internal_dashRT = dashPanel.AddComponent<RectTransform>();
+		RectTransform i_dashRT = dashPanel.AddComponent<RectTransform>();
 		dashPanel.transform.SetParent(playerCanvas.transform);
 		dashPanel.transform.localRotation = Quaternion.identity;
 		dashPanel.transform.localPosition = Vector3.zero;
-		internal_dashRT.sizeDelta = new Vector2(panelWidth, 0.4f);
-		HorizontalLayoutGroup internal_hlg = dashPanel.AddComponent<HorizontalLayoutGroup>();
-		internal_hlg.childAlignment = TextAnchor.MiddleCenter;
-		internal_hlg.childForceExpandHeight = false;
-		internal_hlg.childForceExpandWidth = false;
-		internal_hlg.childScaleHeight = false;
-		internal_hlg.childScaleWidth = false;
-		internal_hlg.childControlHeight = true;
-		internal_hlg.childControlWidth = true;
-		internal_hlg.spacing = 0.1f;
+		i_dashRT.sizeDelta = new Vector2(panelWidth, 0.4f);
+		HorizontalLayoutGroup i_hlg = dashPanel.AddComponent<HorizontalLayoutGroup>();
+		i_hlg.childAlignment = TextAnchor.MiddleCenter;
+		i_hlg.childForceExpandHeight = false;
+		i_hlg.childForceExpandWidth = false;
+		i_hlg.childScaleHeight = false;
+		i_hlg.childScaleWidth = false;
+		i_hlg.childControlHeight = true;
+		i_hlg.childControlWidth = true;
+		i_hlg.spacing = 0.1f;
 
 		for (int i = 0; i < dashController.maxStackAmount; i++)
 		{
-			GameObject internal_dashStackBackground = new GameObject();
-			internal_dashStackBackground.transform.SetParent(dashPanel.transform);
-			internal_dashStackBackground.transform.localPosition = Vector3.zero;
-			internal_dashStackBackground.name = "Dash bar BG [" + i + "]";
+			GameObject i_dashStackBackground = new GameObject();
+			i_dashStackBackground.transform.SetParent(dashPanel.transform);
+			i_dashStackBackground.transform.localPosition = Vector3.zero;
+			i_dashStackBackground.name = "Dash bar BG [" + i + "]";
 
-			Image internal_dashStackBackgroundImage = internal_dashStackBackground.AddComponent<Image>();
-			internal_dashStackBackgroundImage.sprite = dashBarSpriteBackground;
+			Image i_dashStackBackgroundImage = i_dashStackBackground.AddComponent<Image>();
+			i_dashStackBackgroundImage.sprite = dashBarSpriteBackground;
 
-			GameObject internal_dashStackFill = new GameObject();
-			internal_dashStackFill.transform.SetParent(internal_dashStackBackground.transform);
-			internal_dashStackFill.transform.localPosition = Vector3.zero;
-			internal_dashStackFill.name = "Dash bar fill [" + i + "]";
+			GameObject i_dashStackFill = new GameObject();
+			i_dashStackFill.transform.SetParent(i_dashStackBackground.transform);
+			i_dashStackFill.transform.localPosition = Vector3.zero;
+			i_dashStackFill.name = "Dash bar fill [" + i + "]";
 
-			Image internal_dashStackFillImage = internal_dashStackFill.AddComponent<Image>();
-			internal_dashStackFillImage.sprite = dashBarSpriteFill;
-			internal_dashStackFillImage.color = dashBarColor;
-			internal_dashStackFillImage.type = Image.Type.Filled;
-			internal_dashStackFillImage.fillMethod = Image.FillMethod.Horizontal;
-			dashStacks.Add(internal_dashStackFillImage);
+			Image i_dashStackFillImage = i_dashStackFill.AddComponent<Image>();
+			i_dashStackFillImage.sprite = dashBarSpriteFill;
+			i_dashStackFillImage.color = dashBarColor;
+			i_dashStackFillImage.type = Image.Type.Filled;
+			i_dashStackFillImage.fillMethod = Image.FillMethod.Horizontal;
+			dashStacks.Add(i_dashStackFillImage);
 		}
 
 		Canvas.ForceUpdateCanvases();
@@ -269,10 +269,10 @@ public class PlayerUI : MonoBehaviour
 	{
 		_panel.SetActive(true);
 		Canvas.ForceUpdateCanvases();
-		Image[] internal_images = _panel.GetComponentsInChildren<Image>();
-		TextMeshProUGUI[] internal_texts = _panel.GetComponentsInChildren<TextMeshProUGUI>();
+		Image[] i_images = _panel.GetComponentsInChildren<Image>();
+		TextMeshProUGUI[] i_texts = _panel.GetComponentsInChildren<TextMeshProUGUI>();
 
-		foreach (Image image in internal_images)
+		foreach (Image image in i_images)
 		{
 			Color startColor = image.color;
 			Color endColor = image.color;
@@ -280,7 +280,7 @@ public class PlayerUI : MonoBehaviour
 			endColor.a = 0;
 			image.color = startColor;
 		}
-		foreach (TextMeshProUGUI text in internal_texts)
+		foreach (TextMeshProUGUI text in i_texts)
 		{
 			Color startColor = text.color;
 			Color endColor = text.color;
@@ -288,7 +288,7 @@ public class PlayerUI : MonoBehaviour
 			endColor.a = 0;
 			text.color = startColor;
 		}
-		Vector3 internal_initialScale = _panel.transform.localScale / _endScale;
+		Vector3 i_initialScale = _panel.transform.localScale / _endScale;
 		yield return new WaitForSeconds(_duration);
 		if (panelShowedPermanently.Contains(_panel))
 		{
@@ -298,7 +298,7 @@ public class PlayerUI : MonoBehaviour
 		}
 		for (float i = 0; i < 1f / _fadeOutSpeed; i += Time.deltaTime)
 		{
-			foreach (Image image in internal_images)
+			foreach (Image image in i_images)
 			{
 				Color startColor = image.color;
 				Color endColor = image.color;
@@ -306,7 +306,7 @@ public class PlayerUI : MonoBehaviour
 				endColor.a = 0;
 				image.color = Color.Lerp(startColor, endColor, i / (1f / _fadeOutSpeed));
 			}
-			foreach (TextMeshProUGUI text in internal_texts)
+			foreach (TextMeshProUGUI text in i_texts)
 			{
 				Color startColor = text.color;
 				Color endColor = text.color;
@@ -316,7 +316,7 @@ public class PlayerUI : MonoBehaviour
 			}
 			yield return null;
 		}
-		_panel.transform.localScale = internal_initialScale;
+		_panel.transform.localScale = i_initialScale;
 		displayedPanels.Remove(_panel);
 		currentCoroutines.Remove(_panel);
 		_panel.SetActive(false);
@@ -325,15 +325,15 @@ public class PlayerUI : MonoBehaviour
 	IEnumerator DisplayPanel_C(GameObject _panel, float _duration, float _fadeInSpeed, float _fadeOutSpeed, float _startScale, float _endScale, AnimationCurve _scaleCurve)
 	{
 		_panel.SetActive(true);
-		Image[] internal_images = _panel.GetComponentsInChildren<Image>();
-		TextMeshProUGUI[] internal_texts = _panel.GetComponentsInChildren<TextMeshProUGUI>();
-		Vector3 internal_initialScale = _panel.transform.localScale;
+		Image[] i_images = _panel.GetComponentsInChildren<Image>();
+		TextMeshProUGUI[] i_texts = _panel.GetComponentsInChildren<TextMeshProUGUI>();
+		Vector3 i_initialScale = _panel.transform.localScale;
 
-		_panel.transform.localScale = internal_initialScale * _startScale;
+		_panel.transform.localScale = i_initialScale * _startScale;
 		for (float i = 0; i < 1f/_fadeInSpeed; i+=Time.deltaTime)
 		{
-			_panel.transform.localScale = Vector3.Lerp(internal_initialScale * _startScale, internal_initialScale * _endScale, _scaleCurve.Evaluate(i / (1f / _fadeInSpeed)));
-			foreach (Image image in internal_images)
+			_panel.transform.localScale = Vector3.Lerp(i_initialScale * _startScale, i_initialScale * _endScale, _scaleCurve.Evaluate(i / (1f / _fadeInSpeed)));
+			foreach (Image image in i_images)
 			{
 				Color startColor = image.color;
 				Color endColor = image.color;
@@ -341,7 +341,7 @@ public class PlayerUI : MonoBehaviour
 				endColor.a = 1;
 				image.color = Color.Lerp(startColor, endColor, i / (1f/_fadeInSpeed));
 			}
-			foreach (TextMeshProUGUI text in internal_texts)
+			foreach (TextMeshProUGUI text in i_texts)
 			{
 				Color startColor = text.color;
 				Color endColor = text.color;
@@ -351,7 +351,7 @@ public class PlayerUI : MonoBehaviour
 			}
 			yield return null;
 		}
-		_panel.transform.localScale = internal_initialScale * _endScale;
+		_panel.transform.localScale = i_initialScale * _endScale;
 		displayedPanels.Add(_panel);
 		currentCoroutines[_panel] = StartCoroutine(UpdatePanel_C(_panel, _duration, _fadeOutSpeed, _endScale));
 	}

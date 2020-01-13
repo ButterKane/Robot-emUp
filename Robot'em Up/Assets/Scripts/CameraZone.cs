@@ -169,8 +169,8 @@ public class CameraZone : MonoBehaviour
 
 	void UpdateCombatZone()
 	{
-		Vector3 internal_wantedPosition = cornerA_access + ((cornerB_access - cornerA_access) / 2);
-		transform.position = new Vector3(internal_wantedPosition.x, transform.position.y, internal_wantedPosition.z);
+		Vector3 i_wantedPosition = cornerA_access + ((cornerB_access - cornerA_access) / 2);
+		transform.position = new Vector3(i_wantedPosition.x, transform.position.y, i_wantedPosition.z);
 		if (visualizer != null)
 		{
 			//Size X: 
@@ -185,7 +185,7 @@ public class CameraZone : MonoBehaviour
 		}
 		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
 		{
-			cameraPivot.transform.position = internal_wantedPosition;
+			cameraPivot.transform.position = i_wantedPosition;
 			cameraPivot.transform.localRotation = Quaternion.Euler(cameraPivot.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, cameraPivot.transform.localRotation.eulerAngles.z);
 		}
 		if (genCollider != null)
@@ -206,19 +206,19 @@ public class CameraZone : MonoBehaviour
 
 	private void OnTriggerEnter ( Collider _other )
 	{
-		PlayerController internal_playerFound = _other.GetComponent<PlayerController>();
-		if (internal_playerFound != null && !playersInside.Contains(internal_playerFound))
+		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
+		if (i_playerFound != null && !playersInside.Contains(i_playerFound))
 		{
-			playersInside.Add(internal_playerFound);
+			playersInside.Add(i_playerFound);
 		}
 	}
 
 	private void OnTriggerExit ( Collider _other )
 	{
-		PlayerController internal_playerFound = _other.GetComponent<PlayerController>();
-		if (internal_playerFound != null && playersInside.Contains(internal_playerFound))
+		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
+		if (i_playerFound != null && playersInside.Contains(i_playerFound))
 		{
-			playersInside.Remove(internal_playerFound);
+			playersInside.Remove(i_playerFound);
 		}
 	}
 

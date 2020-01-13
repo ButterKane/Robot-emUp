@@ -79,8 +79,8 @@ public class DashController : MonoBehaviour
 		if (!CanDash()) { return; }
 		SoundManager.PlaySound("PlayerDash", transform.position, transform);
 		FeedbackManager.SendFeedback("event.OnDash", this);
-		Vector3 internal_startPosition = transform.position;
-		Vector3 internal_endPosition = transform.position + transform.forward * maxDistance; 
+		Vector3 i_startPosition = transform.position;
+		Vector3 i_endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance
 		RaycastHit hit;
 		if (Physics.Raycast(linkedPawn.GetCenterPosition(), transform.forward, out hit, maxDistance))
@@ -90,13 +90,13 @@ public class DashController : MonoBehaviour
 				return; //Cancel dash
 			} else
 			{
-				internal_endPosition = hit.point - (transform.forward * 0.5f);
+				i_endPosition = hit.point - (transform.forward * 0.5f);
 			}
 		}
-		internal_endPosition.y = internal_startPosition.y;
+		i_endPosition.y = i_startPosition.y;
 
 		currentStackAmount--;
-		StartCoroutine(Dash_C(internal_startPosition, internal_endPosition));
+		StartCoroutine(Dash_C(i_startPosition, i_endPosition));
 		currentUseCooldown = useCooldown;
 	}
 	void ChangeState(DashState _newState)
@@ -121,15 +121,15 @@ public class DashController : MonoBehaviour
 
 	void GenerateClone()
 	{
-		GameObject internal_clone = Instantiate(clonedVisuals.gameObject);
-		Transform[] internal_childTransforms = clonedVisuals.GetComponentsInChildren<Transform>();
-		Transform[] internal_cloneChildTransforms = internal_clone.GetComponentsInChildren<Transform>();
-		for (int i = 0; i < internal_childTransforms.Length; i++)
+		GameObject i_clone = Instantiate(clonedVisuals.gameObject);
+		Transform[] i_childTransforms = clonedVisuals.GetComponentsInChildren<Transform>();
+		Transform[] i_cloneChildTransforms = i_clone.GetComponentsInChildren<Transform>();
+		for (int i = 0; i < i_childTransforms.Length; i++)
 		{
-			internal_cloneChildTransforms[i].position = internal_childTransforms[i].position;
-			internal_cloneChildTransforms[i].localScale = internal_childTransforms[i].localScale;
-			internal_cloneChildTransforms[i].rotation = internal_childTransforms[i].rotation;
-			var components = internal_cloneChildTransforms[i].GetComponents(typeof(Component));
+			i_cloneChildTransforms[i].position = i_childTransforms[i].position;
+			i_cloneChildTransforms[i].localScale = i_childTransforms[i].localScale;
+			i_cloneChildTransforms[i].rotation = i_childTransforms[i].rotation;
+			var components = i_cloneChildTransforms[i].GetComponents(typeof(Component));
 			foreach (Component comp in components)
 			{
 				if (comp.GetType() != typeof(MeshRenderer) && comp.GetType() != typeof(Transform) && comp.GetType() != typeof(MeshFilter) && comp.GetType() != typeof(Renderer))
@@ -147,8 +147,8 @@ public class DashController : MonoBehaviour
 				}
 			}
 		}
-		AutoDestroyAfterDelay internal_newComp = internal_clone.AddComponent<AutoDestroyAfterDelay>();
-		internal_newComp.delay = cloneDuration;
+		AutoDestroyAfterDelay i_newComp = i_clone.AddComponent<AutoDestroyAfterDelay>();
+		i_newComp.delay = cloneDuration;
 
 	}
 
@@ -183,14 +183,14 @@ public class DashController : MonoBehaviour
 	{
 		ChangeState(DashState.Dashing);
 		if (invincibleDuringDash) { linkedPawn.SetInvincible(true); }
-		float internal_cloneCounter = 0;
+		float i_cloneCounter = 0;
 		for (float i = 0; i < Vector3.Distance(_startPosition, _endPosition); i += Time.deltaTime * speed)
 		{
-			internal_cloneCounter += Time.deltaTime;
-			if (internal_cloneCounter >= 1f/clonePerSec)
+			i_cloneCounter += Time.deltaTime;
+			if (i_cloneCounter >= 1f/clonePerSec)
 			{
 				GenerateClone();
-				internal_cloneCounter = 0;
+				i_cloneCounter = 0;
 			}
 			RaycastHit hit;
 			if (Physics.Raycast(transform.position, transform.forward, out hit, 0.1f))

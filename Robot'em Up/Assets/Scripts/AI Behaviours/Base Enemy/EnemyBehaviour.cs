@@ -43,7 +43,6 @@ public class EnemyBehaviour : PawnController, IHitable
     [SerializeField] protected Transform playerTwoTransform;
     protected PawnController playerTwoPawnController;
 
-
     [Space(2)]
     [Separator("Tweakable variables")]
     protected bool playerOneInRange;
@@ -59,7 +58,7 @@ public class EnemyBehaviour : PawnController, IHitable
 	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	public bool arenaRobot;
 
-	[Space(2)]
+	[Space(3)]
     [Header("Focus")]
     public float focusDistance = 18;
     public float unfocusDistance = 20;
@@ -67,7 +66,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public float distanceBeforeChangingPriority = 3;
     public float maxTimeBetweenCheck = 0.25f;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Movement")]
     public float randomSpeedMod;
     public float speedMultiplierFromPassHit;
@@ -76,7 +75,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public float timeToRecoverSlowFromDunk;
     private WhatBumps whatBumps;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Attack")]
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
@@ -99,14 +98,14 @@ public class EnemyBehaviour : PawnController, IHitable
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Surrounding")]
-    [System.NonSerialized] public Transform closestSurroundPoint;
-    [Range(0, 1)]
-    public float bezierCurveHeight = 0.5f;
+    public bool canSurroundPlayer;
+    [Range(0, 1)] public float bezierCurveHeight = 0.5f;
     public float bezierDistanceToHeightRatio = 100f;
+    [System.NonSerialized] public Transform closestSurroundPoint;
 
-    [Space(2)]
+    [Space(3)]
     [Header("Death")]
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
@@ -121,6 +120,7 @@ public class EnemyBehaviour : PawnController, IHitable
         playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
+        if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
         GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform);
         healthBar.GetComponent<EnemyHealthBar>().enemy = this;
 
@@ -141,18 +141,21 @@ public class EnemyBehaviour : PawnController, IHitable
 		UpdateSpeed();
     }
 
-	void UpdateSpeed()
-	{
-		if (navMeshAgent != null)
-		{
-			navMeshAgent.speed = moveSpeed * GetSpeedCoef();
-		}
-	}
+    protected void UpdateSpeed()
+    {
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.speed = moveSpeed * GetSpeedCoef();
+        }
+    }
 
     public override void UpdateAnimatorBlendTree()
     {
-		base.UpdateAnimatorBlendTree();
-		animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
+        base.UpdateAnimatorBlendTree();
+        if (canMove)
+        { 
+            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
+        }
     }
 
     void UpdateState()
@@ -188,22 +191,22 @@ public class EnemyBehaviour : PawnController, IHitable
 
                     if (closestSurroundPoint != null)
                     {
-                        float internal_distanceToPointRatio = (1 + (transform.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+                        float i_distanceToPointRatio = (1 + (transform.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
 
-                        Vector3 internal_p0 = transform.position;    // The starting point
+                        Vector3 i_p0 = transform.position;    // The starting point
 
-                        Vector3 internal_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
+                        Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
 
-                        float internal_angle = Vector3.SignedAngle(internal_p2 - internal_p0, focusedPlayer.transform.position - internal_p0, Vector3.up);
+                        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPlayer.transform.position - i_p0, Vector3.up);
 
-                        int internal_moveSens = internal_angle > 1 ? 1 : -1;
+                        int i_moveSens = i_angle > 1 ? 1 : -1;
 
-                        Vector3 internal_p1 = internal_p0 + (internal_p2 - internal_p0) / 0.5f + Vector3.Cross(internal_p2 - internal_p0, Vector3.up) * internal_moveSens * bezierCurveHeight * internal_distanceToPointRatio;  // "third point" of the bezier curve
+                        Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
 
                         // Calculating position on bezier curve, following start point, end point and avancement
                         // In this version, the avancement has been replaced by a constant because it's recalculated every frame
-                        Vector3 internal_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * internal_p0) + (2 * 0.5f * 0.5f * internal_p1) + (Mathf.Pow(0.5f, 2) * internal_p2);
-                        navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(internal_positionOnBezierCurve, focusedPlayer.position));
+                        Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
+                        navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position));
                     }
                     else
                     {
@@ -236,7 +239,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.Dying:
-                Die();
+                Kill();
                 break;
         }
     }
@@ -406,11 +409,11 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-		Vector3 internal_normalizedImpactVector;
+		Vector3 i_normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
-        float internal_BumpDistanceMod = 0.5f;
-        float internal_BumpDurationMod = 0.5f;
-        float internal_BumpRestDurationMod = 0.5f;
+        float i_BumpDistanceMod = 0.5f;
+        float i_BumpDurationMod = 0.5f;
+        float i_BumpRestDurationMod = 0.5f;
 
         switch (_source)
         {
@@ -418,15 +421,15 @@ public class EnemyBehaviour : PawnController, IHitable
                 if (isBumpable)
                 {
                     damageAfterBump = _damages;
-                    internal_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                    i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_thrower.GetComponent<DunkController>() != null)
                     {
-                        DunkController internal_controller = _thrower.GetComponent<DunkController>();
-                        internal_BumpDistanceMod = internal_controller.bumpDistanceMod;
-                        internal_BumpDurationMod = internal_controller.bumpDurationMod;
-                        internal_BumpRestDurationMod = internal_controller.bumpRestDurationMod;
+                        DunkController i_controller = _thrower.GetComponent<DunkController>();
+                        i_BumpDistanceMod = i_controller.bumpDistanceMod;
+                        i_BumpDurationMod = i_controller.bumpDurationMod;
+                        i_BumpRestDurationMod = i_controller.bumpRestDurationMod;
                     }
-                    BumpMe(10, 1, 1, internal_normalizedImpactVector.normalized, internal_BumpDistanceMod, internal_BumpDurationMod, internal_BumpRestDurationMod);
+                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
                     whatBumps = WhatBumps.Dunk;
                 }
                 else
@@ -440,14 +443,14 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     damageAfterBump = _damages;
                     EnergyManager.IncreaseEnergy(energyGainedOnHit);
-                    internal_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                    i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_bumpModificators != default(Vector3))
                     {
-                        internal_BumpDistanceMod = _bumpModificators.x;
-                        internal_BumpDurationMod = _bumpModificators.y;
-                        internal_BumpRestDurationMod = _bumpModificators.z;
+                        i_BumpDistanceMod = _bumpModificators.x;
+                        i_BumpDurationMod = _bumpModificators.y;
+                        i_BumpRestDurationMod = _bumpModificators.z;
                     }
-                    BumpMe(10, 1, 1, internal_normalizedImpactVector.normalized, internal_BumpDistanceMod, internal_BumpDurationMod, internal_BumpRestDurationMod); 
+                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod); 
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
@@ -475,39 +478,31 @@ public class EnemyBehaviour : PawnController, IHitable
             _ball.Explode(true);
 
             animator.SetTrigger("HitTrigger");
-            GameObject internal_hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
-            internal_hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(internal_hitParticle, 1f);
+            GameObject i_hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
+            i_hitParticle.transform.localScale *= hitParticleScale;
+            Destroy(i_hitParticle, 1f);
     }
 
-    public virtual void Die(string deathSound = "EnemyDeath")
-    {
-        GameManager.i.enemyManager.enemies.Remove(this);
-
-        if (deathSound != null)
-        {
-            SoundManager.PlaySound(deathSound, transform.position, transform);
-        }
-		LockManager.UnlockTarget(this.transform);
-		GameObject internal_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
-        Destroy(internal_deathParticle, 1.5f);
+	public override void Kill ()
+	{
+		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+		GameObject i_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
+		Destroy(i_deathParticle, 1.5f);
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
 		}
-
-        Destroy(gameObject);
-    }
-
+		base.Kill();
+	}
 	protected void DropCore()
 	{
-		GameObject internal_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
-		internal_newCore.name = "Core of " + gameObject.name;
-		internal_newCore.transform.position = transform.position;
-		Vector3 internal_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
-		float internal_throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
-		internal_wantedDirectionAngle.y = internal_throwForce * 0.035f;
-		internal_newCore.GetComponent<CorePart>().Init(null, internal_wantedDirectionAngle.normalized * internal_throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+		GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+		i_newCore.name = "Core of " + gameObject.name;
+		i_newCore.transform.position = transform.position;
+		Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
+		float i_throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
+		i_wantedDirectionAngle.y = i_throwForce * 0.035f;
+		i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
 	}
 
     void CheckDistanceAndAdaptFocus()

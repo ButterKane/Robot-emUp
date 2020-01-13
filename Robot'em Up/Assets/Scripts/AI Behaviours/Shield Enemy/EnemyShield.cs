@@ -90,8 +90,8 @@ public class EnemyShield : EnemyBehaviour
         attackTimeProgression += Time.deltaTime / maxAttackDuration;
 
         //must stop ?
-        int internal_attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-        if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, internal_attackRaycastMask) && !mustCancelAttack)
+        int i_attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+        if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, i_attackRaycastMask) && !mustCancelAttack)
         {
             attackTimeProgression = whenToTriggerEndOfAttackAnim;
             mustCancelAttack = true;
@@ -103,10 +103,10 @@ public class EnemyShield : EnemyBehaviour
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
 
-            Vector3 internal_direction = Vector3.Lerp(transform.forward, focusedPlayer.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
+            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPlayer.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
 
-            Debug.DrawRay(transform.position + internal_direction * 5, Vector3.up, Color.green, 2f);
-            navMeshAgent.SetDestination(transform.position + internal_direction * 5);
+            Debug.DrawRay(transform.position + i_direction * 5, Vector3.up, Color.green, 2f);
+            navMeshAgent.SetDestination(transform.position + i_direction * 5);
         }
 
         if (attackTimeProgression >= 1)
@@ -126,10 +126,10 @@ public class EnemyShield : EnemyBehaviour
         }*/
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
         {
-            float internal_rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
+            float i_rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
             foreach (var renderer in renderers)
             {
-                renderer.material.SetColor("_Color", Color.Lerp(normalColor,  attackingColor, internal_rationalizedProgression)); // Time prgression isn't good
+                renderer.material.SetColor("_Color", Color.Lerp(normalColor,  attackingColor, i_rationalizedProgression)); // Time prgression isn't good
             }
         }
     }
@@ -161,10 +161,10 @@ public class EnemyShield : EnemyBehaviour
         isShieldActivated_accesss = true;
     }
 
-    public override void Die(string deathSound = "EnemyDeath")
+    public override void Kill()
     {
         Destroy(shield);
-        base.Die("EnemyShieldDeath");   // Override the death sound with the right one 
+        base.Kill();   // Override the death sound with the right one 
     }
 
 }

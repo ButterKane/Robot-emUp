@@ -37,15 +37,15 @@ public class Boss_Manager : MonoBehaviour
 
     public void CheckIfWeakpointsAreAlive()
     {
-        bool internal_weakpointsAlive = true;
+        bool i_weakpointsAlive = true;
         foreach (var item in weakPoints)
         {
             if (item.life > 0)
             {
-                internal_weakpointsAlive = false;
+                i_weakpointsAlive = false;
             }
         }
-        if (internal_weakpointsAlive)
+        if (i_weakpointsAlive)
         {
             difficulty = 0;
             winningMessage.gameObject.SetActive(true);
@@ -61,7 +61,7 @@ public class Boss_Manager : MonoBehaviour
     
     void Update()
     {
-        int internal_temporaryHealth = 0;
+        int i_temporaryHealth = 0;
         showInversionMessage -= Time.deltaTime;
         if (showInversionMessage < 0)
         {
@@ -71,17 +71,17 @@ public class Boss_Manager : MonoBehaviour
         {
             if (item.life > 0)
             {
-                internal_temporaryHealth++;
+                i_temporaryHealth++;
             }
         }
-        if (internal_temporaryHealth < 1)
+        if (i_temporaryHealth < 1)
         {
             pyramidHealth.gameObject.SetActive(false);
         }
-        pyramidHealth.value = internal_temporaryHealth;
+        pyramidHealth.value = i_temporaryHealth;
 
-        int internal_totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
-        int internal_totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
+        int i_totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
+        int i_totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
         if (GameManager.playerOne.currentHealth < 1 | GameManager.playerTwo.currentHealth < 1)
         {
             OnePlayerLeft = true;
@@ -91,11 +91,11 @@ public class Boss_Manager : MonoBehaviour
             OnePlayerLeft = false;
         }
 
-        if (internal_totalHealth / internal_totalmaxHealth > 1.2)
+        if (i_totalHealth / i_totalmaxHealth > 1.2)
         {
             difficulty += Time.deltaTime / divisorSpeedDifficulty;
         }
-        else if (internal_totalHealth / internal_totalmaxHealth > 0.6)
+        else if (i_totalHealth / i_totalmaxHealth > 0.6)
             {
             difficulty -= Time.deltaTime / divisorSpeedDifficulty;
 
