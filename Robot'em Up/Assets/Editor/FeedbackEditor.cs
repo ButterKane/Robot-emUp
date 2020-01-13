@@ -292,14 +292,6 @@ public class FeedbackEditor : Editor
 						}
 						GUILayout.EndVertical();
 
-						/*	public GameObject vfxPrefab;
-	public Vector3 offset;
-	public Vector3 scaleMultiplier;
-	public VFXDirection direction;
-	public float spawnDelay;
-	public bool attachToTarget;
-	*/
-
 						GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(100), GUILayout.Width(EditorGUIUtility.currentViewWidth - 50));
 						{
 							if (!i_feedbackData.vfxDataInited)
@@ -614,48 +606,5 @@ public class FeedbackEditor : Editor
 		Debug.Log("Event implementation recalculation end");
 		recalculationCoroutine = null;
 		yield return null;
-	}
-
-	bool IsEventCalled(string _eventName)
-	{
-		bool i_stringFound = false;
-		string[] assetPaths = AssetDatabase.GetAllAssetPaths();
-		foreach (string assetPath in assetPaths)
-		{
-			if (assetPath.EndsWith(".cs"))
-			{
-				if (File.ReadAllText(assetPath).Contains(_eventName))
-				{
-					i_stringFound = true;
-				}
-			}
-			if (assetPath.EndsWith(".prefab"))
-			{
-				GameObject prefab = (GameObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
-				foreach (Component c in prefab.GetComponents(typeof(Component))) 
-				{
-					System.Type tempType = c.GetType();
-					FieldInfo[] tempFields = tempType.GetFields();
-					foreach (FieldInfo field in tempFields)
-					{
-						if (!field.IsStatic)
-						{
-							if (field.FieldType != typeof(string))
-							{
-								continue;
-							}
-							else
-							{
-								if (field.GetValue(c).ToString() == _eventName)
-								{
-									i_stringFound = true;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return i_stringFound;
 	}
 }

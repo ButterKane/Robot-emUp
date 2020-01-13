@@ -73,6 +73,7 @@ public class WaveController : MonoBehaviour
 	{
 		if (waveStarted) { return; }
 		if (currentWaveIndex+1 >= waveList.Count) { return; }
+		FeedbackManager.SendFeedback("event.ArenaWaveFinished", this);
 		currentWaveIndex++;
 		if (currentWaveIndex == 0)
 		{
