@@ -26,14 +26,6 @@ public class Retriever : MonoBehaviour
 		passController = GetComponentInParent<PassController>();
 		playerController = GetComponentInParent<PlayerController>();
     }
-
-	private void OnTriggerEnter ( Collider other )
-	{
-		if (other.tag == "Ball")
-		{
-			FeedbackManager.SendFeedback("event.MagnetAttractingBall", this);
-		}
-	}
 	private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
@@ -59,7 +51,6 @@ public class Retriever : MonoBehaviour
 			if (!i_corePart.CanBePicked()) { return; }
 			if (i_corePart.linkedPawn != null)
 			{
-				SoundManager.PlaySound("PickUpOnePartOfItsBody", transform.position, transform);
 				i_corePart.Pick(playerController);
 				bool i_partsFound = false;
 				List<ReviveInformations> newList = new List<ReviveInformations>();
@@ -75,7 +66,6 @@ public class Retriever : MonoBehaviour
 						{
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
-							FeedbackManager.SendFeedback("event.PickUpTheLastPartOfBody", this);
 						}
 						else
 						{

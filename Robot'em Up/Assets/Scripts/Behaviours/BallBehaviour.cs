@@ -34,7 +34,6 @@ public class BallBehaviour : MonoBehaviour
 	private Collider col;
 	private Rigidbody rb;
 	private int defaultLayer;
-	private GameObject trailFX;
 	private List<IHitable> hitGameObjects;
 	private Vector3 previousPosition;
 	private Coroutine ballCoroutine;
@@ -116,8 +115,6 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
-		SoundManager.PlaySound("BallRebound", transform.position, transform);
-		FeedbackManager.SendFeedback("event.ReboundOnWalls", this);
 		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
@@ -218,10 +215,10 @@ public class BallBehaviour : MonoBehaviour
 	{
 		if (_lightExplosion)
 		{
-			FXManager.InstantiateFX(currentBallDatas.lightExplosion, transform.position, false, Vector3.forward, Vector3.one, null);
+
 		} else
 		{
-			FXManager.InstantiateFX(currentBallDatas.heavyExplosion, transform.position, false, Vector3.forward, Vector3.one, null);
+
 		}
 	}
 
@@ -295,10 +292,6 @@ public class BallBehaviour : MonoBehaviour
 
 	void SetColor(Color _newColor)
 	{
-		if (trailFX != null)
-		{
-			ParticleColorer.ReplaceParticleColor(trailFX, new Color(122f / 255f, 0, 122f / 255f), _newColor);
-		}
         ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
         currentColor = _newColor;
 	}
@@ -349,11 +342,8 @@ public class BallBehaviour : MonoBehaviour
 			case BallState.Grounded:
 				EnableGravity();
 				EnableCollisions();
-				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
-				FeedbackManager.SendFeedback("event.BallFallOnGround", this);
-				SoundManager.PlaySound("BallFallOnTheGround", transform.position, transform);
 				LockManager.UnlockAll();
 				break;
 			case BallState.Aimed:
@@ -365,19 +355,11 @@ public class BallBehaviour : MonoBehaviour
 				DisableGravity();
 				EnableCollisions();
 				currentDistanceTravelled = 0;
-				if (trailFX == null)
-				{
-					trailFX = FXManager.InstantiateFX(currentBallDatas.trail, Vector3.zero, true, Vector3.zero, Vector3.one, transform);
-					UpdateColor();
-					trailFX.name = "FX_CoreTrail";
-				}
 				break;
 			case BallState.Held:
 				DisableGravity();
 				DisableCollisions();
 				LockManager.UnlockAll();
-				FXManager.InstantiateFX(currentBallDatas.receiveCore, Vector3.zero, true, Vector3.zero,Vector3.one, transform);
-				Destroy(trailFX);
 				break;
 		}
 		currentState = _newState;
@@ -454,8 +436,6 @@ public class BallBehaviour : MonoBehaviour
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
 							i_newDirection.y = -currentDirection.y;
 							Bounce(i_newDirection, currentBallDatas.speedMultiplierOnBounce);
-							FXManager.InstantiateFX(currentBallDatas.wallHit, transform.position, false, -currentDirection, Vector3.one * 2.75f);
-							FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
 							return;
 						}
 						else if (canHitWalls)

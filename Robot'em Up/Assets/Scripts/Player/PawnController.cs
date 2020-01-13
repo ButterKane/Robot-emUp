@@ -89,12 +89,6 @@ public class PawnController : MonoBehaviour
     [ConditionalField(nameof(canClimb))] public float climbForwardPushForce = 450f;
     [ConditionalField(nameof(canClimb))] public float climbUpwardPushForce = 450f;
 
-	[Separator("FX")]
-	public GameObject deathParticlePrefab;
-	public float deathParticleScale = 2;
-	public GameObject hitParticlePrefab;
-	public float hitParticleScale = 3;
-
 	[Space(2)]
     [Separator("Bumped Values")]
 	public bool isBumpable = true;
@@ -388,10 +382,6 @@ public class PawnController : MonoBehaviour
 
     public virtual void Kill()
     {
-		if (onDeathEvent != "")
-		{
-			FeedbackManager.SendFeedback(onDeathEvent, this);
-		}
 		LockManager.UnlockTarget(transform);
 		Destroy(this.gameObject);
     }
@@ -415,10 +405,6 @@ public class PawnController : MonoBehaviour
             invincibilityCoroutine = InvicibleFrame_C();
             StartCoroutine(invincibilityCoroutine);
             currentHealth -= _amount;
-			if (onHitEvent != "")
-			{
-				FeedbackManager.SendFeedback(onHitEvent, this);
-			}
             if (currentHealth <= 0)
             {
                 Kill();

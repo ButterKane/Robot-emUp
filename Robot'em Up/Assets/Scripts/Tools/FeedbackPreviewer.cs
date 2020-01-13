@@ -10,11 +10,8 @@ public class FeedbackPreviewer : EditorWindow
 {
 	Camera camera;
 	RenderTexture renderTexture;
-	private float time;
 	private ParticleSystem fxPs;
 	public static FeedbackPreviewer instance;
-	protected static MethodInfo Resimulation;
-	protected static FieldInfo PlaybackTimeField;
 
 	public List<GameObject> instantiatedObjects;
 
@@ -127,7 +124,6 @@ public class FeedbackPreviewer : EditorWindow
 			GameObject fx = FXManager.InstantiateFX(_data.vfxData.vfxPrefab, _data.vfxData.offset, false, Vector3.up, _data.vfxData.scaleMultiplier);
 			instantiatedObjects.Add(fx);
 			fxPs = fx.GetComponent<ParticleSystem>();
-			time = 0;
 			fxPs.useAutoRandomSeed = false;
 		}
 	}

@@ -56,7 +56,6 @@ public class EnemyRedBarrel : EnemyBehaviour
     private IEnumerator ExplosionSequence_C()
     {
         animator.SetTrigger("DeathTrigger");
-        SoundManager.PlaySound("RedBarrelExplosionAnticipation", transform.position, transform);
 
         GameObject i_hitParticle = Instantiate(buildUpExplosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
         i_hitParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
@@ -95,8 +94,6 @@ public class EnemyRedBarrel : EnemyBehaviour
         }
 
         Destroy(i_explosionParticle, 1f);
-        FeedbackManager.SendFeedback("event.RedBarrelExplosion", this);
-        SoundManager.PlaySound("RedBarrelExplosion", transform.position, transform);
         base.Kill();
     }
 

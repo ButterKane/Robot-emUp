@@ -8,8 +8,7 @@ public class FootStepSound : MonoBehaviour
 	{
 		if (_evt.animatorClipInfo.weight > 0.5)
 		{
-			FeedbackManager.SendFeedback("event.WalkingOnGround", this);
-			SoundManager.PlaySound("WalkingOnGround", transform.position);
+
 		}
 	}
 }

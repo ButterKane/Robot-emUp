@@ -1815,6 +1815,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MusicPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 1096068004699470610, guid: 2957e7b7696641c49a07097e7139566d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1096068004699470608, guid: 2957e7b7696641c49a07097e7139566d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2595,6 +2600,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ball
       objectReference: {fileID: 0}
+    - target: {fileID: 312656209842447024, guid: 739fbb2b237f4614580ae2925bc3cbc4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 312656209842447022, guid: 739fbb2b237f4614580ae2925bc3cbc4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3091,6 +3101,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player1
       objectReference: {fileID: 0}
+    - target: {fileID: 69913409235962623, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5825664154814933021, guid: 218a241db58f56849816014d9aa8d204,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3176,6 +3191,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: onHitEvent
+      value: event.PlayerBeingHit
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446006776330246409, guid: 218a241db58f56849816014d9aa8d204,
+        type: 3}
+      propertyPath: onDeathEvent
+      value: event.PlayerDeath
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 218a241db58f56849816014d9aa8d204, type: 3}
@@ -3949,7 +3974,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7ae61878ea67043bf4af2c19392c3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myRend: {fileID: 1679547978}
 --- !u!1001 &1708034498
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4486,6 +4510,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TurretGenerator (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8517383608569374824, guid: 96075e72e843c9e41b97ddfe80e9503a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8517383608569374821, guid: 96075e72e843c9e41b97ddfe80e9503a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4545,6 +4574,11 @@ PrefabInstance:
         type: 3}
       propertyPath: RandomLenghtTime
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8517383608569374829, guid: 96075e72e843c9e41b97ddfe80e9503a,
+        type: 3}
+      propertyPath: waitingTimeForNextEnemy
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96075e72e843c9e41b97ddfe80e9503a, type: 3}
