@@ -237,6 +237,7 @@ public class PlayerUI : MonoBehaviour
 				}
 				break;
 			case HealthAnimationType.Loss:
+				FeedbackManager.SendFeedback("event.PlayerHealthDecreasing", healthPanel);
 				if (displayedPanels.Contains(healthPanel))
 				{
 					StopCoroutine(currentCoroutines[healthPanel]);

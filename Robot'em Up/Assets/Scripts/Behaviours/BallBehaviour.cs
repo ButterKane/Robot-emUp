@@ -340,6 +340,7 @@ public class BallBehaviour : MonoBehaviour
 		switch (_newState)
 		{
 			case BallState.Grounded:
+				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
@@ -429,6 +430,7 @@ public class BallBehaviour : MonoBehaviour
 							Debug.Log("Shield"); 
 						}
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
+						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
 							Vector3 i_hitNormal = raycast.normal;

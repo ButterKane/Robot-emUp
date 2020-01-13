@@ -270,6 +270,7 @@ public class PassController : MonoBehaviour
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
+		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
 		if (ballTimeInHand > receptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
 		currentPassCooldown = passCooldown;
 		BallBehaviour i_shotBall = ball;
@@ -312,6 +313,7 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
+		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPlayer, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection());
 		CursorManager.SetBallPointerParent(transform);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;

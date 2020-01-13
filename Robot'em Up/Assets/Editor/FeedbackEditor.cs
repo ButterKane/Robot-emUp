@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Unity.EditorCoroutines.Editor;
 
 [CustomEditor(typeof(FeedbackDatas))]
 public class FeedbackEditor : Editor
@@ -13,6 +15,8 @@ public class FeedbackEditor : Editor
 	string[] categoryOptions;
 	int selectedCategoryIndex;
 	List<string> soundList;
+	EditorCoroutine recalculationCoroutine;
+	float recalculationProgression;
 
 	private void OnEnable ()
 	{
@@ -81,18 +85,16 @@ public class FeedbackEditor : Editor
 			GUI.color = Color.white;
 			GUILayout.Space(10);
 
-			if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", i_buttonStyle, GUILayout.Height(100)))
+			if (recalculationCoroutine == null)
 			{
-				foreach (FeedbackData feedbackData in feedbackDatas.feedbackList)
+				if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", i_buttonStyle, GUILayout.Height(100)))
 				{
-					if (IsEventCalled(feedbackData.eventName))
-					{
-						feedbackData.eventCalled = true;
-					} else
-					{
-						feedbackData.eventCalled = false;
-					}
+					RecalculateEventIntegration();
 				}
+			} else
+			{
+				GUILayout.Label("Recalculation in progress", i_headerStyle); 
+				EditorGUILayout.Slider(recalculationProgression, 0, 100);
 			}
 			//None yet
 		}
@@ -342,6 +344,12 @@ public class FeedbackEditor : Editor
 								GUILayout.Label("Direction: ", GUILayout.Width(150));
 								EditorGUILayout.PropertyField(m_direction, GUIContent.none);
 
+								SerializedProperty m_position = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.position");
+								GUILayout.Label("Position: ", GUILayout.Width(150));
+								EditorGUILayout.PropertyField(m_position, GUIContent.none);
+								EditorGUILayout.EndHorizontal();
+
+								EditorGUILayout.BeginHorizontal();
 								SerializedProperty m_attachToTarget = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.attachToTarget");
 								GUILayout.Label("Attach to target: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_attachToTarget, GUIContent.none);
@@ -521,6 +529,93 @@ public class FeedbackEditor : Editor
 		_data.shakeDataInited = false;
 	}
 
+
+	void RecalculateEventIntegration()
+	{
+		recalculationProgression = 0;
+		if (recalculationCoroutine != null) { EditorCoroutineUtility.StopCoroutine(recalculationCoroutine); }
+		recalculationCoroutine = EditorCoroutineUtility.StartCoroutine(RecalculateEventIntegration_C(), this);
+	}
+
+	IEnumerator RecalculateEventIntegration_C()
+	{
+		List<FeedbackData> feedbackList = feedbackDatas.feedbackList;
+		List<bool> isIntegratedList = new List<bool>();
+		for (int i = 0; i < feedbackList.Count; i++)
+		{
+			isIntegratedList.Add(false);
+		}
+		for (int i = 0; i < feedbackList.Count; i++)
+		{
+			FeedbackData feedbackData = feedbackList[i];
+			string i_eventName = feedbackData.eventName;
+			string[] assetPaths = AssetDatabase.GetAllAssetPaths();
+			int assetCount = 0;
+			foreach (string assetPath in assetPaths)
+			{
+				assetCount++;
+				if (assetCount > 25)
+				{
+					assetCount = 0;
+					yield return null;
+				}
+				if (assetPath.EndsWith(".cs"))
+				{
+					if (File.ReadAllText(assetPath).Contains(i_eventName))
+					{
+						isIntegratedList[i] = true;
+						break;
+					}
+				}
+				if (assetPath.EndsWith(".prefab"))
+				{
+					GameObject prefab = (GameObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
+					foreach (Component c in prefab.GetComponents(typeof(Component)))
+					{
+						System.Type tempType = c.GetType();
+						FieldInfo[] tempFields = tempType.GetFields();
+						foreach (FieldInfo field in tempFields)
+						{
+							if (!field.IsStatic)
+							{
+								if (field.FieldType != typeof(string))
+								{
+									continue;
+								}
+								else
+								{
+									if (field.GetValue(c).ToString() == i_eventName)
+									{
+										isIntegratedList[i] = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			recalculationProgression += Mathf.RoundToInt((1f/(float)feedbackList.Count)*100f);
+			yield return null;
+		}
+
+		yield return null;
+		for (int i = 0; i < feedbackDatas.feedbackList.Count; i++)
+		{
+			if (i >= isIntegratedList.Count)
+			{
+				feedbackDatas.feedbackList[i].eventCalled = false;
+			}
+			else
+			{
+				feedbackDatas.feedbackList[i].eventCalled = isIntegratedList[i];
+			}
+		}
+		Debug.Log("Event implementation recalculation end");
+		recalculationCoroutine = null;
+		yield return null;
+	}
+
 	bool IsEventCalled(string _eventName)
 	{
 		bool i_stringFound = false;
@@ -532,6 +627,32 @@ public class FeedbackEditor : Editor
 				if (File.ReadAllText(assetPath).Contains(_eventName))
 				{
 					i_stringFound = true;
+				}
+			}
+			if (assetPath.EndsWith(".prefab"))
+			{
+				GameObject prefab = (GameObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
+				foreach (Component c in prefab.GetComponents(typeof(Component))) 
+				{
+					System.Type tempType = c.GetType();
+					FieldInfo[] tempFields = tempType.GetFields();
+					foreach (FieldInfo field in tempFields)
+					{
+						if (!field.IsStatic)
+						{
+							if (field.FieldType != typeof(string))
+							{
+								continue;
+							}
+							else
+							{
+								if (field.GetValue(c).ToString() == _eventName)
+								{
+									i_stringFound = true;
+								}
+							}
+						}
+					}
 				}
 			}
 		}

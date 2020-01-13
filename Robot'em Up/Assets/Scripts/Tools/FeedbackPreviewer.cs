@@ -109,16 +109,22 @@ public class FeedbackPreviewer : EditorWindow
 
 	public void PreviewFeedback(FeedbackData _data )
 	{
-		VibrationManager.Vibrate(PlayerIndex.One,_data.vibrationData.duration, _data.vibrationData.force);
-		VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force);
+		if (_data.vibrationDataInited)
+		{
+			VibrationManager.Vibrate(PlayerIndex.One, _data.vibrationData.duration, _data.vibrationData.force);
+			VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force);
+		}
 		if (_data.soundData.soundName != "" && _data.soundDataInited)
 		{
 			SoundManager.PlaySoundInEditor(_data.soundData.soundName);
 		}
-		CameraShaker.ShakeEditorCamera(camera, _data.shakeData.intensity, _data.shakeData.duration, _data.shakeData.frequency);
+		if (_data.shakeDataInited)
+		{
+			CameraShaker.ShakeEditorCamera(camera, _data.shakeData.intensity, _data.shakeData.duration, _data.shakeData.frequency);
+		}
 
-		//Generate FX
 		if (fxPs != null) { DestroyImmediate(fxPs.gameObject); }
+		//Generate FX
 		if (_data.vfxDataInited && _data.vfxData.vfxPrefab != null)
 		{
 			GameObject fx = FXManager.InstantiateFX(_data.vfxData.vfxPrefab, _data.vfxData.offset, false, Vector3.up, _data.vfxData.scaleMultiplier);

@@ -26,6 +26,14 @@ public class Retriever : MonoBehaviour
 		passController = GetComponentInParent<PassController>();
 		playerController = GetComponentInParent<PlayerController>();
     }
+
+	private void OnTriggerEnter ( Collider other )
+	{
+		if (other.tag == "Ball")
+		{
+			FeedbackManager.SendFeedback("event.PlayerAttractingBall", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
+		}
+	}
 	private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
@@ -64,11 +72,13 @@ public class Retriever : MonoBehaviour
 						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
 						if (parts.amount >= parts.maxAmount)
 						{
+							FeedbackManager.SendFeedback("event.PlayerPickingLastBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
 						}
 						else
 						{
+							FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 							newList.Add(parts);
 						}
 					}

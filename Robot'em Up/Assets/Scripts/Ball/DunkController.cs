@@ -54,6 +54,7 @@ public class DunkController : MonoBehaviour
 	private PlayerController playerController;
 
 	private float currentCD;
+	private GameObject dunkWaitingFX;
 
 	private void Awake ()
 	{
@@ -238,19 +239,25 @@ public class DunkController : MonoBehaviour
 		switch (_newState)
 		{
 			case DunkState.Jumping:
+				FeedbackManager.SendFeedback("event.DunkJumping", playerController);
 				i_playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
 				break;
 			case DunkState.Waiting:
+				dunkWaitingFX = FeedbackManager.SendFeedback("event.DunkWaiting", i_handTransform).GetVFX();
 				break;
 			case DunkState.Canceling:
+				if (dunkWaitingFX) { Destroy(dunkWaitingFX); }
 				i_playerAnimator.SetTrigger("DunkMissedTrigger");
 				break;
 			case DunkState.Receiving:
+				if (dunkWaitingFX) { Destroy(dunkWaitingFX); }
 				i_playerAnimator.SetTrigger("DunkTrigger");
+				FeedbackManager.SendFeedback("event.DunkCatchingBall", i_handTransform);
 				break;
 			case DunkState.Explosing:
+				FeedbackManager.SendFeedback("event.DunkSmashingOnGround", playerController);
 				break;
 		}
 		dunkState = _newState;

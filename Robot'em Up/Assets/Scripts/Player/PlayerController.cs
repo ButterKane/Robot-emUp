@@ -23,7 +23,7 @@ public class PlayerController : PawnController, IHitable
     public bool enableMagnet;
 
 	[Separator("Revive settings")]
-	public string eventRevive;
+	public string eventOnResurrecting = "event.PlayerResurrecting";
 
 	public float deathExplosionRadius = 5;
 	public int deathExplosionDamage = 10;
@@ -278,6 +278,7 @@ public class PlayerController : PawnController, IHitable
 
 	public void Revive(PlayerController _player)
 	{
+		FeedbackManager.SendFeedback(eventOnResurrecting, this);
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");

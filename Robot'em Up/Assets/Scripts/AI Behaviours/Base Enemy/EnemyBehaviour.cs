@@ -458,7 +458,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
-                damageAfterBump = 0;
+				FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+				damageAfterBump = 0;
 				EnergyManager.IncreaseEnergy(energyGainedOnHit);
 				whatBumps = WhatBumps.Pass;
                 Staggered(whatBumps);
