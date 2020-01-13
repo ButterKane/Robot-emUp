@@ -125,10 +125,6 @@ public class EnemyBoss : EnemyBehaviour
     public override void ExitBumpedState()
     {
     }
-
-    public override void Die(string deathSound = "EnemyDeath")
-    {
-        base.Die("EnemyShieldDeath");   // Override the death sound with the right one 
-    }
+    
 
 }
