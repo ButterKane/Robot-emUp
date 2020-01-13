@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class FXManager : MonoBehaviour
 {
-	public static GameObject InstantiateFX(GameObject _fx, Vector3 _position, bool _useLocalPosition, Vector3 _direction, Vector3 _sizeMultiplier, Transform _parent = null )
+	static IEnumerator spawnDelayCoroutine;
+	public static GameObject InstantiateFX(GameObject _fx, Vector3 _position, bool _useLocalPosition, Vector3 _direction, Vector3 _sizeMultiplier, Transform _parent = null)
 	{
 		if (_fx == null)
 		{
@@ -16,9 +17,11 @@ public class FXManager : MonoBehaviour
 		{
 			i_newFX.transform.SetParent(_parent);
 		}
-		if (_useLocalPosition) {
+		if (_useLocalPosition)
+		{
 			i_newFX.transform.localPosition = _position;
-		} else
+		}
+		else
 		{
 			i_newFX.transform.position = _position;
 		}

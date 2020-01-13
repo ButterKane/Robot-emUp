@@ -52,11 +52,11 @@ public class FeedbackPreviewer : EditorWindow
 		cameraObject.name = "PreviewCamera";
 		instantiatedObjects.Add(cameraObject);
 		camera = cameraObject.AddComponent<Camera>();
-		cameraObject.transform.position = new Vector3(0,0,-4);
+		cameraObject.transform.position = new Vector3(0,0,-8);
 
 		//Generate preview object
-		GameObject previewObject = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewSphere"));
-		previewObject.transform.position = Vector3.zero;
+		GameObject previewObject = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewMesh"));
+		previewObject.transform.position = new Vector3(0,-1,0);
 		instantiatedObjects.Add(previewObject);
 
 		//Generate preview panel
@@ -134,11 +134,13 @@ public class FeedbackPreviewer : EditorWindow
 
 		//Generate FX
 		if (fxPs != null) { DestroyImmediate(fxPs.gameObject); }
-		GameObject fx = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewFX"));
-		fx.transform.position = Vector3.zero;
-		instantiatedObjects.Add(fx);
-		fxPs = fx.GetComponent<ParticleSystem>();
-		time = 0;
-		fxPs.useAutoRandomSeed = false;
+		if (_data.vfxDataInited && _data.vfxData.vfxPrefab != null)
+		{
+			GameObject fx = FXManager.InstantiateFX(_data.vfxData.vfxPrefab, _data.vfxData.offset, false, Vector3.up, _data.vfxData.scaleMultiplier);
+			instantiatedObjects.Add(fx);
+			fxPs = fx.GetComponent<ParticleSystem>();
+			time = 0;
+			fxPs.useAutoRandomSeed = false;
+		}
 	}
 }
