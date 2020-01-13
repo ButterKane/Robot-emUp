@@ -64,29 +64,30 @@ public class PawnController : MonoBehaviour
 	public string onHitEvent = "";
 	public string onDeathEvent = "";
 
-	[Space(2)]
-	[Separator("Movement settings")]
-	public float jumpForce;
-    public AnimationCurve accelerationCurve;
+    [Space(2)]
+    [Separator("Movement settings")]
+    public bool canMove;
+    [ConditionalField(nameof(canMove))] public float jumpForce;
+    [ConditionalField(nameof(canMove))] public AnimationCurve accelerationCurve;
 
-	[Tooltip("Minimum required speed to go to walking state")] public float minWalkSpeed = 0.1f;
-	public float moveSpeed = 10;
-	public float acceleration = 10;
+    [ConditionalField(nameof(canMove))]
+    [Tooltip("Minimum required speed to go to walking state")] public float minWalkSpeed = 0.1f;
+    [ConditionalField(nameof(canMove))] public float moveSpeed = 15;
+    [ConditionalField(nameof(canMove))] public float acceleration = 200;
 
-    [Space(7)]
-    public float movingDrag = .4f;
-    public float idleDrag = .4f;
-    public float onGroundGravityMultiplyer;
-	public float deadzone = 0.2f;
-	[Range(0.01f, 1f)] public float turnSpeed = .25f;
+    [ConditionalField(nameof(canMove))] public float movingDrag = .4f;
+    [ConditionalField(nameof(canMove))] public float idleDrag = .4f;
+    [ConditionalField(nameof(canMove))] public float onGroundGravityMultiplyer;
+    [ConditionalField(nameof(canMove))] public float deadzone = 0.2f;
+    [ConditionalField(nameof(canMove))] [Range(0.01f, 1f)] public float turnSpeed = .25f;
 
-	[Separator("Climb settings")]
-	public float timeBeforeClimb = 0.2f;
-	public float minDistanceToClimb = 1f;
-	public float climbDuration = 0.5f;
-
-	public float climbForwardPushForce = 450f;
-	public float climbUpwardPushForce = 450f;
+    [Separator("Climb settings")]
+    public bool canClimb = true;
+    [ConditionalField(nameof(canClimb))] public float timeBeforeClimb = 0.2f;
+    [ConditionalField(nameof(canClimb))] public float minDistanceToClimb = 1f;
+    [ConditionalField(nameof(canClimb))] public float climbDuration = 0.5f;
+    [ConditionalField(nameof(canClimb))] public float climbForwardPushForce = 450f;
+    [ConditionalField(nameof(canClimb))] public float climbUpwardPushForce = 450f;
 
 	[Separator("FX")]
 	public GameObject deathParticlePrefab;
@@ -97,8 +98,10 @@ public class PawnController : MonoBehaviour
 	[Space(2)]
     [Separator("Bumped Values")]
 	public bool isBumpable = true;
-	public float maxGettingUpDuration = 0.6f;
-    public AnimationCurve bumpDistanceCurve;
+    [ConditionalField(nameof(isBumpable))] public float maxGettingUpDuration = 0.6f;
+    [ConditionalField(nameof(isBumpable))] public AnimationCurve bumpDistanceCurve;
+    [ConditionalField(nameof(isBumpable))] public float bumpRaycastDistance = 1;
+    [ConditionalField(nameof(isBumpable))] [Range(0, 1)] public float whenToTriggerFallingAnim = 0.302f;
     protected float bumpDistance;
 	protected float bumpDuration;
 	protected float restDuration;
@@ -107,13 +110,12 @@ public class PawnController : MonoBehaviour
 	protected Vector3 bumpDestinationPosition;
 	protected Vector3 bumpDirection;
 	protected float bumpTimeProgression;
-    [Range(0, 1)] public float whenToTriggerFallingAnim = 0.302f;
 	protected bool fallingTriggerLaunched;
-    public float bumpRaycastDistance = 1;
 	protected bool mustCancelBump;
 
     [Space(2)]
     [Separator("Debug (Don't change)")]
+    [System.NonSerialized] public Rigidbody rb;
     [System.NonSerialized] public MoveState moveState;
 	private float accelerationTimer;
     protected Vector3 moveInput;
@@ -127,7 +129,6 @@ public class PawnController : MonoBehaviour
 	private bool grounded = false;
 	private float timeInAir;
 	private float climbingHoldTime;
-	public Rigidbody rb;
 	[System.NonSerialized] public Animator animator;
 	private Vector3 initialScale;
 	private bool frozen;
@@ -162,6 +163,7 @@ public class PawnController : MonoBehaviour
 		{
 			isPlayer = true;
 		}
+        moveState = MoveState.Idle;
     }
 
     private void FixedUpdate()
@@ -224,19 +226,6 @@ public class PawnController : MonoBehaviour
 		}
     }
 
-	void UpdateSpeedCoef()
-	{
-		List<SpeedCoef> i_newCoefList = new List<SpeedCoef>();
-		foreach (SpeedCoef coef in speedCoefs)
-		{
-			coef.duration -= Time.deltaTime;
-			if (coef.duration > 0)
-			{
-				i_newCoefList.Add(coef);
-			}
-		}
-		speedCoefs = i_newCoefList;
-	}
 
     void Move()
     {
@@ -338,23 +327,7 @@ public class PawnController : MonoBehaviour
     #endregion
     #region Public functions
 
-	public float GetSpeedCoef()
-	{
-		float i_speedCoef = 1;
-		foreach (SpeedCoef coef in speedCoefs)
-		{
-			i_speedCoef *= coef.speedCoef;
-		}
-		if (isPlayer)
-		{
-			i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.playerSpeedMultiplier);
-		} else
-		{
-			i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.enemySpeedMultiplier);
-		}
-		return i_speedCoef;
-	}
-
+	
 	public int GetHealth()
 	{
 		return currentHealth;
@@ -365,7 +338,25 @@ public class PawnController : MonoBehaviour
 		return maxHealth;
 	}
 
-	public void AddSpeedCoef(SpeedCoef _speedCoef )
+    public float GetSpeedCoef()
+    {
+        float i_speedCoef = 1;
+        foreach (SpeedCoef coef in speedCoefs)
+        {
+            i_speedCoef *= coef.speedCoef;
+        }
+        if (isPlayer)
+        {
+            i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.playerSpeedMultiplier);
+        }
+        else
+        {
+            i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.enemySpeedMultiplier);
+        }
+        return i_speedCoef;
+    }
+
+    public void AddSpeedCoef(SpeedCoef _speedCoef )
 	{
 		if (!_speedCoef.stackable)
 		{
@@ -379,6 +370,21 @@ public class PawnController : MonoBehaviour
 		}
 		speedCoefs.Add(_speedCoef);
 	}
+
+    void UpdateSpeedCoef()
+    {
+        List<SpeedCoef> i_newCoefList = new List<SpeedCoef>();
+        foreach (SpeedCoef coef in speedCoefs)
+        {
+            coef.duration -= Time.deltaTime;
+            if (coef.duration > 0)
+            {
+                i_newCoefList.Add(coef);
+            }
+        }
+        speedCoefs = i_newCoefList;
+    }
+
 
     public virtual void Kill()
     {

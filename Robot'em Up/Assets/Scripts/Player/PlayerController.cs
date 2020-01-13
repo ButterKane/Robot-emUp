@@ -58,10 +58,14 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void Update ()
 	{
-		#if !UNITY_EDITOR
+#if !UNITY_EDITOR
 			if (!inputDisabled) { GetInput(); }
-		#endif
-	}
+#endif
+        GetInput();
+
+
+
+    }
 	void GetInput ()
 	{
 		if (HasGamepad())

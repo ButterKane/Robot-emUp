@@ -43,7 +43,6 @@ public class EnemyBehaviour : PawnController, IHitable
     [SerializeField] protected Transform playerTwoTransform;
     protected PawnController playerTwoPawnController;
 
-
     [Space(2)]
     [Separator("Tweakable variables")]
     protected bool playerOneInRange;
@@ -101,11 +100,10 @@ public class EnemyBehaviour : PawnController, IHitable
 
     [Space(3)]
     [Header("Surrounding")]
-    [System.NonSerialized] public Transform closestSurroundPoint;
-    [Range(0, 1)]
     public bool canSurroundPlayer;
-    public float bezierCurveHeight = 0.5f;
+    [Range(0, 1)] public float bezierCurveHeight = 0.5f;
     public float bezierDistanceToHeightRatio = 100f;
+    [System.NonSerialized] public Transform closestSurroundPoint;
 
     [Space(3)]
     [Header("Death")]
@@ -143,18 +141,21 @@ public class EnemyBehaviour : PawnController, IHitable
 		UpdateSpeed();
     }
 
-	void UpdateSpeed()
-	{
-		if (navMeshAgent != null)
-		{
-			navMeshAgent.speed = moveSpeed * GetSpeedCoef();
-		}
-	}
+    protected void UpdateSpeed()
+    {
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.speed = moveSpeed * GetSpeedCoef();
+        }
+    }
 
     public override void UpdateAnimatorBlendTree()
     {
-		base.UpdateAnimatorBlendTree();
-		animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
+        base.UpdateAnimatorBlendTree();
+        if (canMove)
+        { 
+            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
+        }
     }
 
     void UpdateState()

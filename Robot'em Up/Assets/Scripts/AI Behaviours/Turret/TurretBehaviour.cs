@@ -33,11 +33,7 @@ public enum AimingCubeState
 public class TurretBehaviour : EnemyBehaviour, IHitable
 {
     [Space(2)]
-    [Separator("Auto-assigned References")]
-    public Transform target;
-
-    [Space(2)]
-    [Separator("Variables")]
+    [Separator("Turret Variables")]
     public TurretState turretState;
     [NonSerialized] public TurretAttackState attackState;
     [NonSerialized] public AimingCubeState aimingCubeState;

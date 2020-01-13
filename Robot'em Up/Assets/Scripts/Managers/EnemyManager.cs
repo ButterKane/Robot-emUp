@@ -17,7 +17,7 @@ public class EnemyManager : MonoBehaviour
     [NonSerialized] public PlayerController playerTwo;
 
     [ReadOnly] public List<EnemyBehaviour> enemies;
-    [NonSerialized] public List<EnemyBehaviour> enemiesThatSurround;
+    [ReadOnly] public List<EnemyBehaviour> enemiesThatSurround;
     
 
     [NonSerialized] public List<EnemyBehaviour> enemyGroupOne;
