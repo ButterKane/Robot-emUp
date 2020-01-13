@@ -58,10 +58,13 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void Update ()
 	{
+		if (Application.isPlaying)
+		{
+			GetInput();
+		}
 #if !UNITY_EDITOR
 			if (!inputDisabled) { GetInput(); }
 #endif
-        GetInput();
 
 
 
