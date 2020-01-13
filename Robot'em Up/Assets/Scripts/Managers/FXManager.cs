@@ -5,6 +5,9 @@ using UnityEngine;
 public class FXManager : MonoBehaviour
 {
 	static IEnumerator spawnDelayCoroutine;
+	FXManager instance;
+
+	//void On
 	public static GameObject InstantiateFX(GameObject _fx, Vector3 _position, bool _useLocalPosition, Vector3 _direction, Vector3 _sizeMultiplier, Transform _parent = null)
 	{
 		if (_fx == null)
@@ -30,6 +33,20 @@ public class FXManager : MonoBehaviour
 			i_newFX.transform.forward = _direction;
 		}
 		i_newFX.transform.localScale = new Vector3(i_newFX.transform.localScale.x * _sizeMultiplier.x, i_newFX.transform.localScale.y * _sizeMultiplier.y, i_newFX.transform.localScale.z * _sizeMultiplier.z);
+		//i_newFX.GetComponent<ParticleSystem>().Stop();
 		return i_newFX;
 	}
+
+	public void StartDelayCoroutine ( MonoBehaviour myMonoBehaviour )
+	{
+		//Setup event parameters
+		myMonoBehaviour.StartCoroutine("TestCoroutine");
+	}
+
+	static IEnumerable TestCoroutine ()
+	{
+		yield return new WaitForSeconds(1f);
+		Debug.Log("Yoink");
+	}
+
 }

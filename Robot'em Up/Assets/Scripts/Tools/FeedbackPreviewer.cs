@@ -83,18 +83,6 @@ public class FeedbackPreviewer : EditorWindow
 		instance = null;
 	}
 
-	void SetPlaybackTime ( float _time )
-	{
-		if (PlaybackTimeField == null || Resimulation == null)
-		{
-			var PsUtils = typeof(UnityEditor.EditorUtility).Assembly.GetType("ParticleSystemEditorUtils", true);
-			PlaybackTimeField = PsUtils.GetField("playbackTime", BindingFlags.Static | BindingFlags.NonPublic);
-			Resimulation = PsUtils.GetMethod("PerformCompleteResimulation", (BindingFlags.Static | BindingFlags.NonPublic));
-		}
-		PlaybackTimeField.SetValue(null, _time);
-		Resimulation.Invoke(null, null);
-	}
-
 
 	public void Update ()
 	{
@@ -126,7 +114,7 @@ public class FeedbackPreviewer : EditorWindow
 	{
 		VibrationManager.Vibrate(PlayerIndex.One,_data.vibrationData.duration, _data.vibrationData.force);
 		VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force);
-		if (_data.soundData.soundName != "")
+		if (_data.soundData.soundName != "" && _data.soundDataInited)
 		{
 			SoundManager.PlaySoundInEditor(_data.soundData.soundName);
 		}

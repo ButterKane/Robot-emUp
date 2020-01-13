@@ -48,14 +48,24 @@ public class FeedbackData
 	public VFXData vfxData;
 }
 
+public class FeedbackCallback
+{
+	public GameObject vfx;
+	public GameObject GetVFX()
+	{
+		return vfx;
+	}
+}
+
 public class FeedbackManager
 {
-	public static void SendFeedback(string _eventName, Object _target)
+	public static FeedbackCallback SendFeedback (string _eventName, Object _target)
 	{
-		SendFeedback(_eventName, _target, Vector3.forward, Vector3.forward);
+		return SendFeedback(_eventName, _target, Vector3.forward, Vector3.forward);
 	}
-	public static void SendFeedback(string _eventName, Object _target, Vector3 _eventDirection, Vector3 _eventNormal)
+	public static FeedbackCallback SendFeedback (string _eventName, Object _target, Vector3 _eventDirection, Vector3 _eventNormal)
 	{
+		FeedbackCallback i_callBack = new FeedbackCallback();
 		FeedbackData feedback = GetFeedbackData(_eventName);
 		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency); }
 		if (feedback.vibrationData != null && feedback.vibrationDataInited)
@@ -63,7 +73,7 @@ public class FeedbackManager
 			switch (feedback.vibrationData.target)
 			{
 				case VibrationTarget.TargetedPlayer:
-					if (_target == null) { Debug.LogWarning("Can't make target vibrate"); return; }
+					if (_target == null) { Debug.LogWarning("Can't make target vibrate"); return i_callBack; }
 					Component target = _target as Component;
 					PlayerController player = target.GetComponent<PlayerController>();
 					if (player != null)
@@ -115,8 +125,9 @@ public class FeedbackManager
 			{
 				newParent = target.transform;
 			}
-			FXManager.InstantiateFX(feedback.vfxData.vfxPrefab, target.transform.position + feedback.vfxData.offset, false, direction, feedback.vfxData.scaleMultiplier, newParent);
+			i_callBack.vfx = FXManager.InstantiateFX(feedback.vfxData.vfxPrefab, target.transform.position + feedback.vfxData.offset, false, direction, feedback.vfxData.scaleMultiplier, newParent);
 		}
+		return i_callBack;
 	}
 
 	public static FeedbackData GetFeedbackData(string _name)
