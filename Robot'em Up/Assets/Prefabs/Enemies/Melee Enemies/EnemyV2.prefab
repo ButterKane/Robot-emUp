@@ -322,8 +322,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   invincibilityTime: 1
-  onHitSound: 
-  onDeathSound: 
+  onHitEvent: 
+  onDeathEvent: 
+  canMove: 1
   jumpForce: 0
   accelerationCurve:
     serializedVersion: 2
@@ -339,6 +340,7 @@ MonoBehaviour:
   onGroundGravityMultiplyer: 0
   deadzone: 0.2
   turnSpeed: 0.25
+  canClimb: 1
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
   climbDuration: 0.5
@@ -374,9 +376,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0.9
   bumpRaycastDistance: 1
-  rb: {fileID: 0}
+  whenToTriggerFallingAnim: 0.9
   healthBarRef: {fileID: 1286583807845663263}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -394,9 +395,9 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
-  slowFromPass: 0.6
+  speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0.5
-  slowFromDunk: 0.4
+  speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
   distanceToAttack: 5
   maxAnticipationTime: 0.5
@@ -433,6 +434,7 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 0.1
