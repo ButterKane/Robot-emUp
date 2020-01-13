@@ -58,6 +58,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   invincibilityTime: 0.15
+  onHitEvent: 
+  onDeathEvent: 
+  canMove: 1
   jumpForce: 800
   accelerationCurve:
     serializedVersion: 2
@@ -84,18 +87,24 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minWalkSpeed: 0.3
-  maxSpeed: 15
-  maxAcceleration: 200
+  moveSpeed: 15
+  acceleration: 200
   movingDrag: 0.08
   idleDrag: 0.05
   onGroundGravityMultiplyer: 4
   deadzone: 0.2
   turnSpeed: 0.25
+  canClimb: 1
   timeBeforeClimb: 0
   minDistanceToClimb: 1
   climbDuration: 0.18
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
+  deathParticlePrefab: {fileID: 0}
+  deathParticleScale: 2
+  hitParticlePrefab: {fileID: 0}
+  hitParticleScale: 3
+  isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2
@@ -121,12 +130,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0.302
   bumpRaycastDistance: 1
+  whenToTriggerFallingAnim: 0.302
   playerIndex: 0
   triggerTreshold: 0.1
-  _lockable: 0
-  _lockHitboxSize: 0
+  lockable: 0
+  lockHitboxSize: 0
   enableDash: 1
   enableJump: 0
   enableDunk: 1
@@ -160,10 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 874adc8b1dc613448b2bae6f6942fe34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passPreviewInEditor: 1
-  passMode: 1
   handTransform: {fileID: 4655006219135653576}
   ballDatas: {fileID: 11400000, guid: 359213923aba4d6479b78ed4c94532a4, type: 2}
+  passPreviewInEditor: 1
+  passMode: 1
   passCooldown: 0.3
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
@@ -204,10 +213,9 @@ MonoBehaviour:
   dunkSnapTreshold: 30
   dunkCooldown: 1
   dunkCancelFreezeDuration: 0.4
-  dunkState: 6
-  BumpDistanceMod: 1
-  BumpDurationMod: 0.5
-  BumpRestDurationMod: 0.7
+  bumpDistanceMod: 1
+  bumpDurationMod: 0.5
+  bumpRestDurationMod: 0.7
 --- !u!114 &5564275353483555727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,6 +234,32 @@ MonoBehaviour:
   maxDistanceBeforeSlowing: 255
   maxDistanceBeforeBreaking: 260
   distanceBeforeRebuilding: 249
+  maxSlowCoef: 0.1
+  damagesPerSecWithoutLink: 0.5
+  slowCoefCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   linkColor:
     serializedVersion: 2
     key0: {r: 0, g: 0.94729495, b: 1, a: 1}
@@ -255,32 +289,8 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
-  maxSlowCoef: 0.1
-  damagesPerSecWithoutLink: 0.5
-  slowCoefCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  linkMaterial: {fileID: 2100000, guid: a806e106ae4a7664d962ebda6c258dd6, type: 2}
+  linkWidth: 0.2
   opacityFadeCurve:
     serializedVersion: 2
     m_Curve:
@@ -305,8 +315,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  linkMaterial: {fileID: 2100000, guid: a806e106ae4a7664d962ebda6c258dd6, type: 2}
-  linkWidth: 0.2
 --- !u!114 &-6964692673919125295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,8 +362,7 @@ MonoBehaviour:
   dashFadeDuration: 0.2
   UIFadeDuration: 0.5
   UIFadeDelay: 0.8
-  state: 1
-  visuals: {fileID: 4621407884147341700}
+  clonedVisuals: {fileID: 0}
   clonePerSec: 100
   cloneDuration: 0.5
   cloneMaterial: {fileID: 2100000, guid: 9085d16098a735b4b81fdcfd4139e48e, type: 2}
@@ -365,6 +372,7 @@ MonoBehaviour:
     type: 3}
   endDashFX: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
     type: 3}
+  state: 1
 --- !u!54 &8666635390815151469
 Rigidbody:
   m_ObjectHideFlags: 0
