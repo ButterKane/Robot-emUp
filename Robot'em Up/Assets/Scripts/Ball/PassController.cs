@@ -21,8 +21,8 @@ public enum PassState
 public class PassController : MonoBehaviour
 {
     [Separator("Private references")]
-    [SerializeField] private Transform handTransform;
-    [SerializeField] private BallDatas ballDatas;
+    [SerializeField] private Transform handTransform = default;
+    [SerializeField] private BallDatas ballDatas = default;
 
     [Separator("General settings")]
 	public bool passPreviewInEditor;

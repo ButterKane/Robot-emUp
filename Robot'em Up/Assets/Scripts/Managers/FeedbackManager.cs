@@ -69,6 +69,7 @@ public class FeedbackManager
 	{
 		FeedbackCallback i_callBack = new FeedbackCallback();
 		FeedbackData feedback = GetFeedbackData(_eventName);
+		if (feedback == null) { return i_callBack; }
 		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency); }
 		if (feedback.vibrationData != null && feedback.vibrationDataInited)
 		{

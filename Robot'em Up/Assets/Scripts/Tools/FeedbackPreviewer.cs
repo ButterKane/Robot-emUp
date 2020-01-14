@@ -6,6 +6,7 @@ using XInputDotNetPure;
 using UnityEngine.SceneManagement;
 using System.Reflection;
 
+#if UNITY_EDITOR
 public class FeedbackPreviewer : EditorWindow
 {
 	Camera camera;
@@ -145,3 +146,4 @@ public class FeedbackPreviewer : EditorWindow
 		}
 	}
 }
+#endif
