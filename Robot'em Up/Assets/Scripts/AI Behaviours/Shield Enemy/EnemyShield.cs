@@ -87,7 +87,7 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = false;
         }
 
-        attackTimeProgression += Time.deltaTime / maxAttackDuration;
+        //attackTimeProgression += Time.deltaTime / maxAttackDuration;
 
         //must stop ?
         int i_attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");

@@ -81,13 +81,13 @@ public class EnemyBehaviour : PawnController, IHitable
     public float maxAnticipationTime = 0.5f;
     [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
     protected float anticipationTime;
-    public float attackMaxDistance = 8;
-    public float maxAttackDuration = 0.5f;
+    //public float attackMaxDistance = 8;       // How far goes the attack jump
+    //public float maxAttackDuration = 0.5f;    // Time to reach the max distance
     protected float attackDuration;
     protected float attackTimeProgression;
-    public AnimationCurve attackSpeedCurve;
-    protected Vector3 attackInitialPosition;
-    protected Vector3 attackDestination;
+    //public AnimationCurve attackSpeedCurve;
+    //protected Vector3 attackInitialPosition;
+    //protected Vector3 attackDestination;
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
     protected bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
@@ -97,6 +97,7 @@ public class EnemyBehaviour : PawnController, IHitable
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
+    private EnemyArmAttack armScript;
 
     [Space(3)]
     [Header("Surrounding")]
@@ -123,6 +124,7 @@ public class EnemyBehaviour : PawnController, IHitable
         if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
         GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform);
         healthBar.GetComponent<EnemyHealthBar>().enemy = this;
+        armScript = GetComponentInChildren<EnemyArmAttack>();
 
         if (arenaRobot)
         {
@@ -301,10 +303,8 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         endOfAttackTriggerLaunched = false;
-        attackInitialPosition = transform.position;
-        attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
         attackTimeProgression = 0;
-        myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
+        //myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
     }
 
@@ -322,24 +322,20 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void AttackingState()
     {
-        attackTimeProgression += Time.deltaTime / maxAttackDuration;
-        //attackDuration -= Time.deltaTime;
 
         //must stop ?
         int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-        if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
-        {
-            attackTimeProgression = whenToTriggerEndOfAttackAnim;
-            mustCancelAttack = true;
-        }
+
+        armScript.ToggleArmCollider(true);
 
         if (!mustCancelAttack)
         {
-            rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
+            //rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
         }
 
         if (attackTimeProgression >= 1)
         {
+            armScript.ToggleArmCollider(false);
             ChangeState(EnemyState.PauseAfterAttack);
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
