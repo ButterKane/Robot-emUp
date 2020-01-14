@@ -322,8 +322,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   invincibilityTime: 1
-  onHitEvent: 
-  onDeathEvent: 
   canMove: 1
   jumpForce: 0
   accelerationCurve:
@@ -346,10 +344,6 @@ MonoBehaviour:
   climbDuration: 0.5
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
-  deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
-  hitParticleScale: 3
   isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
@@ -378,6 +372,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0.9
+  eventOnBeingHit: event.EnemyHit
+  eventOnBeingBumpedAway: event.EnemyBeingBumpedAway
+  eventOnBeingGrounded: event.EnemyGrounded
+  eventOnDeath: event.EnemyDeath
+  eventOnHealing: 
   healthBarRef: {fileID: 1286583807845663263}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
