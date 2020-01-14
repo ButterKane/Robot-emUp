@@ -456,7 +456,7 @@ public class FeedbackEditor : Editor
 		i_newFeedbackData.shakeData = null;
 		i_newFeedbackData.vibrationData = null;
 		i_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
-		i_newFeedbackData.soundData = null;
+		i_newFeedbackData.soundData = new SoundPlayData();
 		i_newFeedbackData.vfxData = null;
 		int categoryIndex = Mathf.Clamp(selectedCategoryIndex, 0, feedbackDatas.feedbackCategories.Count - 1);
 		if (feedbackDatas.feedbackCategories.Count > 0)

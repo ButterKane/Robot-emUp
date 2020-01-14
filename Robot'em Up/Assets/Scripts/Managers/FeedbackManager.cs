@@ -17,7 +17,7 @@ public class VibrationData
 [System.Serializable]
 public class SoundPlayData
 {
-	public string soundName;
+	public string soundName = "";
 	public bool attachToTarget;
 }
 
