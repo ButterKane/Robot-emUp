@@ -274,8 +274,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
-        FeedbackManager.SendFeedback("event.BasicTurretAttack", this);
-        SoundManager.PlaySound("BasicTurretAttack", transform.position);
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -357,17 +355,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void Die()
     {
-        GameObject i_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        i_deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(i_deathParticle, 1.5f);
 
         if (UnityEngine.Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();
         }
-
-        FeedbackManager.SendFeedback("event.BasicTurretDeath", this);
-        SoundManager.PlaySound("BasicTurretDeath", transform.position);
 
         Destroy(gameObject);
     }

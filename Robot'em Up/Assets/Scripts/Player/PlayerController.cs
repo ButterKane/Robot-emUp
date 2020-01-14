@@ -23,10 +23,7 @@ public class PlayerController : PawnController, IHitable
     public bool enableMagnet;
 
 	[Separator("Revive settings")]
-	public GameObject FX_hit;
-	public GameObject FX_heal;
-	public GameObject FX_death;
-	public GameObject FX_revive;
+	public string eventOnResurrecting = "event.PlayerResurrecting";
 
 	public float deathExplosionRadius = 5;
 	public int deathExplosionDamage = 10;
@@ -239,7 +236,6 @@ public class PlayerController : PawnController, IHitable
 	public override void Heal ( int _amount )
 	{
 		base.Heal(_amount);
-		FXManager.InstantiateFX(FX_heal, Vector3.zero, true, Vector3.zero, Vector3.one * 3.25f, transform);
 		PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 		if (i_potentialPlayerUI != null)
 		{
@@ -256,33 +252,20 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
-			FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
-			SoundManager.PlaySound("PlayerHitNoBump", transform.position);
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
 				i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
             base.Damage(_amount);
-            FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 4.25f, transform);
         }
 	}
 
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
-		if (playerIndex == PlayerIndex.One)
-		{
-			FeedbackManager.SendFeedback("event.DeathFromPlayer1", this);
-		} else if (playerIndex == PlayerIndex.Two)
-		{
-			FeedbackManager.SendFeedback("event.DeathFromPlayer2", this);
-		}
-		FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
-		SoundManager.PlaySound("DeathFromOneCharacter", transform.position, transform);
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
-		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
 		DropBall();
 		SetUntargetable();
 		Freeze();
@@ -295,6 +278,7 @@ public class PlayerController : PawnController, IHitable
 
 	public void Revive(PlayerController _player)
 	{
+		FeedbackManager.SendFeedback(eventOnResurrecting, this);
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
@@ -304,14 +288,10 @@ public class PlayerController : PawnController, IHitable
 		_player.transform.position = transform.position + Vector3.up * 7 + Vector3.left * 0.1f;
 		_player.FreezeTemporarly(reviveFreezeDuration);
 		_player.EnableInput();
-		//_player.StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
 		List<ReviveInformations> i_newRevivablePlayers = new List<ReviveInformations>();
-		FXManager.InstantiateFX(FX_revive, GetCenterPosition(), false, Vector3.zero, Vector3.one * 5);
-		SoundManager.PlaySound("AllyResurrection", _player.transform.position, transform);
-		FeedbackManager.SendFeedback("event.AllyResurrection", this);
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
@@ -406,7 +386,6 @@ public class PlayerController : PawnController, IHitable
 
 	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
 	{
-		FeedbackManager.SendFeedback("event.PlayerBumpedAway", this);
 		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
 	}
 }

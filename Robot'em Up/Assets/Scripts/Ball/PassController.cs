@@ -21,8 +21,8 @@ public enum PassState
 public class PassController : MonoBehaviour
 {
     [Separator("Private references")]
-    [SerializeField] private Transform handTransform;
-    [SerializeField] private BallDatas ballDatas;
+    [SerializeField] private Transform handTransform = default;
+    [SerializeField] private BallDatas ballDatas = default;
 
     [Separator("General settings")]
 	public bool passPreviewInEditor;
@@ -133,13 +133,9 @@ public class PassController : MonoBehaviour
 		EnablePassPreview();
 		StartCoroutine(ShootAfterDelay_C(receptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
-		SoundManager.PlaySound("PerfectReception", transform.position, transform);
 		_ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
 		_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
 		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
-		Color i_newColor = ballDatas.colorOverDamage.Evaluate(i_lerpValue);
-		GameObject i_perfectFX = FXManager.InstantiateFX(ballDatas.perfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
-		ParticleColorer.ReplaceParticleColor(i_perfectFX, new Color(122f / 255f, 0, 122f / 255f), i_newColor);
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
 		PawnController i_pawnController = GetComponent<PawnController>();
@@ -273,9 +269,8 @@ public class PassController : MonoBehaviour
 	{
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
-		FeedbackManager.SendFeedback("event.ThrowPass", this);
-		SoundManager.PlaySound("ThrowPass", transform.position, transform);
 		ChangePassState(PassState.Shooting);
+		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
 		if (ballTimeInHand > receptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
 		currentPassCooldown = passCooldown;
 		BallBehaviour i_shotBall = ball;
@@ -291,12 +286,10 @@ public class PassController : MonoBehaviour
 				if (passPreview)
 				{
 					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
-					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
 					i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
-					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false,otherPlayer.transform.position - transform.position, Vector3.one * 5f);
 				}
             }
         }
@@ -307,13 +300,11 @@ public class PassController : MonoBehaviour
 				if (otherPlayer != null)
 				{
 					i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
-					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, otherPlayer.transform.position - transform.position, Vector3.one * 5f);
 				}
 			}
 			else // if aiming with right joystick
 			{
 				i_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
-				FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
 			}
 		}
 		ChangePassState(PassState.None);
@@ -322,8 +313,7 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
-		FeedbackManager.SendFeedback("event.ReceiveBall", this) ;
-		SoundManager.PlaySound("BallReception", transform.position, transform);
+		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPlayer, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection());
 		CursorManager.SetBallPointerParent(transform);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;

@@ -31,7 +31,7 @@ public class Retriever : MonoBehaviour
 	{
 		if (other.tag == "Ball")
 		{
-			FeedbackManager.SendFeedback("event.MagnetAttractingBall", this);
+			FeedbackManager.SendFeedback("event.PlayerAttractingBall", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 		}
 	}
 	private void OnTriggerStay(Collider other)
@@ -59,7 +59,6 @@ public class Retriever : MonoBehaviour
 			if (!i_corePart.CanBePicked()) { return; }
 			if (i_corePart.linkedPawn != null)
 			{
-				SoundManager.PlaySound("PickUpOnePartOfItsBody", transform.position, transform);
 				i_corePart.Pick(playerController);
 				bool i_partsFound = false;
 				List<ReviveInformations> newList = new List<ReviveInformations>();
@@ -73,12 +72,13 @@ public class Retriever : MonoBehaviour
 						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
 						if (parts.amount >= parts.maxAmount)
 						{
+							FeedbackManager.SendFeedback("event.PlayerPickingLastBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
-							FeedbackManager.SendFeedback("event.PickUpTheLastPartOfBody", this);
 						}
 						else
 						{
+							FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 							newList.Add(parts);
 						}
 					}

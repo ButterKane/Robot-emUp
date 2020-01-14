@@ -6,15 +6,15 @@ using XInputDotNetPure;
 using UnityEngine.SceneManagement;
 using System.Reflection;
 
+#if UNITY_EDITOR
 public class FeedbackPreviewer : EditorWindow
 {
 	Camera camera;
 	RenderTexture renderTexture;
-	private float time;
 	private ParticleSystem fxPs;
 	public static FeedbackPreviewer instance;
-	protected static MethodInfo Resimulation;
-	protected static FieldInfo PlaybackTimeField;
+	public static GameObject prefabToInstantiate;
+	public static GameObject currentPreviewObject;
 
 	public List<GameObject> instantiatedObjects;
 
@@ -55,9 +55,8 @@ public class FeedbackPreviewer : EditorWindow
 		cameraObject.transform.position = new Vector3(0,0,-8);
 
 		//Generate preview object
-		GameObject previewObject = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewMesh"));
-		previewObject.transform.position = new Vector3(0,-1,0);
-		instantiatedObjects.Add(previewObject);
+		currentPreviewObject = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewMesh"));
+		currentPreviewObject.transform.position = Vector3.zero;
 
 		//Generate preview panel
 		GameObject previewPanel = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewPanel"));
@@ -71,6 +70,7 @@ public class FeedbackPreviewer : EditorWindow
 		{
 			DestroyImmediate(obj);
 		}
+		if (currentPreviewObject) { DestroyImmediate(currentPreviewObject); }
 		List<GameObject> rootObjects = new List<GameObject>();
 		Scene scene = SceneManager.GetActiveScene();
 		scene.GetRootGameObjects(rootObjects);
@@ -108,27 +108,42 @@ public class FeedbackPreviewer : EditorWindow
 	void OnGUI ()
 	{
 		GUI.DrawTexture(new Rect(0.0f, 0.0f, position.width, position.height), renderTexture);
+		EditorGUI.BeginChangeCheck();
+		prefabToInstantiate = (GameObject)EditorGUILayout.ObjectField(prefabToInstantiate, typeof(GameObject), true);
+
+		if (GUI.changed)
+		{
+			if (currentPreviewObject) { DestroyImmediate(currentPreviewObject); }
+			currentPreviewObject = Instantiate(prefabToInstantiate);
+			currentPreviewObject.transform.position = Vector3.zero;
+		}
 	}
 
 	public void PreviewFeedback(FeedbackData _data )
 	{
-		VibrationManager.Vibrate(PlayerIndex.One,_data.vibrationData.duration, _data.vibrationData.force);
-		VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force);
+		if (_data.vibrationDataInited)
+		{
+			VibrationManager.Vibrate(PlayerIndex.One, _data.vibrationData.duration, _data.vibrationData.force);
+			VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force);
+		}
 		if (_data.soundData.soundName != "" && _data.soundDataInited)
 		{
 			SoundManager.PlaySoundInEditor(_data.soundData.soundName);
 		}
-		CameraShaker.ShakeEditorCamera(camera, _data.shakeData.intensity, _data.shakeData.duration, _data.shakeData.frequency);
+		if (_data.shakeDataInited)
+		{
+			CameraShaker.ShakeEditorCamera(camera, _data.shakeData.intensity, _data.shakeData.duration, _data.shakeData.frequency);
+		}
 
-		//Generate FX
 		if (fxPs != null) { DestroyImmediate(fxPs.gameObject); }
+		//Generate FX
 		if (_data.vfxDataInited && _data.vfxData.vfxPrefab != null)
 		{
 			GameObject fx = FXManager.InstantiateFX(_data.vfxData.vfxPrefab, _data.vfxData.offset, false, Vector3.up, _data.vfxData.scaleMultiplier);
 			instantiatedObjects.Add(fx);
 			fxPs = fx.GetComponent<ParticleSystem>();
-			time = 0;
 			fxPs.useAutoRandomSeed = false;
 		}
 	}
 }
+#endif

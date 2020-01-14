@@ -34,16 +34,10 @@ public class DashController : MonoBehaviour
 	public float cloneDuration = 0.5f;
 	public Material cloneMaterial;
 
-	[Separator("FX")]
-	public GameObject dashTrail;
-	public GameObject startDashFX;
-	public GameObject endDashFX;
-
 	private PawnController linkedPawn;
 	private float currentUseCooldown;
 	private float currentStackCooldown;
 	private int currentStackAmount;
-	private GameObject currentDashFX;
 
 	[ReadOnly] public DashState state;
 	private void Awake ()
@@ -77,8 +71,6 @@ public class DashController : MonoBehaviour
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
-		SoundManager.PlaySound("PlayerDash", transform.position, transform);
-		FeedbackManager.SendFeedback("event.OnDash", this);
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance
@@ -104,16 +96,8 @@ public class DashController : MonoBehaviour
 		switch (_newState)
 		{
 			case DashState.Dashing:
-				if (currentDashFX != null) { Destroy(currentDashFX); }
-				FXManager.InstantiateFX(startDashFX, transform.position, false, Vector3.forward, Vector3.one);
-				currentDashFX = FXManager.InstantiateFX(dashTrail, Vector3.zero, true, Vector3.zero, Vector3.one * 2, transform);
 				break;
 			case DashState.None:
-				if (state == DashState.Dashing)
-				{
-					if (currentDashFX != null) { AutoDestroyAfterDelay adad = currentDashFX.AddComponent<AutoDestroyAfterDelay>(); adad.delay = 0.5f; }
-					FXManager.InstantiateFX(endDashFX, transform.position, false, Vector3.forward, Vector3.one);
-				}
 				break;
 		}
 		state = _newState;

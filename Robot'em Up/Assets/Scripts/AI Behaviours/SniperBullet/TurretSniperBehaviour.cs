@@ -19,24 +19,14 @@ public class TurretSniperBehaviour : TurretBehaviour
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
-
-        FeedbackManager.SendFeedback("event.SniperTurretAttack", this);
-        SoundManager.PlaySound("SniperTurretAttack", transform.position);
     }
 
     public override void Die()
     {
-        GameObject i_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        i_deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(i_deathParticle, 1.5f);
-
         if (Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();
         }
-
-        FeedbackManager.SendFeedback("event.SniperTurretDeath", this);
-        SoundManager.PlaySound("SniperTurretDeath", transform.position);
 
         Destroy(gameObject);
     }

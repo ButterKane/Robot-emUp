@@ -34,7 +34,6 @@ public class Dummy : MonoBehaviour, IHitable
         {
             EnergyManager.IncreaseEnergy(0.2f);
         }
-		if (hitCount >= maxHealth) { FXManager.InstantiateFX(deathFX, transform.position, false, Vector3.forward, Vector3.one); Destroy(this.gameObject); }
 
 		//Fonctions utile
 		//_ball.Bounce();

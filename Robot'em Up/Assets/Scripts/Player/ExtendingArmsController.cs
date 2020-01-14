@@ -37,11 +37,6 @@ public class ExtendingArmsController : MonoBehaviour
 	public float armWidth;
 	public Material armMaterial;
 
-	[Separator("FX")]
-	public GameObject FX_retraction;
-	public GameObject FX_hit;
-	public GameObject FX_extension;
-
 	private Vector3 throwDirection;
 	private GameObject throwDirectionIndicator;
 	private LineRenderer lineRenderer;
@@ -139,12 +134,10 @@ public class ExtendingArmsController : MonoBehaviour
 		switch (_newState)
 		{
 			case ArmState.Extended:
-				FXManager.InstantiateFX(FX_hit, armTransform.position, false, -throwDirection, Vector3.one * 3);
 				break;
 			case ArmState.Retracted:
 				break;
 			case ArmState.Extending:
-				FXManager.InstantiateFX(FX_extension, startTransform.position, false, throwDirection, Vector3.one * 3);
 				break;
 			case ArmState.Retracting:
 				break;

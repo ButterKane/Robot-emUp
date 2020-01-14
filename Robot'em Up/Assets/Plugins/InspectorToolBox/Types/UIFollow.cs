@@ -14,7 +14,7 @@ namespace MyBox
 		private bool _hideOffscreen;
 #pragma warning restore 0649
 		[SerializeField, ConditionalField("_hideOffscreen")]
-		private Canvas _canvas;
+		private Canvas _canvas = default;
 
 		[SerializeField] private bool _editTime = true;
 

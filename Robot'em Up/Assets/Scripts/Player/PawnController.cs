@@ -61,8 +61,6 @@ public class PawnController : MonoBehaviour
 	private bool isInvincible;
     public float invincibilityTime = 1;
     private IEnumerator invincibilityCoroutine;
-	public string onHitEvent = "";
-	public string onDeathEvent = "";
 
     [Space(2)]
     [Separator("Movement settings")]
@@ -89,12 +87,6 @@ public class PawnController : MonoBehaviour
     [ConditionalField(nameof(canClimb))] public float climbForwardPushForce = 450f;
     [ConditionalField(nameof(canClimb))] public float climbUpwardPushForce = 450f;
 
-	[Separator("FX")]
-	public GameObject deathParticlePrefab;
-	public float deathParticleScale = 2;
-	public GameObject hitParticlePrefab;
-	public float hitParticleScale = 3;
-
 	[Space(2)]
     [Separator("Bumped Values")]
 	public bool isBumpable = true;
@@ -112,6 +104,14 @@ public class PawnController : MonoBehaviour
 	protected float bumpTimeProgression;
 	protected bool fallingTriggerLaunched;
 	protected bool mustCancelBump;
+
+	[Space(2)]
+	[Separator("Events")]
+	public string eventOnBeingHit = "event.PlayerBeingHit";
+	public string eventOnBeingBumpedAway = "event.PlayerBeingBumpedAway";
+	public string eventOnBeingGrounded = "event.PlayerGrounded";
+	public string eventOnDeath = "event.Player1Death";
+	public string eventOnHealing = "event.PlayerHealing";
 
     [Space(2)]
     [Separator("Debug (Don't change)")]
@@ -302,6 +302,7 @@ public class PawnController : MonoBehaviour
 			{
 				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
 				{
+					FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
 					grounded = true;
 					timeInAir = 0;
 					if (moveState == MoveState.Jumping) { 
@@ -388,11 +389,8 @@ public class PawnController : MonoBehaviour
 
     public virtual void Kill()
     {
-		if (onDeathEvent != "")
-		{
-			FeedbackManager.SendFeedback(onDeathEvent, this);
-		}
 		LockManager.UnlockTarget(transform);
+		FeedbackManager.SendFeedback(eventOnDeath, this);
 		Destroy(this.gameObject);
     }
 
@@ -406,6 +404,7 @@ public class PawnController : MonoBehaviour
 	{
 		int i_newHealth = currentHealth + _amount;
 		currentHealth = Mathf.Clamp(i_newHealth, 0, GetMaxHealth());
+		FeedbackManager.SendFeedback(eventOnHealing, this);
 	}
 
 	public virtual void Damage(int _amount)
@@ -414,11 +413,8 @@ public class PawnController : MonoBehaviour
         {
             invincibilityCoroutine = InvicibleFrame_C();
             StartCoroutine(invincibilityCoroutine);
-            currentHealth -= _amount;
-			if (onHitEvent != "")
-			{
-				FeedbackManager.SendFeedback(onHitEvent, this);
-			}
+			FeedbackManager.SendFeedback(eventOnBeingHit, this);
+			currentHealth -= _amount;
             if (currentHealth <= 0)
             {
                 Kill();
@@ -524,7 +520,9 @@ public class PawnController : MonoBehaviour
 	public virtual void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod)
     {
 		if (!isBumpable) { return; }
-        bumpDistance = _bumpDistance + Random.Range(-_randomDistanceMod, _randomDistanceMod);
+		FeedbackManager.SendFeedback(eventOnBeingBumpedAway, this);
+
+		bumpDistance = _bumpDistance + Random.Range(-_randomDistanceMod, _randomDistanceMod);
         bumpDuration = _bumpDuration + Random.Range(-_randomDurationMod, _randomDurationMod);
         restDuration = _restDuration + Random.Range(-_randomRestDurationMod, _randomRestDurationMod);
         bumpDirection = _bumpDirection;

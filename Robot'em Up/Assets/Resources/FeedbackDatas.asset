@@ -25,248 +25,39 @@ MonoBehaviour:
     displayColor: {r: 1, g: 0.8059104, b: 0.33490568, a: 1}
   - displayName: Environment
     displayColor: {r: 0, g: 0.8301887, b: 0.2769112, a: 1}
+  - displayName: Dunk
+    displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
   feedbackList:
-  - eventName: event.JumpForDunk
+  - eventName: event.DunkJumping
     shakeData:
-      duration: 0.2
-      intensity: 0.4
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 1
-      duration: 0.2
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.ThrowPass
-    shakeData:
-      duration: 0.2
-      intensity: 0.3
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 3
-      duration: 0.15
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.ReboundOnWalls
-    shakeData:
-      duration: 0.15
-      intensity: 0.3
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Ball
-      displayColor: {r: 0.89740425, g: 0.504717, b: 1, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.ReceiveBall
-    shakeData:
-      duration: 0.15
-      intensity: 0.3
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 3
-      duration: 0.15
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.EnemyHitByBall
-    shakeData:
-      duration: 0.25
-      intensity: 0.5
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 3
-      duration: 0.1
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Enemy
-      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.BallTouchingEnemy
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Ball
-      displayColor: {r: 0.89740425, g: 0.504717, b: 1, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.MagnetAttractingBall
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.WalkingOnGround
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.CaughtTheBallForDunk
-    shakeData:
-      duration: 0.2
-      intensity: 0.2
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 1
-      duration: 0.3
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.DunkSmashingOnTheGround
-    shakeData:
-      duration: 0.6
+      duration: 1
       intensity: 1
-      frequency: 1.5
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0.5
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.PlayerHitWithoutBump
-    shakeData:
-      duration: 0.3
-      intensity: 0.5
       frequency: 1
       durationLeft: 0
     vibrationData:
-      force: 1
-      duration: 0.4
+      force: 0
+      duration: 0
       target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 1
     eventCalled: 1
     category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+      displayName: Dunk
+      displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
     soundData:
-      soundName: 
+      soundName: BasicTurretDeath
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.PlayerBumpedAway
-    shakeData:
-      duration: 0.4
-      intensity: 0.75
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 1
-      duration: 0.5
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
+    vfxData:
+      vfxPrefab: {fileID: 1284778659018410, guid: b22a8556d083fa44c990ed50e9c42227,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 5, y: 5, z: 5}
+      direction: 0
+      position: 0
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.PlayerBackOnGround
+  - eventName: event.PlayerThrowingBall
     shakeData:
       duration: 0
       intensity: 0
@@ -278,106 +69,8 @@ MonoBehaviour:
       target: 0
     shakeDataInited: 0
     vibrationDataInited: 0
-    eventCalled: 0
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
     soundDataInited: 0
-  - eventName: event.EnemyBumpedAway
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 2
-      duration: 0.25
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Enemy
-      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.LinkRebuilt
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Link
-      displayColor: {r: 0.33459416, g: 0.89867705, b: 0.9716981, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.LinkBroken
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Link
-      displayColor: {r: 0.33459416, g: 0.89867705, b: 0.9716981, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.HealthGoingDown
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 0
-    eventCalled: 0
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.DeathFromPlayer1
-    shakeData:
-      duration: 0.7
-      intensity: 1
-      frequency: 1.5
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0.4
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
+    vfxDataInited: 1
     eventCalled: 1
     category:
       displayName: Player
@@ -385,87 +78,13 @@ MonoBehaviour:
     soundData:
       soundName: 
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.PickUpTheLastPartOfBody
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 1
-      duration: 0.25
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.AllyResurrection
-    shakeData:
-      duration: 0.4
-      intensity: 0.5
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 1
-      duration: 0.25
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.BallFallOnGround
-    shakeData:
-      duration: 0
-      intensity: 0
-      frequency: 0
-      durationLeft: 0
-    vibrationData:
-      force: 2
-      duration: 0.25
-      target: 0
-    shakeDataInited: 0
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Ball
-      displayColor: {r: 0.89740425, g: 0.504717, b: 1, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.DeathFromPlayer2
-    shakeData:
-      duration: 0.7
-      intensity: 1.25
-      frequency: 1.5
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0.7
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Player
-      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
   - eventName: event.WallHitByBall
     shakeData:
       duration: 0
@@ -478,6 +97,8 @@ MonoBehaviour:
       target: 0
     shakeDataInited: 0
     vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
     eventCalled: 1
     category:
       displayName: Environment
@@ -485,8 +106,14 @@ MonoBehaviour:
     soundData:
       soundName: 
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.OnDash
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerReceivingBall
     shakeData:
       duration: 0
       intensity: 0
@@ -498,6 +125,8 @@ MonoBehaviour:
       target: 0
     shakeDataInited: 0
     vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
     eventCalled: 1
     category:
       displayName: Player
@@ -505,108 +134,14 @@ MonoBehaviour:
     soundData:
       soundName: 
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.doorOpen
-    shakeData:
-      duration: 0.6
-      intensity: 1
-      frequency: 0.2
-      durationLeft: 0
-    vibrationData:
-      force: 2
-      duration: 0.25
-      target: 1
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Puzzle
-      displayColor: {r: 1, g: 0.8059104, b: 0.33490568, a: 1}
-    soundData:
-      soundName: 
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
       attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.BasicTurretAttack
-    shakeData:
-      duration: 0.2
-      intensity: 0.2
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Enemy
-      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.BasicTurretDeath
-    shakeData:
-      duration: 0.25
-      intensity: 0.5
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Enemy
-      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.SniperTurretAttack
-    shakeData:
-      duration: 0.25
-      intensity: 0.8
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 4
-      duration: 0.2
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 1
-    eventCalled: 1
-    category:
-      displayName: Enemy
-      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.SniperTurretDeath
-    shakeData:
-      duration: 0.25
-      intensity: 0.5
-      frequency: 1
-      durationLeft: 0
-    vibrationData:
-      force: 0
-      duration: 0
-      target: 0
-    shakeDataInited: 1
-    vibrationDataInited: 0
-    eventCalled: 1
-    category:
-      displayName: Enemy
-      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
-    soundData:
-      soundName: 
-      attachToTarget: 0
-    soundDataInited: 0
-  - eventName: event.RedBarrelExplosion
+  - eventName: event.BallHittingEnemy
     shakeData:
       duration: 0
       intensity: 0
@@ -618,6 +153,597 @@ MonoBehaviour:
       target: 0
     shakeDataInited: 0
     vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Ball
+      displayColor: {r: 0.89740425, g: 0.504717, b: 1, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerAttractingBall
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerWalkingOnGround
+    shakeData:
+      duration: 1
+      intensity: 50
+      frequency: 1
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.DunkWaiting
+    shakeData:
+      duration: 1
+      intensity: 1
+      frequency: 1
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Dunk
+      displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.DunkCatchingBall
+    shakeData:
+      duration: 1
+      intensity: 1
+      frequency: 1
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Dunk
+      displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.DunkSmashingOnGround
+    shakeData:
+      duration: 1
+      intensity: 50
+      frequency: 1
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Dunk
+      displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerBeingHit
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerBeingBumpedAway
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerGrounded
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.LinkRebuilt
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Link
+      displayColor: {r: 0.33459416, g: 0.89867705, b: 0.9716981, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.LinkBroken
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Link
+      displayColor: {r: 0.33459416, g: 0.89867705, b: 0.9716981, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerHealthDecreasing
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.Player1Death
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.Player2Death
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerPickingBodyPart
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerPickingLastBodyPart
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerResurrecting
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.BallGrounded
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Ball
+      displayColor: {r: 0.89740425, g: 0.504717, b: 1, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 0, y: 0, z: 0}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.PlayerHealing
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Player
+      displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyHit
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemyHit
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyBeingBumpedAway
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemiesBumpAway
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyGrounded
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 1
     eventCalled: 1
     category:
       displayName: Enemy
@@ -625,4 +751,322 @@ MonoBehaviour:
     soundData:
       soundName: 
       attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 119968, guid: 15670fb34e5d9c8488fce2f162c227af, type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyDeath
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemyDeath
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 158308, guid: 0984428228e9ef2498042396f95d50f6, type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyShieldHit
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemyHit
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyShieldBeingBumpedAway
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemiesBumpAway
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyShieldGrounded
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
     soundDataInited: 0
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 119968, guid: 15670fb34e5d9c8488fce2f162c227af, type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyShieldDeath
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemyDeath
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 158308, guid: fc830b09b1396a2408aecd5dad551c3b, type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.ShieldHitByBall
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Environment
+      displayColor: {r: 0, g: 0.8301887, b: 0.2769112, a: 1}
+    soundData:
+      soundName: BallShieldHit
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 111992, guid: e31bb4d7413fc234380f7787013bdcec, type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyRedBarrelHit
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemyHit
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyRedBarrelBeingBumpedAway
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 0
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: EnemiesBumpAway
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 0}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyRedBarrelGrounded
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 0
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: 
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 119968, guid: 15670fb34e5d9c8488fce2f162c227af, type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyRedBarrelDeathPart1
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: RedBarrelExplosionAnticipation
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 931145262344750406, guid: 16989127af7d60f43a97f344fa42aa39,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0
+  - eventName: event.EnemyRedBarrelDeathPart2
+    shakeData:
+      duration: 0
+      intensity: 0
+      frequency: 0
+      durationLeft: 0
+    vibrationData:
+      force: 0
+      duration: 0
+      target: 0
+    shakeDataInited: 0
+    vibrationDataInited: 0
+    soundDataInited: 1
+    vfxDataInited: 1
+    eventCalled: 1
+    category:
+      displayName: Enemy
+      displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+    soundData:
+      soundName: RedBarrelExplosion
+      attachToTarget: 0
+    vfxData:
+      vfxPrefab: {fileID: 9291318973935025, guid: 0db92edc5f4a81445a509b80316f1b67,
+        type: 3}
+      offset: {x: 0, y: 0, z: 0}
+      scaleMultiplier: {x: 1, y: 1, z: 1}
+      direction: 0
+      position: 0
+      attachToTarget: 0

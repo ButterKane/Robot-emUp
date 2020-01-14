@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Unity.EditorCoroutines.Editor;
 
 [CustomEditor(typeof(FeedbackDatas))]
 public class FeedbackEditor : Editor
@@ -13,6 +15,9 @@ public class FeedbackEditor : Editor
 	string[] categoryOptions;
 	int selectedCategoryIndex;
 	List<string> soundList;
+	EditorCoroutine recalculationCoroutine;
+	float recalculationProgression;
+	string nameSearched;
 
 	private void OnEnable ()
 	{
@@ -81,18 +86,16 @@ public class FeedbackEditor : Editor
 			GUI.color = Color.white;
 			GUILayout.Space(10);
 
-			if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", i_buttonStyle, GUILayout.Height(100)))
+			if (recalculationCoroutine == null)
 			{
-				foreach (FeedbackData feedbackData in feedbackDatas.feedbackList)
+				if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", i_buttonStyle, GUILayout.Height(100)))
 				{
-					if (IsEventCalled(feedbackData.eventName))
-					{
-						feedbackData.eventCalled = true;
-					} else
-					{
-						feedbackData.eventCalled = false;
-					}
+					RecalculateEventIntegration();
 				}
+			} else
+			{
+				GUILayout.Label("Recalculation in progress", i_headerStyle); 
+				EditorGUILayout.Slider(recalculationProgression, 0, 100);
 			}
 			//None yet
 		}
@@ -108,11 +111,14 @@ public class FeedbackEditor : Editor
 
 			EditorGUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
-			GUILayout.Label("Display events of category: ", EditorStyles.largeLabel);
+			GUILayout.Label("Category: ", EditorStyles.largeLabel);
 			List<string> i_categoryOptionsWithAll = categoryOptions.ToList();
 			i_categoryOptionsWithAll.Add("All");
 
-			selectedCategoryIndex = EditorGUILayout.Popup(selectedCategoryIndex, i_categoryOptionsWithAll.ToArray());
+			selectedCategoryIndex = EditorGUILayout.Popup(selectedCategoryIndex, i_categoryOptionsWithAll.ToArray(), GUILayout.Width(100));
+
+			GUILayout.Label("Name: ", EditorStyles.largeLabel);
+			nameSearched = EditorGUILayout.TextField(nameSearched);
 
 			GUILayout.FlexibleSpace();
 			EditorGUILayout.EndHorizontal();
@@ -120,19 +126,30 @@ public class FeedbackEditor : Editor
 			for (int i = 0; i < feedbackDatas.feedbackList.Count; i++)
 			{
 				if (selectedCategoryIndex < feedbackDatas.feedbackCategories.Count && feedbackDatas.feedbackCategories[selectedCategoryIndex] != feedbackDatas.feedbackList[i].category) { continue; }
+				if (nameSearched != null && nameSearched != "" && !feedbackDatas.feedbackList[i].eventName.Contains(nameSearched)) { continue; }
 				GUI.color = new Color(0.8f, 0.8f, 0.8f);
 				FeedbackData i_feedbackData = feedbackDatas.feedbackList[i];
 				GUILayout.BeginVertical(EditorStyles.helpBox);
 					{
 					GUILayout.BeginHorizontal();
-					showPosition[i] = EditorGUILayout.Foldout(showPosition[i], feedbackDatas.feedbackList[i].eventName);
+					showPosition[i] = EditorGUILayout.Foldout(showPosition[i], feedbackDatas.feedbackList[i].eventName) ;
+					if (GUILayout.Button("Preview", GUILayout.Width(100), GUILayout.Height(20)))
+					{
+						PreviewFeedback(feedbackDatas.feedbackList[i]);
+						return;
+					}
 					GUI.color = i_feedbackData.category.displayColor;
-					int index = EditorGUILayout.Popup(GetCategoryIndex(feedbackDatas.feedbackList[i].category), categoryOptions);
+					int index = EditorGUILayout.Popup(GetCategoryIndex(feedbackDatas.feedbackList[i].category), categoryOptions, GUILayout.Width(150));
 					if (index != -1)
 					{
 						feedbackDatas.feedbackList[i].category = feedbackDatas.feedbackCategories[index];
 					}
 					GUI.color = new Color(0.8f, 0.8f, 0.8f);
+					if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
+					{
+						feedbackDatas.feedbackList.Remove(feedbackDatas.feedbackList[i]);
+						break;
+					}
 					if (i_feedbackData.eventCalled)
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_max"), GUILayout.Height(20), GUILayout.Width(20));
@@ -290,14 +307,6 @@ public class FeedbackEditor : Editor
 						}
 						GUILayout.EndVertical();
 
-						/*	public GameObject vfxPrefab;
-	public Vector3 offset;
-	public Vector3 scaleMultiplier;
-	public VFXDirection direction;
-	public float spawnDelay;
-	public bool attachToTarget;
-	*/
-
 						GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(100), GUILayout.Width(EditorGUIUtility.currentViewWidth - 50));
 						{
 							if (!i_feedbackData.vfxDataInited)
@@ -342,6 +351,12 @@ public class FeedbackEditor : Editor
 								GUILayout.Label("Direction: ", GUILayout.Width(150));
 								EditorGUILayout.PropertyField(m_direction, GUIContent.none);
 
+								SerializedProperty m_position = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.position");
+								GUILayout.Label("Position: ", GUILayout.Width(150));
+								EditorGUILayout.PropertyField(m_position, GUIContent.none);
+								EditorGUILayout.EndHorizontal();
+
+								EditorGUILayout.BeginHorizontal();
 								SerializedProperty m_attachToTarget = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.attachToTarget");
 								GUILayout.Label("Attach to target: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_attachToTarget, GUIContent.none);
@@ -350,31 +365,9 @@ public class FeedbackEditor : Editor
 						}
 						GUILayout.EndVertical();
 
-						GUILayout.BeginHorizontal();
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("Delete", GUILayout.Width(100), GUILayout.Height(20)))
-						{
-							feedbackDatas.feedbackList.Remove(feedbackDatas.feedbackList[i]);
-							return;
-						}
-						GUILayout.FlexibleSpace();
-						GUILayout.EndHorizontal();
-						GUILayout.Space(10);
-
-						GUILayout.BeginHorizontal();
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("Preview", GUILayout.Width(100), GUILayout.Height(20)))
-						{
-							PreviewFeedback(feedbackDatas.feedbackList[i]);
-							return;
-						}
-						GUILayout.FlexibleSpace();
-						GUILayout.EndHorizontal();
-
 					}
 					GUILayout.EndVertical();
 				}
-				GUILayout.Space(10);
 			}
 
 
@@ -463,7 +456,7 @@ public class FeedbackEditor : Editor
 		i_newFeedbackData.shakeData = null;
 		i_newFeedbackData.vibrationData = null;
 		i_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
-		i_newFeedbackData.soundData = null;
+		i_newFeedbackData.soundData = new SoundPlayData();
 		i_newFeedbackData.vfxData = null;
 		int categoryIndex = Mathf.Clamp(selectedCategoryIndex, 0, feedbackDatas.feedbackCategories.Count - 1);
 		if (feedbackDatas.feedbackCategories.Count > 0)
@@ -521,20 +514,90 @@ public class FeedbackEditor : Editor
 		_data.shakeDataInited = false;
 	}
 
-	bool IsEventCalled(string _eventName)
+
+	void RecalculateEventIntegration()
 	{
-		bool i_stringFound = false;
-		string[] assetPaths = AssetDatabase.GetAllAssetPaths();
-		foreach (string assetPath in assetPaths)
+		recalculationProgression = 0;
+		if (recalculationCoroutine != null) { EditorCoroutineUtility.StopCoroutine(recalculationCoroutine); }
+		recalculationCoroutine = EditorCoroutineUtility.StartCoroutine(RecalculateEventIntegration_C(), this);
+	}
+
+	IEnumerator RecalculateEventIntegration_C()
+	{
+		List<FeedbackData> feedbackList = feedbackDatas.feedbackList;
+		List<bool> isIntegratedList = new List<bool>();
+		for (int i = 0; i < feedbackList.Count; i++)
 		{
-			if (assetPath.EndsWith(".cs"))
+			isIntegratedList.Add(false);
+		}
+		for (int i = 0; i < feedbackList.Count; i++)
+		{
+			FeedbackData feedbackData = feedbackList[i];
+			string i_eventName = feedbackData.eventName;
+			string[] assetPaths = AssetDatabase.GetAllAssetPaths();
+			int assetCount = 0;
+			foreach (string assetPath in assetPaths)
 			{
-				if (File.ReadAllText(assetPath).Contains(_eventName))
+				assetCount++;
+				if (assetCount > 25)
 				{
-					i_stringFound = true;
+					assetCount = 0;
+					yield return null;
+				}
+				if (assetPath.EndsWith(".cs"))
+				{
+					if (File.ReadAllText(assetPath).Contains(i_eventName))
+					{
+						isIntegratedList[i] = true;
+						break;
+					}
+				}
+				if (assetPath.EndsWith(".prefab"))
+				{
+					GameObject prefab = (GameObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
+					foreach (Component c in prefab.GetComponents(typeof(Component)))
+					{
+						System.Type tempType = c.GetType();
+						FieldInfo[] tempFields = tempType.GetFields();
+						foreach (FieldInfo field in tempFields)
+						{
+							if (!field.IsStatic)
+							{
+								if (field.FieldType != typeof(string))
+								{
+									continue;
+								}
+								else
+								{
+									if (field.GetValue(c).ToString() == i_eventName)
+									{
+										isIntegratedList[i] = true;
+										break;
+									}
+								}
+							}
+						}
+					}
 				}
 			}
+			recalculationProgression += Mathf.RoundToInt((1f/(float)feedbackList.Count)*100f);
+			yield return null;
 		}
-		return i_stringFound;
+
+		yield return null;
+		for (int i = 0; i < feedbackDatas.feedbackList.Count; i++)
+		{
+			if (i >= isIntegratedList.Count)
+			{
+				feedbackDatas.feedbackList[i].eventCalled = false;
+			}
+			else
+			{
+				feedbackDatas.feedbackList[i].eventCalled = isIntegratedList[i];
+			}
+		}
+		Debug.Log("Event implementation recalculation end");
+		recalculationCoroutine = null;
+		yield return null;
 	}
 }

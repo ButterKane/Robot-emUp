@@ -300,8 +300,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
-        SoundManager.PlaySound(attackSound, transform.position, transform);
-        //attackDuration = maxAttackDuration;
         endOfAttackTriggerLaunched = false;
         attackInitialPosition = transform.position;
         attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
@@ -392,7 +390,7 @@ public class EnemyBehaviour : PawnController, IHitable
     Transform GetClosestAndAvailablePlayer()
     {
         if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
-            || !playerOnePawnController.IsTargetable())
+            || !playerOnePawnController.IsTargetable()) 
         {
             return playerTwoTransform;
         }
@@ -434,7 +432,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 else
                 {
-                    currentHealth -= _damages;
+					Damage(_damages);
+					//currentHealth -= _damages;
                 }
                 break;
 
@@ -455,18 +454,19 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 else
                 {
-					currentHealth -= _damages;
+					Damage(_damages);
+					//currentHealth -= _damages;
                 }
                 break;
 
             case DamageSource.Ball:
-                damageAfterBump = 0;
-                FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
-				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
+				FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+				damageAfterBump = 0;
 				EnergyManager.IncreaseEnergy(energyGainedOnHit);
 				whatBumps = WhatBumps.Pass;
                 Staggered(whatBumps);
-				currentHealth -= _damages;
+				Damage(_damages);
+				//currentHealth -= _damages;
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
@@ -478,16 +478,11 @@ public class EnemyBehaviour : PawnController, IHitable
             _ball.Explode(true);
 
             animator.SetTrigger("HitTrigger");
-            GameObject i_hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
-            i_hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(i_hitParticle, 1f);
     }
 
 	public override void Kill ()
 	{
 		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
-		GameObject i_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
-		Destroy(i_deathParticle, 1.5f);
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
@@ -588,8 +583,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
 	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
 	{
-		FeedbackManager.SendFeedback("event.EnemyBumpedAway", this);
-		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
 		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
 		ChangeState(EnemyState.Bumped);
 	}

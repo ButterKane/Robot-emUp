@@ -7,8 +7,8 @@ public class EnemyRedBarrel : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Red Barrel Death variables")]
-    [SerializeField] GameObject buildUpExplosionFX = null;
-    [SerializeField] GameObject explosionFX = null;
+    public string buildUpExplosionFX = "event.RedBarrelEnemyDeathPart1";
+    public string explosionFX = "event.RedBarrelEnemyDeathPart2";
     public float explosionRadius = 3f;
     public int explosionDamage = 10;
     public float buildUpBeforeExplosion = 0.5f;
@@ -56,10 +56,7 @@ public class EnemyRedBarrel : EnemyBehaviour
     private IEnumerator ExplosionSequence_C()
     {
         animator.SetTrigger("DeathTrigger");
-        SoundManager.PlaySound("RedBarrelExplosionAnticipation", transform.position, transform);
-
-        GameObject i_hitParticle = Instantiate(buildUpExplosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
-        i_hitParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
+        FeedbackManager.SendFeedback(buildUpExplosionFX, this);
 
         //hitParticle.transform.localScale = 3f;
         explosionRadiusTransform.gameObject.SetActive(true);
@@ -78,9 +75,7 @@ public class EnemyRedBarrel : EnemyBehaviour
             yield return null;
         }
         //yield return new WaitForSeconds(buildUpBeforeExplosion);
-        
-        GameObject i_explosionParticle = Instantiate(explosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
-        i_explosionParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
+        FeedbackManager.SendFeedback(explosionFX, this);
 
         Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
         int i = 0;
@@ -94,9 +89,6 @@ public class EnemyRedBarrel : EnemyBehaviour
             i++;
         }
 
-        Destroy(i_explosionParticle, 1f);
-        FeedbackManager.SendFeedback("event.RedBarrelExplosion", this);
-        SoundManager.PlaySound("RedBarrelExplosion", transform.position, transform);
         base.Kill();
     }
 

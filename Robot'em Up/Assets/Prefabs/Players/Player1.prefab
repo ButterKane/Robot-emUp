@@ -58,8 +58,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   invincibilityTime: 0.15
-  onHitEvent: 
-  onDeathEvent: 
   canMove: 1
   jumpForce: 800
   accelerationCurve:
@@ -100,12 +98,6 @@ MonoBehaviour:
   climbDuration: 0.18
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
-  deathParticlePrefab: {fileID: 931145262344750406, guid: 49511d94e820e4147827919cbd7c9d50,
-    type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
-    type: 3}
-  hitParticleScale: 3
   isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
@@ -134,6 +126,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0.302
+  eventOnBeingHit: event.PlayerBeingHit
+  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
+  eventOnBeingGrounded: event.PlayerGrounded
+  eventOnDeath: event.Player1Death
+  eventOnHealing: event.PlayerHealing
   playerIndex: 0
   triggerTreshold: 0.1
   lockable: 0
@@ -142,11 +139,7 @@ MonoBehaviour:
   enableJump: 0
   enableDunk: 1
   enableMagnet: 1
-  FX_hit: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89, type: 3}
-  FX_heal: {fileID: 7463846729143775103, guid: 7da72fa8b0a9ffb49b6b3774ad25a65e, type: 3}
-  FX_death: {fileID: 931145262344750406, guid: 49511d94e820e4147827919cbd7c9d50, type: 3}
-  FX_revive: {fileID: 6633511075223468162, guid: eaa65c119d2400f4f80af4dc5ebdbe83,
-    type: 3}
+  eventOnResurrecting: event.PlayerResurrecting
   deathExplosionRadius: 0
   deathExplosionDamage: 0
   deathExplosionForce: 0
@@ -364,16 +357,10 @@ MonoBehaviour:
   dashFadeDuration: 0.2
   UIFadeDuration: 0.5
   UIFadeDelay: 0.8
-  clonedVisuals: {fileID: 0}
+  clonedVisuals: {fileID: 4621407884147341700}
   clonePerSec: 100
   cloneDuration: 0.5
   cloneMaterial: {fileID: 2100000, guid: 9085d16098a735b4b81fdcfd4139e48e, type: 2}
-  dashTrail: {fileID: 8651325449361012943, guid: 8ebb4c678bbe08b479176d5701dcab4b,
-    type: 3}
-  startDashFX: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
-    type: 3}
-  endDashFX: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
-    type: 3}
   state: 1
 --- !u!54 &8666635390815151469
 Rigidbody:
@@ -527,11 +514,6 @@ MonoBehaviour:
   armColor: {r: 1, g: 0.96903324, b: 0, a: 1}
   armWidth: 0.2
   armMaterial: {fileID: 2100000, guid: e720cf03c3fc89e44b0a2e0a163c3005, type: 2}
-  FX_retraction: {fileID: 5970221395719563378, guid: 18947a631fe61194cab38896d21c53da,
-    type: 3}
-  FX_hit: {fileID: 7728491280138033091, guid: 4e5d473577ba3aa4eac6f8c955cf1115, type: 3}
-  FX_extension: {fileID: 5970221395719563378, guid: 18947a631fe61194cab38896d21c53da,
-    type: 3}
 --- !u!114 &6803351105506393549
 MonoBehaviour:
   m_ObjectHideFlags: 0
