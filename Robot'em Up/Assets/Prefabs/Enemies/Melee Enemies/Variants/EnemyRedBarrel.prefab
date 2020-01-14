@@ -169,17 +169,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f69425a4c5ed87f40adc392634d4bc2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 7449900513924197480}
-  rb: {fileID: 7449900513924197492}
-  animator: {fileID: 7449900512966237189}
-  navMeshAgent: {fileID: 7449900513924197489}
+  maxHealth: 30
+  invincibilityTime: 1
+  canMove: 0
+  jumpForce: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minWalkSpeed: 0.1
+  moveSpeed: 15
+  acceleration: 200
+  movingDrag: 0.4
+  idleDrag: 0.4
+  onGroundGravityMultiplyer: 0
+  deadzone: 0.2
+  turnSpeed: 0.25
+  canClimb: 1
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
+  isBumpable: 1
+  maxGettingUpDuration: 0.6
+  bumpDistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpRaycastDistance: 1
+  whenToTriggerFallingAnim: 0.9
+  eventOnBeingHit: event.EnemyRedBarrelHit
+  eventOnBeingBumpedAway: event.EnemyRedBarrelBeingBumpedAway
+  eventOnBeingGrounded: event.EnemyRedBarrelGrounded
+  eventOnDeath: 
+  eventOnHealing: 
   healthBarRef: {fileID: 8328487176404494424}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  maxHealth: 30
-  energyAmount: 0.08
+  energyGainedOnHit: 1
   damage: 10
   powerLevel: 2.5
   lockable: 0
@@ -190,37 +242,11 @@ MonoBehaviour:
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
-  normalSpeed: 7
-  normalAcceleration: 30
   randomSpeedMod: 0
-  slowFromPass: 0.3
+  speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0.5
-  slowFromDunk: 0.5
+  speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
-  speedRecoverCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   distanceToAttack: 5
   maxAnticipationTime: 0.75
   rotationSpeedPreparingAttack: 0
@@ -255,48 +281,14 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0, z: 0}
   maxTimePauseAfterAttack: 0
   attackRaycastDistance: 0
-  isBumpable: 1
-  maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0.9
-  bumpRaycastDistance: 1
-  damageAfterBump: 0
-  deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
-  hitParticleScale: 3
+  canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 0.15
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
-  buildUpExplosionFX: {fileID: 931145262344750406, guid: 16989127af7d60f43a97f344fa42aa39,
-    type: 3}
-  explosionFX: {fileID: 9291318973935025, guid: 0db92edc5f4a81445a509b80316f1b67,
-    type: 3}
+  buildUpExplosionFX: event.EnemyRedBarrelDeathPart1
+  explosionFX: event.EnemyRedBarrelDeathPart2
   explosionRadius: 10
   explosionDamage: 20
   buildUpBeforeExplosion: 1.17
@@ -378,6 +370,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 017d549570572da4c855d6f51c980b04, type: 2}
     - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_RootOrder
@@ -388,11 +385,6 @@ PrefabInstance:
       propertyPath: m_Speed
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 017d549570572da4c855d6f51c980b04, type: 2}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Controller
@@ -424,27 +416,9 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7083713466704685639}
   m_PrefabAsset: {fileID: 0}
---- !u!54 &7449900513924197492 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 373019035910456883, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
-  m_PrefabAsset: {fileID: 0}
---- !u!195 &7449900513924197489 stripped
-NavMeshAgent:
-  m_CorrespondingSourceObject: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
-  m_PrefabAsset: {fileID: 0}
 --- !u!23 &7449900512966237307 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 7083713466704685639}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &7449900512966237189 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 7083713466704685639}
   m_PrefabAsset: {fileID: 0}

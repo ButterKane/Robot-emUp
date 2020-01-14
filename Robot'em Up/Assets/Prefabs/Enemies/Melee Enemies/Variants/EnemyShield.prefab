@@ -12,17 +12,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ae1881f85ce524a80896da20b3a312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 6181108247738804001}
-  rb: {fileID: 6181108247738804029}
-  animator: {fileID: 6181108246780876620}
-  navMeshAgent: {fileID: 6181108247738804024}
+  maxHealth: 30
+  invincibilityTime: 1
+  canMove: 0
+  jumpForce: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minWalkSpeed: 0.1
+  moveSpeed: 15
+  acceleration: 200
+  movingDrag: 0.4
+  idleDrag: 0.4
+  onGroundGravityMultiplyer: 0
+  deadzone: 0.2
+  turnSpeed: 0.25
+  canClimb: 1
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
+  isBumpable: 1
+  maxGettingUpDuration: 0.6
+  bumpDistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpRaycastDistance: 1
+  whenToTriggerFallingAnim: 0.9
+  eventOnBeingHit: event.EnemyShieldHit
+  eventOnBeingBumpedAway: event.EnemyShieldBeingBumpedAway
+  eventOnBeingGrounded: event.EnemyShieldGrounded
+  eventOnDeath: event.EnemyShieldDeath
+  eventOnHealing: 
   healthBarRef: {fileID: 4697345455816352529}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  maxHealth: 30
-  energyAmount: 0.13
+  energyGainedOnHit: 1
   damage: 15
   powerLevel: 4
   lockable: 0
@@ -33,19 +85,11 @@ MonoBehaviour:
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 6
   maxTimeBetweenCheck: 0.25
-  normalSpeed: 7
-  normalAcceleration: 30
   randomSpeedMod: 0
-  slowFromPass: 0
+  speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0
-  slowFromDunk: 0
+  speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  speedRecoverCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   distanceToAttack: 10
   maxAnticipationTime: 1.5
   rotationSpeedPreparingAttack: 0.2
@@ -81,39 +125,7 @@ MonoBehaviour:
   hitBoxOffset: {x: 0.5, y: 1, z: 0}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
-  isBumpable: 1
-  maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0.9
-  bumpRaycastDistance: 1
-  damageAfterBump: 0
-  deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
-  hitParticleScale: 3
+  canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 1
@@ -171,22 +183,22 @@ PrefabInstance:
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -43.929123
+      value: -48.87
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.42000002
+      value: 2.24
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.695854
+      value: 0.88
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -228,6 +240,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: eventOnBeingHit
+      value: event.EnemyShieldHit
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: eventOnBeingBumpedAway
+      value: event.EnemyShieldBeingBumpedAway
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: eventOnBeingGrounded
+      value: event.EnemyShieldGrounded
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: eventOnDeath
+      value: event.EnemyShieldDeath
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -255,19 +292,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_Speed
-      value: 5.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
       propertyPath: m_Radius
       value: 0.84
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
+      propertyPath: m_Speed
+      value: 5.5
+      objectReference: {fileID: 0}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Controller
@@ -285,35 +317,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     m_RemovedComponents:
     - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
-    - {fileID: 373019035910456882, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
 --- !u!1 &6181108247738804025 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &6181108247738804001 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
---- !u!54 &6181108247738804029 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 373019035910456883, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
---- !u!195 &6181108247738804024 stripped
-NavMeshAgent:
-  m_CorrespondingSourceObject: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  m_PrefabInstance: {fileID: 5830630885209383182}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &6181108246780876620 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}
