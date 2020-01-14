@@ -432,7 +432,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 else
                 {
-                    currentHealth -= _damages;
+					Damage(_damages);
+					//currentHealth -= _damages;
                 }
                 break;
 
@@ -453,7 +454,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 else
                 {
-					currentHealth -= _damages;
+					Damage(_damages);
+					//currentHealth -= _damages;
                 }
                 break;
 
@@ -463,7 +465,8 @@ public class EnemyBehaviour : PawnController, IHitable
 				EnergyManager.IncreaseEnergy(energyGainedOnHit);
 				whatBumps = WhatBumps.Pass;
                 Staggered(whatBumps);
-				currentHealth -= _damages;
+				Damage(_damages);
+				//currentHealth -= _damages;
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
