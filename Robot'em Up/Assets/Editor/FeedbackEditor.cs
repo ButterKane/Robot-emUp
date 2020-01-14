@@ -17,6 +17,7 @@ public class FeedbackEditor : Editor
 	List<string> soundList;
 	EditorCoroutine recalculationCoroutine;
 	float recalculationProgression;
+	string nameSearched;
 
 	private void OnEnable ()
 	{
@@ -110,11 +111,14 @@ public class FeedbackEditor : Editor
 
 			EditorGUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
-			GUILayout.Label("Display events of category: ", EditorStyles.largeLabel);
+			GUILayout.Label("Category: ", EditorStyles.largeLabel);
 			List<string> i_categoryOptionsWithAll = categoryOptions.ToList();
 			i_categoryOptionsWithAll.Add("All");
 
-			selectedCategoryIndex = EditorGUILayout.Popup(selectedCategoryIndex, i_categoryOptionsWithAll.ToArray());
+			selectedCategoryIndex = EditorGUILayout.Popup(selectedCategoryIndex, i_categoryOptionsWithAll.ToArray(), GUILayout.Width(100));
+
+			GUILayout.Label("Name: ", EditorStyles.largeLabel);
+			nameSearched = EditorGUILayout.TextField(nameSearched);
 
 			GUILayout.FlexibleSpace();
 			EditorGUILayout.EndHorizontal();
@@ -122,19 +126,30 @@ public class FeedbackEditor : Editor
 			for (int i = 0; i < feedbackDatas.feedbackList.Count; i++)
 			{
 				if (selectedCategoryIndex < feedbackDatas.feedbackCategories.Count && feedbackDatas.feedbackCategories[selectedCategoryIndex] != feedbackDatas.feedbackList[i].category) { continue; }
+				if (nameSearched != null && nameSearched != "" && !feedbackDatas.feedbackList[i].eventName.Contains(nameSearched)) { continue; }
 				GUI.color = new Color(0.8f, 0.8f, 0.8f);
 				FeedbackData i_feedbackData = feedbackDatas.feedbackList[i];
 				GUILayout.BeginVertical(EditorStyles.helpBox);
 					{
 					GUILayout.BeginHorizontal();
-					showPosition[i] = EditorGUILayout.Foldout(showPosition[i], feedbackDatas.feedbackList[i].eventName);
+					showPosition[i] = EditorGUILayout.Foldout(showPosition[i], feedbackDatas.feedbackList[i].eventName) ;
+					if (GUILayout.Button("Preview", GUILayout.Width(100), GUILayout.Height(20)))
+					{
+						PreviewFeedback(feedbackDatas.feedbackList[i]);
+						return;
+					}
 					GUI.color = i_feedbackData.category.displayColor;
-					int index = EditorGUILayout.Popup(GetCategoryIndex(feedbackDatas.feedbackList[i].category), categoryOptions);
+					int index = EditorGUILayout.Popup(GetCategoryIndex(feedbackDatas.feedbackList[i].category), categoryOptions, GUILayout.Width(150));
 					if (index != -1)
 					{
 						feedbackDatas.feedbackList[i].category = feedbackDatas.feedbackCategories[index];
 					}
 					GUI.color = new Color(0.8f, 0.8f, 0.8f);
+					if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
+					{
+						feedbackDatas.feedbackList.Remove(feedbackDatas.feedbackList[i]);
+						break;
+					}
 					if (i_feedbackData.eventCalled)
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_max"), GUILayout.Height(20), GUILayout.Width(20));
@@ -350,31 +365,9 @@ public class FeedbackEditor : Editor
 						}
 						GUILayout.EndVertical();
 
-						GUILayout.BeginHorizontal();
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("Delete", GUILayout.Width(100), GUILayout.Height(20)))
-						{
-							feedbackDatas.feedbackList.Remove(feedbackDatas.feedbackList[i]);
-							return;
-						}
-						GUILayout.FlexibleSpace();
-						GUILayout.EndHorizontal();
-						GUILayout.Space(10);
-
-						GUILayout.BeginHorizontal();
-						GUILayout.FlexibleSpace();
-						if (GUILayout.Button("Preview", GUILayout.Width(100), GUILayout.Height(20)))
-						{
-							PreviewFeedback(feedbackDatas.feedbackList[i]);
-							return;
-						}
-						GUILayout.FlexibleSpace();
-						GUILayout.EndHorizontal();
-
 					}
 					GUILayout.EndVertical();
 				}
-				GUILayout.Space(10);
 			}
 
 

@@ -12,6 +12,8 @@ public class FeedbackPreviewer : EditorWindow
 	RenderTexture renderTexture;
 	private ParticleSystem fxPs;
 	public static FeedbackPreviewer instance;
+	public static GameObject prefabToInstantiate;
+	public static GameObject currentPreviewObject;
 
 	public List<GameObject> instantiatedObjects;
 
@@ -52,9 +54,8 @@ public class FeedbackPreviewer : EditorWindow
 		cameraObject.transform.position = new Vector3(0,0,-8);
 
 		//Generate preview object
-		GameObject previewObject = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewMesh"));
-		previewObject.transform.position = new Vector3(0,-1,0);
-		instantiatedObjects.Add(previewObject);
+		currentPreviewObject = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewMesh"));
+		currentPreviewObject.transform.position = Vector3.zero;
 
 		//Generate preview panel
 		GameObject previewPanel = Instantiate(Resources.Load<GameObject>("FeedbackToolResources/PreviewPanel"));
@@ -68,6 +69,7 @@ public class FeedbackPreviewer : EditorWindow
 		{
 			DestroyImmediate(obj);
 		}
+		if (currentPreviewObject) { DestroyImmediate(currentPreviewObject); }
 		List<GameObject> rootObjects = new List<GameObject>();
 		Scene scene = SceneManager.GetActiveScene();
 		scene.GetRootGameObjects(rootObjects);
@@ -105,6 +107,15 @@ public class FeedbackPreviewer : EditorWindow
 	void OnGUI ()
 	{
 		GUI.DrawTexture(new Rect(0.0f, 0.0f, position.width, position.height), renderTexture);
+		EditorGUI.BeginChangeCheck();
+		prefabToInstantiate = (GameObject)EditorGUILayout.ObjectField(prefabToInstantiate, typeof(GameObject), true);
+
+		if (GUI.changed)
+		{
+			if (currentPreviewObject) { DestroyImmediate(currentPreviewObject); }
+			currentPreviewObject = Instantiate(prefabToInstantiate);
+			currentPreviewObject.transform.position = Vector3.zero;
+		}
 	}
 
 	public void PreviewFeedback(FeedbackData _data )
