@@ -25,7 +25,7 @@ public class SoundPlayData
 [System.Serializable]
 public class VFXData
 {
-	public GameObject vfxPrefab;
+	public GameObject vfxPrefab = default;
 	public Vector3 offset;
 	public Vector3 scaleMultiplier = new Vector3(1, 1, 1);
 	public VFXDirection direction;
@@ -33,9 +33,8 @@ public class VFXData
 	public bool attachToTarget;
 }
 
-
 [System.Serializable]
-public class FeedbackData
+public class FeedbackData : ScriptableObject
 {
 	public string eventName; //Each event will trigger specific feedbacks (Vibration or screenShake
 	public ShakeData shakeData = null;

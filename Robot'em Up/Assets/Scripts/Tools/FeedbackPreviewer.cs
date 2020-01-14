@@ -119,7 +119,7 @@ public class FeedbackPreviewer : EditorWindow
 		}
 	}
 
-	public void PreviewFeedback(FeedbackData _data )
+	public void PreviewFeedback( FeedbackData _data )
 	{
 		if (_data.vibrationDataInited)
 		{

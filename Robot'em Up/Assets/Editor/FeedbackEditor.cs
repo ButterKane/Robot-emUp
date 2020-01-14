@@ -22,6 +22,7 @@ public class FeedbackEditor : Editor
 	private void OnEnable ()
 	{
 		feedbackDatas = (FeedbackDatas)target;
+		UpdateFeedbackList();
 		showPosition = new List<bool>();
 		for (int i = 0; i < feedbackDatas.feedbackList.Count; i++)
 		{
@@ -94,10 +95,9 @@ public class FeedbackEditor : Editor
 				}
 			} else
 			{
-				GUILayout.Label("Recalculation in progress", i_headerStyle); 
+				GUILayout.Label("Checking implementations...", i_headerStyle); 
 				EditorGUILayout.Slider(recalculationProgression, 0, 100);
 			}
-			//None yet
 		}
 		GUILayout.EndVertical();
 
@@ -129,6 +129,8 @@ public class FeedbackEditor : Editor
 				if (nameSearched != null && nameSearched != "" && !feedbackDatas.feedbackList[i].eventName.Contains(nameSearched)) { continue; }
 				GUI.color = new Color(0.8f, 0.8f, 0.8f);
 				FeedbackData i_feedbackData = feedbackDatas.feedbackList[i];
+				SerializedObject i_serializedFeedbackData = new SerializedObject(serializedObject.FindProperty("feedbackList.Array.data[" + i + "]").objectReferenceValue);
+				i_serializedFeedbackData.Update();
 				GUILayout.BeginVertical(EditorStyles.helpBox);
 					{
 					GUILayout.BeginHorizontal();
@@ -147,7 +149,7 @@ public class FeedbackEditor : Editor
 					GUI.color = new Color(0.8f, 0.8f, 0.8f);
 					if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
 					{
-						feedbackDatas.feedbackList.Remove(feedbackDatas.feedbackList[i]);
+						RemoveEvent(feedbackDatas.feedbackList[i].eventName);
 						break;
 					}
 					if (i_feedbackData.eventCalled)
@@ -164,7 +166,13 @@ public class FeedbackEditor : Editor
 					{
 
 						GUILayout.BeginHorizontal();
-						i_feedbackData.eventName = EditorGUILayout.TextField(i_feedbackData.eventName);
+						EditorGUI.BeginChangeCheck();
+						string newEventName = EditorGUILayout.TextField(i_feedbackData.eventName);
+						if (EditorGUI.EndChangeCheck())
+						{
+							RenameAsset(i_feedbackData.eventName, newEventName);
+							i_feedbackData.eventName = newEventName;
+						}
 						GUILayout.EndHorizontal();
 
 						EditorGUILayout.BeginHorizontal();
@@ -200,19 +208,19 @@ public class FeedbackEditor : Editor
 									}
 
 									EditorGUILayout.BeginHorizontal();
-									SerializedProperty m_force = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vibrationData.force");
+									SerializedProperty m_force = i_serializedFeedbackData.FindProperty("vibrationData.force");
 									GUILayout.Label("Force: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_force, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
 
 									EditorGUILayout.BeginHorizontal();
-									SerializedProperty m_duration = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vibrationData.duration");
+									SerializedProperty m_duration = i_serializedFeedbackData.FindProperty("vibrationData.duration");
 									GUILayout.Label("Duration: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_duration, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
 
 									EditorGUILayout.BeginHorizontal();
-									SerializedProperty m_target = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vibrationData.target");
+									SerializedProperty m_target = i_serializedFeedbackData.FindProperty("vibrationData.target");
 									GUILayout.Label("Target: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_target, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
@@ -245,19 +253,19 @@ public class FeedbackEditor : Editor
 									}
 
 									EditorGUILayout.BeginHorizontal();
-									SerializedProperty m_duration = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].shakeData.duration");
+									SerializedProperty m_duration = i_serializedFeedbackData.FindProperty("shakeData.duration");
 									GUILayout.Label("Duration: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_duration, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
 
 									EditorGUILayout.BeginHorizontal();
-									SerializedProperty m_intensity = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].shakeData.intensity");
+									SerializedProperty m_intensity = i_serializedFeedbackData.FindProperty("shakeData.intensity");
 									GUILayout.Label("Force: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_intensity, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
 
 									EditorGUILayout.BeginHorizontal();
-									SerializedProperty m_frequency = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].shakeData.frequency");
+									SerializedProperty m_frequency = i_serializedFeedbackData.FindProperty("shakeData.frequency");
 									GUILayout.Label("Frequency: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_frequency, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
@@ -331,33 +339,33 @@ public class FeedbackEditor : Editor
 									RemoveVFX(i_feedbackData);
 								}
 								EditorGUILayout.BeginHorizontal();
-								SerializedProperty m_prefab = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.vfxPrefab");
+								SerializedProperty m_prefab = i_serializedFeedbackData.FindProperty("vfxData.vfxPrefab");
 								GUILayout.Label("Prefab: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_prefab, GUIContent.none);
 								EditorGUILayout.EndHorizontal();
 
 								EditorGUILayout.BeginHorizontal();
-								SerializedProperty m_offset = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.offset");
+								SerializedProperty m_offset = i_serializedFeedbackData.FindProperty("vfxData.offset");
 								GUILayout.Label("Offset: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_offset, GUIContent.none);
 
-								SerializedProperty m_scaleMultiplier = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.scaleMultiplier");
+								SerializedProperty m_scaleMultiplier = i_serializedFeedbackData.FindProperty("vfxData.scaleMultiplier");
 								GUILayout.Label("Scale: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_scaleMultiplier, GUIContent.none);
 								EditorGUILayout.EndHorizontal();
 
 								EditorGUILayout.BeginHorizontal();
-								SerializedProperty m_direction = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.direction");
+								SerializedProperty m_direction = i_serializedFeedbackData.FindProperty("vfxData.direction");
 								GUILayout.Label("Direction: ", GUILayout.Width(150));
 								EditorGUILayout.PropertyField(m_direction, GUIContent.none);
 
-								SerializedProperty m_position = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.position");
+								SerializedProperty m_position = i_serializedFeedbackData.FindProperty("vfxData.position");
 								GUILayout.Label("Position: ", GUILayout.Width(150));
 								EditorGUILayout.PropertyField(m_position, GUIContent.none);
 								EditorGUILayout.EndHorizontal();
 
 								EditorGUILayout.BeginHorizontal();
-								SerializedProperty m_attachToTarget = serializedObject.FindProperty("feedbackList.Array.data[" + i + "].vfxData.attachToTarget");
+								SerializedProperty m_attachToTarget = i_serializedFeedbackData.FindProperty("vfxData.attachToTarget");
 								GUILayout.Label("Attach to target: ", GUILayout.Width(100));
 								EditorGUILayout.PropertyField(m_attachToTarget, GUIContent.none);
 								EditorGUILayout.EndHorizontal();
@@ -368,6 +376,7 @@ public class FeedbackEditor : Editor
 					}
 					GUILayout.EndVertical();
 				}
+				i_serializedFeedbackData.ApplyModifiedProperties();
 			}
 
 
@@ -440,7 +449,7 @@ public class FeedbackEditor : Editor
 		}
 	}
 
-	public void PreviewFeedback(FeedbackData _data)
+	public void PreviewFeedback( FeedbackData _data )
 	{
 		if (FeedbackPreviewer.instance == null)
 		{
@@ -452,7 +461,7 @@ public class FeedbackEditor : Editor
 
 	public void AddEvent()
 	{
-		FeedbackData i_newFeedbackData = new FeedbackData();
+		FeedbackData i_newFeedbackData = ScriptableObject.CreateInstance<FeedbackData>();
 		i_newFeedbackData.shakeData = null;
 		i_newFeedbackData.vibrationData = null;
 		i_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
@@ -465,6 +474,20 @@ public class FeedbackEditor : Editor
 		}
 		showPosition.Add(false);
 		feedbackDatas.feedbackList.Add(i_newFeedbackData);
+		AssetDatabase.CreateAsset(i_newFeedbackData, "Assets/Resources/FeedbackToolResources/Datas/" + i_newFeedbackData.eventName + ".asset");
+		AssetDatabase.SaveAssets();
+	}
+
+	public void RemoveEvent(string _eventName)
+	{
+		AssetDatabase.DeleteAsset("Assets/Resources/FeedbackToolResources/Datas/" + _eventName + ".asset");
+		AssetDatabase.SaveAssets();
+		UpdateFeedbackList();
+	}
+
+	public void RenameAsset( string _previousName, string _newName )
+	{
+		AssetDatabase.RenameAsset("Assets/Resources/FeedbackToolResources/Datas/" + _previousName + ".asset", _newName);
 	}
 
 	public void AddCategory()
@@ -474,27 +497,27 @@ public class FeedbackEditor : Editor
 		RecalculateCategoryOptions();
 	}
 
-	void AddVFX(FeedbackData _data )
+	void AddVFX( FeedbackData _data )
 	{
 		_data.vfxDataInited = true;
 	}
 
-	void RemoveVFX(FeedbackData _data)
+	void RemoveVFX( FeedbackData _data )
 	{
 		_data.vfxDataInited = false;
 	}
 
-	void AddSound(FeedbackData _data)
+	void AddSound( FeedbackData _data )
 	{
 		_data.soundDataInited = true;
 	}
 
-	void RemoveSound(FeedbackData _data )
+	void RemoveSound( FeedbackData _data )
 	{
 		_data.soundDataInited = false;
 	}
 
-	void AddVibration(FeedbackData _data)
+	void AddVibration( FeedbackData _data )
 	{
 		_data.vibrationDataInited = true;
 	}
@@ -514,6 +537,23 @@ public class FeedbackEditor : Editor
 		_data.shakeDataInited = false;
 	}
 
+	void UpdateFeedbackList()
+	{
+		feedbackDatas = (FeedbackDatas)target;
+		this.serializedObject.Update();
+		List<FeedbackData> feedbackDataList = new List<FeedbackData>();
+		foreach (FeedbackData obj in Resources.LoadAll<FeedbackData>("FeedbackToolResources/Datas"))
+		{
+			feedbackDataList.Add(obj);
+			AssetDatabase.RenameAsset("Assets/Resources/FeedbackToolResources/Datas/" + obj.name + ".asset", obj.eventName);
+		}
+		feedbackDatas.feedbackList = feedbackDataList;
+		this.serializedObject.ApplyModifiedProperties();
+		if (GUI.changed)
+		{
+			EditorUtility.SetDirty(target);
+		}
+	}
 
 	void RecalculateEventIntegration()
 	{
