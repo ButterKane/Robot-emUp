@@ -245,8 +245,8 @@ GameObject:
   - component: {fileID: 373019035910456879}
   - component: {fileID: 373019035910456883}
   - component: {fileID: 373019035910456886}
+  - component: {fileID: 1682654848667235717}
   - component: {fileID: 7311809069756282518}
-  - component: {fileID: -4031855454331282323}
   m_Layer: 0
   m_Name: EnemyV2
   m_TagString: Enemy
@@ -308,20 +308,7 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!135 &7311809069756282518
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 373019035910456887}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.34
-  m_Center: {x: 0, y: 0.37, z: 0}
---- !u!114 &-4031855454331282323
+--- !u!114 &1682654848667235717
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -330,12 +317,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 373019035910456887}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 883c74c168875a246a415dd7bf19630c, type: 3}
+  m_Script: {fileID: 11500000, guid: 3493b39309a3d5f4f97a6fae11f414c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
+  maxHealth: 30
   invincibilityTime: 1
-  canMove: 0
+  canMove: 1
   jumpForce: 0
   accelerationCurve:
     serializedVersion: 2
@@ -344,8 +331,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minWalkSpeed: 0.1
-  moveSpeed: 15
-  acceleration: 200
+  moveSpeed: 7
+  acceleration: 30
   movingDrag: 0.4
   idleDrag: 0.4
   onGroundGravityMultiplyer: 0
@@ -361,37 +348,56 @@ MonoBehaviour:
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   bumpRaycastDistance: 1
-  whenToTriggerFallingAnim: 0.302
-  eventOnBeingHit: event.PlayerBeingHit
-  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
-  eventOnBeingGrounded: event.PlayerGrounded
-  eventOnDeath: event.Player1Death
-  eventOnHealing: event.PlayerHealing
-  healthBarRef: {fileID: 0}
-  healthBarPrefab: {fileID: 0}
+  whenToTriggerFallingAnim: 0.9
+  eventOnBeingHit: event.EnemyHit
+  eventOnBeingBumpedAway: event.EnemyBeingBumpedAway
+  eventOnBeingGrounded: event.EnemyGrounded
+  eventOnDeath: event.EnemyDeath
+  eventOnHealing: 
+  healthBarRef: {fileID: 1286583807845663263}
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+    type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   energyGainedOnHit: 1
   damage: 10
   powerLevel: 1
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 1.35
   arenaRobot: 0
-  focusDistance: 18
-  unfocusDistance: 20
+  focusDistance: 50
+  unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
+  timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
-  timeToRecoverSlowFromDunk: 0
+  timeToRecoverSlowFromDunk: 1
   distanceToAttack: 5
   maxAnticipationTime: 0.5
   rotationSpeedPreparingAttack: 0.2
@@ -399,21 +405,53 @@ MonoBehaviour:
   maxAttackDuration: 0.5
   attackSpeedCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  whenToTriggerEndOfAttackAnim: 0
-  attackHitBoxPrefab: {fileID: 0}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
+  whenToTriggerEndOfAttackAnim: 0.302
+  attackHitBoxPrefab: {fileID: 1561288176734524478, guid: 5a96c9071a92ed1449640b4ee659fc33,
+    type: 3}
+  hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
-  coreDropChances: 1
+  coreDropChances: 0.1
   minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 1, y: 3}
+  minMaxCoreHealthValue: {x: 10, y: 10}
+--- !u!135 &7311809069756282518
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373019035910456887}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.34
+  m_Center: {x: 0, y: 0.37, z: 0}
 --- !u!1 &373019035912214700
 GameObject:
   m_ObjectHideFlags: 0
