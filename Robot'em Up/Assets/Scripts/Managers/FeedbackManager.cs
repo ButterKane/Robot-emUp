@@ -12,6 +12,7 @@ public class VibrationData
 	public VibrationForce force;
 	public float duration;
 	public VibrationTarget target;
+	public AnimationCurve forceCurve;
 }
 
 [System.Serializable]
@@ -70,7 +71,7 @@ public class FeedbackManager
 		FeedbackCallback i_callBack = new FeedbackCallback();
 		FeedbackData feedback = GetFeedbackData(_eventName);
 		if (feedback == null) { return i_callBack; }
-		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency); }
+		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency, feedback.shakeData.intensityCurve); }
 		if (feedback.vibrationData != null && feedback.vibrationDataInited)
 		{
 			switch (feedback.vibrationData.target)
@@ -81,12 +82,12 @@ public class FeedbackManager
 					PlayerController player = target.GetComponent<PlayerController>();
 					if (player != null)
 					{
-						VibrationManager.Vibrate(player.playerIndex,feedback.vibrationData.duration, feedback.vibrationData.force);
+						VibrationManager.Vibrate(player.playerIndex,feedback.vibrationData.duration, feedback.vibrationData.force, feedback.vibrationData.forceCurve);
 					}
 					break;
 				case VibrationTarget.BothPlayers:
-					VibrationManager.Vibrate(PlayerIndex.One,feedback.vibrationData.duration, feedback.vibrationData.force);
-					VibrationManager.Vibrate(PlayerIndex.Two, feedback.vibrationData.duration, feedback.vibrationData.force);
+					VibrationManager.Vibrate(PlayerIndex.One,feedback.vibrationData.duration, feedback.vibrationData.force, feedback.vibrationData.forceCurve);
+					VibrationManager.Vibrate(PlayerIndex.Two, feedback.vibrationData.duration, feedback.vibrationData.force, feedback.vibrationData.forceCurve);
 					break;
 
 			}

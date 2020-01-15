@@ -50,7 +50,6 @@ public class CameraBehaviour : MonoBehaviour
 	public void ActivateCamera()
 	{
 		followedPath = GetComponentInParent<PathCreator>();
-		Debug.Log("Activating");
 		if (followedPath != null)
 		{
 			followedPath.pathUpdated += OnPathChanged;

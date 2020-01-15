@@ -19,6 +19,13 @@ public class FeedbackEditor : Editor
 	float recalculationProgression;
 	string nameSearched;
 
+	public void OnValidate ()
+	{
+		if (feedbackDatas.feedbackList.Count < 1)
+		{
+			UpdateFeedbackList();
+		}
+	}
 	private void OnEnable ()
 	{
 		feedbackDatas = (FeedbackDatas)target;
@@ -66,6 +73,11 @@ public class FeedbackEditor : Editor
 	public override void OnInspectorGUI ()
 	{
 		feedbackDatas = (FeedbackDatas)target;
+
+		if (feedbackDatas.feedbackList.Count < 1)
+		{
+			UpdateFeedbackList();
+		}
 
 		this.serializedObject.Update();
 
@@ -214,6 +226,12 @@ public class FeedbackEditor : Editor
 									EditorGUILayout.EndHorizontal();
 
 									EditorGUILayout.BeginHorizontal();
+									SerializedProperty m_forceCurve = i_serializedFeedbackData.FindProperty("vibrationData.forceCurve");
+									GUILayout.Label("Force curve: ", GUILayout.Width(100));
+									EditorGUILayout.PropertyField(m_forceCurve, GUIContent.none);
+									EditorGUILayout.EndHorizontal();
+
+									EditorGUILayout.BeginHorizontal();
 									SerializedProperty m_duration = i_serializedFeedbackData.FindProperty("vibrationData.duration");
 									GUILayout.Label("Duration: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_duration, GUIContent.none);
@@ -262,6 +280,12 @@ public class FeedbackEditor : Editor
 									SerializedProperty m_intensity = i_serializedFeedbackData.FindProperty("shakeData.intensity");
 									GUILayout.Label("Force: ", GUILayout.Width(100));
 									EditorGUILayout.PropertyField(m_intensity, GUIContent.none);
+									EditorGUILayout.EndHorizontal();
+
+									EditorGUILayout.BeginHorizontal();
+									SerializedProperty m_intensityCurve = i_serializedFeedbackData.FindProperty("shakeData.intensityCurve");
+									GUILayout.Label("Force curve: ", GUILayout.Width(100));
+									EditorGUILayout.PropertyField(m_intensityCurve, GUIContent.none);
 									EditorGUILayout.EndHorizontal();
 
 									EditorGUILayout.BeginHorizontal();
@@ -462,8 +486,11 @@ public class FeedbackEditor : Editor
 	public void AddEvent()
 	{
 		FeedbackData i_newFeedbackData = ScriptableObject.CreateInstance<FeedbackData>();
-		i_newFeedbackData.shakeData = null;
-		i_newFeedbackData.vibrationData = null;
+		i_newFeedbackData.shakeData = new ShakeData(0,0,0);
+		i_newFeedbackData.vibrationData = new VibrationData();
+		i_newFeedbackData.vibrationData.forceCurve = new AnimationCurve();
+		i_newFeedbackData.vibrationData.forceCurve.AddKey(new Keyframe(0, 1));
+		i_newFeedbackData.vibrationData.forceCurve.AddKey(new Keyframe(1, 1));
 		i_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
 		i_newFeedbackData.soundData = new SoundPlayData();
 		i_newFeedbackData.vfxData = null;

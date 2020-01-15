@@ -123,8 +123,8 @@ public class FeedbackPreviewer : EditorWindow
 	{
 		if (_data.vibrationDataInited)
 		{
-			VibrationManager.Vibrate(PlayerIndex.One, _data.vibrationData.duration, _data.vibrationData.force);
-			VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force);
+			VibrationManager.Vibrate(PlayerIndex.One, _data.vibrationData.duration, _data.vibrationData.force, _data.vibrationData.forceCurve);
+			VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force, _data.vibrationData.forceCurve);
 		}
 		if (_data.soundData.soundName != "" && _data.soundDataInited)
 		{
@@ -132,7 +132,7 @@ public class FeedbackPreviewer : EditorWindow
 		}
 		if (_data.shakeDataInited)
 		{
-			CameraShaker.ShakeEditorCamera(camera, _data.shakeData.intensity, _data.shakeData.duration, _data.shakeData.frequency);
+			CameraShaker.ShakeEditorCamera(camera, _data.shakeData.intensity, _data.shakeData.duration, _data.shakeData.frequency, _data.shakeData.intensityCurve);
 		}
 
 		if (fxPs != null) { DestroyImmediate(fxPs.gameObject); }
