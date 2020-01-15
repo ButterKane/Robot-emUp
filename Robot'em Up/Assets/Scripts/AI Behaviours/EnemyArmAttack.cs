@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class EnemyArmAttack : MonoBehaviour
 {
-    Collider armCollider;
+    Collider meleeCollider;
+    public int attackDamage;
+    public GameObject plane;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        armCollider = GetComponent<Collider>();
-
+        meleeCollider = GetComponent<Collider>();
+        plane = transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
@@ -23,21 +24,28 @@ public class EnemyArmAttack : MonoBehaviour
     {
         if(value != null)
         {
-            armCollider.enabled = (bool)value;
+            meleeCollider.enabled = (bool)value;
         }
         else
         {
-            armCollider.enabled = !armCollider.enabled;
+            meleeCollider.enabled = !meleeCollider.enabled;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        Vector3 colliderSize = meleeCollider.bounds.size;
+        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, colliderSize/2, Quaternion.identity);
+        int i = 0;
+        while (i < i_hitColliders.Length)
         {
-            armCollider.enabled = false;
-            PlayerController player = other.GetComponent<PlayerController>();
-            player.Damage(10);
+            IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
+            if (i_potentialHitableObject != null)
+            {
+                i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
+            }
+            i++;
         }
+        ToggleArmCollider(false);
     }
 }

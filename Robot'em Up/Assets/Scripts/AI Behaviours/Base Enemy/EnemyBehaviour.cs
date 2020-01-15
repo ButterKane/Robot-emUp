@@ -91,6 +91,8 @@ public class EnemyBehaviour : PawnController, IHitable
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
     protected bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
+    private GameObject attackHitBoxInstance;
+    private MeshRenderer attackPreviewPlaneRenderer;
     GameObject myAttackHitBox;
     public Vector3 hitBoxOffset;
     public float maxTimePauseAfterAttack = 1;
@@ -233,6 +235,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.PauseAfterAttack:
+                Debug.Log("PauseAfterAttackingState");
                 timePauseAfterAttack -= Time.deltaTime;
                 if (timePauseAfterAttack <= 0)
                 {
@@ -299,23 +302,39 @@ public class EnemyBehaviour : PawnController, IHitable
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AttackTrigger");
+        attackPreviewPlaneRenderer = null;
     }
 
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         endOfAttackTriggerLaunched = false;
         attackTimeProgression = 0;
+        
         //myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
     }
 
     public virtual void PreparingAttackState()
     {
+        Debug.Log("PreparingAttackingState");
+        if (attackHitBoxInstance == null)
+        {
+            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
+            attackPreviewPlaneRenderer = attackHitBoxInstance.GetComponent<EnemyArmAttack>().plane.GetComponent<MeshRenderer>();
+        }
+
+        if (attackPreviewPlaneRenderer != null)
+        {
+            // Make attack zone appear progressively
+            attackPreviewPlaneRenderer.material.color = new Color(attackPreviewPlaneRenderer.material.color.r, attackPreviewPlaneRenderer.material.color.g, attackPreviewPlaneRenderer.material.color.b, 1-(anticipationTime/maxAnticipationTime));
+            //TODO: Make it appear fully befor reaching max, and blink when close to attacking
+        }
+
         Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
         _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
         anticipationTime -= Time.deltaTime;
-        armScript.ToggleArmCollider(true);
 
         if (anticipationTime <= 0)
         {
@@ -325,24 +344,22 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void AttackingState()
     {
-        attackTimeProgression += Time.deltaTime;
-        //must stop ?
-        int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
+        Debug.Log("attackingState");
+        ChangeState(EnemyState.PauseAfterAttack);
+    }
 
-
-        if (!mustCancelAttack)
+    public void ActivateAttackHitBox()
+    {
+        if (attackHitBoxInstance != null)
         {
-            //rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
         }
-
-        if (attackTimeProgression >= 1)
+    }
+    public void DestroyAttackHitBox()
+    {
+        if (attackHitBoxInstance != null)
         {
-            ChangeState(EnemyState.PauseAfterAttack);
-        }
-        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
-        {
-            endOfAttackTriggerLaunched = true;
-            animator.SetTrigger("EndOfAttackTrigger");
+           Destroy(attackHitBoxInstance);
         }
     }
 
@@ -457,7 +474,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
-				FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+                animator.SetTrigger("HitTrigger");
+                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
 				damageAfterBump = 0;
 				EnergyManager.IncreaseEnergy(energyGainedOnHit);
 				whatBumps = WhatBumps.Pass;
@@ -474,7 +492,7 @@ public class EnemyBehaviour : PawnController, IHitable
         if (_ball)
             _ball.Explode(true);
 
-            animator.SetTrigger("HitTrigger");
+            
     }
 
 	public override void Kill ()

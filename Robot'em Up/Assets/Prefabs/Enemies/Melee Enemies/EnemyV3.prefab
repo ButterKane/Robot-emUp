@@ -398,37 +398,11 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
-  distanceToAttack: 5
-  maxAnticipationTime: 0.5
+  distanceToAttack: 2.4
+  maxAnticipationTime: 1.5
   rotationSpeedPreparingAttack: 0.2
-  attackMaxDistance: 8
-  maxAttackDuration: 0.5
-  attackSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   whenToTriggerEndOfAttackAnim: 0.302
-  attackHitBoxPrefab: {fileID: 1561288176734524478, guid: 5a96c9071a92ed1449640b4ee659fc33,
+  attackHitBoxPrefab: {fileID: 3204598243110983843, guid: 34976ce2e8641614f9791ea7f5d31244,
     type: 3}
   hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
@@ -495,6 +469,7 @@ GameObject:
   - component: {fileID: 373019037066540607}
   - component: {fileID: 373019037066540604}
   - component: {fileID: 373019037066540610}
+  - component: {fileID: 1380684847737817524}
   m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
@@ -585,6 +560,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1380684847737817524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373019037066540611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361bfe6b1de8dfe45ac2841c5d519eaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &455205453146699781
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +583,7 @@ GameObject:
   - component: {fileID: 3037649919187380554}
   - component: {fileID: 7944689748425001446}
   - component: {fileID: 6055561084390735178}
+  - component: {fileID: 950354072}
   m_Layer: 10
   m_Name: Right Arm
   m_TagString: Untagged
@@ -611,7 +599,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 455205453146699781}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.855, y: 0.062, z: 0}
+  m_LocalPosition: {x: 0.699, y: 0.062, z: 0.01}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children: []
   m_Father: {fileID: 373019037066540606}
@@ -663,6 +651,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &950354072
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455205453146699781}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7422217942154639599
 GameObject:
   m_ObjectHideFlags: 0
