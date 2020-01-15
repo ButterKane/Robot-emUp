@@ -236,6 +236,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack -= Time.deltaTime;
                 if (timePauseAfterAttack <= 0)
                 {
+                    Debug.Log("On a fini d'attendre wesh");
                     ChangeState(EnemyState.Idle);
                 }
                 break;
@@ -314,6 +315,8 @@ public class EnemyBehaviour : PawnController, IHitable
         _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
         anticipationTime -= Time.deltaTime;
+        armScript.ToggleArmCollider(true);
+
         if (anticipationTime <= 0)
         {
             ChangeState(EnemyState.Attacking);
@@ -322,11 +325,10 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void AttackingState()
     {
-
+        attackTimeProgression += Time.deltaTime;
         //must stop ?
         int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
 
-        armScript.ToggleArmCollider(true);
 
         if (!mustCancelAttack)
         {
@@ -335,7 +337,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (attackTimeProgression >= 1)
         {
-            armScript.ToggleArmCollider(false);
             ChangeState(EnemyState.PauseAfterAttack);
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)

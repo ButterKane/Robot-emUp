@@ -35,6 +35,7 @@ public class EnemyArmAttack : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
+            armCollider.enabled = false;
             PlayerController player = other.GetComponent<PlayerController>();
             player.Damage(10);
         }
