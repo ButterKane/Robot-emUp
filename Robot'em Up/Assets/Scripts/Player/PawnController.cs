@@ -49,7 +49,8 @@ public class PawnController : MonoBehaviour
 {
 	[Separator("General settings")]
 	public int maxHealth;
-   public bool isInvincible_access
+	public float totalHeight;
+	public bool isInvincible_access
     {
         get { return isInvincible; }
         set
@@ -495,17 +496,17 @@ public class PawnController : MonoBehaviour
 
 	public Vector3 GetCenterPosition()
 	{
-		return transform.position + Vector3.up * 1;
+		return transform.position + Vector3.up * (totalHeight / 2f);
 	}
 
 	public Vector3 GetHeadPosition()
 	{
-		return transform.position + Vector3.up * 1.8f;
+		return transform.position + Vector3.up * totalHeight;
 	}
 
 	public float GetHeight()
 	{
-		return 2f;
+		return totalHeight;
 	}
 
     public void SetInvincible(bool _state)

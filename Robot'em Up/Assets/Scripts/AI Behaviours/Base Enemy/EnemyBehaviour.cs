@@ -97,6 +97,7 @@ public class EnemyBehaviour : PawnController, IHitable
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
+	private HealthBar healthBar;
 
     [Space(3)]
     [Header("Surrounding")]
@@ -121,8 +122,8 @@ public class EnemyBehaviour : PawnController, IHitable
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
         if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
-        GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform);
-        healthBar.GetComponent<EnemyHealthBar>().enemy = this;
+        healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar.target = this;
 
         if (arenaRobot)
         {
@@ -139,7 +140,19 @@ public class EnemyBehaviour : PawnController, IHitable
         UpdateDistancesToPlayers();
         UpdateState();
 		UpdateSpeed();
+		UpdateHealthBar();
     }
+
+	protected void UpdateHealthBar()
+	{
+		if (currentHealth < maxHealth && healthBar != null)
+		{
+			healthBar.ToggleHealthBar(true);
+		} else
+		{
+			healthBar.ToggleHealthBar(false);
+		}
+	}
 
     protected void UpdateSpeed()
     {
@@ -482,6 +495,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
 	public override void Kill ()
 	{
+		if (healthBar != null) { Destroy(healthBar.gameObject); }
 		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
