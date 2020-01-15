@@ -30,6 +30,7 @@ public class PassController : MonoBehaviour
 	public float passCooldown;
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
+	public float perfectReceptionBufferOnFail = 0.25f;
 
 	public float delayBeforePickingOwnBall;
 	public int minBouncesBeforePickingOwnBall;
@@ -62,7 +63,8 @@ public class PassController : MonoBehaviour
 	private float ballTimeInHand;
 	private bool didPerfectReception;
 	private PassState previousState;
-    [ReadOnly] public PassState passState;
+	private float perfectReceptionBuffer;
+	[ReadOnly] public PassState passState;
 
     private void Awake ()
 	{
@@ -104,24 +106,21 @@ public class PassController : MonoBehaviour
 			if (i_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates,0);
-			if (passPreviewInEditor)
-			{
-				//PreviewPathInEditor(pathCoordinates);
-			}
 		}
 
 	}
 	public void TryReception() //Player tries to do a perfect reception
 	{
 		if (didPerfectReception) { return; }
+		if (perfectReceptionBuffer > 0) { return; }
 		BallBehaviour i_mainBall = BallBehaviour.instance;
 		if (i_mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
 		if (ball == null)
 		{
-			if (Vector3.Distance(handTransform.position, i_mainBall.transform.position) > receptionMinDistance) { return; }
+			if (Vector3.Distance(handTransform.position, i_mainBall.transform.position) > receptionMinDistance) { perfectReceptionBuffer += 0.2f; return; }
 		} else
 		{
-			if (ballTimeInHand > receptionMinDelay) { return; }
+			if (ballTimeInHand > receptionMinDelay) { perfectReceptionBuffer = 0; return; }
 		}
 		ExecutePerfectReception(i_mainBall);
 	}
@@ -135,7 +134,7 @@ public class PassController : MonoBehaviour
 		didPerfectReception = true;
 		_ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
 		_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
-		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1); //Used for color
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
 		PawnController i_pawnController = GetComponent<PawnController>();
@@ -443,6 +442,10 @@ public class PassController : MonoBehaviour
 		if (currentPassCooldown >= 0)
 		{
 			currentPassCooldown -= Time.deltaTime;
+		}
+		if (perfectReceptionBuffer >= 0)
+		{
+			perfectReceptionBuffer -= Time.deltaTime;
 		}
 	}
 
