@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using MyBox;
+using PathCreation;
 
 public enum CameraType { Combat, Adventure, Circle}
 public class CameraBehaviour : MonoBehaviour
@@ -15,6 +16,9 @@ public class CameraBehaviour : MonoBehaviour
 	public float rotationSpeed = 1;
 	public float translationSpeed = 1;
 
+	public Transform focusPoint;
+	[Range(0f, 1f)] public float focusImportance;
+
 	public bool enableTranslation = true;
 
 	[Separator("Debug values")]
@@ -22,29 +26,55 @@ public class CameraBehaviour : MonoBehaviour
 	[ReadOnly] public float currentDistanceX;
 	[ReadOnly] public float currentDistanceY;
 
-	[ReadOnly] public CameraType type;
+	public CameraType type;
 	[ReadOnly] public CameraZone zone;
 	private CinemachineVirtualCamera virtualCamera;
 	private Quaternion defaultRotation;
 	private Vector3 defaultTranslation;
+	private bool activated;
+
+	private PathCreator followedPath;
+	private float distanceTravelled;
 
 	public void InitCamera ( CameraType _type, CameraZone _zone)
 	{
 		type = _type;
 		zone = _zone;
+		followedPath = GetComponentInParent<PathCreator>();
+		if (followedPath != null)
+		{
+			followedPath.pathUpdated += OnPathChanged;
+		}
+	}
+
+	public void ActivateCamera()
+	{
+		followedPath = GetComponentInParent<PathCreator>();
+		Debug.Log("Activating");
+		if (followedPath != null)
+		{
+			followedPath.pathUpdated += OnPathChanged;
+		}
+		activated = true;
+	}
+
+	public void DesactivateCamera()
+	{
+		activated = false;
 	}
 
 	private void Awake ()
 	{
 		defaultRotation = transform.localRotation;
+		//InitCamera(CameraType.Adventure, null);
+		ActivateCamera();
 	}
 
 	private void Update ()
 	{
-		if (zone == null) { return; }
 		if (virtualCamera == null) { virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
 
-		if (zone.IsZoneActivated())
+		if (activated)
 		{
 			//Enable camera
 			virtualCamera.m_Priority = enabledPriority;
@@ -56,6 +86,9 @@ public class CameraBehaviour : MonoBehaviour
 				case CameraType.Circle:
 					UpdateCircleCamera();
 					break;
+				case CameraType.Adventure:
+					UpdateAdventureCamera();
+					break;
 			}
 
 		} else
@@ -64,7 +97,35 @@ public class CameraBehaviour : MonoBehaviour
 			virtualCamera.m_Priority = defaultPriority;
 		}
 	}
+	void OnPathChanged ()
+	{
+		distanceTravelled = followedPath.path.GetClosestDistanceAlongPath(transform.position);
+	}
 
+	void UpdateAdventureCamera()
+	{
+		if (followedPath == null) { return; }
+		Vector3 i_middlePosition = Vector3.zero;
+		if (GameManager.deadPlayers.Count > 0)
+		{
+			i_middlePosition = zone.GetPlayersInside()[0].transform.position;
+		}
+		else
+		{
+			i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+		}
+		i_middlePosition = Vector3.Lerp(i_middlePosition, focusPoint.position, focusImportance);
+		Quaternion i_wantedRotation = Quaternion.LookRotation(-(virtualCamera.transform.position - i_middlePosition));
+		float lerpCoef = Vector3.Distance(transform.position, followedPath.path.GetPointAtDistance(distanceTravelled, EndOfPathInstruction.Stop));
+		lerpCoef = Mathf.Clamp(lerpCoef, 1f, 10f);
+		transform.position = Vector3.Lerp(transform.position, followedPath.path.GetPointAtDistance(distanceTravelled, EndOfPathInstruction.Stop), Time.deltaTime * translationSpeed / lerpCoef) ;
+	//	virtualCamera.transform.LookAt(i_middlePosition);
+		distanceTravelled = followedPath.path.GetClosestDistanceAlongPath(i_middlePosition);
+		virtualCamera.transform.rotation = Quaternion.Lerp(virtualCamera.transform.rotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
+		Vector3 pivotLookDirection = followedPath.path.GetDirectionAtDistance(distanceTravelled);
+		pivotLookDirection = Quaternion.AngleAxis(90, Vector3.up) * pivotLookDirection;
+		transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(pivotLookDirection), Time.deltaTime * rotationSpeed / Quaternion.Angle(transform.rotation, Quaternion.LookRotation(pivotLookDirection)));
+	}
 	void UpdateCombatCamera()
 	{
 		Vector3 i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);

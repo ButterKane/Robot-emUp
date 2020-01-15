@@ -33,6 +33,7 @@ public class VFXData
 	public bool attachToTarget;
 }
 
+
 [System.Serializable]
 public class FeedbackData : ScriptableObject
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
+using UnityEngine.Analytics;
 
 [ExecuteAlways]
 public class PlayerController : PawnController, IHitable

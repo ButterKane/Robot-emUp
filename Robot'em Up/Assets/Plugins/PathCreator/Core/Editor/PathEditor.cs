@@ -20,7 +20,7 @@ namespace PathCreationEditor {
 
         // Help messages:
         const string helpInfo = "Shift-click to add or insert new points. Control-click to delete points. For more detailed infomation, please refer to the documentation.";
-        static readonly string[] spaceNames = { "3D (xyz)", "2D (xy)", "Top-down (xz)" };
+        static readonly string[] spaceNames = { "3D (xyz)", "Top-down (xz)" };
         static readonly string[] tabNames = { "Bézier Path", "Vertex Path" };
         const string constantSizeTooltip = "If true, anchor and control points will keep a constant size when zooming in the editor.";
 
@@ -110,7 +110,7 @@ namespace PathCreationEditor {
                         bezierPath.AutoControlLength = EditorGUILayout.Slider (new GUIContent ("Control Spacing"), bezierPath.AutoControlLength, 0, 1);
                     }
 
-                    bezierPath.IsClosed = EditorGUILayout.Toggle ("Closed Path", bezierPath.IsClosed);
+                    bezierPath.IsClosed = false;
                     data.showTransformTool = EditorGUILayout.Toggle (new GUIContent ("Enable Transforms"), data.showTransformTool);
 
                     Tools.hidden = !data.showTransformTool;
@@ -149,9 +149,7 @@ namespace PathCreationEditor {
 
                             Vector3 worldCentre = bezierPath.CalculateBoundsWithTransform (creator.transform).center;
                             Vector3 transformPos = creator.transform.position;
-                            if (bezierPath.Space == PathSpace.xy) {
-                                transformPos = new Vector3 (transformPos.x, transformPos.y, 0);
-                            } else if (bezierPath.Space == PathSpace.xz) {
+							if (bezierPath.Space == PathSpace.xz) {
                                 transformPos = new Vector3 (transformPos.x, 0, transformPos.z);
                             }
                             Vector3 worldCentreToTransform = transformPos - worldCentre;
@@ -181,8 +179,8 @@ namespace PathCreationEditor {
                     GUILayout.Space (inspectorSectionSpacing);
                 }
 
-                data.showNormals = EditorGUILayout.Foldout (data.showNormals, new GUIContent ("Normals Options"), true, boldFoldoutStyle);
-                if (data.showNormals) {
+				data.showNormals = false; //EditorGUILayout.Foldout (data.showNormals, new GUIContent ("Normals Options"), true, boldFoldoutStyle);
+               /* if (data.showNormals) {
                     bezierPath.FlipNormals = EditorGUILayout.Toggle (new GUIContent ("Flip Normals"), bezierPath.FlipNormals);
                     if (bezierPath.Space == PathSpace.xyz) {
                         bezierPath.GlobalNormalsAngle = EditorGUILayout.Slider (new GUIContent ("Global Angle"), bezierPath.GlobalNormalsAngle, 0, 360);
@@ -194,7 +192,7 @@ namespace PathCreationEditor {
                         }
                     }
                     GUILayout.Space (inspectorSectionSpacing);
-                }
+                }*/
 
                 // Editor display options
                 data.showDisplayOptions = EditorGUILayout.Foldout (data.showDisplayOptions, new GUIContent ("Display Options"), true, boldFoldoutStyle);
