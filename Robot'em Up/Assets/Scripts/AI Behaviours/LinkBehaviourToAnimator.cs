@@ -20,5 +20,9 @@ public class LinkBehaviourToAnimator : MonoBehaviour
     {
         enemyScriptRef.DestroyAttackHitBox();
     }
+    public void EndAttack()
+    {
+        enemyScriptRef.ChangeState(EnemyState.PauseAfterAttack);
+    }
 
 }

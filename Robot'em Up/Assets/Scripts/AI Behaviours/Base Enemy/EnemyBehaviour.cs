@@ -91,6 +91,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
     protected bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
+    public Transform attackHitBoxCenterPoint;
     private GameObject attackHitBoxInstance;
     private MeshRenderer attackPreviewPlaneRenderer;
     GameObject myAttackHitBox;
@@ -301,7 +302,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
-        animator.SetTrigger("AttackTrigger");
+        animator.SetTrigger("AnticipateAttackTrigger");
         attackPreviewPlaneRenderer = null;
     }
 
@@ -309,7 +310,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         endOfAttackTriggerLaunched = false;
         attackTimeProgression = 0;
-        
+        animator.SetTrigger("AttackTrigger");
         //myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
     }
@@ -319,7 +320,8 @@ public class EnemyBehaviour : PawnController, IHitable
         Debug.Log("PreparingAttackingState");
         if (attackHitBoxInstance == null)
         {
-            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
+            //attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
+            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, attackHitBoxCenterPoint.position, Quaternion.identity);
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
             attackPreviewPlaneRenderer = attackHitBoxInstance.GetComponent<EnemyArmAttack>().plane.GetComponent<MeshRenderer>();
         }
@@ -335,7 +337,7 @@ public class EnemyBehaviour : PawnController, IHitable
         _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
         anticipationTime -= Time.deltaTime;
-
+        Debug.Log("anticipation = " + anticipationTime);
         if (anticipationTime <= 0)
         {
             ChangeState(EnemyState.Attacking);
@@ -345,7 +347,8 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void AttackingState()
     {
         Debug.Log("attackingState");
-        ChangeState(EnemyState.PauseAfterAttack);
+
+        //ChangeState(EnemyState.PauseAfterAttack);
     }
 
     public void ActivateAttackHitBox()
@@ -357,9 +360,11 @@ public class EnemyBehaviour : PawnController, IHitable
     }
     public void DestroyAttackHitBox()
     {
+        Debug.Log("Destroying plane");
         if (attackHitBoxInstance != null)
         {
            Destroy(attackHitBoxInstance);
+           attackHitBoxInstance = null;
         }
     }
 
