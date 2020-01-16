@@ -28,28 +28,12 @@ public class VFXData
 {
 	public GameObject vfxPrefab = default;
 	public Vector3 offset;
-	public Vector3 scaleMultiplier = new Vector3(1, 1, 1);
+	public Vector3 scaleMultiplier = new Vector3(1, 1, 1); 
 	public VFXDirection direction;
 	public VFXPosition position;
 	public bool attachToTarget;
 }
 
-
-[System.Serializable]
-public class FeedbackData : ScriptableObject
-{
-	public string eventName; //Each event will trigger specific feedbacks (Vibration or screenShake
-	public ShakeData shakeData = null;
-	public VibrationData vibrationData = null;
-	public bool shakeDataInited;
-	public bool vibrationDataInited;
-	public bool soundDataInited;
-	public bool vfxDataInited;
-	public bool eventCalled = false;
-	public FeedbackEventCategory category;
-	public SoundPlayData soundData;
-	public VFXData vfxData;
-}
 
 public class FeedbackCallback
 {
@@ -138,7 +122,7 @@ public class FeedbackManager
 			}
 			i_callBack.vfx = FXManager.InstantiateFX(feedback.vfxData.vfxPrefab, position + feedback.vfxData.offset, false, direction, feedback.vfxData.scaleMultiplier, newParent);
 		}
-		return i_callBack;
+		return i_callBack; 
 	}
 
 	public static FeedbackData GetFeedbackData(string _name)
@@ -151,7 +135,7 @@ public class FeedbackManager
 				return feedbackData;
 			}
 		}
-		Debug.LogWarning("No data for sound with name " + _name + " found.");
+		Debug.LogWarning("No data for event with name " + _name + " found.");
 		return null;
 	}
 }
