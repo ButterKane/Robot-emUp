@@ -7,8 +7,7 @@ public class EnemyShield : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Shield Variables")]
-    public GameObject shieldPrefab;
-    [System.NonSerialized] public GameObject shield;
+    public GameObject shield;       // It's only cosmetic now
     public bool deactivateShieldWhenAttacking = true;
 
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
@@ -45,8 +44,7 @@ public class EnemyShield : EnemyBehaviour
     private new void Start()
     {
         base.Start();
-        shield = Instantiate(shieldPrefab);
-        shield.GetComponent<Shield>().enemy = this;
+        enemyType = EnemyTypes.Shield;
     }
 
     // ATTACK
@@ -165,7 +163,6 @@ public class EnemyShield : EnemyBehaviour
 
     public override void Kill()
     {
-        Destroy(shield);
         base.Kill();   // Override the death sound with the right one 
     }
 
