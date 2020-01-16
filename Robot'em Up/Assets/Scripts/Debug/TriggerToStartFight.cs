@@ -29,7 +29,7 @@ public class TriggerToStartFight : MonoBehaviour
                 {
                     for (int i = 0; i < enemyArray.Length; i++)
                     {
-                        enemyArray[i].ChangingState(EnemyState.Idle);
+                        enemyArray[i].ChangeState(EnemyState.Idle);
                     }
                 }
                 if (turretArray.Length > 0)
@@ -46,9 +46,9 @@ public class TriggerToStartFight : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.CompareTag("Player") && !wallShouldMove)
+        if (_other.CompareTag("Player") && !wallShouldMove)
         {
             wallShouldMove = true;
         }

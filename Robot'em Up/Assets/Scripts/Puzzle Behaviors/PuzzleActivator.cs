@@ -19,7 +19,6 @@ public class PuzzleActivator : MonoBehaviour
         }
     }
 
-
     public virtual void UpdateLight()
     {
         if (indictatorLight != null)
@@ -36,13 +35,12 @@ public class PuzzleActivator : MonoBehaviour
        
     }
 
-
     public virtual void ActivateLinkedObjects()
     {
-        PuzzleActivable[] activables = FindObjectsOfType<PuzzleActivable>();
+        PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
         //Debug.Log("Find call ");
 
-        foreach (var item in activables)
+        foreach (var item in i_activables)
         {
             if (item.needAllConditions == false)
             {
@@ -77,10 +75,9 @@ public class PuzzleActivator : MonoBehaviour
 
     public virtual void DesactiveLinkedObjects()
     {
-        PuzzleActivable[] activables = FindObjectsOfType<PuzzleActivable>();
+        PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
 
-
-        foreach (var item in activables)
+        foreach (var item in i_activables)
         {
             if (item.needAllConditions == false)
             {
@@ -100,7 +97,6 @@ public class PuzzleActivator : MonoBehaviour
                 {
                     item.WhenActivate();
                 }
-
 
                 if (!item.puzzleActivationsBool.Contains(true))
                 {

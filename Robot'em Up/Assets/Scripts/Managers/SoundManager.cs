@@ -1,6 +1,7 @@
 ﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 [System.Serializable]
 public class SoundData
@@ -12,18 +13,18 @@ public class SoundData
 	public void SetPlayRate(Sound _sound, float _newPlayRate)
 	{
 		if (soundList.Count <= 1) { return; }
-		float difference = 0f;
-		float otherTotal = 0;
+		float i_difference = 0f;
+		float i_otherTotal = 0;
 		foreach (Sound wep in soundList)
 		{
 			if (wep == _sound)
 			{
-				difference = _newPlayRate - wep.playChances;
+				i_difference = _newPlayRate - wep.playChances;
 				wep.playChances = _newPlayRate;
 			}
 			else
 			{
-				otherTotal += wep.playChances;
+				i_otherTotal += wep.playChances;
 			}
 		}
 
@@ -32,20 +33,20 @@ public class SoundData
 		{
 			if (wep != _sound)
 			{
-				if (difference > 0)
+				if (i_difference > 0)
 				{
-					if (otherTotal != 0)
+					if (i_otherTotal != 0)
 					{
-						float force = wep.playChances / otherTotal;
-						wep.playChances -= force * difference;
+						float force = wep.playChances / i_otherTotal;
+						wep.playChances -= force * i_difference;
 					}
 				}
 				else
 				{
-					if ((float)(soundList.Count - 1) - otherTotal != 0)
+					if ((float)(soundList.Count - 1) - i_otherTotal != 0)
 					{
-						float force = (1f - wep.playChances) / ((float)(soundList.Count - 1) - otherTotal);
-						wep.playChances -= force * difference;
+						float i_force = (1f - wep.playChances) / ((float)(soundList.Count - 1) - i_otherTotal);
+						wep.playChances -= i_force * i_difference;
 					}
 				}
 			}
@@ -54,21 +55,21 @@ public class SoundData
 	}
 	public void RemoveSound(Sound _sound )
 	{
-		float difference = _sound.playChances;
+		float i_difference = _sound.playChances;
 		soundList.Remove(_sound);
-		float totalProba = 0;
+		float i_totalProba = 0;
 		foreach (Sound wep in soundList)
 		{
-			totalProba += wep.playChances;
+			i_totalProba += wep.playChances;
 		}
 
 		//Reduce or improve all the other probabilities (So it keep a maximum of 1)
 		foreach (Sound wep in soundList)
 		{
-			if (totalProba != 0)
+			if (i_totalProba != 0)
 			{
-				float force = wep.playChances / totalProba;
-				wep.playChances += force * difference;
+				float i_force = wep.playChances / i_totalProba;
+				wep.playChances += i_force * i_difference;
 				wep.playChances = Mathf.Clamp(wep.playChances, 0f, 1f);
 			}
 			else
@@ -90,29 +91,29 @@ public class SoundManager
 {
 	public static void PlaySound(string _soundName, Vector3 _worldPosition, Transform _parent = null)
 	{
-		SoundData soundData = GetSoundData(_soundName);
-		AudioClip clip = GetSoundClip(soundData);
+		SoundData i_soundData = GetSoundData(_soundName);
+		AudioClip clip = GetSoundClip(i_soundData);
 		if (clip == null) { Debug.LogWarning("Warning: Clip not found."); return; }
-		GameObject newSoundPlayer = new GameObject();
-		newSoundPlayer.name = "SoundPlayer";
-		AudioSource newAudioSource = newSoundPlayer.AddComponent<AudioSource>();
-		newAudioSource.spatialBlend = 0.65f;
-		newAudioSource.maxDistance = 100;
-		newAudioSource.volume = soundData.volumeMultiplier;
+		GameObject i_newSoundPlayer = new GameObject();
+		i_newSoundPlayer.name = "SoundPlayer";
+		AudioSource i_newAudioSource = i_newSoundPlayer.AddComponent<AudioSource>();
+		i_newAudioSource.spatialBlend = 0.65f;
+		i_newAudioSource.maxDistance = 100;
+		i_newAudioSource.volume = i_soundData.volumeMultiplier;
 		if (_parent != null)
 		{
-			newAudioSource.transform.SetParent(_parent);
+			i_newAudioSource.transform.SetParent(_parent);
 		}
-		newAudioSource.gameObject.AddComponent<SoundAutoDestroyer>();
-		newAudioSource.transform.position = _worldPosition;
-		newAudioSource.clip = clip;
-		newAudioSource.Play();
+		i_newAudioSource.gameObject.AddComponent<SoundAutoDestroyer>();
+		i_newAudioSource.transform.position = _worldPosition;
+		i_newAudioSource.clip = clip;
+		i_newAudioSource.Play();
 	}
 
 	public static SoundData GetSoundData(string _soundName)
 	{
-		SoundDatas soundDatas = Resources.Load<SoundDatas>("SoundDatas");
-		foreach (SoundData soundData in soundDatas.soundList)
+		SoundDatas i_soundDatas = Resources.Load<SoundDatas>("SoundDatas");
+		foreach (SoundData soundData in i_soundDatas.soundList)
 		{
 			if (soundData.soundName == _soundName)
 			{
@@ -124,14 +125,58 @@ public class SoundManager
 	}
 	public static AudioClip GetSoundClip(SoundData _soundData)
 	{
-		float pickChances = Random.value;
-		int chosenIndex = 0;
-		float cumulativeChances = _soundData.soundList[0].playChances;
-		while (pickChances > cumulativeChances && chosenIndex < _soundData.soundList.Count)
+		float i_pickChances = Random.value;
+		int i_chosenIndex = 0;
+		float i_cumulativeChances = _soundData.soundList[0].playChances;
+		while (i_pickChances > i_cumulativeChances && i_chosenIndex < _soundData.soundList.Count)
 		{
-			chosenIndex++;
-			cumulativeChances += _soundData.soundList[chosenIndex].playChances;
+			i_chosenIndex++;
+			i_cumulativeChances += _soundData.soundList[i_chosenIndex].playChances;
 		}
-		return _soundData.soundList[chosenIndex].clip;
+		return _soundData.soundList[i_chosenIndex].clip;
+	}
+
+	public static void PlaySoundInEditor ( string soundName )
+	{
+#if UNITY_EDITOR
+		PlaySoundInEditor(SoundManager.GetSoundClip(SoundManager.GetSoundData(soundName)));
+#endif
+	}
+	public static void PlaySoundInEditor ( AudioClip _clip, int _startSample = 0, bool _loop = false )
+	{
+#if UNITY_EDITOR
+		StopAllClips();
+		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
+		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
+			"PlayClip",
+			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+			null,
+			new System.Type[] { typeof(AudioClip), typeof(int), typeof(bool) },
+			null
+		);
+		method.Invoke(
+			null,
+			new object[] { _clip, _startSample, _loop }
+		);
+#endif
+	}
+	public static void StopAllClips ()
+	{
+#if UNITY_EDITOR
+		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
+		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
+		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
+			"StopAllClips",
+			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+			null,
+			new System.Type[] { },
+			null
+		);
+		method.Invoke(
+			null,
+			new object[] { }
+		);
+#endif
 	}
 }

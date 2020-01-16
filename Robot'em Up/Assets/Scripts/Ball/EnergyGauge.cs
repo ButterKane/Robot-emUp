@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using MyBox;
 #pragma warning disable 0649
 
 public class EnergyGauge : MonoBehaviour
 {
+    [Separator("References")]
 	[SerializeField] private Color defaultGaugeColor;
 	[SerializeField] private Color fullGaugeColor;
 
@@ -23,15 +25,15 @@ public class EnergyGauge : MonoBehaviour
 	}
 	public void UpdateGauge()
 	{
-		float currentValue = EnergyManager.GetEnergy();
+		float i_currentValue = EnergyManager.GetEnergy();
 		gaugeFillLerped.fillAmount = Mathf.Lerp(gaugeFillLerped.fillAmount, EnergyManager.GetDisplayedEnergy(), Time.deltaTime * 8);
 		gaugeFillRay.fillAmount = gaugeFillLerped.fillAmount;
 
-		if (Mathf.Abs(currentValue - previousValue) >= 0.1f)
+		if (Mathf.Abs(i_currentValue - previousValue) >= 0.1f)
 		{
 			transform.DOShakeScale(0.1f, 0.1f).OnComplete(ResetScale);
 		}
-		previousValue = currentValue;
+		previousValue = i_currentValue;
 
 		if (EnergyManager.GetEnergy() >= 0.99f)
 		{

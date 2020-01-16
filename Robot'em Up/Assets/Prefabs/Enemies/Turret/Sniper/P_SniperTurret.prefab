@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06114c3c4d746248960ee19ba8470ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MyScript: {fileID: 8681543399049038298}
+  myScript: {fileID: 8681543399049038298}
 --- !u!1 &4194175701387704102
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,7 +545,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8681543399049038297}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -69.12, y: 52.78, z: -41.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -597,32 +597,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56b6d92130ddb4468812410f2db6e98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _self: {fileID: 2227829331840288604}
-  Rb: {fileID: 6736872995242432900}
-  Animator: {fileID: 3854977622740128092}
-  HealthBarRef: {fileID: 1237326659969052972}
-  HealthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+  maxHealth: 30
+  totalHeight: 1.5
+  invincibilityTime: 1
+  canMove: 0
+  jumpForce: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minWalkSpeed: 0.1
+  moveSpeed: 15
+  acceleration: 200
+  movingDrag: 0.4
+  idleDrag: 0.4
+  onGroundGravityMultiplyer: 0
+  deadzone: 0.2
+  turnSpeed: 0.25
+  canClimb: 1
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
+  isBumpable: 1
+  maxGettingUpDuration: 0.6
+  bumpDistanceCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpRaycastDistance: 1
+  whenToTriggerFallingAnim: 0
+  eventOnBeingHit: event.PlayerBeingHit
+  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
+  eventOnBeingGrounded: event.PlayerGrounded
+  eventOnDeath: event.Player1Death
+  eventOnHealing: event.PlayerHealing
+  healthBarRef: {fileID: 1237326659969052972}
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
-  Target: {fileID: 0}
-  State: 0
-  attackState: 0
-  aimingCubeState: 0
+  playerOneTransform: {fileID: 0}
+  playerTwoTransform: {fileID: 0}
+  energyGainedOnHit: 1
+  damage: 10
+  powerLevel: 1
+  lockable: 0
+  lockHitboxSize: 0
+  arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
-  maxTimeBetweenCheck: 0.25
+  timeBetweenCheck: 0
   distanceBeforeChangingPriority: 2
-  MaxHealth: 30
-  Health: 0
-  energyAmount: 0.08
+  maxTimeBetweenCheck: 0.25
+  randomSpeedMod: 0
+  speedMultiplierFromPassHit: 0
+  timeToRecoverSlowFromPass: 0
+  speedMultiplierFromDunkHit: 0
+  timeToRecoverSlowFromDunk: 0
+  distanceToAttack: 5
+  maxAnticipationTime: 2.5
+  rotationSpeedPreparingAttack: 0.2
+  attackMaxDistance: 8
+  maxAttackDuration: 0.5
+  attackSpeedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  whenToTriggerEndOfAttackAnim: 0
+  attackHitBoxPrefab: {fileID: 0}
+  hitBoxOffset: {x: 0, y: 0, z: 0}
+  maxTimePauseAfterAttack: 1
+  attackRaycastDistance: 2
+  canSurroundPlayer: 0
+  bezierCurveHeight: 0.5
+  bezierDistanceToHeightRatio: 100
+  coreDropChances: 1
+  minMaxDropForce: {x: 0, y: 0}
+  minMaxCoreHealthValue: {x: 10, y: 10}
+  turretState: 0
   arenaTurret: 0
   defaultForwardPredictionRatio: 0
   minMaxRandomRangePredictionRatio: {x: 0, y: 0}
   maxRotationSpeed: 110.95
-  maxAnticipationTime: 2.5
   maxRestTime: 4
   randomRangeRestTime: 0.5
-  _lockable: 1
-  _lockHitboxSize: 2
   aimingCubeTransform: {fileID: 6678318211773809441}
   aimingCubeRenderer: {fileID: 788040119959061173}
   aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
@@ -637,13 +701,6 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3937835393218686174, guid: 5123b33b6acbb164e8b524799f9a4324,
     type: 3}
   bulletSpawn: {fileID: 1311322156898505201}
-  deathParticlePrefab: {fileID: 103296, guid: 64213efe87b202141b44b6a613b892e9, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 102696, guid: 185035e4680c4b344b62bf5ace4674b8, type: 3}
-  hitParticleScale: 3
-  coreDropChances: 1
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
   minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.15}
   aimingAtPlayerFXTransform: {fileID: 7429455705988075639}
   aimingAtPlayerFXRenderer: {fileID: 7429455705988075637}
@@ -662,16 +719,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: P_SniperTurretAimingAtPlayerFX
-      objectReference: {fileID: 0}
-    - target: {fileID: 2630881796360466225, guid: 4cccfb20e48f9184099401344ea3c902,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2630881796360466226, guid: 4cccfb20e48f9184099401344ea3c902,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}

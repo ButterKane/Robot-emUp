@@ -1,18 +1,12 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using XInputDotNetPure;
 #pragma warning disable 0649
 
-public enum VibrationForce
-{
-    VeryHeavy,
-	Heavy,
-	Medium,
-	Light,
-    VeryLight,
-}
 public enum DamageSource
 {
 	Ball,
@@ -44,34 +38,36 @@ public class DamageModifier {
 public class GameManager : MonoBehaviour
 {
     //Singleton du gameManager
-    [System.NonSerialized] public static GameManager i;
-    [System.NonSerialized] public LevelManager levelManager;
-    [System.NonSerialized] public InputManager inputManager;
-    [System.NonSerialized]  public EventManager eventManager;
-    [System.NonSerialized]  public EnemyManager enemyManager;
-
-	[System.NonSerialized]  public GameObject mainCameraGO;
-	[System.NonSerialized]  public static PlayerController playerOne;
-	[System.NonSerialized]  public static PlayerController playerTwo;
-    [System.NonSerialized] public BallBehaviour ball;
+    public static GameManager i;
+    
+    [Separator ("Public variables")] 
     public int ballDamage = 30;
-    public List<GameObject> enemies;
-
-
-    [System.NonSerialized] public GameObject surrounderPlayerOne;
-    [System.NonSerialized] public GameObject surrounderPlayerTwo;
-	public static Canvas mainCanvas;
-	public static List<PlayerController> deadPlayers;
     public GameObject SurrounderPrefab;
-	private static MainMenu menu;
-	private static bool menuCalledOne = false;
-	private static bool menuCalledTwo = false;
-	private static bool deathPanelCalled = false;
-
-	[SerializeField]
-    GameObject dummyPrefab;
     public GameObject ballPrefab;
 
+    [Separator("Private variables")]
+    [SerializeField]
+    GameObject dummyPrefab;
+
+    // Auto-Assigned References
+    [NonSerialized] public GameObject surrounderPlayerOne;
+    [NonSerialized] public GameObject surrounderPlayerTwo;
+    public static Canvas mainCanvas;
+    public static List<PlayerController> deadPlayers;
+
+    private static MainMenu menu;
+    private static bool menuCalledOne = false;
+    private static bool menuCalledTwo = false;
+    private static bool deathPanelCalled = false;
+
+    [NonSerialized] public LevelManager levelManager;
+    [NonSerialized] public InputManager inputManager;
+    [NonSerialized] public EnemyManager enemyManager;
+
+    [NonSerialized] public GameObject mainCameraGO;
+    [NonSerialized] public static PlayerController playerOne;
+    [NonSerialized] public static PlayerController playerTwo;
+    [NonSerialized] public BallBehaviour ball;
 
     private void Awake()
     {
@@ -91,7 +87,6 @@ public class GameManager : MonoBehaviour
 		}
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
-        if (eventManager == null) { eventManager = FindObjectOfType<EventManager>(); }
 		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
@@ -256,11 +251,6 @@ public class GameManager : MonoBehaviour
 	//    }
 	//}
 
-	private void OnEnable()
-    {
-        EventManager.DummySpawn += SpawnDummy;
-    }
-
     void SpawnDummy()
     {
         Instantiate(dummyPrefab, playerOne.transform.position + (playerOne.transform.forward * 7f), Quaternion.identity);
@@ -288,10 +278,10 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(ball.gameObject);
 		}
-		GameObject newBall = Instantiate(i.ballPrefab, null);
-		BallBehaviour.instance = newBall.GetComponent<BallBehaviour>();
-        i.ball = newBall.GetComponent<BallBehaviour>();
-		newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
+		GameObject i_newBall = Instantiate(i.ballPrefab, null);
+		BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
+        i.ball = i_newBall.GetComponent<BallBehaviour>();
+		i_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
 	void LoadMomentumManager()

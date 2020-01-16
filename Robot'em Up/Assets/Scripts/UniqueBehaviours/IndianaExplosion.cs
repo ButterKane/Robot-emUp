@@ -11,20 +11,20 @@ public class IndianaExplosion : MonoBehaviour
     [ReadOnly] public float waitingForExplosion;
     [ReadOnly]  public bool Explosed;
 
-    public GameObject FXExplosion;
+    public GameObject fXExplosion;
     private SpriteRenderer spriteRenderer;
     private SphereCollider sphereCollider;
     [ReadOnly] public IndianaManager indianaManager;
 
 
-    private List<PawnController> ListPawnsHere;
+    private List<PawnController> listPawnsHere;
 
     // Start is called before the first frame update
     public void Initiate()
     {
         transform.localScale = new Vector3(myScale, myScale, myScale);
         waitingForExplosion = waitTimeForExplosion;
-        ListPawnsHere = new List<PawnController>();
+        listPawnsHere = new List<PawnController>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         sphereCollider = GetComponent<SphereCollider>();
     }
@@ -50,36 +50,33 @@ public class IndianaExplosion : MonoBehaviour
             }
             SoundManager.PlaySound("ExplosionIndianaJones", transform.position, transform);
             spriteRenderer.color = new Color(1, 1, 1, 0.05f);
-            FXExplosion.SetActive(true);
-            foreach (var item in ListPawnsHere)
+            fXExplosion.SetActive(true);
+            foreach (var item in listPawnsHere)
             {
-                item.Damage(indianaManager.DamageToPawn);
+                item.Damage(indianaManager.damageToPawn);
             }
         }
         if (waitingForExplosion < -2)
         {
             Destroy(gameObject);
         }
-
-        
     }
 
-
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.GetComponent<PawnController>())
+        if (_other.GetComponent<PawnController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Add(pawn);
+            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Add(pawn);
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.GetComponent<PawnController>())
+        if (_other.GetComponent<PawnController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            ListPawnsHere.Remove(pawn);
+            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
+            listPawnsHere.Remove(pawn);
         }
     }
 }

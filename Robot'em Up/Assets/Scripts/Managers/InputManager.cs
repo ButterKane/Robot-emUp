@@ -1,17 +1,18 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [HideInInspector] public static InputManager i;
+    public static InputManager i;
 
-    [Header("Settings")]
+    [Separator("Settings")]
     public bool inputDisabled;
     public float minJoystickStrength = 0.1f;
 
+    // Auto-Assigned References
     Transform mainCamTransform;
-
 
     private void Start()
     {
@@ -32,26 +33,26 @@ public class InputManager : MonoBehaviour
         mainCamTransform = GameManager.i.mainCameraGO.transform;
     }
 
-    public Vector3 GetMoveAbsoluteDirection(float xMove, float zMove)
+    public Vector3 GetMoveAbsoluteDirection(float _xMove, float _zMove)
     {
-        Vector3 moveDirection;
+        Vector3 i_moveDirection;
 
-        moveDirection = new Vector3(xMove, 0, zMove).normalized;
+        i_moveDirection = new Vector3(_xMove, 0, _zMove).normalized;
 
-        return moveDirection;
+        return i_moveDirection;
     }
 
-    public Vector3 GetMoveAsViewedWithCamera(float xMove, float zMove)
+    public Vector3 GetMoveAsViewedWithCamera(float _xMove, float _zMove)
     {
-        Vector3 unrotatedMoveDirection = GetMoveAbsoluteDirection(xMove, zMove);
+        Vector3 i_unrotatedMoveDirection = GetMoveAbsoluteDirection(_xMove, _zMove);
 
         // Flat down camera orientation. Only take the components that are parrallel to the ground 
-        Vector3 flattedCameraRight = new Vector3 (mainCamTransform.right.x,0 ,mainCamTransform.right.z);
-        Vector3 flattedCameraForward = new Vector3(mainCamTransform.forward.x, 0, mainCamTransform.forward.z);
+        Vector3 i_flattedCameraRight = new Vector3 (mainCamTransform.right.x,0 ,mainCamTransform.right.z);
+        Vector3 i_flattedCameraForward = new Vector3(mainCamTransform.forward.x, 0, mainCamTransform.forward.z);
 
-        Vector3 rotatedMoveDirection = (flattedCameraRight * unrotatedMoveDirection.x  + flattedCameraForward * unrotatedMoveDirection.z).normalized;
+        Vector3 i_rotatedMoveDirection = (i_flattedCameraRight * i_unrotatedMoveDirection.x  + i_flattedCameraForward * i_unrotatedMoveDirection.z).normalized;
 
-        return rotatedMoveDirection;
+        return i_rotatedMoveDirection;
     }
 
     

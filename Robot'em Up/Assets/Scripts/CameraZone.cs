@@ -6,11 +6,11 @@ using UnityEngine.Events;
 [ExecuteInEditMode]
 public class CameraZone : MonoBehaviour
 {
-	public Vector3 cornerA { get { return m_cornerA; } set { m_cornerA = new Vector3(value.x, transform.position.y, value.z); } }
+	public Vector3 cornerA_access { get { return m_cornerA; } set { m_cornerA = new Vector3(value.x, transform.position.y, value.z); } }
 	[SerializeField]
 	private Vector3 m_cornerA = new Vector3(-30, 0f, -30);
 
-	public Vector3 cornerB { get { return m_cornerB; } set { m_cornerB = new Vector3(value.x, transform.position.y, value.z); } }
+	public Vector3 cornerB_access { get { return m_cornerB; } set { m_cornerB = new Vector3(value.x, transform.position.y, value.z); } }
 	[SerializeField]
 	private Vector3 m_cornerB = new Vector3(30f, 0f, 30f);
 
@@ -21,23 +21,24 @@ public class CameraZone : MonoBehaviour
 	private Transform cameraPivot;
 	private Collider genCollider;
 	private bool zoneActivated;
+	public CameraBehaviour linkedCameraBehaviour;
 	[HideInInspector] public UnityEvent onZoneActivation;
 
 	private List<PlayerController> playersInside;
 #if UNITY_EDITOR
-	Tool LastTool = Tool.None;
+	Tool lastTool = Tool.None;
 #endif
 
 	void OnDisable ()
 	{
 #if UNITY_EDITOR
-		Tools.current = LastTool;
+		Tools.current = lastTool;
 #endif
 	}
 	private void OnEnable ()
 	{
 #if UNITY_EDITOR
-		LastTool = Tools.current;
+		lastTool = Tools.current;
 		Tools.current = Tool.None;
 #endif
 		if (GetComponent<SpriteRenderer>() == null)
@@ -61,6 +62,7 @@ public class CameraZone : MonoBehaviour
 #if UNITY_EDITOR
 		EditorApplication.playModeStateChanged += RegenerateVisualizer;
 #endif
+		if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
 	}
 #if UNITY_EDITOR
 	private void RegenerateVisualizer ( PlayModeStateChange state )
@@ -114,6 +116,7 @@ public class CameraZone : MonoBehaviour
 				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) < minPlayersRequired)
 				{
 					DesactivateZone();
+					linkedCameraBehaviour.DesactivateCamera();
 				}
 			}
 			else
@@ -121,6 +124,7 @@ public class CameraZone : MonoBehaviour
 				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
 				{
 					ActivateZone();
+					linkedCameraBehaviour.ActivateCamera();
 				}
 			}
 		}
@@ -169,23 +173,23 @@ public class CameraZone : MonoBehaviour
 
 	void UpdateCombatZone()
 	{
-		Vector3 wantedPosition = cornerA + ((cornerB - cornerA) / 2);
-		transform.position = new Vector3(wantedPosition.x, transform.position.y, wantedPosition.z);
+		Vector3 i_wantedPosition = cornerA_access + ((cornerB_access - cornerA_access) / 2);
+		transform.position = new Vector3(i_wantedPosition.x, transform.position.y, i_wantedPosition.z);
 		if (visualizer != null)
 		{
 			//Size X: 
-			float angleA = Vector3.Angle(transform.TransformDirection(new Vector3(1, 0, 0)), (cornerA - transform.position));
-			float sizeX = (cornerA - transform.position).magnitude * Mathf.Cos(angleA * Mathf.Deg2Rad);
+			float angleA = Vector3.Angle(transform.TransformDirection(new Vector3(1, 0, 0)), (cornerA_access - transform.position));
+			float sizeX = (cornerA_access - transform.position).magnitude * Mathf.Cos(angleA * Mathf.Deg2Rad);
 
-			float angleB = Vector3.Angle(transform.TransformDirection(new Vector3(0, 1, 0)), (cornerA - transform.position));
-			float sizeY = (cornerA - transform.position).magnitude * Mathf.Cos(angleB * Mathf.Deg2Rad);
+			float angleB = Vector3.Angle(transform.TransformDirection(new Vector3(0, 1, 0)), (cornerA_access - transform.position));
+			float sizeY = (cornerA_access - transform.position).magnitude * Mathf.Cos(angleB * Mathf.Deg2Rad);
 
 			visualizer.size = new Vector3((sizeX * 2) / transform.localScale.x, (sizeY * 2) / transform.localScale.z, 1);
 			visualizer.transform.localRotation = Quaternion.Euler(new Vector3(-90, transform.localRotation.eulerAngles.y, 0));
 		}
 		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
 		{
-			cameraPivot.transform.position = wantedPosition;
+			cameraPivot.transform.position = i_wantedPosition;
 			cameraPivot.transform.localRotation = Quaternion.Euler(cameraPivot.transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, cameraPivot.transform.localRotation.eulerAngles.z);
 		}
 		if (genCollider != null)
@@ -204,21 +208,21 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerEnter ( Collider other )
+	private void OnTriggerEnter ( Collider _other )
 	{
-		PlayerController playerFound = other.GetComponent<PlayerController>();
-		if (playerFound != null && !playersInside.Contains(playerFound))
+		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
+		if (i_playerFound != null && !playersInside.Contains(i_playerFound))
 		{
-			playersInside.Add(playerFound);
+			playersInside.Add(i_playerFound);
 		}
 	}
 
-	private void OnTriggerExit ( Collider other )
+	private void OnTriggerExit ( Collider _other )
 	{
-		PlayerController playerFound = other.GetComponent<PlayerController>();
-		if (playerFound != null && playersInside.Contains(playerFound))
+		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
+		if (i_playerFound != null && playersInside.Contains(i_playerFound))
 		{
-			playersInside.Remove(playerFound);
+			playersInside.Remove(i_playerFound);
 		}
 	}
 

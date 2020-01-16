@@ -20,15 +20,15 @@ public class SoundEditor : Editor
 		soundDatas = (SoundDatas)target;
 		this.serializedObject.Update();
 
-		GUIStyle headerStyle = new GUIStyle(EditorStyles.helpBox);
-		headerStyle.alignment = TextAnchor.MiddleCenter;
-		headerStyle.fontSize = 20;
-		headerStyle.fontStyle = FontStyle.Bold;
+		GUIStyle i_headerStyle = new GUIStyle(EditorStyles.helpBox);
+		i_headerStyle.alignment = TextAnchor.MiddleCenter;
+		i_headerStyle.fontSize = 20;
+		i_headerStyle.fontStyle = FontStyle.Bold;
 
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Global settings", headerStyle);
+			GUILayout.Box("Global settings", i_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -40,7 +40,7 @@ public class SoundEditor : Editor
 		GUILayout.BeginVertical(EditorStyles.helpBox);
 		{
 			GUI.color = Color.gray;
-			GUILayout.Box("Sound datas", headerStyle);
+			GUILayout.Box("Sound datas", i_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
@@ -61,7 +61,7 @@ public class SoundEditor : Editor
 
 							if (GUILayout.Button(EditorGUIUtility.IconContent("Animation.Play"), GUILayout.Width(20), GUILayout.Height(20)))
 							{
-								PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
+								SoundManager.PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
 							}
 							GUILayout.Label("Play Chances", GUILayout.Width(100));
 							EditorGUI.BeginChangeCheck();
@@ -144,47 +144,12 @@ public class SoundEditor : Editor
 
 	void AddSound()
 	{
-		SoundData newSoundData = new SoundData();
-		newSoundData.soundName = "New sound " + (soundDatas.soundList.Count + 1);
-		newSoundData.soundList = new List<Sound>();
+		SoundData i_newSoundData = new SoundData();
+		i_newSoundData.soundName = "New sound " + (soundDatas.soundList.Count + 1);
+		i_newSoundData.soundList = new List<Sound>();
 		Sound newSound = new Sound();
 		newSound.playChances = 1f;
-		newSoundData.soundList.Add(newSound);
-		soundDatas.soundList.Add(newSoundData);
-	}
-
-	void PlaySoundInEditor ( AudioClip clip, int startSample = 0, bool loop = false )
-	{
-		StopAllClips();
-		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
-		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
-		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
-			"PlayClip",
-			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
-			null,
-			new System.Type[] { typeof(AudioClip), typeof(int), typeof(bool) },
-			null
-		);
-		method.Invoke(
-			null,
-			new object[] { clip, startSample, loop }
-		);
-	}
-
-	void StopAllClips ()
-	{
-		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
-		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
-		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
-			"StopAllClips",
-			System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
-			null,
-			new System.Type[] { },
-			null
-		);
-		method.Invoke(
-			null,
-			new object[] { }
-		);
+		i_newSoundData.soundList.Add(newSound);
+		soundDatas.soundList.Add(i_newSoundData);
 	}
 }

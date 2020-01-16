@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06114c3c4d746248960ee19ba8470ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MyScript: {fileID: 4966143793828746274}
+  myScript: {fileID: 0}
 --- !u!1 &3158914843825606604
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,7 +389,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6086072691216837907}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -427,32 +427,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a120f4e62c7884a43822b8d03f446de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _self: {fileID: 3668126503491773334}
-  Rb: {fileID: 8174936212591820110}
-  Animator: {fileID: 1833733463821956502}
-  HealthBarRef: {fileID: 3348403758328978162}
-  HealthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+  maxHealth: 30
+  totalHeight: 1.5
+  invincibilityTime: 1
+  canMove: 0
+  jumpForce: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minWalkSpeed: 0.1
+  moveSpeed: 15
+  acceleration: 200
+  movingDrag: 0.4
+  idleDrag: 0.4
+  onGroundGravityMultiplyer: 0
+  deadzone: 0.2
+  turnSpeed: 0.25
+  canClimb: 1
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
+  isBumpable: 1
+  maxGettingUpDuration: 0.6
+  bumpDistanceCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpRaycastDistance: 1
+  whenToTriggerFallingAnim: 0
+  eventOnBeingHit: event.PlayerBeingHit
+  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
+  eventOnBeingGrounded: event.PlayerGrounded
+  eventOnDeath: event.Player1Death
+  eventOnHealing: event.PlayerHealing
+  healthBarRef: {fileID: 3348403758328978162}
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
-  Target: {fileID: 0}
-  State: 0
-  attackState: 0
-  aimingCubeState: 0
+  playerOneTransform: {fileID: 0}
+  playerTwoTransform: {fileID: 0}
+  energyGainedOnHit: 1
+  damage: 10
+  powerLevel: 1
+  lockable: 0
+  lockHitboxSize: 0
+  arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
-  maxTimeBetweenCheck: 0.25
+  timeBetweenCheck: 0
   distanceBeforeChangingPriority: 2
-  MaxHealth: 30
-  Health: 0
-  energyAmount: 0.08
+  maxTimeBetweenCheck: 0.25
+  randomSpeedMod: 0
+  speedMultiplierFromPassHit: 0
+  timeToRecoverSlowFromPass: 0
+  speedMultiplierFromDunkHit: 0
+  timeToRecoverSlowFromDunk: 0
+  distanceToAttack: 5
+  maxAnticipationTime: 1
+  rotationSpeedPreparingAttack: 0.2
+  attackMaxDistance: 8
+  maxAttackDuration: 0.5
+  attackSpeedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  whenToTriggerEndOfAttackAnim: 0
+  attackHitBoxPrefab: {fileID: 0}
+  hitBoxOffset: {x: 0, y: 0, z: 0}
+  maxTimePauseAfterAttack: 1
+  attackRaycastDistance: 2
+  canSurroundPlayer: 0
+  bezierCurveHeight: 0.5
+  bezierDistanceToHeightRatio: 100
+  coreDropChances: 0.15
+  minMaxDropForce: {x: 0, y: 0}
+  minMaxCoreHealthValue: {x: 10, y: 10}
+  turretState: 0
   arenaTurret: 0
   defaultForwardPredictionRatio: 0.85
   minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
   maxRotationSpeed: 5
-  maxAnticipationTime: 1
   maxRestTime: 2
   randomRangeRestTime: 0.5
-  _lockable: 1
-  _lockHitboxSize: 2
   aimingCubeTransform: {fileID: 8116397337583495147}
   aimingCubeRenderer: {fileID: 2802001169725089407}
   aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
@@ -467,13 +531,6 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3937835393218686174, guid: b8e3861787e70b145a85cd7de75f14e5,
     type: 3}
   bulletSpawn: {fileID: 4485545553351095611}
-  deathParticlePrefab: {fileID: 103296, guid: 64213efe87b202141b44b6a613b892e9, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 102696, guid: 185035e4680c4b344b62bf5ace4674b8, type: 3}
-  hitParticleScale: 3
-  coreDropChances: 0.15
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
 --- !u!135 &8142821643506368650
 SphereCollider:
   m_ObjectHideFlags: 0

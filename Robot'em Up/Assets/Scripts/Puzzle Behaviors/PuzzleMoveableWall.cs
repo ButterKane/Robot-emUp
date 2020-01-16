@@ -6,9 +6,9 @@ using MyBox;
 public class PuzzleMoveableWall : PuzzleActivable
 {
 
-    [ReadOnly] public Vector3 Pos1;
-    [ReadOnly] public Vector3 Pos2;
-    public Vector3 PositionModifier;
+    [ReadOnly] public Vector3 pos1;
+    [ReadOnly] public Vector3 pos2;
+    public Vector3 positionModifier;
     [Range(0, 40)]
     public float speed;
     public enum MoveableWallState { Pos1, Pos2, OneToTwo, TwoToOne }
@@ -25,7 +25,7 @@ public class PuzzleMoveableWall : PuzzleActivable
     void Awake()
     {
         startTime = Time.time;
-        journeyLength = Vector3.Distance(Pos1, Pos2);
+        journeyLength = Vector3.Distance(pos1, pos2);
         RecalculatePositions();
 
     }
@@ -37,7 +37,7 @@ public class PuzzleMoveableWall : PuzzleActivable
         {
             distCovered = (Time.time - startTime) * speed;
             fractionOfJourney = distCovered / journeyLength;
-            transform.position = Vector3.Lerp(Pos1, Pos2, fractionOfJourney);
+            transform.position = Vector3.Lerp(pos1, pos2, fractionOfJourney);
             if (fractionOfJourney > 0.99f)
             {
                 state = MoveableWallState.Pos2;
@@ -54,7 +54,7 @@ public class PuzzleMoveableWall : PuzzleActivable
         {
             distCovered = (Time.time - startTime) * speed;
             fractionOfJourney = distCovered / journeyLength;
-            transform.position = Vector3.Lerp(Pos2, Pos1, fractionOfJourney);
+            transform.position = Vector3.Lerp(pos2, pos1, fractionOfJourney);
             if (fractionOfJourney > 0.99f)
             {
                 state = MoveableWallState.Pos1;
@@ -93,7 +93,6 @@ public class PuzzleMoveableWall : PuzzleActivable
         {
             state = MoveableWallState.TwoToOne;
             startTime = Time.time - (1 - fractionOfJourney) * journeyLength / speed;
-
         }
 
         UpdateLights();
@@ -103,8 +102,8 @@ public class PuzzleMoveableWall : PuzzleActivable
     [ButtonMethod]
     private void RecalculatePositions()
     {
-        Pos1 = transform.position;
-        Pos2 = transform.position + PositionModifier;
+        pos1 = transform.position;
+        pos2 = transform.position + positionModifier;
     }
 //#endif
 }

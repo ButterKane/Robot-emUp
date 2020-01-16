@@ -9,11 +9,11 @@ public class PyramidGenerator : ScriptableWizard
     public bool flat = true;
 
          
-    Mesh GenerateMesh(Mesh oldMesh = null)
+    Mesh GenerateMesh(Mesh _oldMesh = null)
     {
-        if (oldMesh == null)
+        if (_oldMesh == null)
         {
-            oldMesh = new Mesh();
+            _oldMesh = new Mesh();
         }
         int vertextCount = size + 2;
         int triangleCount = size * 2;
@@ -40,19 +40,19 @@ public class PyramidGenerator : ScriptableWizard
             triangles[offset + 5] = oldIndex;
         }
         
-        oldMesh.vertices = vertices;
-        oldMesh.triangles = triangles;
-        oldMesh.RecalculateNormals();
-        oldMesh.RecalculateBounds();
+        _oldMesh.vertices = vertices;
+        _oldMesh.triangles = triangles;
+        _oldMesh.RecalculateNormals();
+        _oldMesh.RecalculateBounds();
 
-        return oldMesh;
+        return _oldMesh;
     }
 
-    Mesh GenerateMeshFlat(Mesh oldMesh = null)
+    Mesh GenerateMeshFlat(Mesh _oldMesh = null)
     {
-        if (oldMesh == null)
+        if (_oldMesh == null)
         {
-            oldMesh = new Mesh();
+            _oldMesh = new Mesh();
         }
         int vertextCount = size*4 + 1;
         int triangleCount = size * 2;
@@ -87,12 +87,12 @@ public class PyramidGenerator : ScriptableWizard
             triangles[offset + 5] = oldIndex - 1;
         }
 
-        oldMesh.vertices = vertices;
-        oldMesh.triangles = triangles;
-        oldMesh.RecalculateNormals();
-        oldMesh.RecalculateBounds();
+        _oldMesh.vertices = vertices;
+        _oldMesh.triangles = triangles;
+        _oldMesh.RecalculateNormals();
+        _oldMesh.RecalculateBounds();
 
-        return oldMesh;
+        return _oldMesh;
     }
 
     [MenuItem("Assets/Create/Pyramid")]

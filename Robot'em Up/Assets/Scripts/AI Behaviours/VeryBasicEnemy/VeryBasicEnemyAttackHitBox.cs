@@ -4,23 +4,23 @@ using UnityEngine;
 
 public class VeryBasicEnemyAttackHitBox : MonoBehaviour
 {
-    void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider _other)
     {
-        Vector3 impactVector = other.transform.position - transform.position;
-        Vector3 flattedDownImpactVector = new Vector3(impactVector.x, 0, impactVector.z);
+        Vector3 i_impactVector = _other.transform.position - transform.position;
+        Vector3 i_flattedDownImpactVector = new Vector3(i_impactVector.x, 0, i_impactVector.z);
 
-        if (other.tag == "Player")
+        if (_other.tag == "Player")
         {
-            if (other.GetComponent<PawnController>() != null)
-                other.GetComponent<PawnController>().Damage(transform.parent.GetComponent<EnemyBehaviour>().damage);
+            if (_other.GetComponent<PawnController>() != null)
+                _other.GetComponent<PawnController>().Damage(transform.parent.GetComponent<EnemyBehaviour>().damage);
 
-            EnemyShield enemyShield = GetComponentInParent<EnemyShield>();
-            if (enemyShield !=null)
+            EnemyShield i_enemyShield = GetComponentInParent<EnemyShield>();
+            if (i_enemyShield !=null)
             {
-                enemyShield.StopAttack();
+                i_enemyShield.StopAttack();
 
-                if (other.GetComponent<PawnController>() != null && other.GetComponent<DunkController>() != null && other.GetComponent<DunkController>().isDunking() == false)
-                    other.GetComponent<PawnController>().BumpMe(10,1,1, flattedDownImpactVector.normalized, enemyShield.BumpOtherDistanceMod, enemyShield.BumpOtherDurationMod, enemyShield.BumpOtherRestDurationMod);
+                if (_other.GetComponent<PawnController>() != null && _other.GetComponent<DunkController>() != null && _other.GetComponent<DunkController>().isDunking() == false)
+                    _other.GetComponent<PawnController>().BumpMe(10,1,1, i_flattedDownImpactVector.normalized, i_enemyShield.BumpOtherDistanceMod, i_enemyShield.BumpOtherDurationMod, i_enemyShield.BumpOtherRestDurationMod);
             }
         }
     }

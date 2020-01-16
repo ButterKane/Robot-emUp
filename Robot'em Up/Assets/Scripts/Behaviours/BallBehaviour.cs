@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyBox;
 
 public enum BallState {
 	Grounded, //The ball is on the ground
@@ -10,30 +11,29 @@ public enum BallState {
 }
 public class BallBehaviour : MonoBehaviour
 {
-	[Header("Ball informations (Only debug, don't change)")]
+	[Separator("Ball variables")]
 	[Space(2)]
-	[SerializeField] private Vector3 currentDirection;
-	[SerializeField] private float currentMaxDistance;
-	[SerializeField] private float currentDistanceTravelled;
-	[SerializeField] private float currentSpeed;
-    [SerializeField] private BallState currentState;
-	[SerializeField] private BallDatas currentBallDatas;
-	[SerializeField] private int currentBounceCount;
-	[SerializeField] private PawnController currentThrower;
-	 public bool canBounce;
-	[SerializeField] private bool canHitWalls;
-	[SerializeField] private List<Vector3> currentCurve;
-	[SerializeField] private Vector3 initialLookDirection;
-	[SerializeField] private List<DamageModifier> currentDamageModifiers;
-	[SerializeField] private List<SpeedCoef> currentSpeedModifiers;
-	[SerializeField] private Color currentColor;
-	[SerializeField] private bool teleguided;
-	[SerializeField] private float currentTimeFlying;
+	[ReadOnly] [SerializeField] private Vector3 currentDirection;
+	[ReadOnly] [SerializeField] private float currentMaxDistance;
+	[ReadOnly] [SerializeField] private float currentDistanceTravelled;
+	[ReadOnly] [SerializeField] private float currentSpeed;
+	[ReadOnly] [SerializeField] private BallState currentState;
+	[ReadOnly] [SerializeField] private BallDatas currentBallDatas;
+	[ReadOnly] [SerializeField] private int currentBounceCount;
+	[ReadOnly] [SerializeField] private PawnController currentThrower;
+	[ReadOnly] public bool canBounce;
+	[ReadOnly] [SerializeField] private bool canHitWalls;
+	[ReadOnly] [SerializeField] private List<Vector3> currentCurve;
+	[ReadOnly] [SerializeField] private Vector3 initialLookDirection;
+	[ReadOnly] [SerializeField] private List<DamageModifier> currentDamageModifiers;
+	[ReadOnly] [SerializeField] private List<SpeedCoef> currentSpeedModifiers;
+	[ReadOnly] [SerializeField] private Color currentColor;
+	[ReadOnly] [SerializeField] private bool teleguided;
+	[ReadOnly] [SerializeField] private float currentTimeFlying;
 
 	private Collider col;
 	private Rigidbody rb;
 	private int defaultLayer;
-	private GameObject trailFX;
 	private List<IHitable> hitGameObjects;
 	private Vector3 previousPosition;
 	private Coroutine ballCoroutine;
@@ -115,8 +115,6 @@ public class BallBehaviour : MonoBehaviour
 
 	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
 	{
-		SoundManager.PlaySound("BallRebound", transform.position, transform);
-		FeedbackManager.SendFeedback("event.ReboundOnWalls", this);
 		CursorManager.SetBallPointerParent(transform);
 		currentCurve = null;
 		currentDistanceTravelled = 0;
@@ -168,38 +166,38 @@ public class BallBehaviour : MonoBehaviour
 
 	void UpdateModifiers ()
 	{
-		List<DamageModifier> newDamageModifierList = new List<DamageModifier>();
+		List<DamageModifier> i_newDamageModifierList = new List<DamageModifier>();
 		foreach (DamageModifier damageModifier in currentDamageModifiers)
 		{
-			if (damageModifier.duration <= -1) { newDamageModifierList.Add(damageModifier); continue; }
+			if (damageModifier.duration <= -1) { i_newDamageModifierList.Add(damageModifier); continue; }
 			damageModifier.duration -= Time.deltaTime;
 			if (damageModifier.duration > 0)
 			{
-				newDamageModifierList.Add(damageModifier);
+				i_newDamageModifierList.Add(damageModifier);
 			}
 		}
-		currentDamageModifiers = newDamageModifierList;
+		currentDamageModifiers = i_newDamageModifierList;
 
-		List<SpeedCoef> newSpeedModifierList = new List<SpeedCoef>();
+		List<SpeedCoef> i_newSpeedModifierList = new List<SpeedCoef>();
 		foreach (SpeedCoef speedModifier in currentSpeedModifiers)
 		{
-			if (speedModifier.duration <= -1) { newSpeedModifierList.Add(speedModifier); continue; }
+			if (speedModifier.duration <= -1) { i_newSpeedModifierList.Add(speedModifier); continue; }
 			speedModifier.duration -= Time.deltaTime;
 			if (speedModifier.duration > 0)
 			{
-				newSpeedModifierList.Add(speedModifier);
+				i_newSpeedModifierList.Add(speedModifier);
 			}
 		}
-		currentSpeedModifiers = newSpeedModifierList;
+		currentSpeedModifiers = i_newSpeedModifierList;
 	}
 
 	void UpdateColor ()
 	{
 		if (currentBallDatas != null)
 		{
-			float lerpValue = (GetCurrentDamageModifier()-1) / (currentBallDatas.maxDamageModifierOnPerfectReception - 1);
-			Color newColor = currentBallDatas.colorOverDamage.Evaluate(lerpValue);
-			SetColor(newColor);
+			float i_lerpValue = (GetCurrentDamageModifier()-1) / (currentBallDatas.maxDamageModifierOnPerfectReception - 1);
+			Color i_newColor = currentBallDatas.colorOverDamage.Evaluate(i_lerpValue);
+			SetColor(i_newColor);
 		}
 	}
 
@@ -217,10 +215,10 @@ public class BallBehaviour : MonoBehaviour
 	{
 		if (_lightExplosion)
 		{
-			FXManager.InstantiateFX(currentBallDatas.LightExplosion, transform.position, false, Vector3.forward, Vector3.one, null);
+
 		} else
 		{
-			FXManager.InstantiateFX(currentBallDatas.HeavyExplosion, transform.position, false, Vector3.forward, Vector3.one, null);
+
 		}
 	}
 
@@ -251,53 +249,49 @@ public class BallBehaviour : MonoBehaviour
 
 	public int GetCurrentDamages()
 	{
-		float damages = currentBallDatas.damages;
-		return Mathf.RoundToInt(damages * GetCurrentDamageModifier());
+		float i_damages = currentBallDatas.damages;
+		return Mathf.RoundToInt(i_damages * GetCurrentDamageModifier());
 	}
 
 	public float GetCurrentDamageModifier()
 	{
-		float perfectReceptionModifier = 1f;
-		float otherModifier = 1;
+		float i_perfectReceptionModifier = 1f;
+		float i_otherModifier = 1;
 		foreach (DamageModifier modifier in currentDamageModifiers)
 		{
 			if (modifier.source == DamageModifierSource.PerfectReception)
 			{
-				perfectReceptionModifier *= modifier.multiplyCoef;
+				i_perfectReceptionModifier *= modifier.multiplyCoef;
 			}
 			else
 			{
-				otherModifier *= modifier.multiplyCoef;
+				i_otherModifier *= modifier.multiplyCoef;
 			}
 		}
-		perfectReceptionModifier = Mathf.Clamp(perfectReceptionModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
-		return (perfectReceptionModifier * otherModifier);
+		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
+		return (i_perfectReceptionModifier * i_otherModifier);
 	}
 
 	public float GetCurrentSpeedModifier()
 	{
-		float otherModifier = 1f;
-		float perfectReceptionModifier = 1f;
+		float i_otherModifier = 1f;
+		float i_perfectReceptionModifier = 1f;
 		foreach (SpeedCoef modifier in currentSpeedModifiers)
 		{
 			if (modifier.reason == SpeedMultiplierReason.PerfectReception)
 			{
-				perfectReceptionModifier *= modifier.speedCoef;
+				i_perfectReceptionModifier *= modifier.speedCoef;
 			} else
 			{
-				otherModifier *= modifier.speedCoef;
+				i_otherModifier *= modifier.speedCoef;
 			}
 		}
-		perfectReceptionModifier = Mathf.Clamp(perfectReceptionModifier, 0, currentBallDatas.maxSpeedMultiplierOnPerfectReception);
-		return perfectReceptionModifier * otherModifier;
+		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, currentBallDatas.maxSpeedMultiplierOnPerfectReception);
+		return i_perfectReceptionModifier * i_otherModifier;
 	}
 
 	void SetColor(Color _newColor)
 	{
-		if (trailFX != null)
-		{
-			ParticleColorer.ReplaceParticleColor(trailFX, new Color(122f / 255f, 0, 122f / 255f), _newColor);
-		}
         ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
         currentColor = _newColor;
 	}
@@ -310,15 +304,15 @@ public class BallBehaviour : MonoBehaviour
 
 	public void RemoveSpeedModifier(SpeedMultiplierReason _source)
 	{
-		List<SpeedCoef> newModifierList = new List<SpeedCoef>();
+		List<SpeedCoef> i_newModifierList = new List<SpeedCoef>();
 		foreach (SpeedCoef modifier in currentSpeedModifiers)
 		{
 			if (modifier.reason != _source)
 			{
-				newModifierList.Add(modifier);
+				i_newModifierList.Add(modifier);
 			}
 		}
-		currentSpeedModifiers = newModifierList;
+		currentSpeedModifiers = i_newModifierList;
 	}
 	public DamageModifier AddNewDamageModifier(DamageModifier _newModifier)
 	{
@@ -329,30 +323,28 @@ public class BallBehaviour : MonoBehaviour
 
 	public void RemoveDamageModifier(DamageModifierSource _source)
 	{
-		List<DamageModifier> newModifierList = new List<DamageModifier>();
+		List<DamageModifier> i_newModifierList = new List<DamageModifier>();
 		foreach (DamageModifier modifier in currentDamageModifiers)
 		{
 			if (modifier.source != _source)
 			{
-				newModifierList.Add(modifier);
+				i_newModifierList.Add(modifier);
 			}
 		}
-		currentDamageModifiers = newModifierList;
+		currentDamageModifiers = i_newModifierList;
 		UpdateColor();
 	}
 
-	public void ChangeState(BallState newState)
+	public void ChangeState(BallState _newState)
 	{
-		switch (newState)
+		switch (_newState)
 		{
 			case BallState.Grounded:
+				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
-				Destroy(trailFX);
 				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
-				FeedbackManager.SendFeedback("event.BallFallOnGround", this);
-				SoundManager.PlaySound("BallFallOnTheGround", transform.position, transform);
 				LockManager.UnlockAll();
 				break;
 			case BallState.Aimed:
@@ -364,22 +356,14 @@ public class BallBehaviour : MonoBehaviour
 				DisableGravity();
 				EnableCollisions();
 				currentDistanceTravelled = 0;
-				if (trailFX == null)
-				{
-					trailFX = FXManager.InstantiateFX(currentBallDatas.Trail, Vector3.zero, true, Vector3.zero, Vector3.one, transform);
-					UpdateColor();
-					trailFX.name = "FX_CoreTrail";
-				}
 				break;
 			case BallState.Held:
 				DisableGravity();
 				DisableCollisions();
 				LockManager.UnlockAll();
-				FXManager.InstantiateFX(currentBallDatas.ReceiveCore, Vector3.zero, true, Vector3.zero,Vector3.one, transform);
-				Destroy(trailFX);
 				break;
 		}
-		currentState = newState;
+		currentState = _newState;
 	}
 
 	public BallState GetState()
@@ -398,27 +382,27 @@ public class BallBehaviour : MonoBehaviour
 			case BallState.Flying:
 				if (currentCurve != null)
 				{
-					AnimationCurve curveX;
-					AnimationCurve curveY;
-					AnimationCurve curveZ;
-					float curveLength;
-					PassController currentPassController = GetCurrentThrower().GetComponent<PassController>();
-					if (currentPassController == null) { return; }
-					List<Vector3> pathCoordinates = currentPassController.GetCurvedPathCoordinates(startPosition, currentPassController.GetTarget().transform, initialLookDirection);
-					ConvertCoordinatesToCurve(pathCoordinates, out curveX, out curveY, out curveZ, out curveLength);
-					currentMaxDistance = curveLength;
-					float positionOnCurve = currentDistanceTravelled / currentMaxDistance;
-					LockManager.LockTargetsInPath(pathCoordinates, positionOnCurve);
-					if (positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
-					Vector3 nextPosition = new Vector3(curveX.Evaluate(positionOnCurve + 0.1f), curveY.Evaluate(positionOnCurve + 0.1f), curveZ.Evaluate(positionOnCurve + 0.1f));
-					currentDirection = nextPosition - transform.position;
+					AnimationCurve i_curveX;
+					AnimationCurve i_curveY;
+					AnimationCurve i_curveZ;
+					float i_curveLength;
+					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
+					if (i_currentPassController == null) { return; }
+					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget().transform, initialLookDirection);
+					ConvertCoordinatesToCurve(i_pathCoordinates, out i_curveX, out i_curveY, out i_curveZ, out i_curveLength);
+					currentMaxDistance = i_curveLength;
+					float i_positionOnCurve = currentDistanceTravelled / currentMaxDistance;
+					LockManager.LockTargetsInPath(i_pathCoordinates, i_positionOnCurve);
+					if (i_positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
+					Vector3 i_nextPosition = new Vector3(i_curveX.Evaluate(i_positionOnCurve + 0.1f), i_curveY.Evaluate(i_positionOnCurve + 0.1f), i_curveZ.Evaluate(i_positionOnCurve + 0.1f));
+					currentDirection = i_nextPosition - transform.position;
 				}
 				if (teleguided)
 				{
-					PassController currentPassController = GetCurrentThrower().GetComponent<PassController>();
-					if (currentPassController != null)
+					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
+					if (i_currentPassController != null)
 					{
-						currentDirection = (currentPassController.GetTarget().transform.position-transform.position).normalized;
+						currentDirection = (i_currentPassController.GetTarget().transform.position-transform.position).normalized;
 					}
 				}
 
@@ -433,28 +417,27 @@ public class BallBehaviour : MonoBehaviour
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
 					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
 
-					RaycastHit[] hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
-					foreach (RaycastHit raycast in hitColliders)
+					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
+					foreach (RaycastHit raycast in i_hitColliders)
 					{
-						IHitable potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
-						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
+						IHitable i_potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
+						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
 						{
-							hitGameObjects.Add(potentialHitableObjectFound);
-							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							hitGameObjects.Add(i_potentialHitableObjectFound);
+							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
 						if (raycast.collider.GetComponentInParent<Shield>() != null) {
 							Debug.Log("Shield"); 
 						}
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
+						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
-							Vector3 hitNormal = raycast.normal;
-							hitNormal.y = 0;
-							Vector3 newDirection = Vector3.Reflect(currentDirection, hitNormal);
-							newDirection.y = -currentDirection.y;
-							Bounce(newDirection, currentBallDatas.speedMultiplierOnBounce);
-							FXManager.InstantiateFX(currentBallDatas.WallHit, transform.position, false, -currentDirection, Vector3.one * 2.75f);
-							FeedbackManager.SendFeedback("event.WallHitByBall", raycast.collider.gameObject);
+							Vector3 i_hitNormal = raycast.normal;
+							i_hitNormal.y = 0;
+							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
+							i_newDirection.y = -currentDirection.y;
+							Bounce(i_newDirection, currentBallDatas.speedMultiplierOnBounce);
 							return;
 						}
 						else if (canHitWalls)
@@ -464,14 +447,14 @@ public class BallBehaviour : MonoBehaviour
 							return;
 						}
 					}
-					RaycastHit[] previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
-					foreach (RaycastHit raycast in previousColliders)
+					RaycastHit[] i_previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
+					foreach (RaycastHit raycast in i_previousColliders)
 					{
-						IHitable potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
-						if (potentialHitableObjectFound != null && !hitGameObjects.Contains(potentialHitableObjectFound))
+						IHitable i_potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
+						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
 						{
-							hitGameObjects.Add(potentialHitableObjectFound);
-							potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							hitGameObjects.Add(i_potentialHitableObjectFound);
+							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
 					}
 				}
@@ -519,43 +502,43 @@ public class BallBehaviour : MonoBehaviour
 		ballCoroutine = null;
 	}
 
-	public void PrintDecal(RaycastHit ray, Vector3 direction )
+	public void PrintDecal(RaycastHit _ray, Vector3 _direction )
 	{
 		Debug.Log("Spawning decal");
 	}
 
 	public void ConvertCoordinatesToCurve(List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength)
 	{
-		AnimationCurve curveX = new AnimationCurve();
-		AnimationCurve curveY = new AnimationCurve();
-		AnimationCurve curveZ = new AnimationCurve();
-		float curveLength = 0;
+		AnimationCurve i_curveX = new AnimationCurve();
+		AnimationCurve i_curveY = new AnimationCurve();
+		AnimationCurve i_curveZ = new AnimationCurve();
+		float i_curveLength = 0;
 		for (int i = 0; i < _coordinates.Count; i++)
 		{
-			float time = (float)i / (float)_coordinates.Count;
-			Keyframe keyX = new Keyframe();
-			keyX.value = _coordinates[i].x;
-			keyX.time = time;
-			curveX.AddKey(keyX);
+			float i_time = (float)i / (float)_coordinates.Count;
+			Keyframe i_keyX = new Keyframe();
+			i_keyX.value = _coordinates[i].x;
+			i_keyX.time = i_time;
+			i_curveX.AddKey(i_keyX);
 
-			Keyframe keyY = new Keyframe();
-			keyY.value = _coordinates[i].y;
-			keyY.time = time;
-			curveY.AddKey(keyY);
+			Keyframe i_keyY = new Keyframe();
+			i_keyY.value = _coordinates[i].y;
+			i_keyY.time = i_time;
+			i_curveY.AddKey(i_keyY);
 
-			Keyframe keyZ = new Keyframe();
-			keyZ.value = _coordinates[i].z;
-			keyZ.time = time;
-			curveZ.AddKey(keyZ);
+			Keyframe i_keyZ = new Keyframe();
+			i_keyZ.value = _coordinates[i].z;
+			i_keyZ.time = i_time;
+			i_curveZ.AddKey(i_keyZ);
 
 			if (i < _coordinates.Count - 1)
 			{
-				curveLength += Vector3.Distance(_coordinates[i], _coordinates[i + 1]);
+				i_curveLength += Vector3.Distance(_coordinates[i], _coordinates[i + 1]);
 			}
 		}
-		_curveX = curveX;
-		_curveY = curveY;
-		_curveZ = curveZ;
-		_curveLength = curveLength;
+		_curveX = i_curveX;
+		_curveY = i_curveY;
+		_curveZ = i_curveZ;
+		_curveLength = i_curveLength;
 	}
 }

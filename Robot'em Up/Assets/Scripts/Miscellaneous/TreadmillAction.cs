@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class TreadmillAction : MonoBehaviour
 {
-    public GameObject Steve;
-    public float TreadmillForce = 10;
+    public GameObject steve;
+    public float treadmillForce = 10;
 
     private Vector3 steveDirection;
     private List<Rigidbody> _concernedRbs = new List<Rigidbody>();
@@ -18,14 +18,14 @@ public class TreadmillAction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        steveDirection = Steve.transform.forward;
+        steveDirection = steve.transform.forward;
 
         if (_concernedRbs.Count > 0)
         {
             foreach (var rb in _concernedRbs)
             {
                 rb.AddForce(-rb.velocity , ForceMode.Acceleration);
-                rb.AddForce(steveDirection * TreadmillForce, ForceMode.Acceleration);
+                rb.AddForce(steveDirection * treadmillForce, ForceMode.Acceleration);
             }
         }
     }
@@ -33,15 +33,16 @@ public class TreadmillAction : MonoBehaviour
 
     /// Right now, the detection takes the magnet collider of the player as weel, needs rework to prevent that
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
         Rigidbody thisRb;
         bool isAlreadyPresent = false;
-        if (other.gameObject.tag == "Player" || other.gameObject.tag == "Enemy")
+
+        if (_other.gameObject.tag == "Player" || _other.gameObject.tag == "Enemy")
         {
-            if (other.gameObject.GetComponent<Rigidbody>())
+            if (_other.gameObject.GetComponent<Rigidbody>())
             {
-                thisRb = other.gameObject.GetComponent<Rigidbody>();
+                thisRb = _other.gameObject.GetComponent<Rigidbody>();
                 foreach (var rb in _concernedRbs)
                 {
                     if (rb == thisRb)
@@ -59,9 +60,9 @@ public class TreadmillAction : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        _concernedRbs.Remove(other.gameObject.transform.root.GetComponent<Rigidbody>());
+        _concernedRbs.Remove(_other.gameObject.transform.root.GetComponent<Rigidbody>());
     }
 
 }

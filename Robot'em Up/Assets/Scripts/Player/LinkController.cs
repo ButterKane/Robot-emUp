@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using MyBox;
 
 public enum LinkState
 {
@@ -15,26 +15,24 @@ public enum LinkState
 [RequireComponent(typeof(PawnController))]
 public class LinkController : MonoBehaviour
 {
-	[Header("Settings")]
-	public PawnController firstPawn;
-	public PawnController secondPawn;
+	[Separator("General Settings")]
+	[ReadOnly] public PawnController firstPawn;
+	[ReadOnly] public PawnController secondPawn;
 
 	public float maxDistanceBeforeShowing = 10f;
 	public float maxDistanceBeforeSlowing = 12f;
 	public float maxDistanceBeforeBreaking = 14f;
 	public float distanceBeforeRebuilding = 10f;
-
-	public Gradient linkColor;
-
 	public float maxSlowCoef = 0.2f;
-
 	public float damagesPerSecWithoutLink = 1f;
 
 	public AnimationCurve slowCoefCurve;
-	public AnimationCurve opacityFadeCurve;
 
+	[Separator("Visuals")]
+	public Gradient linkColor;
 	public Material linkMaterial;
 	public float linkWidth;
+	public AnimationCurve opacityFadeCurve;
 
 	private GameObject linkGameObject;
 	private LineRenderer lineRenderer;
@@ -61,14 +59,14 @@ public class LinkController : MonoBehaviour
 
     GameObject GenerateLinkHolder()
 	{
-		GameObject newLinkHolder = new GameObject();
-		newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
-		newLinkHolder.transform.SetParent(firstPawn.transform.parent);
-		lineRenderer = newLinkHolder.AddComponent<LineRenderer>();
+		GameObject i_newLinkHolder = new GameObject();
+		i_newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
+		i_newLinkHolder.transform.SetParent(firstPawn.transform.parent);
+		lineRenderer = i_newLinkHolder.AddComponent<LineRenderer>();
 		lineRenderer.material = linkMaterial;
 		lineRenderer.startWidth = linkWidth;
 		lineRenderer.endWidth = linkWidth;
-		return newLinkHolder;
+		return i_newLinkHolder;
 	}
 
 	private void Update ()
@@ -83,13 +81,13 @@ public class LinkController : MonoBehaviour
 		switch (_newState)
 		{
 			case LinkState.Broken:
-				FeedbackManager.SendFeedback("event.LinkBroken", this);
-				SoundManager.PlaySound("LinkBroken", firstPawn.GetCenterPosition() + (firstPawn.GetCenterPosition() + secondPawn.GetCenterPosition() / 2));
+				FeedbackManager.SendFeedback("event.LinkBroken", firstPawn, firstPawn.GetCenterPosition(), firstPawn.GetCenterPosition() - transform.position, firstPawn.GetCenterPosition() - transform.position);
+				FeedbackManager.SendFeedback("event.LinkBroken", secondPawn, secondPawn.GetCenterPosition(), secondPawn.GetCenterPosition() - transform.position, secondPawn.GetCenterPosition() - transform.position);
 				WarningPanel.OpenPanel();
 				break;
 			case LinkState.Rebuilt:
-				FeedbackManager.SendFeedback("event.LinkRebuilt", this);
-				SoundManager.PlaySound("LinkRebuilt", firstPawn.GetCenterPosition() + (firstPawn.GetCenterPosition() + secondPawn.GetCenterPosition() / 2));
+				FeedbackManager.SendFeedback("event.LinkRebuilt", firstPawn, firstPawn.GetCenterPosition(), firstPawn.GetCenterPosition() - transform.position, firstPawn.GetCenterPosition() - transform.position);
+				FeedbackManager.SendFeedback("event.LinkRebuilt", secondPawn, secondPawn.GetCenterPosition(), secondPawn.GetCenterPosition() - transform.position, secondPawn.GetCenterPosition() - transform.position);
 				WarningPanel.ClosePanel();
 				break;
 			case LinkState.Showing:
@@ -108,10 +106,10 @@ public class LinkController : MonoBehaviour
 		if (linkGameObject != null)
 		{
 			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; WarningPanel.ClosePanelInstantly(); linkIsBroke = false; return;}
-			float linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
+			float i_linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
 			if (!linkIsBroke)
 			{
-				if (linkLength < maxDistanceBeforeBreaking)
+				if (i_linkLength < maxDistanceBeforeBreaking)
 				{
 					//Hide link
 					lineRenderer.positionCount = 2;
@@ -123,13 +121,13 @@ public class LinkController : MonoBehaviour
 					lineRenderer.endColor = transparentColor;
 					ChangeLinkState(LinkState.Hidden);
 				}
-				if (linkLength >= maxDistanceBeforeShowing && linkLength < maxDistanceBeforeSlowing)
+				if (i_linkLength >= maxDistanceBeforeShowing && i_linkLength < maxDistanceBeforeSlowing)
 				{
 					//Show link
 					lineRenderer.positionCount = 2;
 					lineRenderer.SetPosition(0, firstPawn.GetCenterPosition());
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
-					float lerpValue = (maxDistanceBeforeSlowing - linkLength) / (maxDistanceBeforeSlowing - maxDistanceBeforeShowing);
+					float lerpValue = (maxDistanceBeforeSlowing - i_linkLength) / (maxDistanceBeforeSlowing - maxDistanceBeforeShowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
 					Color transparentColor = linkColor.Evaluate(0);
 					transparentColor.a = 0.1f;
@@ -137,12 +135,12 @@ public class LinkController : MonoBehaviour
 					lineRenderer.endColor = Color.Lerp(transparentColor, linkColor.Evaluate(0), lerpValue);
 					ChangeLinkState(LinkState.Showing);
 				}
-				if (linkLength >= maxDistanceBeforeSlowing && linkLength < maxDistanceBeforeBreaking)
+				if (i_linkLength >= maxDistanceBeforeSlowing && i_linkLength < maxDistanceBeforeBreaking)
 				{
 					lineRenderer.positionCount = 2;
 					lineRenderer.SetPosition(0, firstPawn.GetCenterPosition());
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
-					float lerpValue = (maxDistanceBeforeBreaking - linkLength) / (maxDistanceBeforeBreaking - maxDistanceBeforeSlowing);
+					float lerpValue = (maxDistanceBeforeBreaking - i_linkLength) / (maxDistanceBeforeBreaking - maxDistanceBeforeSlowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
 					lineRenderer.startColor = linkColor.Evaluate(lerpValue);
 					lineRenderer.endColor = linkColor.Evaluate(lerpValue);
@@ -160,7 +158,7 @@ public class LinkController : MonoBehaviour
 					secondPawn.AddSpeedCoef(new SpeedCoef(FsSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
 					ChangeLinkState(LinkState.Slowing);
 				}
-				if (linkLength >= maxDistanceBeforeBreaking)
+				if (i_linkLength >= maxDistanceBeforeBreaking)
 				{
 					//Break link
 					lineRenderer.positionCount = 0;
@@ -170,7 +168,7 @@ public class LinkController : MonoBehaviour
 			}
 			else
 			{
-				if (linkLength <= distanceBeforeRebuilding)
+				if (i_linkLength <= distanceBeforeRebuilding)
 				{
 					//Rebuild link
 					linkIsBroke = false;

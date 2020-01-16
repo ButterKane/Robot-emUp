@@ -4,29 +4,49 @@ using UnityEngine;
 
 public class FXManager : MonoBehaviour
 {
-	public static GameObject InstantiateFX(GameObject fx, Vector3 _position, bool _useLocalPosition, Vector3 _direction, Vector3 _sizeMultiplier, Transform _parent = null )
+	static IEnumerator spawnDelayCoroutine;
+	FXManager instance;
+
+	//void On
+	public static GameObject InstantiateFX(GameObject _fx, Vector3 _position, bool _useLocalPosition, Vector3 _direction, Vector3 _sizeMultiplier, Transform _parent = null)
 	{
-		if (fx == null)
+		if (_fx == null)
 		{
 			Debug.Log("Warning: No FX assigned");
 			return null;
 		}
-		GameObject newFX = Instantiate(fx);
+		GameObject i_newFX = Instantiate(_fx);
 		if (_parent != null)
 		{
-			newFX.transform.SetParent(_parent);
+			i_newFX.transform.SetParent(_parent);
 		}
-		if (_useLocalPosition) {
-			newFX.transform.localPosition = _position;
-		} else
+		if (_useLocalPosition)
 		{
-			newFX.transform.position = _position;
+			i_newFX.transform.localPosition = _position;
+		}
+		else
+		{
+			i_newFX.transform.position = _position;
 		}
 		if (_direction != Vector3.zero)
 		{
-			newFX.transform.forward = _direction;
+			i_newFX.transform.forward = _direction;
 		}
-		newFX.transform.localScale = new Vector3(newFX.transform.localScale.x * _sizeMultiplier.x, newFX.transform.localScale.y * _sizeMultiplier.y, newFX.transform.localScale.z * _sizeMultiplier.z);
-		return newFX;
+		i_newFX.transform.localScale = new Vector3(i_newFX.transform.localScale.x * _sizeMultiplier.x, i_newFX.transform.localScale.y * _sizeMultiplier.y, i_newFX.transform.localScale.z * _sizeMultiplier.z);
+		//i_newFX.GetComponent<ParticleSystem>().Stop();
+		return i_newFX;
 	}
+
+	public void StartDelayCoroutine ( MonoBehaviour myMonoBehaviour )
+	{
+		//Setup event parameters
+		myMonoBehaviour.StartCoroutine("TestCoroutine");
+	}
+
+	static IEnumerable TestCoroutine ()
+	{
+		yield return new WaitForSeconds(1f);
+		Debug.Log("Yoink");
+	}
+
 }

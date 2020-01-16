@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BallReseter : MonoBehaviour
 {
-	private void OnTriggerEnter ( Collider other )
+	private void OnTriggerEnter ( Collider _other )
 	{
 		GameManager.ResetBall();
 	}

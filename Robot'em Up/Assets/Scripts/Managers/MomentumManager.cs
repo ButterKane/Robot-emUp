@@ -28,36 +28,36 @@ public class MomentumManager: MonoBehaviour
 		currentMomentum = 0;
 		wantedMomentum = currentMomentum;
 
-		PostProcessProfile postProcessVolumeProfile = Camera.main.GetComponent<PostProcessVolume>().profile;
-		if (postProcessVolumeProfile == null) { Debug.LogWarning("No post process found, momentum won't update it's values"); }
+		PostProcessProfile i_postProcessVolumeProfile = Camera.main.GetComponent<PostProcessVolume>().profile;
+		if (i_postProcessVolumeProfile == null) { Debug.LogWarning("No post process found, momentum won't update it's values"); }
 
 		//Retrieves or add bloom settings
-		if (!postProcessVolumeProfile.TryGetSettings(out bloom))
+		if (!i_postProcessVolumeProfile.TryGetSettings(out bloom))
 		{
-			postProcessVolumeProfile.AddSettings<Bloom>();
+			i_postProcessVolumeProfile.AddSettings<Bloom>();
 		}
-		postProcessVolumeProfile.TryGetSettings(out bloom);
+		i_postProcessVolumeProfile.TryGetSettings(out bloom);
 
 		//Retrieves or add chromaticAberration settings
-		if (!postProcessVolumeProfile.TryGetSettings(out chromaticAberration))
+		if (!i_postProcessVolumeProfile.TryGetSettings(out chromaticAberration))
 		{
-			postProcessVolumeProfile.AddSettings<ChromaticAberration>();
+			i_postProcessVolumeProfile.AddSettings<ChromaticAberration>();
 		}
-		postProcessVolumeProfile.TryGetSettings(out chromaticAberration);
+		i_postProcessVolumeProfile.TryGetSettings(out chromaticAberration);
 
 		//Retrieves or add colorGrading settings
-		if (!postProcessVolumeProfile.TryGetSettings(out colorGrading))
+		if (!i_postProcessVolumeProfile.TryGetSettings(out colorGrading))
 		{
-			postProcessVolumeProfile.AddSettings<ColorGrading>();
+			i_postProcessVolumeProfile.AddSettings<ColorGrading>();
 		}
-		postProcessVolumeProfile.TryGetSettings(out colorGrading);
+		i_postProcessVolumeProfile.TryGetSettings(out colorGrading);
 
         //Retrieves or add grain settings
-        if (!postProcessVolumeProfile.TryGetSettings(out grain))
+        if (!i_postProcessVolumeProfile.TryGetSettings(out grain))
         {
-            postProcessVolumeProfile.AddSettings<Grain>();
+            i_postProcessVolumeProfile.AddSettings<Grain>();
         }
-        postProcessVolumeProfile.TryGetSettings(out grain);
+        i_postProcessVolumeProfile.TryGetSettings(out grain);
     }
 	private void Update ()
 	{

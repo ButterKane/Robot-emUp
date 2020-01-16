@@ -31,54 +31,54 @@ public class Retriever : MonoBehaviour
 	{
 		if (other.tag == "Ball")
 		{
-			FeedbackManager.SendFeedback("event.MagnetAttractingBall", this);
+			FeedbackManager.SendFeedback("event.PlayerAttractingBall", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 		}
 	}
 	private void OnTriggerStay(Collider other)
     {
         if (other.tag == "Ball")
         {
-			BallBehaviour ballBehaviour = other.GetComponent<BallBehaviour>();
-			if (ballBehaviour.GetState() == BallState.Grounded || ballBehaviour.GetState() == BallState.Flying)
+			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
+			if (i_ballBehaviour.GetState() == BallState.Grounded || i_ballBehaviour.GetState() == BallState.Flying)
 			{
-				if (ballBehaviour.GetState() == BallState.Flying)
+				if (i_ballBehaviour.GetState() == BallState.Flying)
 				{
-					if (ballBehaviour.GetCurrentThrower() == playerController && (ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
-					passController.Receive(ballBehaviour);
+					if (i_ballBehaviour.GetCurrentThrower() == playerController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+					passController.Receive(i_ballBehaviour);
 				}
 				else
 				{
-					passController.Receive(ballBehaviour);
+					passController.Receive(i_ballBehaviour);
 				}
 			}
         }
 		if (other.tag == "CorePart")
 		{
-			CorePart corePart = other.GetComponent<CorePart>();
-			if (!corePart.grounded) { return; }
-			if (!corePart.CanBePicked()) { return; }
-			if (corePart.linkedPawn != null)
+			CorePart i_corePart = other.GetComponent<CorePart>();
+			if (!i_corePart.grounded) { return; }
+			if (!i_corePart.CanBePicked()) { return; }
+			if (i_corePart.linkedPawn != null)
 			{
-				SoundManager.PlaySound("PickUpOnePartOfItsBody", transform.position, transform);
-				corePart.Pick(playerController);
-				bool partsFound = false;
+				i_corePart.Pick(playerController);
+				bool i_partsFound = false;
 				List<ReviveInformations> newList = new List<ReviveInformations>();
 				foreach (ReviveInformations parts in retrievedParts)
 				{
-					if (parts.linkedPlayer == corePart.linkedPawn)
+					if (parts.linkedPlayer == i_corePart.linkedPawn)
 					{
-						partsFound = true;
+						i_partsFound = true;
 						parts.amount++;
 						parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
 						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
 						if (parts.amount >= parts.maxAmount)
 						{
+							FeedbackManager.SendFeedback("event.PlayerPickingLastBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 							playerController.AddRevivablePlayer(parts);
-							FeedbackManager.SendFeedback("event.PickUpTheLastPartOfBody", this);
 						}
 						else
 						{
+							FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 							newList.Add(parts);
 						}
 					}
@@ -88,17 +88,17 @@ public class Retriever : MonoBehaviour
 					}
 				}
 				retrievedParts = newList;
-				if (!partsFound)
+				if (!i_partsFound)
 				{
-					ReviveInformations newPart = new ReviveInformations();
-					newPart.linkedPlayer = (PlayerController)corePart.linkedPawn;
-					newPart.maxAmount = corePart.totalPartCount;
-					newPart.amount = 1;
-					newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
-					newPart.linkedPanel.revivedPlayer = newPart.linkedPlayer;
-					newPart.linkedPanel.revivingPlayer = playerController;
-					newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = newPart.amount + "/" + corePart.totalPartCount;
-					retrievedParts.Add(newPart);
+					ReviveInformations i_newPart = new ReviveInformations();
+					i_newPart.linkedPlayer = (PlayerController)i_corePart.linkedPawn;
+					i_newPart.maxAmount = i_corePart.totalPartCount;
+					i_newPart.amount = 1;
+					i_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
+					i_newPart.linkedPanel.revivedPlayer = i_newPart.linkedPlayer;
+					i_newPart.linkedPanel.revivingPlayer = playerController;
+					i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + i_corePart.totalPartCount;
+					retrievedParts.Add(i_newPart);
 				}
 			} else
 			{
@@ -106,8 +106,8 @@ public class Retriever : MonoBehaviour
 
 				if (playerController.GetHealth() < playerController.GetMaxHealth())
 				{
-					corePart.Pick(playerController);
-									playerController.Heal(corePart.healthValue);
+					i_corePart.Pick(playerController);
+									playerController.Heal(i_corePart.healthValue);
 				}
 			}
 		}

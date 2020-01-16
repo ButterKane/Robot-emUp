@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,21 +8,22 @@ public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager i;
 
-    [Header("References")]
+    [Separator("References")]
     public GameObject enemyPrefab;
     public List<Transform> enemySpawnPoints;
 
-    [Space(2)]
-    [Header("Auto-assigned References")]
-    public PlayerController playerOne;
-    public PlayerController playerTwo;
-    public GameObject enemyCurrentlyAttacking = null;
-    public List<EnemyBehaviour> enemies;
+    // Auto-Assigned References
+    [NonSerialized] public PlayerController playerOne;
+    [NonSerialized] public PlayerController playerTwo;
 
-    public List<EnemyBehaviour> enemyGroupOne;
-    public List<EnemyBehaviour> enemyGroupTwo;
-    public Vector3 groupOneMiddlePoint;
-    public Vector3 groupTwoMiddlePoint;
+    [ReadOnly] public List<EnemyBehaviour> enemies;
+    [ReadOnly] public List<EnemyBehaviour> enemiesThatSurround;
+    
+
+    [NonSerialized] public List<EnemyBehaviour> enemyGroupOne;
+    [NonSerialized] public List<EnemyBehaviour> enemyGroupTwo;
+    [NonSerialized] public Vector3 groupOneMiddlePoint;
+    [NonSerialized] public Vector3 groupTwoMiddlePoint;
 
     private void Awake()
     {
@@ -46,95 +49,95 @@ public class EnemyManager : MonoBehaviour
 
     public void GetMiddleOfEnemies()
     {
-        List<EnemyBehaviour> groupOne;
-        List<EnemyBehaviour> groupTwo;
+        List<EnemyBehaviour> i_groupOne;
+        List<EnemyBehaviour> i_groupTwo;
 
         groupOneMiddlePoint = new Vector3();
         groupTwoMiddlePoint = new Vector3();
 
-        SetGroupsOfEnemies(out groupOne, out groupTwo);
+        SetGroupsOfEnemies(out i_groupOne, out i_groupTwo);
 
-        enemyGroupOne = groupOne;   // list of enemies targeting player one, sorted from closest to farthest to player
-        enemyGroupTwo = groupTwo;   // same, but with the player two
+        enemyGroupOne = i_groupOne;   // list of enemies targeting player one, sorted from closest to farthest to player
+        enemyGroupTwo = i_groupTwo;   // same, but with the player two
 
-        for (int i = 0; i < groupOne.Count; i++)
+        for (int i = 0; i < i_groupOne.Count; i++)
         {
-            groupOneMiddlePoint += groupOne[i].transform.position;
+            groupOneMiddlePoint += i_groupOne[i].transform.position;
         }
 
-        for (int i = 0; i < groupTwo.Count; i++)
+        for (int i = 0; i < i_groupTwo.Count; i++)
         {
-            groupTwoMiddlePoint += groupTwo[i].transform.position;
+            groupTwoMiddlePoint += i_groupTwo[i].transform.position;
         }
 
-        groupOneMiddlePoint = new Vector3(groupOneMiddlePoint.x / groupOne.Count, groupOneMiddlePoint.y / groupOne.Count, groupOneMiddlePoint.z / groupOne.Count);
-        groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / groupTwo.Count, groupTwoMiddlePoint.y / groupTwo.Count, groupTwoMiddlePoint.z / groupTwo.Count);
+        groupOneMiddlePoint = new Vector3(groupOneMiddlePoint.x / i_groupOne.Count, groupOneMiddlePoint.y / i_groupOne.Count, groupOneMiddlePoint.z / i_groupOne.Count);
+        groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / i_groupTwo.Count, groupTwoMiddlePoint.y / i_groupTwo.Count, groupTwoMiddlePoint.z / i_groupTwo.Count);
     }
 
-    public void SetGroupsOfEnemies(out List<EnemyBehaviour> groupOne, out List<EnemyBehaviour> groupTwo)
+    public void SetGroupsOfEnemies(out List<EnemyBehaviour> i_groupOne, out List<EnemyBehaviour> i_groupTwo)
     {
-        groupOne = new List<EnemyBehaviour>();
-        groupTwo = new List<EnemyBehaviour>();
+        i_groupOne = new List<EnemyBehaviour>();
+        i_groupTwo = new List<EnemyBehaviour>();
 
-        foreach (var enemy in enemies)
+        foreach (var enemy in enemiesThatSurround)
         {
             if (enemy.focusedPlayer != null)
             {
                 if (enemy.focusedPlayer.gameObject == playerOne.gameObject)
                 {
-                    groupOne.Add(enemy);
+                    i_groupOne.Add(enemy);
                 }
                 else if (enemy.focusedPlayer.gameObject == playerTwo.gameObject)
                 {
-                    groupTwo.Add(enemy);
+                    i_groupTwo.Add(enemy);
                 }
                 else { Debug.Log("The enemy " + enemy.name + " doesn't have a target"); }
             }
         }
 
-        groupOne = GetClosestEnemies(groupOne);
-        groupTwo = GetClosestEnemies(groupTwo);
+        i_groupOne = GetClosestEnemies(i_groupOne);
+        i_groupTwo = GetClosestEnemies(i_groupTwo);
     }
 
-    public List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> enemies)
+    public List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> _enemies)
     {
-        List<EnemyBehaviour> closeEnemies = new List<EnemyBehaviour>();
+        List<EnemyBehaviour> i_closeEnemies = new List<EnemyBehaviour>();
 
-        if (enemies.Count < 0)
+        if (_enemies.Count < 0)
         {
             Debug.LogWarning("The groupe of enemy is empty");
             return null;
         }
 
-        enemies.Sort((a, b) =>
+        _enemies.Sort((a, b) =>
         {
-            var target = a.focusedPlayer;
-            var dstToA = (target.transform.position - a.transform.position).magnitude;
-            var dstToB = (target.transform.position - b.transform.position).magnitude;
+            var i_target = a.focusedPlayer;
+            var i_dstToA = (i_target.transform.position - a.transform.position).magnitude;
+            var i_dstToB = (i_target.transform.position - b.transform.position).magnitude;
 
-            if (dstToA > dstToB) return 1;
-            else if (dstToA < dstToB) return -1;
+            if (i_dstToA > i_dstToB) return 1;
+            else if (i_dstToA < i_dstToB) return -1;
             else return 0;
         });
 
-        for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, enemies.Count); i++)
+        for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, _enemies.Count); i++)
         {
-            if (enemies[i] != null)
+            if (_enemies[i] != null)
             {
-                Debug.DrawRay(enemies[i].transform.position, Vector3.up * 3, Color.yellow);
-                closeEnemies.Add(enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
+                Debug.DrawRay(_enemies[i].transform.position, Vector3.up * 3, Color.yellow);
+                i_closeEnemies.Add(_enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
             }
         }
 
-        return closeEnemies;
+        return i_closeEnemies;
     }
 
     public void SpawnEnemies()
     {
         for (int i = 0; i < 3; i++)
         {
-            var newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
-            enemies.Add(newEnemy.GetComponent<EnemyBehaviour>());
+            var i_newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
+            enemiesThatSurround.Add(i_newEnemy.GetComponent<EnemyBehaviour>());
         }
     }
 }
