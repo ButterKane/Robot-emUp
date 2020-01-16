@@ -14,7 +14,8 @@ public enum DamageSource
 	DeathExplosion,
 	ReviveExplosion,
 	RedBarrelExplosion,
-	PerfectReceptionExplosion
+	PerfectReceptionExplosion,
+    EnemyContact
 }
 
 public enum DamageModifierSource
