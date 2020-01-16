@@ -292,7 +292,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
-				onDeath.Invoke();
                 break;
         }
     }
@@ -496,6 +495,7 @@ public class EnemyBehaviour : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (healthBar != null) { Destroy(healthBar.gameObject); }
+		onDeath.Invoke();
 		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{

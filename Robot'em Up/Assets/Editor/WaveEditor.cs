@@ -35,6 +35,7 @@ public class WaveEditor : Editor
 
 	public override void OnInspectorGUI ()
 	{
+		this.serializedObject.Update();
 		if (waveEditor.waveList.Count > 0)
 		{
 			GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -47,9 +48,17 @@ public class WaveEditor : Editor
 			GUILayout.Space(10);
 			GUI.color = Color.white;
 			SerializedProperty m_startOnTriggerEnter = serializedObject.FindProperty("startOnTriggerEnter");
-			this.serializedObject.Update();
 			EditorGUILayout.PropertyField(m_startOnTriggerEnter, new GUIContent("Start automatically when players enters zone ?"));
 			this.serializedObject.ApplyModifiedProperties();
+
+			EditorGUI.BeginChangeCheck();
+			SerializedProperty m_exitDoor = serializedObject.FindProperty("exitDoor");
+			EditorGUILayout.PropertyField(m_exitDoor, true);
+			this.serializedObject.ApplyModifiedProperties();
+			if (EditorGUI.EndChangeCheck())
+			{
+				UpdateDoorCounter();
+			}
 			GUILayout.Space(10);
 			GUILayout.EndVertical();
 			GUILayout.Space(20);
@@ -113,9 +122,7 @@ public class WaveEditor : Editor
 
 			GUILayout.Label("Actions on wave start", EditorStyles.centeredGreyMiniLabel);
 			SerializedProperty m_events = serializedObject.FindProperty("onStartEvents");
-			this.serializedObject.Update();
 			EditorGUILayout.PropertyField(m_events, true);
-			this.serializedObject.ApplyModifiedProperties();
 		}
 		for (int i = 0; i < waveEditor.waveList.Count; i++)
 		{
@@ -131,7 +138,7 @@ public class WaveEditor : Editor
 			GUI.color = Color.white;
 			if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(30), GUILayout.Height(30)))
 			{
-				waveEditor.waveList.Remove(i_waveData);
+				RemoveWave(i_waveData);
 			}
 			GUILayout.EndHorizontal();
 
@@ -228,9 +235,7 @@ public class WaveEditor : Editor
 			GUILayout.Space(10);
 			GUILayout.Label("Actions on wave end", EditorStyles.centeredGreyMiniLabel);
 			SerializedProperty m_events = serializedObject.FindProperty("waveList.Array.data[" + i + "].onEndEvents");
-			this.serializedObject.Update();
 			EditorGUILayout.PropertyField(m_events, true);
-			this.serializedObject.ApplyModifiedProperties();
 			GUILayout.Space(20);
 			GUILayout.EndVertical();
 			GUILayout.Space(30);
@@ -247,6 +252,8 @@ public class WaveEditor : Editor
 		GUILayout.EndHorizontal();
 		GUILayout.Space(30);
 		EditorUtility.SetDirty(target);
+		this.serializedObject.ApplyModifiedProperties();
+
 	}
 
 	void AddWave()
@@ -260,6 +267,13 @@ public class WaveEditor : Editor
 		enemyFoldoutIndex.Add(i_newWave, 0);
 		enemyAvailable.Add(i_newWave, new EnemyData[0]);
 		UpdateAvailableEnemies(i_newWave);
+		UpdateDoorCounter();
+	}
+
+	void RemoveWave(WaveData _waveData)
+	{
+		waveEditor.waveList.Remove(_waveData);
+		UpdateDoorCounter();
 	}
 
 	void UpdateAvailableEnemies(WaveData _wave)
@@ -315,6 +329,11 @@ public class WaveEditor : Editor
 			}
 		}
 		return finalString;
+	}
+
+	void UpdateDoorCounter()
+	{
+		if (waveEditor.exitDoor != null) { if (waveEditor.exitDoor.currentCounter != null) { waveEditor.exitDoor.currentCounter.isWaveCounter = true; waveEditor.exitDoor.currentCounter.Generate(waveEditor.waveList.Count); } }
 	}
 
 	public EnemyData[] GetAvailableEnemies(WaveData _waveData)
