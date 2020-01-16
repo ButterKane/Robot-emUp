@@ -258,7 +258,7 @@ public class PlayerController : PawnController, IHitable
 			{
 				i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
-            base.Damage(_amount);
+            base.Damage(_amount);   // manages the recovery time as well
         }
 	}
 
@@ -382,6 +382,10 @@ public class PlayerController : PawnController, IHitable
 			case DamageSource.RedBarrelExplosion:
 				Damage(_damages);
 				break;
+
+            case DamageSource.EnemyContact:
+                Damage(_damages);
+                break;
 		}
 	}
 
