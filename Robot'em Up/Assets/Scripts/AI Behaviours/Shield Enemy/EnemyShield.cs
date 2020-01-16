@@ -40,6 +40,7 @@ public class EnemyShield : EnemyBehaviour
     public float BumpOtherDistanceMod = 0.5f;
     public float BumpOtherDurationMod = 0.2f;
     public float BumpOtherRestDurationMod = 0.3f;
+    private float attackTimeProgression;
 
     private new void Start()
     {
@@ -72,6 +73,7 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         attackSound = "EnemyShieldAttack";
+        attackTimeProgression = 0;
         base.EnterAttackingState();
     }
 

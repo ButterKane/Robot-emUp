@@ -60,7 +60,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
 	[Space(3)]
     [Header("Focus")]
-    public float focusDistance = 18;
+    public float focusDistance = 3;
     public float unfocusDistance = 20;
     public float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
@@ -79,19 +79,15 @@ public class EnemyBehaviour : PawnController, IHitable
     [Header("Attack")]
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
+    private float maxPartAnticipationTime;
     [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
     protected float anticipationTime;
-    //public float attackMaxDistance = 8;       // How far goes the attack jump
-    //public float maxAttackDuration = 0.5f;    // Time to reach the max distance
     protected float attackDuration;
-    protected float attackTimeProgression;
-    //public AnimationCurve attackSpeedCurve;
-    //protected Vector3 attackInitialPosition;
-    //protected Vector3 attackDestination;
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
     protected bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
     public Transform attackHitBoxCenterPoint;
+    private float partAnticipationTime;
     private GameObject attackHitBoxInstance;
     private MeshRenderer attackPreviewPlaneRenderer;
     GameObject myAttackHitBox;
@@ -236,11 +232,9 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.PauseAfterAttack:
-                Debug.Log("PauseAfterAttackingState");
                 timePauseAfterAttack -= Time.deltaTime;
                 if (timePauseAfterAttack <= 0)
                 {
-                    Debug.Log("On a fini d'attendre wesh");
                     ChangeState(EnemyState.Idle);
                 }
                 break;
@@ -300,8 +294,10 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void EnterPreparingAttackState()
     {
+        maxPartAnticipationTime = maxAnticipationTime * 0.66f;
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
+        partAnticipationTime = maxPartAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
         attackPreviewPlaneRenderer = null;
     }
@@ -309,7 +305,6 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         endOfAttackTriggerLaunched = false;
-        attackTimeProgression = 0;
         animator.SetTrigger("AttackTrigger");
         //myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
@@ -317,7 +312,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void PreparingAttackState()
     {
-        Debug.Log("PreparingAttackingState");
         if (attackHitBoxInstance == null)
         {
             //attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
@@ -328,25 +322,34 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (attackPreviewPlaneRenderer != null)
         {
+            
             // Make attack zone appear progressively
-            attackPreviewPlaneRenderer.material.color = new Color(attackPreviewPlaneRenderer.material.color.r, attackPreviewPlaneRenderer.material.color.g, attackPreviewPlaneRenderer.material.color.b, 1-(anticipationTime/maxAnticipationTime));
-            //TODO: Make it appear fully befor reaching max, and blink when close to attacking
+            if (partAnticipationTime >= 0)
+            {
+                attackPreviewPlaneRenderer.material.color = new Color(attackPreviewPlaneRenderer.material.color.r, attackPreviewPlaneRenderer.material.color.g, attackPreviewPlaneRenderer.material.color.b, 1 - (partAnticipationTime / maxPartAnticipationTime));
+            }
+            else if (anticipationTime <= 0.20f) // If attack will happen in less than 0.2 sec
+            {
+                // Blinking, imminent attack
+                attackPreviewPlaneRenderer.enabled = !attackPreviewPlaneRenderer.enabled;
+            }
         }
 
         Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
         _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
         anticipationTime -= Time.deltaTime;
-        Debug.Log("anticipation = " + anticipationTime);
+        partAnticipationTime -= Time.deltaTime;
+
         if (anticipationTime <= 0)
         {
+            attackPreviewPlaneRenderer.enabled = false; // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
     }
 
     public virtual void AttackingState()
     {
-        Debug.Log("attackingState");
 
         //ChangeState(EnemyState.PauseAfterAttack);
     }
@@ -360,7 +363,6 @@ public class EnemyBehaviour : PawnController, IHitable
     }
     public void DestroyAttackHitBox()
     {
-        Debug.Log("Destroying plane");
         if (attackHitBoxInstance != null)
         {
            Destroy(attackHitBoxInstance);
