@@ -474,9 +474,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                 break;
         }
 
-        if (_ball)
-            _ball.Explode(true);
-
             animator.SetTrigger("HitTrigger");
     }
 

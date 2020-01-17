@@ -64,6 +64,7 @@ public class PassController : MonoBehaviour
 	private bool didPerfectReception;
 	private PassState previousState;
 	private float perfectReceptionBuffer;
+	private bool keepPerfectReceptionModifiers;
 	[ReadOnly] public PassState passState;
 
     private void Awake ()
@@ -87,6 +88,10 @@ public class PassController : MonoBehaviour
 		if (ball != null)
 		{
 			ballTimeInHand += Time.deltaTime;
+			if (ballTimeInHand > perfectReceptionMinDelay + 0.1f)
+			{
+				BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
+			}
 		}
 
 		if (!otherPlayer.IsTargetable() && passMode == PassMode.Curve) { DisablePassPreview(); }
@@ -117,7 +122,7 @@ public class PassController : MonoBehaviour
 		if (i_mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
 		if (ball == null)
 		{
-			if (Vector3.Distance(handTransform.position, i_mainBall.transform.position) > perfectReceptionMinDistance) { perfectReceptionBuffer += 0.2f; return; }
+			if (Vector3.Distance(handTransform.position, i_mainBall.transform.position) > perfectReceptionMinDistance) { perfectReceptionBuffer += perfectReceptionBufferOnFail; return; }
 		} else
 		{
 			if (ballTimeInHand > perfectReceptionMinDelay) { perfectReceptionBuffer = 0; return; }
@@ -128,6 +133,7 @@ public class PassController : MonoBehaviour
 	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
 		Receive(_ball);
+		keepPerfectReceptionModifiers = true;
 		ChangePassState(PassState.Aiming);
 		EnablePassPreview();
 		StartCoroutine(ShootAfterDelay_C(perfectReceptionMinDelay - ballTimeInHand));
@@ -264,7 +270,7 @@ public class PassController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
-		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default); 
+		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
 		Shoot();
 	}
 	public void Shoot()
@@ -273,7 +279,11 @@ public class PassController : MonoBehaviour
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
 		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
-		if (ballTimeInHand > perfectReceptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
+		if (!keepPerfectReceptionModifiers)
+		{
+			BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
+		}
+		keepPerfectReceptionModifiers = false;
 		currentPassCooldown = passCooldown;
 		BallBehaviour i_shotBall = ball;
 		ball = null;
@@ -377,7 +387,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve))
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
 		{
 			return false;
 		} else

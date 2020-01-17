@@ -36,6 +36,7 @@ public class Retriever : MonoBehaviour
 	}
 	private void OnTriggerStay(Collider other)
     {
+
         if (other.tag == "Ball")
         {
 			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
@@ -102,8 +103,6 @@ public class Retriever : MonoBehaviour
 				}
 			} else
 			{
-				//if (corePart.linkedPawn.GetType() == typeof(EnemyBehaviour)) (Must be added after heriting enemyBehaviour from pawnController)
-
 				if (playerController.GetHealth() < playerController.GetMaxHealth())
 				{
 					i_corePart.Pick(playerController);

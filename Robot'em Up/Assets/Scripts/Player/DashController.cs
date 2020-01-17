@@ -39,6 +39,7 @@ public class DashController : MonoBehaviour
 	private float currentUseCooldown;
 	private float currentStackCooldown;
 	private int currentStackAmount;
+	private GameObject currentDashFX;
 
 	[ReadOnly] public DashState state;
 	private void Awake ()
@@ -72,6 +73,7 @@ public class DashController : MonoBehaviour
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
+
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = transform.position + transform.forward * maxDistance; 
 		//Check for min distance & maxDistance
@@ -89,6 +91,7 @@ public class DashController : MonoBehaviour
 		i_endPosition.y = i_startPosition.y;
 
 		currentStackAmount--;
+		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
 		StartCoroutine(Dash_C(i_startPosition, i_endPosition));
 		currentUseCooldown = useCooldown;
 	}
@@ -99,6 +102,7 @@ public class DashController : MonoBehaviour
 			case DashState.Dashing:
 				break;
 			case DashState.None:
+				if (currentDashFX) { Destroy(currentDashFX); }
 				break;
 		}
 		state = _newState;

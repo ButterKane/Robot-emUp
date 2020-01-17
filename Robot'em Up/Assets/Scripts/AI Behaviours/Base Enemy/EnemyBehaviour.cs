@@ -533,9 +533,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
 
-        if (_ball)
-            _ball.Explode(true);
-
 
     }
 

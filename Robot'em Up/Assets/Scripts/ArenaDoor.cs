@@ -53,7 +53,6 @@ public class ArenaDoor : MonoBehaviour
 
 	IEnumerator OpenAfterDelay_C()
 	{
-		Debug.Log("Opening after delay");
 		yield return new WaitForSeconds(delayBeforeOpening);
 		animator.SetBool("Opened", true);
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);

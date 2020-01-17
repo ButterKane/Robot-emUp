@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 826eac420e2c8b94fb654bfcf49dfcd5, type: 3}
-  m_Name: event.Player2Death
-  m_EditorClassIdentifier: Assembly-CSharp::FeedbackData
-  eventName: event.Player2Death
+  m_Name: event.Dash
+  m_EditorClassIdentifier: 
+  eventName: event.Dash
   shakeData:
     duration: 0
     intensity: 0
@@ -25,7 +25,7 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 34
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 34
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 34
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 34
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -74,18 +74,18 @@ MonoBehaviour:
   vibrationDataInited: 0
   soundDataInited: 1
   vfxDataInited: 1
-  eventCalled: 1
+  eventCalled: 0
   category:
-    displayName: Player
-    displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
+    displayName: Dash
+    displayColor: {r: 0.25, g: 0.31471133, b: 1, a: 1}
   soundData:
-    soundName: DeathFromOneCharacter
+    soundName: PlayerDash
     attachToTarget: 0
   vfxData:
-    vfxPrefab: {fileID: 931145262344750406, guid: 49511d94e820e4147827919cbd7c9d50,
+    vfxPrefab: {fileID: 8651325449361012943, guid: 8ebb4c678bbe08b479176d5701dcab4b,
       type: 3}
     offset: {x: 0, y: 0.5, z: 0}
-    scaleMultiplier: {x: 1.5, y: 1.5, z: 1.5}
+    scaleMultiplier: {x: 2, y: 2, z: 2}
     direction: 0
     position: 0
-    attachToTarget: 0
+    attachToTarget: 1

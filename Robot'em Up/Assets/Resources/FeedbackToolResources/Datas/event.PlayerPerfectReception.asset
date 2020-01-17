@@ -14,42 +14,78 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FeedbackData
   eventName: event.PlayerPerfectReception
   shakeData:
-    duration: 0
-    intensity: 0
-    frequency: 0
+    duration: 0.2
+    intensity: 1
+    frequency: 1
     intensityCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0.062411617
+        outSlope: 0.062411617
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.11336718
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -2.843491
+        outSlope: -2.843491
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.042301178
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
     force: 0
-    duration: 0
+    duration: 0.5
     target: 0
     forceCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0.010679843
+        outSlope: 0.010679843
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.15792115
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -2.5341554
+        outSlope: -2.5341554
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.060959935
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  shakeDataInited: 0
-  vibrationDataInited: 0
-  soundDataInited: 0
+  shakeDataInited: 1
+  vibrationDataInited: 1
+  soundDataInited: 1
   vfxDataInited: 1
-  eventCalled: 0
+  eventCalled: 1
   category:
     displayName: Player
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
-    soundName: 
+    soundName: PerfectReception
     attachToTarget: 0
   vfxData:
     vfxPrefab: {fileID: 1911461834216105247, guid: a5e001f70de21fb4da19f2fc140ed5ea,
       type: 3}
     offset: {x: 0, y: 0, z: 0}
-    scaleMultiplier: {x: 3, y: 3, z: 3}
+    scaleMultiplier: {x: 4, y: 4, z: 4}
     direction: 0
     position: 1
     attachToTarget: 0
