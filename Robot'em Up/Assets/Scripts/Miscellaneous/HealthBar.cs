@@ -9,13 +9,18 @@ public class HealthBar : MonoBehaviour
 	public float heightOffset;
     public PawnController target;
     public Gradient healthBarGradient;
+	public float fadeInSpeed = 0.5f;
+	public float fadeOutSpeed = 0.1f;
     private float _initialWidth;
     private Rect _rect;
     private Camera _mainCamera;
     private RectTransform _self;
-    private RawImage BarBackground;
-    private RawImage BarFill;
+    private RawImage barBackground;
+    private RawImage barFill;
 	private bool activated;
+
+	private float initialBarFillAlpha;
+	private float initialBarBackgroundAlpha;
 
     // Start is called before the first frame update
     void Start()
@@ -29,9 +34,11 @@ public class HealthBar : MonoBehaviour
         _rect = fillRect.rect;
         _initialWidth = _rect.width;
 
-        BarBackground = GetComponent<RawImage>();
-        BarFill = fillRect.GetComponent<RawImage>();
+        barBackground = GetComponent<RawImage>();
+        barFill = fillRect.GetComponent<RawImage>();
 		activated = true;
+		initialBarFillAlpha = barFill.color.a;
+		initialBarBackgroundAlpha = barBackground.color.a;
 		ToggleHealthBar(false);
 	}
 
@@ -41,8 +48,11 @@ public class HealthBar : MonoBehaviour
         if(target != null)
         {
             fillRect.sizeDelta = new Vector2(((float)target.currentHealth / target.maxHealth) * _initialWidth, _rect.height);
-            BarFill.color = healthBarGradient.Evaluate(fillRect.sizeDelta.magnitude / _initialWidth);
-            _self.position = _mainCamera.WorldToScreenPoint(target.GetHeadPosition() + new Vector3(0f, heightOffset,0f));
+			Color newColor = healthBarGradient.Evaluate(fillRect.sizeDelta.magnitude / _initialWidth);
+			newColor.a = barFill.color.a;
+			barFill.color = newColor;
+
+			_self.position = _mainCamera.WorldToScreenPoint(target.GetHeadPosition() + new Vector3(0f, heightOffset,0f));
             if (target.currentHealth <= 0)
             {
 				ToggleHealthBar(false);
@@ -53,8 +63,53 @@ public class HealthBar : MonoBehaviour
     public void ToggleHealthBar(bool _value)
     {
 		if (activated == _value) { return; }
-        BarBackground.enabled = _value;
-        BarFill.enabled = _value;
+		if (_value == true)
+		{
+			StartCoroutine(FadeIn_C(fadeInSpeed));
+		} else
+		{
+			StartCoroutine(FadeOut_C(fadeOutSpeed));
+		}
 		activated = _value;
     }
+
+	IEnumerator FadeIn_C(float _duration)
+	{
+		barBackground.enabled = true;
+		barFill.enabled = true;
+		Color barColor = barFill.color;
+		Color backgroundColor = barBackground.color;
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			barColor.a = Mathf.Lerp(0f, initialBarFillAlpha, i / _duration);
+			barFill.color = barColor;
+			backgroundColor.a = Mathf.Lerp(0f, initialBarBackgroundAlpha, i / _duration);
+			barBackground.color = backgroundColor;
+			yield return null;
+		}
+		barColor.a = initialBarFillAlpha;
+		barFill.color = barColor;
+		backgroundColor.a = initialBarBackgroundAlpha;
+		barBackground.color = backgroundColor;
+	}
+
+	IEnumerator FadeOut_C ( float _duration )
+	{
+		Color barColor = barFill.color;
+		Color backgroundColor = barBackground.color;
+		for (float i = 0; i < _duration; i += Time.deltaTime)
+		{
+			barColor.a = Mathf.Lerp(initialBarFillAlpha, 0f, i / _duration);
+			barFill.color = barColor;
+			backgroundColor.a = Mathf.Lerp(initialBarBackgroundAlpha, 0f, i / _duration);
+			barBackground.color = backgroundColor;
+			yield return null;
+		}
+		barColor.a = 0f;
+		barFill.color = barColor;
+		backgroundColor.a = 0f;
+		barBackground.color = backgroundColor;
+		barBackground.enabled = false;
+		barFill.enabled = false;
+	}
 }

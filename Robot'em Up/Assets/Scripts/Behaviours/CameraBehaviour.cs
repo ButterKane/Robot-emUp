@@ -57,7 +57,7 @@ public class CameraBehaviour : MonoBehaviour
 		activated = true;
 	}
 
-	public void DesactivateCamera()
+	public void DesactivateCamera() 
 	{
 		activated = false;
 	}
@@ -65,8 +65,6 @@ public class CameraBehaviour : MonoBehaviour
 	private void Awake ()
 	{
 		defaultRotation = transform.localRotation;
-		//InitCamera(CameraType.Adventure, null);
-		ActivateCamera();
 	}
 
 	private void Update ()

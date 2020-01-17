@@ -23,10 +23,16 @@ public enum WhatBumps
     Pass,
     Dunk,
     RedBarrel,
-    Environment,
-    Count
+    Environment
 }
-
+public enum EnemyTypes
+{
+    Melee,
+    Shield,
+    RedBarrel,
+    Turret,
+    Sniper
+}
 
 public class EnemyBehaviour : PawnController, IHitable
 {
@@ -45,6 +51,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     [Space(2)]
     [Separator("Tweakable variables")]
+    public EnemyTypes enemyType = EnemyTypes.Melee;
     protected bool playerOneInRange;
     protected bool playerTwoInRange;
     protected float distanceWithPlayerOne;
@@ -292,7 +299,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
-				onDeath.Invoke();
                 break;
         }
     }
@@ -420,6 +426,24 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
+        if (enemyType == EnemyTypes.Shield)
+        {
+            if (_ball != null) // Check if it's the ball that touched
+            {
+                EnemyShield selfRef = GetComponent<EnemyShield>();
+                if ((_impactVector.normalized + transform.forward.normalized).magnitude < (selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
+                {
+                    FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
+                    Vector3 i_newDirection = Vector3.Reflect(_impactVector, transform.forward);
+                    //Debug.DrawRay(transform.position, i_newDirection, Color.magenta, 10f);
+                    i_newDirection.y = _impactVector.y;
+                    _ball.Bounce(i_newDirection, 1f);
+
+                    return;
+                }
+            }
+        }
+
 		Vector3 i_normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
         float i_BumpDistanceMod = 0.5f;
@@ -496,6 +520,7 @@ public class EnemyBehaviour : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (healthBar != null) { Destroy(healthBar.gameObject); }
+		onDeath.Invoke();
 		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
