@@ -123,7 +123,12 @@ public class PlayerController : PawnController, IHitable
 			//extendingArmsController.ExtendArm();
 			if (enableDash && revivablePlayers.Count <= 0 && dashPressed == false)
 			{
-				dashController.Dash();
+				Vector3 dashDirection = moveInput;
+				if (moveInput.magnitude <= 0)
+				{
+					dashDirection = transform.forward;
+				}
+				dashController.Dash(dashDirection);
 			}
 			dashPressed = true;
 		} else
@@ -198,7 +203,12 @@ public class PlayerController : PawnController, IHitable
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
 			//extendingArmsController.ExtendArm();
-			dashController.Dash();
+			Vector3 dashDirection = moveInput;
+			if (moveInput.magnitude <= 0)
+			{
+				dashDirection = transform.forward;
+			}
+			dashController.Dash(dashDirection);
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{
