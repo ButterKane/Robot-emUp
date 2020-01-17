@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MyBox;
 using UnityEngine.Analytics;
+using MyBox;
 
 public enum DashState
 {
@@ -82,6 +82,11 @@ public class DashController : MonoBehaviour
 		}
 		if (!CanDash()) { return; }
 
+		Analytics.CustomEvent("dash", new Dictionary<string, object>
+		{
+			{ "test", 1 },
+			{ "test2", 0 }
+		});
 		_direction = _direction.normalized;
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = transform.position + _direction * maxDistance; 

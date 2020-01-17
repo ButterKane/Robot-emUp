@@ -408,7 +408,7 @@ public class PawnController : MonoBehaviour
         {
             invincibilityCoroutine = InvicibleFrame_C();
             StartCoroutine(invincibilityCoroutine);
-			FeedbackManager.SendFeedback(eventOnBeingHit, this);
+			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 			currentHealth -= _amount;
             if (currentHealth <= 0)
             {
