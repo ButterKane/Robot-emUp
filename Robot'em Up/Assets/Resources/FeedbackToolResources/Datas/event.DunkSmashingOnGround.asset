@@ -14,29 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FeedbackData
   eventName: event.DunkSmashingOnGround
   shakeData:
-    duration: 1
-    intensity: 50
-    frequency: 1
+    duration: 0.8
+    intensity: 3
+    frequency: 2
     intensityCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
+        inSlope: -2.6269045
+        outSlope: -2.6269045
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.04399323
       - serializedVersion: 3
         time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
+        value: 0
+        inSlope: -0.02431165
+        outSlope: -0.02431165
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.29103214
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -70,21 +70,22 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  shakeDataInited: 0
+  shakeDataInited: 1
   vibrationDataInited: 0
-  soundDataInited: 0
-  vfxDataInited: 0
+  soundDataInited: 1
+  vfxDataInited: 1
   eventCalled: 1
   category:
     displayName: Dunk
     displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
   soundData:
-    soundName: 
+    soundName: DunkOnGround
     attachToTarget: 0
   vfxData:
-    vfxPrefab: {fileID: 0}
+    vfxPrefab: {fileID: 7112094014409148280, guid: ef46861f07ec72b45b333a3508fe0e0a,
+      type: 3}
     offset: {x: 0, y: 0, z: 0}
-    scaleMultiplier: {x: 0, y: 0, z: 0}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
     direction: 0
     position: 0
     attachToTarget: 0

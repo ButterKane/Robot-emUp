@@ -45,6 +45,7 @@ public class PlayerController : PawnController, IHitable
 	private ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
+	private bool rightTriggerWaitForRelease;
 
 	public override void Awake ()
 	{
@@ -106,8 +107,12 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
-			passController.TryReception();
-			passController.Shoot();
+			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
+			rightTriggerWaitForRelease = true;
+		}
+		if (state.Triggers.Right < triggerTreshold)
+		{
+			rightTriggerWaitForRelease = false;
 		}
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
