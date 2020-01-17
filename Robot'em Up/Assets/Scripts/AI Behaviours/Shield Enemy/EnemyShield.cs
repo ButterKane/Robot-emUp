@@ -12,9 +12,7 @@ public class EnemyShield : EnemyBehaviour
 
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
     [Range(0,90)]
-    public float angleRangeForRebound;
-
-    public float spawningShieldFrontDistance;
+    public float angleRangeForRebound= 45;
 
     public Renderer[] renderers;
     public Color normalColor = Color.blue;

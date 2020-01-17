@@ -331,7 +331,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void PreparingAttackState()
     {
-        if (attackHitBoxInstance == null)
+        if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
         {
             //attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
             attackHitBoxInstance = Instantiate(attackHitBoxPrefab, attackHitBoxCenterPoint.position, Quaternion.identity);
@@ -362,7 +362,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (anticipationTime <= 0)
         {
-            attackPreviewPlaneRenderer.enabled = false; // making preview zone disappear
+            if (attackPreviewPlaneRenderer) { attackPreviewPlaneRenderer.enabled = false; } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
     }
@@ -456,7 +456,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
                     Vector3 i_newDirection = Vector3.Reflect(_impactVector, transform.forward);
-                    //Debug.DrawRay(transform.position, i_newDirection, Color.magenta, 10f);
                     i_newDirection.y = _impactVector.y;
                     _ball.Bounce(i_newDirection, 1f);
 
