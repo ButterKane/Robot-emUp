@@ -10,13 +10,13 @@ public class CameraShaker : MonoBehaviour
 	public static ShakeData currentShake;
 	public static ShakeEffect cameraShaker;
 
-	public static void ShakeEditorCamera (Camera _camera, float _intensity, float _duration, float _frequency)
+	public static void ShakeEditorCamera (Camera _camera, float _intensity, float _duration, float _frequency, AnimationCurve _intensityCurve)
 	{
 		EditorCameraShaker shaker = _camera.gameObject.AddComponent<EditorCameraShaker>();
-		shaker.Init(_duration, _intensity, _frequency);
+		shaker.Init(_duration, _intensity, _frequency, _intensityCurve);
 	}
 
-	public static void ShakeCamera ( float _intensity, float _duration, float _frequency )
+	public static void ShakeCamera ( float _intensity, float _duration, float _frequency, AnimationCurve _intensityCurve )
 	{
 		if (cameraShaker == null)
 		{
@@ -24,6 +24,7 @@ public class CameraShaker : MonoBehaviour
 			cameraShaker.gameObject.name = "Camera Shaker";
 		}
 		ShakeData i_shakeData = new ShakeData(_intensity, _duration, _frequency);
+		i_shakeData.intensityCurve = _intensityCurve;
 		if (currentShake != null)
 		{
 			if (_intensity > currentShake.intensity)
@@ -80,16 +81,20 @@ public class CameraShaker : MonoBehaviour
 [System.Serializable]
 public class ShakeData
 {
-	public ShakeData (float _intensity, float _duration, float _frequency)
+	public ShakeData ( float _intensity, float _duration, float _frequency)
 	{
 		duration = _duration;
 		intensity = _intensity;
 		frequency = _frequency;
 		durationLeft = _duration;
+		intensityCurve = new AnimationCurve();
+		intensityCurve.AddKey(new Keyframe(0, 1));
+		intensityCurve.AddKey(new Keyframe(1, 1));
 	}
 	public float duration;
 	public float intensity;
 	public float frequency;
+	public AnimationCurve intensityCurve;
 
 	public float durationLeft;
 }
@@ -138,8 +143,9 @@ public class ShakeEffect : MonoBehaviour {
 		if (currentShake != null)
 		{
 			float i_momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.screenShakeMultiplier);
-			_perlin.m_AmplitudeGain = currentShake.intensity * i_momentumMultiplier;
-			_perlin.m_FrequencyGain = currentShake.frequency;
+			float i_curveMultiplier = currentShake.intensityCurve.Evaluate(1f - (currentShake.durationLeft / currentShake.duration));
+			_perlin.m_AmplitudeGain = currentShake.intensity * i_momentumMultiplier * i_curveMultiplier;
+			_perlin.m_FrequencyGain = currentShake.frequency * i_curveMultiplier;
 		} else
 		{
 			_perlin.m_AmplitudeGain = 0;
@@ -151,17 +157,17 @@ public class ShakeEffect : MonoBehaviour {
 [ExecuteInEditMode]
 public class EditorCameraShaker : MonoBehaviour
 {
-	public void Init (float _duration, float _intensity, float _frequency)
+	public void Init (float _duration, float _intensity, float _frequency, AnimationCurve _intensityCurve)
 	{
-		StartCoroutine(ShakeEditorCamera_C(_duration, _intensity, _frequency));
+		StartCoroutine(ShakeEditorCamera_C(_duration, _intensity, _frequency, _intensityCurve));
 	}
 
-	IEnumerator ShakeEditorCamera_C(float _duration, float _intensity, float _frequency)
+	IEnumerator ShakeEditorCamera_C(float _duration, float _intensity, float _frequency, AnimationCurve _intensityCurve)
 	{
 		Vector3 initialPosition = transform.position;
 		for (float i = 0; i < _duration; i+= Time.deltaTime)
 		{
-			transform.position = initialPosition+ Random.insideUnitSphere * _intensity * 0.1f;
+			transform.position = initialPosition+ Random.insideUnitSphere * _intensity * 0.1f * _intensityCurve.Evaluate(i/_duration);
 			yield return null;
 		}
 		transform.position = initialPosition;

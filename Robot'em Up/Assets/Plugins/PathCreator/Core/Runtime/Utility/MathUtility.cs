@@ -6,10 +6,7 @@ namespace PathCreation.Utility {
 
         static PosRotScale LockTransformToSpace (Transform t, PathSpace space) {
             var original = new PosRotScale (t);
-            if (space == PathSpace.xy) {
-                t.eulerAngles = new Vector3 (0, 0, t.eulerAngles.z);
-                t.position = new Vector3 (t.position.x, t.position.y, 0);
-            } else if (space == PathSpace.xz) {
+			if (space == PathSpace.xz) {
                 t.eulerAngles = new Vector3 (0, t.eulerAngles.y, 0);
                 t.position = new Vector3 (t.position.x, 0, t.position.z);
             }

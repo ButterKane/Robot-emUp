@@ -57,6 +57,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  totalHeight: 2
   invincibilityTime: 0.15
   canMove: 1
   jumpForce: 800
@@ -173,10 +174,11 @@ MonoBehaviour:
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
   delayBeforePickingOwnBall: 0.1
   minBouncesBeforePickingOwnBall: 2
-  receptionMinDistance: 2.5
-  receptionMinDelay: 0.3
-  receptionExplosionRadius: 2
-  receptionExplosionDamage: 1
+  perfectReceptionBufferOnFail: 0.65
+  perfectReceptionMinDistance: 10
+  perfectReceptionMinDelay: 0.2
+  perfectReceptionExplosionRadius: 2
+  perfectReceptionExplosionDamages: 1
   curveMaxLateralDistance: 0
   curveMaxPlayerDistance: 0
   curveRaycastIteration: 25
@@ -323,13 +325,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minDistance: 1
-  maxDistance: 5
-  speed: 100
+  maxDistance: 7.5
+  duration: 0.12
+  dashDistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   maxStackAmount: 3
   unstoppableDash: 0
   invincibleDuringDash: 1
+  pushForce: 20
   useCooldown: 0.2
-  stackCooldown: 2.7
+  defaultStackRecoveryDuration: 3
+  minStackRecoverySpeedMultiplier: 1
+  maxStackRecoverySpeedMultiplier: 3
+  dashRecoverySpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   dashFadeCurve:
     serializedVersion: 2
     m_Curve:
@@ -624,6 +677,9 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   healthGradientInterpolationRate: 0.1
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 9645029cf8e0a3642b943a03efed65a7,
+    type: 3}
+  healthBarHeight: 2
   dashFadeInSpeed: 8
   dashFadeOutSpeed: 8
   dashShowDuration: 2
@@ -697,7 +753,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195533169622842252}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f1b1ff743e93494183ccc23b00d80f7, type: 3}
   m_Name: 
@@ -1346,6 +1402,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}

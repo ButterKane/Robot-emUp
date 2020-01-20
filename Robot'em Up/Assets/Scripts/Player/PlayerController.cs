@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
+using UnityEngine.Analytics;
 
 [ExecuteAlways]
 public class PlayerController : PawnController, IHitable
@@ -44,6 +45,7 @@ public class PlayerController : PawnController, IHitable
 	private ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
+	private bool rightTriggerWaitForRelease;
 
 	public override void Awake ()
 	{
@@ -105,8 +107,12 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
-			passController.TryReception();
-			passController.Shoot();
+			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
+			rightTriggerWaitForRelease = true;
+		}
+		if (state.Triggers.Right < triggerTreshold)
+		{
+			rightTriggerWaitForRelease = false;
 		}
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
@@ -117,7 +123,12 @@ public class PlayerController : PawnController, IHitable
 			//extendingArmsController.ExtendArm();
 			if (enableDash && revivablePlayers.Count <= 0 && dashPressed == false)
 			{
-				dashController.Dash();
+				Vector3 dashDirection = moveInput;
+				if (moveInput.magnitude <= 0)
+				{
+					dashDirection = transform.forward;
+				}
+				dashController.Dash(dashDirection);
 			}
 			dashPressed = true;
 		} else
@@ -192,7 +203,12 @@ public class PlayerController : PawnController, IHitable
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
 			//extendingArmsController.ExtendArm();
-			dashController.Dash();
+			Vector3 dashDirection = moveInput;
+			if (moveInput.magnitude <= 0)
+			{
+				dashDirection = transform.forward;
+			}
+			dashController.Dash(dashDirection);
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{
@@ -257,7 +273,7 @@ public class PlayerController : PawnController, IHitable
 			{
 				i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
-            base.Damage(_amount);
+            base.Damage(_amount);   // manages the recovery time as well
         }
 	}
 
@@ -381,6 +397,10 @@ public class PlayerController : PawnController, IHitable
 			case DamageSource.RedBarrelExplosion:
 				Damage(_damages);
 				break;
+
+            case DamageSource.EnemyContact:
+                Damage(_damages);
+                break;
 		}
 	}
 

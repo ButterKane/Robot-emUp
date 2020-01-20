@@ -94,7 +94,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     {
         UpdateDistancesToPlayers();
         UpdateState();
-    }
+		UpdateHealthBar();
+	}
 
     void UpdateDistancesToPlayers()
     {

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 826eac420e2c8b94fb654bfcf49dfcd5, type: 3}
   m_Name: event.DunkJumping
   m_EditorClassIdentifier: Assembly-CSharp::FeedbackData
   eventName: event.DunkJumping
@@ -17,27 +17,45 @@ MonoBehaviour:
     duration: 0.2
     intensity: 20
     frequency: 1
+    intensityCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
     force: 2
     duration: 0.2
     target: 0
+<<<<<<< HEAD
   shakeDataInited: 1
   vibrationDataInited: 1
   soundDataInited: 0
+=======
+    forceCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  shakeDataInited: 0
+  vibrationDataInited: 0
+  soundDataInited: 1
+>>>>>>> 0f21464f4e1f105b7f8e1ee89cff8beb7f5ddaa3
   vfxDataInited: 1
   eventCalled: 1
   category:
     displayName: Dunk
     displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
   soundData:
-    soundName: BasicTurretDeath
+    soundName: JumpForDunk
     attachToTarget: 0
   vfxData:
-    vfxPrefab: {fileID: 1284778659018410, guid: b22a8556d083fa44c990ed50e9c42227,
+    vfxPrefab: {fileID: 6372490846240346686, guid: 8b35f5f664620f948bb1a131aa50d597,
       type: 3}
     offset: {x: 0, y: 0, z: 0}
-    scaleMultiplier: {x: 5, y: 5, z: 5}
+    scaleMultiplier: {x: 2, y: 2, z: 2}
     direction: 0
     position: 0
     attachToTarget: 0

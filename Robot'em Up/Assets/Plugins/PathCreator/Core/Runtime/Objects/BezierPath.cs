@@ -98,14 +98,14 @@ namespace PathCreation {
         ///<param name="transforms"> List or array of transforms to create the path from. </param>
         ///<param name="isClosed"> Should the end point connect back to the start point? </param>
         ///<param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-        public BezierPath (IEnumerable<Vector2> transforms, bool isClosed = false, PathSpace space = PathSpace.xy):
+        public BezierPath (IEnumerable<Vector2> transforms, bool isClosed = false, PathSpace space = PathSpace.xyz):
             this (transforms.Select (p => new Vector3 (p.x, p.y)), isClosed, space) { }
 
         /// <summary> Creates a path from the positions of the supplied transforms </summary>
         ///<param name="transforms"> List or array of transforms to create the path from. </param>
         ///<param name="isClosed"> Should the end point connect back to the start point? </param>
         ///<param name="space"> Determines if the path is in 3d space, or clamped to the xy/xz plane </param>
-        public BezierPath (IEnumerable<Transform> transforms, bool isClosed = false, PathSpace space = PathSpace.xy):
+        public BezierPath (IEnumerable<Transform> transforms, bool isClosed = false, PathSpace space = PathSpace.xyz ) :
             this (transforms.Select (t => t.position), isClosed, space) { }
 
         /// <summary> Creates a path from the supplied 2D points </summary>
@@ -348,9 +348,7 @@ namespace PathCreation {
         /// Move an existing point to a new position
         public void MovePoint (int i, Vector3 pointPos, bool suppressPathModifiedEvent = false) {
 
-            if (space == PathSpace.xy) {
-                pointPos.z = 0;
-            } else if (space == PathSpace.xz) {
+			if (space == PathSpace.xz) {
                 pointPos.y = 0;
             }
             Vector3 deltaMove = pointPos - points[i];
@@ -570,7 +568,7 @@ namespace PathCreation {
                 if (NumAnchorPoints == 2) {
                     Vector3 dirAnchorAToB = (points[3] - points[0]).normalized;
                     float dstBetweenAnchors = (points[0] - points[3]).magnitude;
-                    Vector3 perp = Vector3.Cross (dirAnchorAToB, (space == PathSpace.xy) ? Vector3.forward : Vector3.up);
+                    Vector3 perp = Vector3.Cross (dirAnchorAToB, Vector3.up);
                     points[1] = points[0] + perp * dstBetweenAnchors / 2f;
                     points[5] = points[0] - perp * dstBetweenAnchors / 2f;
                     points[2] = points[3] + perp * dstBetweenAnchors / 2f;
@@ -602,11 +600,7 @@ namespace PathCreation {
                 float minBoundsSize = Mathf.Min (boundsSize.x, boundsSize.y, boundsSize.z);
 
                 for (int i = 0; i < NumPoints; i++) {
-                    if (space == PathSpace.xy) {
-                        float x = (minBoundsSize == boundsSize.x) ? points[i].z : points[i].x;
-                        float y = (minBoundsSize == boundsSize.y) ? points[i].z : points[i].y;
-                        points[i] = new Vector3 (x, y, 0);
-                    } else if (space == PathSpace.xz) {
+					if (space == PathSpace.xz) {
                         float x = (minBoundsSize == boundsSize.x) ? points[i].y : points[i].x;
                         float z = (minBoundsSize == boundsSize.z) ? points[i].y : points[i].z;
                         points[i] = new Vector3 (x, 0, z);
@@ -616,12 +610,8 @@ namespace PathCreation {
                 // Nothing needs to change when going to 3d space
                 if (space != PathSpace.xyz) {
                     for (int i = 0; i < NumPoints; i++) {
-                        // from xz to xy
-                        if (space == PathSpace.xy) {
-                            points[i] = new Vector3 (points[i].x, points[i].z, 0);
-                        }
                         // from xy to xz
-                        else if (space == PathSpace.xz) {
+                        if (space == PathSpace.xz) {
                             points[i] = new Vector3 (points[i].x, 0, points[i].y);
                         }
                     }

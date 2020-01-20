@@ -12,6 +12,7 @@ public class VibrationData
 	public VibrationForce force;
 	public float duration;
 	public VibrationTarget target;
+	public AnimationCurve forceCurve;
 }
 
 [System.Serializable]
@@ -27,27 +28,12 @@ public class VFXData
 {
 	public GameObject vfxPrefab = default;
 	public Vector3 offset;
-	public Vector3 scaleMultiplier = new Vector3(1, 1, 1);
+	public Vector3 scaleMultiplier = new Vector3(1, 1, 1); 
 	public VFXDirection direction;
 	public VFXPosition position;
 	public bool attachToTarget;
 }
 
-[System.Serializable]
-public class FeedbackData : ScriptableObject
-{
-	public string eventName; //Each event will trigger specific feedbacks (Vibration or screenShake
-	public ShakeData shakeData = null;
-	public VibrationData vibrationData = null;
-	public bool shakeDataInited;
-	public bool vibrationDataInited;
-	public bool soundDataInited;
-	public bool vfxDataInited;
-	public bool eventCalled = false;
-	public FeedbackEventCategory category;
-	public SoundPlayData soundData;
-	public VFXData vfxData;
-}
 
 public class FeedbackCallback
 {
@@ -69,7 +55,7 @@ public class FeedbackManager
 		FeedbackCallback i_callBack = new FeedbackCallback();
 		FeedbackData feedback = GetFeedbackData(_eventName);
 		if (feedback == null) { return i_callBack; }
-		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency); }
+		if (feedback.shakeData != null && feedback.shakeDataInited) { CameraShaker.ShakeCamera(feedback.shakeData.intensity, feedback.shakeData.duration, feedback.shakeData.frequency, feedback.shakeData.intensityCurve); }
 		if (feedback.vibrationData != null && feedback.vibrationDataInited)
 		{
 			switch (feedback.vibrationData.target)
@@ -80,12 +66,12 @@ public class FeedbackManager
 					PlayerController player = target.GetComponent<PlayerController>();
 					if (player != null)
 					{
-						VibrationManager.Vibrate(player.playerIndex,feedback.vibrationData.duration, feedback.vibrationData.force);
+						VibrationManager.Vibrate(player.playerIndex,feedback.vibrationData.duration, feedback.vibrationData.force, feedback.vibrationData.forceCurve);
 					}
 					break;
 				case VibrationTarget.BothPlayers:
-					VibrationManager.Vibrate(PlayerIndex.One,feedback.vibrationData.duration, feedback.vibrationData.force);
-					VibrationManager.Vibrate(PlayerIndex.Two, feedback.vibrationData.duration, feedback.vibrationData.force);
+					VibrationManager.Vibrate(PlayerIndex.One,feedback.vibrationData.duration, feedback.vibrationData.force, feedback.vibrationData.forceCurve);
+					VibrationManager.Vibrate(PlayerIndex.Two, feedback.vibrationData.duration, feedback.vibrationData.force, feedback.vibrationData.forceCurve);
 					break;
 
 			}
@@ -136,7 +122,7 @@ public class FeedbackManager
 			}
 			i_callBack.vfx = FXManager.InstantiateFX(feedback.vfxData.vfxPrefab, position + feedback.vfxData.offset, false, direction, feedback.vfxData.scaleMultiplier, newParent);
 		}
-		return i_callBack;
+		return i_callBack; 
 	}
 
 	public static FeedbackData GetFeedbackData(string _name)
@@ -149,7 +135,7 @@ public class FeedbackManager
 				return feedbackData;
 			}
 		}
-		Debug.LogWarning("No data for sound with name " + _name + " found.");
+		Debug.LogWarning("No data for event with name " + _name + " found.");
 		return null;
 	}
 }

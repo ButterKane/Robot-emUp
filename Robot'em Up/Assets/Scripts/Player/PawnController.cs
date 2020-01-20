@@ -49,7 +49,8 @@ public class PawnController : MonoBehaviour
 {
 	[Separator("General settings")]
 	public int maxHealth;
-   public bool isInvincible_access
+	public float totalHeight;
+	public bool isInvincible_access
     {
         get { return isInvincible; }
         set
@@ -199,7 +200,7 @@ public class PawnController : MonoBehaviour
     void Rotate()
     {
 		//Rotation while moving
-        if (moveInput.magnitude >= 0.1f)
+        if (moveInput.magnitude >= 0.5f)
             turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
 
 		//Rotation while aiming or shooting
@@ -394,12 +395,6 @@ public class PawnController : MonoBehaviour
 		Destroy(this.gameObject);
     }
 
-    public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
-    {
-        _direction = _direction.normalized * _magnitude;
-        rb.AddExplosionForce(_magnitude, explosionPoint, 0);
-    }
-
 	public virtual void Heal(int _amount)
 	{
 		int i_newHealth = currentHealth + _amount;
@@ -413,7 +408,7 @@ public class PawnController : MonoBehaviour
         {
             invincibilityCoroutine = InvicibleFrame_C();
             StartCoroutine(invincibilityCoroutine);
-			FeedbackManager.SendFeedback(eventOnBeingHit, this);
+			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 			currentHealth -= _amount;
             if (currentHealth <= 0)
             {
@@ -495,17 +490,17 @@ public class PawnController : MonoBehaviour
 
 	public Vector3 GetCenterPosition()
 	{
-		return transform.position + Vector3.up * 1;
+		return transform.position + Vector3.up * (totalHeight / 2f);
 	}
 
 	public Vector3 GetHeadPosition()
 	{
-		return transform.position + Vector3.up * 1.8f;
+		return transform.position + Vector3.up * totalHeight;
 	}
 
 	public float GetHeight()
 	{
-		return 2f;
+		return totalHeight;
 	}
 
     public void SetInvincible(bool _state)
@@ -537,6 +532,13 @@ public class PawnController : MonoBehaviour
 
         StartCoroutine(Bump_C());
     }
+
+	public virtual void Push(Vector3 _pushDirection, float _pushForce)
+	{
+		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
+		_pushDirection.y = Mathf.Clamp((_pushForce/10f),0.1f, 0.75f);
+		rb.AddForce(_pushDirection.normalized * _pushForce, ForceMode.Impulse);
+	}
     #endregion
 
     #region Private functions

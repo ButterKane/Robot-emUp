@@ -55,6 +55,7 @@ public class DunkController : MonoBehaviour
 
 	private float currentCD;
 	private GameObject dunkWaitingFX;
+	private GameObject dunkDashFX;
 
 	private void Awake ()
 	{
@@ -243,6 +244,7 @@ public class DunkController : MonoBehaviour
 				i_playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
+				dunkDashFX = FeedbackManager.SendFeedback("event.DunkDashing", i_handTransform).GetVFX();
 				break;
 			case DunkState.Waiting:
 				dunkWaitingFX = FeedbackManager.SendFeedback("event.DunkWaiting", i_handTransform).GetVFX();
@@ -257,6 +259,7 @@ public class DunkController : MonoBehaviour
 				FeedbackManager.SendFeedback("event.DunkCatchingBall", i_handTransform);
 				break;
 			case DunkState.Explosing:
+				if (dunkDashFX) { Destroy(dunkDashFX); }
 				FeedbackManager.SendFeedback("event.DunkSmashingOnGround", playerController);
 				break;
 		}

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 826eac420e2c8b94fb654bfcf49dfcd5, type: 3}
   m_Name: event.PlayerHealing
   m_EditorClassIdentifier: Assembly-CSharp::FeedbackData
   eventName: event.PlayerHealing
@@ -17,14 +17,66 @@ MonoBehaviour:
     duration: 0
     intensity: 0
     frequency: 0
+    intensityCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
     force: 0
     duration: 0
     target: 0
+    forceCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   shakeDataInited: 0
   vibrationDataInited: 0
+<<<<<<< HEAD
   soundDataInited: 1
+=======
+  soundDataInited: 0
+>>>>>>> 0f21464f4e1f105b7f8e1ee89cff8beb7f5ddaa3
   vfxDataInited: 1
   eventCalled: 1
   category:
@@ -36,8 +88,13 @@ MonoBehaviour:
   vfxData:
     vfxPrefab: {fileID: 7463846729143775103, guid: 7da72fa8b0a9ffb49b6b3774ad25a65e,
       type: 3}
+<<<<<<< HEAD
     offset: {x: 0, y: 0, z: 0}
     scaleMultiplier: {x: 2, y: 2, z: 2}
+=======
+    offset: {x: 0, y: 2.5, z: 0}
+    scaleMultiplier: {x: 5, y: 5, z: 5}
+>>>>>>> 0f21464f4e1f105b7f8e1ee89cff8beb7f5ddaa3
     direction: 0
     position: 0
     attachToTarget: 0

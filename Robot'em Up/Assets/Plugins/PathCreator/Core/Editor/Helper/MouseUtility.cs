@@ -15,18 +15,7 @@ namespace PathCreationEditor
             Ray mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
             Vector3 worldMouse = mouseRay.GetPoint(depthFor3DSpace);
 
-            // Mouse can only move on XY plane
-            if (space == PathSpace.xy)
-            {
-                float zDir = mouseRay.direction.z;
-                if (zDir != 0)
-                {
-                    float dstToXYPlane = Mathf.Abs(mouseRay.origin.z / zDir);
-                    worldMouse = mouseRay.GetPoint(dstToXYPlane);
-                }
-            }
-            // Mouse can only move on XZ plane 
-            else if (space == PathSpace.xz)
+			if (space == PathSpace.xz)
             {
                 float yDir = mouseRay.direction.y;
                 if (yDir != 0)
