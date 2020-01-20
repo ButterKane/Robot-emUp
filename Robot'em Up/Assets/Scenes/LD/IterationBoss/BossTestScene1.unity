@@ -313,6 +313,8 @@ MonoBehaviour:
   maxForwardTranslation: 3
   rotationSpeed: 1.5
   translationSpeed: 1.5
+  focusPoint: {fileID: 0}
+  focusImportance: 0
   enableTranslation: 1
   wantedAngle: 0
   currentDistanceX: 0
@@ -1376,6 +1378,7 @@ MonoBehaviour:
   m_cornerB: {x: 36.48146, y: 0.060000002, z: 26.953773}
   minPlayersRequired: 2
   type: 0
+  linkedCameraBehaviour: {fileID: 49869887}
   onZoneActivation:
     m_PersistentCalls:
       m_Calls: []
@@ -3485,6 +3488,8 @@ MonoBehaviour:
   maxForwardTranslation: 3
   rotationSpeed: 1.5
   translationSpeed: 1.5
+  focusPoint: {fileID: 0}
+  focusImportance: 0
   enableTranslation: 1
   wantedAngle: 0
   currentDistanceX: 0
@@ -3729,6 +3734,7 @@ MonoBehaviour:
   m_cornerB: {x: 22.671051, y: 0.40000153, z: 13.67934}
   minPlayersRequired: 2
   type: 0
+  linkedCameraBehaviour: {fileID: 0}
   onZoneActivation:
     m_PersistentCalls:
       m_Calls: []
@@ -4464,7 +4470,7 @@ PrefabInstance:
     - target: {fileID: 6181108247738804025, guid: 9661c26e07b438f4ca2f3f97e47ecab1,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6181108247738804001, guid: 9661c26e07b438f4ca2f3f97e47ecab1,
         type: 3}
@@ -5213,6 +5219,7 @@ MonoBehaviour:
   - customName: Coin5
     transform: {fileID: 1103414190}
     color: {r: 0.09849739, g: 1, b: 0, a: 1}
+  exitDoor: {fileID: 0}
   currentEnemies: []
 --- !u!114 &1965198749
 MonoBehaviour:
@@ -5689,6 +5696,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1005291879}
     m_Modifications:
+    - target: {fileID: 1166366095150063242, guid: 1be9ea3b785fea1489fa01b2bbbdf6ba,
+        type: 3}
+      propertyPath: m_Name
+      value: EnergyGauge
+      objectReference: {fileID: 0}
     - target: {fileID: 1166366095150063243, guid: 1be9ea3b785fea1489fa01b2bbbdf6ba,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5793,11 +5805,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1166366095150063242, guid: 1be9ea3b785fea1489fa01b2bbbdf6ba,
-        type: 3}
-      propertyPath: m_Name
-      value: EnergyGauge
       objectReference: {fileID: 0}
     - target: {fileID: 9220228097875342431, guid: 1be9ea3b785fea1489fa01b2bbbdf6ba,
         type: 3}
@@ -6205,6 +6212,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1005291879}
     m_Modifications:
+    - target: {fileID: 7361388671208415390, guid: d207957b19b86354891a0e8a519ffa45,
+        type: 3}
+      propertyPath: m_Name
+      value: WarningPanel
+      objectReference: {fileID: 0}
     - target: {fileID: 7361388671208415389, guid: d207957b19b86354891a0e8a519ffa45,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6309,11 +6321,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7361388671208415390, guid: d207957b19b86354891a0e8a519ffa45,
-        type: 3}
-      propertyPath: m_Name
-      value: WarningPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7361388671208415361, guid: d207957b19b86354891a0e8a519ffa45,
         type: 3}
