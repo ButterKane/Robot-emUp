@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-interface IHitable
+public interface IHitable
 {
-	void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source );
+	bool lockable_access { get; set; }
+	float lockHitboxSize_access { get; set; }
+
+	void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3) );
 }

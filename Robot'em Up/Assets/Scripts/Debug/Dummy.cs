@@ -5,25 +5,31 @@ using UnityEngine;
 using DG.Tweening;
 public class Dummy : MonoBehaviour, IHitable
 {
-	private int _hitCount;
+	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+
+	public GameObject deathFX;
+	private int hitCount;
 	private Vector3 initialScale;
-	public int hitCount { 
+	public int hitCount_access { 
 		get { 
-			return _hitCount; 
+			return hitCount; 
 		}
 		set { 
-			_hitCount = value; 
+			hitCount = value; 
 		}
 	}
 
 	public int maxHealth;
-	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source )
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
-		hitCount++;
-		_ball.Explode(true);
-		EnergyManager.IncreaseEnergy(0.1f);
-		if (_hitCount >= maxHealth) { Destroy(this.gameObject); }
+		hitCount_access++;
+
+        if (_source != DamageSource.Dunk)
+        {
+            EnergyManager.IncreaseEnergy(0.2f);
+        }
 
 		//Fonctions utile
 		//_ball.Bounce();

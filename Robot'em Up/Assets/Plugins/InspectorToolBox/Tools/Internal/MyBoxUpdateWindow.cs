@@ -127,17 +127,11 @@ namespace MyBox.Internal
 				var packageJson = await wc.GetStringAsync(MyBoxPackageInfoURL);
 				_latestVersion = new Version(ParsePackageVersion(packageJson));
 				if (_windowInstance != null) _windowInstance.Repaint();
-
-				if (!_currentVersion.BaseVersionMatch(_latestVersion) && withLog)
-				{
-					Debug.Log("It's time to update MyBox :)! Use \"Tools/MyBox/Update window\". Current version: " +
-					          _currentVersion + ", new version: " + _latestVersion);
-				}
 			}
 		}
 
 		private static void CheckCurrentVersion()
-		{
+		{ 
 			var scriptPath = MyEditor.GetScriptAssetPath(MyBoxUpdateWindowLocation.Instance);
 			var scriptDirectory = new DirectoryInfo(scriptPath);
 

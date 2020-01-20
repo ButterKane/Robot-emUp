@@ -23,12 +23,19 @@ public class PuzzleEletricPlate : PuzzleActivable
         IdleFx = new List<GameObject>();
         boxCollider = GetComponent<BoxCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
     }
 
     void FixedUpdate()
     {
-        
+        for (int i = 0; i < PawnTrapped.Count; i++)
+        {
+            PawnController item = PawnTrapped[i];
+            if (item.currentHealth <1)
+            {
+                PawnTrapped.Remove(item);
+            }
+        }
         waitTimeBeforeNextDamage -= Time.deltaTime;
         //waitTimeBeforeNextFx -= Time.deltaTime;
 
@@ -38,6 +45,9 @@ public class PuzzleEletricPlate : PuzzleActivable
             foreach (PawnController item in PawnTrapped)
             {
                 item.Damage(puzzleData.DamageEletricPlate);
+                item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+
+                SoundManager.PlaySound("EletricPlateDamage", transform.position, transform);
             }
         }
         /*
@@ -56,25 +66,30 @@ public class PuzzleEletricPlate : PuzzleActivable
         */
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>())
         {
             
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
+            PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
-            PawnTrapped.Add(pawn);
+            PawnTrapped.Add(_pawn);
+
+            if (!isActivated)
+            {
+                _pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+            }
         }
 
     }
 
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>())
         {
-            PawnController pawn = other.gameObject.GetComponent<PawnController>();
-            PawnTrapped.Remove(pawn);
+            PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
+            PawnTrapped.Remove(_pawn);
         }
 
     }
@@ -85,7 +100,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         isActivated = true;
 
         UpdateLights();
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate;
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
 
 
         if (myFx != null)
@@ -97,19 +112,30 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenDesactivate()
     {
-        isActivated = false;
-        UpdateLights();
-        meshRenderer.material = puzzleData.M_PuzzleElectreticPlate_Activated;
-
-        Destroy(myFx);
-
-        if (myFx != null)
-        {
-            Destroy(myFx);
-        }
-        myFx = FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+        bool i_checkAllConditionsCustom = true;
         
+        foreach (var item in puzzleActivators)
+        {
+            if (item.isActivated)
+            {
+                i_checkAllConditionsCustom = false;
+            }
+        }
+        
+        if (i_checkAllConditionsCustom)
+        {
+
+            isActivated = false;
+            UpdateLights();
+            meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
+
+            Destroy(myFx);
+
+            if (myFx != null)
+            {
+                Destroy(myFx);
+            }
+            myFx = FXManager.InstantiateFX(puzzleData.electricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+        }
     }
-
-
 }

@@ -4,28 +4,50 @@ using UnityEngine;
 
 public class TurretAnimationEvent : MonoBehaviour
 {
-    public TurretBehaviour MyScript;
+    public TurretBehaviour myScript;
+    bool canCallFollowingState = true;
+
+    private void Start()
+    {
+        if (myScript == null)
+        {
+            myScript = GetComponentInParent<TurretBehaviour>(); // supposedly, there is only one instance of TurretBehviour, in the top parent
+        }
+    }
 
     void FinishedPrepareAttack()
     {
-        MyScript.ChangingState(TurretState.Attacking);
+        myScript.ChangingState(TurretState.Attacking);
     }
     void FinishedHiding()
     {
-        MyScript.ChangingState(TurretState.Hidden);
+        myScript.ChangingState(TurretState.Hidden);
     }
     void Attack()
     {
-        MyScript.LaunchProjectile();
+        myScript.LaunchProjectile();
     }
 
     void AimingCubeRotateTrue()
     {
-        MyScript.AimingCubeRotate(true);
+        if (canCallFollowingState)
+        {
+            myScript.ChangeAimingCubeState(AimingCubeState.Following);
+            canCallFollowingState = false;
+        }
     }
 
     void AimingCubeRotateFalse()
     {
-        MyScript.AimingCubeRotate(false);
+        myScript.ChangeAimingCubeState(AimingCubeState.Locking);
+    }
+
+    void GoToRestAttackState()
+    {
+        if(myScript.attackState == TurretAttackState.Attack)
+        {
+            myScript.TransitionFromAttackToRest();
+            canCallFollowingState = true;
+        }
     }
 }

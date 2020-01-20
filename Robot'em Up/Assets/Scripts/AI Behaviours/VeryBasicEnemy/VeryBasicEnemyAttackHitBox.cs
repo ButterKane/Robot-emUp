@@ -4,13 +4,24 @@ using UnityEngine;
 
 public class VeryBasicEnemyAttackHitBox : MonoBehaviour
 {
-    void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider _other)
     {
-        print(other.name);
-        if (other.tag == "Player")
+        Vector3 i_impactVector = _other.transform.position - transform.position;
+        Vector3 i_flattedDownImpactVector = new Vector3(i_impactVector.x, 0, i_impactVector.z);
+
+        if (_other.tag == "Player")
         {
-            if (other.GetComponent<PawnController>() != null)
-                other.GetComponent<PawnController>().Damage(2);
+            if (_other.GetComponent<PawnController>() != null)
+                _other.GetComponent<PawnController>().Damage(transform.parent.GetComponent<EnemyBehaviour>().damage);
+
+            EnemyShield i_enemyShield = GetComponentInParent<EnemyShield>();
+            if (i_enemyShield !=null)
+            {
+                i_enemyShield.StopAttack();
+
+                if (_other.GetComponent<PawnController>() != null && _other.GetComponent<DunkController>() != null && _other.GetComponent<DunkController>().isDunking() == false)
+                    _other.GetComponent<PawnController>().BumpMe(10,1,1, i_flattedDownImpactVector.normalized, i_enemyShield.BumpOtherDistanceMod, i_enemyShield.BumpOtherDurationMod, i_enemyShield.BumpOtherRestDurationMod);
+            }
         }
     }
 }
