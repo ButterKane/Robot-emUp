@@ -51,12 +51,6 @@ public class AnalyticsDatasEditor : Editor
 				EditorGUILayout.EndHorizontal();
 
 				EditorGUILayout.BeginHorizontal();
-				SerializedProperty m_sortPerArena = serializedObject.FindProperty("analyticsDatas.Array.data[" + i + "].sortPerArena");
-				GUILayout.Label("Sort per arena?: ", GUILayout.Width(100));
-				EditorGUILayout.PropertyField(m_sortPerArena, GUIContent.none);
-				EditorGUILayout.EndHorizontal();
-
-				EditorGUILayout.BeginHorizontal();
 				SerializedProperty m_perPlayer = serializedObject.FindProperty("analyticsDatas.Array.data[" + i + "].perPlayer");
 				GUILayout.Label("Sort per player?: ", GUILayout.Width(100));
 				EditorGUILayout.PropertyField(m_perPlayer, GUIContent.none);

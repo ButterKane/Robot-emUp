@@ -55,10 +55,6 @@ public class PlayerController : PawnController, IHitable
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
-		if (Application.isPlaying)
-		{
-			AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
-		}
 	}
 	private void Update ()
 	{
@@ -273,6 +269,7 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
+			AnalyticsManager.IncrementData("DamageTaken", _amount);
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
@@ -285,6 +282,11 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
+		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
+		if (GameManager.deadPlayers.Count > 0)
+		{
+			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
+		}
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -300,6 +302,7 @@ public class PlayerController : PawnController, IHitable
 	public void Revive(PlayerController _player)
 	{
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
+		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");

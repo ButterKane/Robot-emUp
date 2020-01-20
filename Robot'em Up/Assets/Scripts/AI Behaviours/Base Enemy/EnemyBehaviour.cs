@@ -475,7 +475,8 @@ public class EnemyBehaviour : PawnController, IHitable
             case DamageSource.Dunk:
                 if (isBumpable)
                 {
-                    damageAfterBump = _damages;
+					AnalyticsManager.IncrementData("DamageWithDunk", _damages);
+					damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_thrower.GetComponent<DunkController>() != null)
                     {
@@ -517,7 +518,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
-                animator.SetTrigger("HitTrigger");
+				AnalyticsManager.IncrementData("DamageWithPass", _damages);
+				animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 damageAfterBump = 0;
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
@@ -530,7 +532,15 @@ public class EnemyBehaviour : PawnController, IHitable
                     ChangeState(EnemyState.Dying);
                 }
                 break;
-        }
+			case DamageSource.PerfectReceptionExplosion:
+				Damage(_damages);
+				if (currentHealth <= 0)
+				{
+					ChangeState(EnemyState.Dying);
+				}
+				FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+				break;
+		}
 
 
     }
