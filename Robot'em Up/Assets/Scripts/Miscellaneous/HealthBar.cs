@@ -22,8 +22,13 @@ public class HealthBar : MonoBehaviour
 	private float initialBarFillAlpha;
 	private float initialBarBackgroundAlpha;
 
+
+    public bool customHealthBar;
+    public float customValueToCheck;
+    public float customDeltaPosition = 0f;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _self = GetComponent<RectTransform>();
         _mainCamera = Camera.main;
@@ -47,12 +52,20 @@ public class HealthBar : MonoBehaviour
     {
         if(target != null)
         {
-            fillRect.sizeDelta = new Vector2(((float)target.currentHealth / target.maxHealth) * _initialWidth, _rect.height);
+            if (!customHealthBar)
+            {
+                fillRect.sizeDelta = new Vector2(((float)target.currentHealth / target.maxHealth) * _initialWidth, _rect.height);
+            }
+            else
+            {
+                fillRect.sizeDelta = new Vector2((customValueToCheck) * _initialWidth, _rect.height);
+            }
+
 			Color newColor = healthBarGradient.Evaluate(fillRect.sizeDelta.magnitude / _initialWidth);
 			newColor.a = barFill.color.a;
 			barFill.color = newColor;
 
-			_self.position = _mainCamera.WorldToScreenPoint(target.GetHeadPosition() + new Vector3(0f, heightOffset,0f));
+			_self.position = _mainCamera.WorldToScreenPoint(target.GetHeadPosition() + new Vector3(0f, heightOffset + customDeltaPosition, 0f));
             if (target.currentHealth <= 0)
             {
 				ToggleHealthBar(false);
