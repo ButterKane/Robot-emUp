@@ -39,7 +39,7 @@ namespace MyBox
 
         [SerializeField] private int sceneIndex = -1;
 
-        [SerializeField] private bool sceneEnabled;
+        [SerializeField] private bool sceneEnabled = default;
 
         public bool IsAssigned
         {

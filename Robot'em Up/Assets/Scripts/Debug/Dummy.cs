@@ -25,16 +25,11 @@ public class Dummy : MonoBehaviour, IHitable
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount_access++;
-		if (_ball != null)
-		{
-			_ball.Explode(true);
-		}
 
         if (_source != DamageSource.Dunk)
         {
             EnergyManager.IncreaseEnergy(0.2f);
         }
-		if (hitCount >= maxHealth) { FXManager.InstantiateFX(deathFX, transform.position, false, Vector3.forward, Vector3.one); Destroy(this.gameObject); }
 
 		//Fonctions utile
 		//_ball.Bounce();

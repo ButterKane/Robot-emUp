@@ -23,10 +23,16 @@ public enum WhatBumps
     Pass,
     Dunk,
     RedBarrel,
-    Environment,
-    Count
+    Environment
 }
-
+public enum EnemyTypes
+{
+    Melee,
+    Shield,
+    RedBarrel,
+    Turret,
+    Sniper
+}
 
 public class EnemyBehaviour : PawnController, IHitable
 {
@@ -36,7 +42,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public Transform healthBarRef;
     public GameObject healthBarPrefab;
 
-	[Space(2)]
+    [Space(2)]
     [Separator("Auto-assigned References")]
     [SerializeField] protected Transform playerOneTransform;
     protected PawnController playerOnePawnController;
@@ -45,6 +51,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     [Space(2)]
     [Separator("Tweakable variables")]
+    public EnemyTypes enemyType = EnemyTypes.Melee;
     protected bool playerOneInRange;
     protected bool playerTwoInRange;
     protected float distanceWithPlayerOne;
@@ -53,14 +60,14 @@ public class EnemyBehaviour : PawnController, IHitable
     [System.NonSerialized] public Transform focusedPlayer = null;
     public float energyGainedOnHit = 1;
     public int damage = 10;
-	public float powerLevel = 1;
+    public float powerLevel = 1;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
-	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
-	public bool arenaRobot;
+    [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+    public bool arenaRobot;
 
-	[Space(3)]
+    [Space(3)]
     [Header("Focus")]
-    public float focusDistance = 18;
+    public float focusDistance = 3;
     public float unfocusDistance = 20;
     public float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
@@ -79,24 +86,24 @@ public class EnemyBehaviour : PawnController, IHitable
     [Header("Attack")]
     public float distanceToAttack = 5;
     public float maxAnticipationTime = 0.5f;
+    private float maxPartAnticipationTime;
     [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
     protected float anticipationTime;
-    public float attackMaxDistance = 8;
-    public float maxAttackDuration = 0.5f;
     protected float attackDuration;
-    protected float attackTimeProgression;
-    public AnimationCurve attackSpeedCurve;
-    protected Vector3 attackInitialPosition;
-    protected Vector3 attackDestination;
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
     protected bool endOfAttackTriggerLaunched;
     public GameObject attackHitBoxPrefab;
+    public Transform attackHitBoxCenterPoint;
+    private float partAnticipationTime;
+    private GameObject attackHitBoxInstance;
+    private MeshRenderer attackPreviewPlaneRenderer;
     GameObject myAttackHitBox;
     public Vector3 hitBoxOffset;
     public float maxTimePauseAfterAttack = 1;
     float timePauseAfterAttack;
     public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
+    private EnemyArmAttack armScript;
 
     [Space(3)]
     [Header("Surrounding")]
@@ -109,8 +116,9 @@ public class EnemyBehaviour : PawnController, IHitable
     [Header("Death")]
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
-	public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
+    public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
+    private HealthBar healthBar;
 
     protected void Start()
     {
@@ -121,8 +129,9 @@ public class EnemyBehaviour : PawnController, IHitable
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
         if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
-        GameObject healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform);
-        healthBar.GetComponent<EnemyHealthBar>().enemy = this;
+        armScript = GetComponentInChildren<EnemyArmAttack>();
+        healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar.target = this;
 
         if (arenaRobot)
         {
@@ -138,7 +147,19 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         UpdateDistancesToPlayers();
         UpdateState();
-		UpdateSpeed();
+        UpdateSpeed();
+        UpdateHealthBar();
+    }
+    protected void UpdateHealthBar()
+    {
+        if (currentHealth < maxHealth && healthBar != null)
+        {
+            healthBar.ToggleHealthBar(true);
+        }
+        else
+        {
+            healthBar.ToggleHealthBar(false);
+        }
     }
 
     protected void UpdateSpeed()
@@ -153,7 +174,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         base.UpdateAnimatorBlendTree();
         if (canMove)
-        { 
+        {
             animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
         }
     }
@@ -260,7 +281,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 timeBetweenCheck = 0;
                 //StartCoroutine(WaitABit(1));
                 break;
-			case EnemyState.Following:
+            case EnemyState.Following:
                 navMeshAgent.enabled = true;
                 timeBetweenCheck = 0;
                 break;
@@ -279,7 +300,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
-				onDeath.Invoke();
                 break;
         }
     }
@@ -293,61 +313,79 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void EnterPreparingAttackState()
     {
+        maxPartAnticipationTime = maxAnticipationTime * 0.66f;
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
-        animator.SetTrigger("AttackTrigger");
+        partAnticipationTime = maxPartAnticipationTime;
+        animator.SetTrigger("AnticipateAttackTrigger");
+        attackPreviewPlaneRenderer = null;
     }
 
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
     {
-        SoundManager.PlaySound(attackSound, transform.position, transform);
-        //attackDuration = maxAttackDuration;
         endOfAttackTriggerLaunched = false;
-        attackInitialPosition = transform.position;
-        attackDestination = attackInitialPosition + attackMaxDistance * transform.forward;
-        attackTimeProgression = 0;
-        myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
+        animator.SetTrigger("AttackTrigger");
+        //myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
     }
 
     public virtual void PreparingAttackState()
     {
+        if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
+        {
+            //attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
+            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, attackHitBoxCenterPoint.position, Quaternion.identity);
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
+            attackPreviewPlaneRenderer = attackHitBoxInstance.GetComponent<EnemyArmAttack>().plane.GetComponent<MeshRenderer>();
+        }
+
+        if (attackPreviewPlaneRenderer != null)
+        {
+
+            // Make attack zone appear progressively
+            if (partAnticipationTime >= 0)
+            {
+                attackPreviewPlaneRenderer.material.color = new Color(attackPreviewPlaneRenderer.material.color.r, attackPreviewPlaneRenderer.material.color.g, attackPreviewPlaneRenderer.material.color.b, 1 - (partAnticipationTime / maxPartAnticipationTime));
+            }
+            else if (anticipationTime <= 0.20f) // If attack will happen in less than 0.2 sec
+            {
+                // Blinking, imminent attack
+                attackPreviewPlaneRenderer.enabled = !attackPreviewPlaneRenderer.enabled;
+            }
+        }
+
         Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
         _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
         anticipationTime -= Time.deltaTime;
+        partAnticipationTime -= Time.deltaTime;
+
         if (anticipationTime <= 0)
         {
+            if (attackPreviewPlaneRenderer) { attackPreviewPlaneRenderer.enabled = false; } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
     }
 
     public virtual void AttackingState()
     {
-        attackTimeProgression += Time.deltaTime / maxAttackDuration;
-        //attackDuration -= Time.deltaTime;
 
-        //must stop ?
-        int attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
-        if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, attackRaycastMask) && !mustCancelAttack)
-        {
-            attackTimeProgression = whenToTriggerEndOfAttackAnim;
-            mustCancelAttack = true;
-        }
+        //ChangeState(EnemyState.PauseAfterAttack);
+    }
 
-        if (!mustCancelAttack)
+    public void ActivateAttackHitBox()
+    {
+        if (attackHitBoxInstance != null)
         {
-            rb.MovePosition(Vector3.Lerp(attackInitialPosition, attackDestination, attackSpeedCurve.Evaluate(attackTimeProgression)));
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
         }
-
-        if (attackTimeProgression >= 1)
+    }
+    public void DestroyAttackHitBox()
+    {
+        if (attackHitBoxInstance != null)
         {
-            ChangeState(EnemyState.PauseAfterAttack);
-        }
-        else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
-        {
-            endOfAttackTriggerLaunched = true;
-            animator.SetTrigger("EndOfAttackTrigger");
+            Destroy(attackHitBoxInstance);
+            attackHitBoxInstance = null;
         }
     }
 
@@ -409,8 +447,25 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-		Vector3 i_normalizedImpactVector;
-		LockManager.UnlockTarget(this.transform);
+        if (enemyType == EnemyTypes.Shield)
+        {
+            if (_ball != null) // Check if it's the ball that touched
+            {
+                EnemyShield selfRef = GetComponent<EnemyShield>();
+                if ((_impactVector.normalized + transform.forward.normalized).magnitude < (selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
+                {
+                    FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
+                    Vector3 i_newDirection = Vector3.Reflect(_impactVector, transform.forward);
+                    i_newDirection.y = _impactVector.y;
+                    _ball.Bounce(i_newDirection, 1f);
+
+                    return;
+                }
+            }
+        }
+
+        Vector3 i_normalizedImpactVector;
+        LockManager.UnlockTarget(this.transform);
         float i_BumpDistanceMod = 0.5f;
         float i_BumpDurationMod = 0.5f;
         float i_BumpRestDurationMod = 0.5f;
@@ -434,7 +489,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 else
                 {
-                    currentHealth -= _damages;
+                    Damage(_damages);
+                    //currentHealth -= _damages;
                 }
                 break;
 
@@ -450,23 +506,25 @@ public class EnemyBehaviour : PawnController, IHitable
                         i_BumpDurationMod = _bumpModificators.y;
                         i_BumpRestDurationMod = _bumpModificators.z;
                     }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod); 
+                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
                 {
-					currentHealth -= _damages;
+                    Damage(_damages);
+                    //currentHealth -= _damages;
                 }
                 break;
 
             case DamageSource.Ball:
+                animator.SetTrigger("HitTrigger");
+                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 damageAfterBump = 0;
-                FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
-				FeedbackManager.SendFeedback("event.BallTouchingEnemy", _ball);
-				EnergyManager.IncreaseEnergy(energyGainedOnHit);
-				whatBumps = WhatBumps.Pass;
+                EnergyManager.IncreaseEnergy(energyGainedOnHit);
+                whatBumps = WhatBumps.Pass;
                 Staggered(whatBumps);
-				currentHealth -= _damages;
+                Damage(_damages);
+                //currentHealth -= _damages;
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
@@ -474,36 +532,30 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
 
-        if (_ball)
-            _ball.Explode(true);
 
-            animator.SetTrigger("HitTrigger");
-            GameObject i_hitParticle = Instantiate(hitParticlePrefab, transform.position, Quaternion.identity);
-            i_hitParticle.transform.localScale *= hitParticleScale;
-            Destroy(i_hitParticle, 1f);
     }
 
-	public override void Kill ()
-	{
-		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
-		GameObject i_deathParticle = FXManager.InstantiateFX(deathParticlePrefab, transform.position, false, Vector3.up, Vector3.one * deathParticleScale);
-		Destroy(i_deathParticle, 1.5f);
-		if (Random.Range(0f, 1f) <= coreDropChances)
-		{
-			DropCore();
-		}
-		base.Kill();
-	}
-	protected void DropCore()
-	{
-		GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
-		i_newCore.name = "Core of " + gameObject.name;
-		i_newCore.transform.position = transform.position;
-		Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0,360), 0));
-		float i_throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
-		i_wantedDirectionAngle.y = i_throwForce * 0.035f;
-		i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
-	}
+    public override void Kill()
+    {
+        if (healthBar != null) { Destroy(healthBar.gameObject); }
+        onDeath.Invoke();
+        GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+        if (Random.Range(0f, 1f) <= coreDropChances)
+        {
+            DropCore();
+        }
+        base.Kill();
+    }
+    protected void DropCore()
+    {
+        GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+        i_newCore.name = "Core of " + gameObject.name;
+        i_newCore.transform.position = transform.position;
+        Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
+        float i_throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
+        i_wantedDirectionAngle.y = i_throwForce * 0.035f;
+        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+    }
 
     void CheckDistanceAndAdaptFocus()
     {
@@ -564,7 +616,7 @@ public class EnemyBehaviour : PawnController, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
-		AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
+        AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
     }
 
     public void Staggered(WhatBumps? cause = default)
@@ -572,27 +624,25 @@ public class EnemyBehaviour : PawnController, IHitable
         switch (cause)
         {
             case WhatBumps.Pass:
-				AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
+                AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
                 break;
             case WhatBumps.Dunk:
-				AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
+                AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
                 break;
             case WhatBumps.Environment:
-				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
+                AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
                 break;
             default:
-				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
+                AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
                 break;
         }
     }
 
-	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
-	{
-		FeedbackManager.SendFeedback("event.EnemyBumpedAway", this);
-		SoundManager.PlaySound("EnemiesBumpAway", transform.position, transform);
-		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
-		ChangeState(EnemyState.Bumped);
-	}
+    public override void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod)
+    {
+        base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
+        ChangeState(EnemyState.Bumped);
+    }
 
     IEnumerator WaitABit_C(float _duration)
     {

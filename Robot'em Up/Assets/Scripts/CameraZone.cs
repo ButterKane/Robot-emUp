@@ -21,6 +21,7 @@ public class CameraZone : MonoBehaviour
 	private Transform cameraPivot;
 	private Collider genCollider;
 	private bool zoneActivated;
+	public CameraBehaviour linkedCameraBehaviour;
 	[HideInInspector] public UnityEvent onZoneActivation;
 
 	private List<PlayerController> playersInside;
@@ -61,6 +62,7 @@ public class CameraZone : MonoBehaviour
 #if UNITY_EDITOR
 		EditorApplication.playModeStateChanged += RegenerateVisualizer;
 #endif
+		if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
 	}
 #if UNITY_EDITOR
 	private void RegenerateVisualizer ( PlayModeStateChange state )
@@ -114,6 +116,7 @@ public class CameraZone : MonoBehaviour
 				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) < minPlayersRequired)
 				{
 					DesactivateZone();
+					linkedCameraBehaviour.DesactivateCamera();
 				}
 			}
 			else
@@ -121,6 +124,7 @@ public class CameraZone : MonoBehaviour
 				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
 				{
 					ActivateZone();
+					linkedCameraBehaviour.ActivateCamera();
 				}
 			}
 		}

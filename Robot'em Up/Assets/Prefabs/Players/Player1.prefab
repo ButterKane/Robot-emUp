@@ -57,9 +57,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  totalHeight: 2
   invincibilityTime: 0.15
-  onHitEvent: 
-  onDeathEvent: 
   canMove: 1
   jumpForce: 800
   accelerationCurve:
@@ -100,10 +99,6 @@ MonoBehaviour:
   climbDuration: 0.18
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
-  deathParticlePrefab: {fileID: 0}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 0}
-  hitParticleScale: 3
   isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
@@ -132,6 +127,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0.302
+  eventOnBeingHit: event.PlayerBeingHit
+  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
+  eventOnBeingGrounded: event.PlayerGrounded
+  eventOnDeath: event.Player1Death
+  eventOnHealing: event.PlayerHealing
   playerIndex: 0
   triggerTreshold: 0.1
   lockable: 0
@@ -140,11 +140,7 @@ MonoBehaviour:
   enableJump: 0
   enableDunk: 1
   enableMagnet: 1
-  FX_hit: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89, type: 3}
-  FX_heal: {fileID: 7463846729143775103, guid: 7da72fa8b0a9ffb49b6b3774ad25a65e, type: 3}
-  FX_death: {fileID: 931145262344750406, guid: 49511d94e820e4147827919cbd7c9d50, type: 3}
-  FX_revive: {fileID: 6633511075223468162, guid: eaa65c119d2400f4f80af4dc5ebdbe83,
-    type: 3}
+  eventOnResurrecting: event.PlayerResurrecting
   deathExplosionRadius: 0
   deathExplosionDamage: 0
   deathExplosionForce: 0
@@ -178,10 +174,11 @@ MonoBehaviour:
   previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
   delayBeforePickingOwnBall: 0.1
   minBouncesBeforePickingOwnBall: 2
-  receptionMinDistance: 2.5
-  receptionMinDelay: 0.3
-  receptionExplosionRadius: 2
-  receptionExplosionDamage: 1
+  perfectReceptionBufferOnFail: 0.65
+  perfectReceptionMinDistance: 10
+  perfectReceptionMinDelay: 0.2
+  perfectReceptionExplosionRadius: 2
+  perfectReceptionExplosionDamages: 1
   curveMaxLateralDistance: 0
   curveMaxPlayerDistance: 0
   curveRaycastIteration: 25
@@ -328,13 +325,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minDistance: 1
-  maxDistance: 5
-  speed: 100
+  maxDistance: 7.5
+  duration: 0.12
+  dashDistanceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   maxStackAmount: 3
   unstoppableDash: 0
   invincibleDuringDash: 1
+  pushForce: 20
   useCooldown: 0.2
-  stackCooldown: 2.7
+  defaultStackRecoveryDuration: 3
+  minStackRecoverySpeedMultiplier: 1
+  maxStackRecoverySpeedMultiplier: 3
+  dashRecoverySpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   dashFadeCurve:
     serializedVersion: 2
     m_Curve:
@@ -362,16 +410,10 @@ MonoBehaviour:
   dashFadeDuration: 0.2
   UIFadeDuration: 0.5
   UIFadeDelay: 0.8
-  clonedVisuals: {fileID: 0}
+  clonedVisuals: {fileID: 4621407884147341700}
   clonePerSec: 100
   cloneDuration: 0.5
   cloneMaterial: {fileID: 2100000, guid: 9085d16098a735b4b81fdcfd4139e48e, type: 2}
-  dashTrail: {fileID: 8651325449361012943, guid: 8ebb4c678bbe08b479176d5701dcab4b,
-    type: 3}
-  startDashFX: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
-    type: 3}
-  endDashFX: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
-    type: 3}
   state: 1
 --- !u!54 &8666635390815151469
 Rigidbody:
@@ -525,11 +567,6 @@ MonoBehaviour:
   armColor: {r: 1, g: 0.96903324, b: 0, a: 1}
   armWidth: 0.2
   armMaterial: {fileID: 2100000, guid: e720cf03c3fc89e44b0a2e0a163c3005, type: 2}
-  FX_retraction: {fileID: 5970221395719563378, guid: 18947a631fe61194cab38896d21c53da,
-    type: 3}
-  FX_hit: {fileID: 7728491280138033091, guid: 4e5d473577ba3aa4eac6f8c955cf1115, type: 3}
-  FX_extension: {fileID: 5970221395719563378, guid: 18947a631fe61194cab38896d21c53da,
-    type: 3}
 --- !u!114 &6803351105506393549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -640,6 +677,9 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   healthGradientInterpolationRate: 0.1
+  healthBarPrefab: {fileID: 6345541632243073559, guid: 9645029cf8e0a3642b943a03efed65a7,
+    type: 3}
+  healthBarHeight: 2
   dashFadeInSpeed: 8
   dashFadeOutSpeed: 8
   dashShowDuration: 2
@@ -713,7 +753,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195533169622842252}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f1b1ff743e93494183ccc23b00d80f7, type: 3}
   m_Name: 
@@ -908,7 +948,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0b46969ac788f064ab2f8f747a69e361, type: 2}
+  - {fileID: 2100000, guid: 6288cd3f78a17b7428733c6d32ff8c19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1021,7 +1061,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0b46969ac788f064ab2f8f747a69e361, type: 2}
+  - {fileID: 2100000, guid: 6288cd3f78a17b7428733c6d32ff8c19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1330,7 +1370,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0b46969ac788f064ab2f8f747a69e361, type: 2}
+  - {fileID: 2100000, guid: 6288cd3f78a17b7428733c6d32ff8c19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1362,6 +1402,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}

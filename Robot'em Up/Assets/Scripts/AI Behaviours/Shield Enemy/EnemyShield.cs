@@ -7,15 +7,12 @@ public class EnemyShield : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Shield Variables")]
-    public GameObject shieldPrefab;
-    [System.NonSerialized] public GameObject shield;
+    public GameObject shield;       // It's only cosmetic now
     public bool deactivateShieldWhenAttacking = true;
 
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
     [Range(0,90)]
-    public float angleRangeForRebound;
-
-    public float spawningShieldFrontDistance;
+    public float angleRangeForRebound= 45;
 
     public Renderer[] renderers;
     public Color normalColor = Color.blue;
@@ -40,12 +37,12 @@ public class EnemyShield : EnemyBehaviour
     public float BumpOtherDistanceMod = 0.5f;
     public float BumpOtherDurationMod = 0.2f;
     public float BumpOtherRestDurationMod = 0.3f;
+    private float attackTimeProgression;
 
     private new void Start()
     {
         base.Start();
-        shield = Instantiate(shieldPrefab);
-        shield.GetComponent<Shield>().enemy = this;
+        enemyType = EnemyTypes.Shield;
     }
 
     // ATTACK
@@ -72,6 +69,7 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         attackSound = "EnemyShieldAttack";
+        attackTimeProgression = 0;
         base.EnterAttackingState();
     }
 
@@ -87,7 +85,7 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = false;
         }
 
-        attackTimeProgression += Time.deltaTime / maxAttackDuration;
+        //attackTimeProgression += Time.deltaTime / maxAttackDuration;
 
         //must stop ?
         int i_attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
@@ -163,7 +161,6 @@ public class EnemyShield : EnemyBehaviour
 
     public override void Kill()
     {
-        Destroy(shield);
         base.Kill();   // Override the death sound with the right one 
     }
 

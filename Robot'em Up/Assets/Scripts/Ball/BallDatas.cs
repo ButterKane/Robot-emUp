@@ -16,23 +16,7 @@ public class BallDatas : ScriptableObject
 	public float damageModifierOnPerfectReception;
 	public float maxDamageModifierOnPerfectReception;
 	public int damages;
+	public float maxFXSizeMultiplierOnPerfectReception;
 	public Gradient colorOverDamage;
 	public Texture2D hitDecal;
-
-	[Separator("FX")]
-	public GameObject trail;
-	public GameObject wallHit;
-	public GameObject receiveCore;
-	public GameObject throwCore;
-
-	public GameObject lightExplosion;
-	public GameObject heavyExplosion;
-
-	public GameObject dunkJump;
-	public GameObject dunkExplosion;
-	public GameObject dunkIdle;
-	public GameObject dunkDash;
-	public GameObject dunkReceiving;
-
-	public GameObject perfectReception;
 }

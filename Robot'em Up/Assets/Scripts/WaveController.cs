@@ -18,7 +18,7 @@ public class WaveController : MonoBehaviour
 	public UnityEvent onStartEvents;
 	public List<WaveData> waveList = new List<WaveData>(); 
 	public List<SpawnInformation> spawnList = new List<SpawnInformation>();
-
+	public ArenaDoor exitDoor;
 
 	private bool waveStarted = false;
 	private int currentWaveIndex = -1;
@@ -28,19 +28,23 @@ public class WaveController : MonoBehaviour
 	public List<EnemyBehaviour> currentEnemies;
 	private WaveEnemy nextEnemyToSpawn;
 	private float delayBeforeNextWave;
+	private bool enemiesKilled = false;
+	private bool arenaFinished = false;
 
 	private void Awake ()
 	{
+		arenaFinished = false;
 		currentWaveIndex = -1;
 		zone = GetComponentInChildren<CameraZone>();
 		if (startOnTriggerEnter && zone != null)
 		{
-			zone.onZoneActivation.AddListener(StartNextWave);
+			zone.onZoneActivation.AddListener(StartArena);
 		}
 	}
 
 	private void Update ()
 	{
+		if (arenaFinished) { return; }
 		if (waveStarted) { 
 			if (nextEnemyToSpawn == null)
 			{
@@ -59,6 +63,7 @@ public class WaveController : MonoBehaviour
 			{
 				if (currentPowerLevel <= 0)
 				{
+					EnemiesKilled();
 					delayBeforeNextWave -= Time.deltaTime;
 					if (delayBeforeNextWave <= 0)
 					{
@@ -69,15 +74,46 @@ public class WaveController : MonoBehaviour
 		}
 	}
 
+	public void StartArena()
+	{
+		if (currentWaveIndex >= 0) { return; } else
+		{
+			StartNextWave();
+		}
+		onStartEvents.Invoke();
+		if (exitDoor != null)
+		{
+			exitDoor.OnArenaEnter();
+		}
+	}
+
+	public void EnemiesKilled()
+	{
+		if (!enemiesKilled)
+		{
+			FeedbackManager.SendFeedback("event.ArenaWaveFinished", this);
+			if (exitDoor != null) { exitDoor.OnWaveFinished(); }
+			enemiesKilled = true;
+		}
+	}
+	public void EndArena()
+	{
+		if (arenaFinished) { return; }
+		arenaFinished = true;
+		if (exitDoor != null) { exitDoor.OnWaveFinished(); }
+		FeedbackManager.SendFeedback("event.ArenaFinished", this);
+		if (exitDoor != null)
+		{
+			exitDoor.OnArenaFinished();
+		}
+	}
 	public void StartNextWave()
 	{
 		if (waveStarted) { return; }
-		if (currentWaveIndex+1 >= waveList.Count) { return; }
 		currentWaveIndex++;
-		if (currentWaveIndex == 0)
-		{
-			onStartEvents.Invoke();
-		}
+		if (currentWaveIndex >= waveList.Count - 1) { EndArena(); return; }
+		if (exitDoor != null) { exitDoor.OnWaveStart(); }
+		enemiesKilled = false;
 		waveStarted = true;
 		StartCoroutine(StartWave_C(currentWaveIndex));
 	}

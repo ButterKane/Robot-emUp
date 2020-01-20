@@ -53,9 +53,9 @@ public class DunkController : MonoBehaviour
 	private PawnController pawnController;
 	private PlayerController playerController;
 
-	private GameObject waitingFX;
-	private GameObject dashFX;
 	private float currentCD;
+	private GameObject dunkWaitingFX;
+	private GameObject dunkDashFX;
 
 	private void Awake ()
 	{
@@ -83,8 +83,6 @@ public class DunkController : MonoBehaviour
 	{
 		BallBehaviour i_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
-		FeedbackManager.SendFeedback("event.DunkSmashingOnTheGround", this);
-		SoundManager.PlaySound("DunkOnGround", transform.position);
 		EnergyManager.DecreaseEnergy(1f);
 		Collider[] i_hitColliders = Physics.OverlapSphere(i_ball.transform.position, dunkExplosionRadius);
 		int i = 0;
@@ -137,8 +135,6 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkOnGround_C ()
 	{
 		ChangeState(DunkState.Receiving);
-		FeedbackManager.SendFeedback("event.CaughtTheBallForDunk", this);
-		SoundManager.PlaySound("CaughtBallForDunk", transform.position, transform);
 		yield return new WaitForSeconds(dunkDashDelay);
 		ChangeState(DunkState.Dashing);
 		yield return FallOnGround_C(dunkDashSpeed);
@@ -151,8 +147,6 @@ public class DunkController : MonoBehaviour
 		{
 			playerController.DisableInput();
 		}
-		FeedbackManager.SendFeedback("event.JumpForDunk", this);
-		SoundManager.PlaySound("JumpForDunk", transform.position, transform);
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		rb.isKinematic = true;
@@ -173,7 +167,6 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkWait_C ()
 	{
 		passController.EnableBallReception();
-		SoundManager.PlaySound("ReadyToCatchDunk", transform.position, transform);
 		ChangeState(DunkState.Waiting);
 		SnapController.SetSnappable(SnapType.Pass, this.gameObject, dunkSnapTreshold, dunkJumpFreezeDuration);
 		for (float i = 0; i < dunkJumpFreezeDuration; i += Time.deltaTime)
@@ -247,30 +240,27 @@ public class DunkController : MonoBehaviour
 		switch (_newState)
 		{
 			case DunkState.Jumping:
-				FXManager.InstantiateFX(i_ballDatas.dunkJump, transform.position + new Vector3(0,0.1f,0), false, Vector3.up, Vector3.one * 2.5f);
+				FeedbackManager.SendFeedback("event.DunkJumping", playerController);
 				i_playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
-				Destroy(waitingFX);
-				dashFX = FXManager.InstantiateFX(i_ballDatas.dunkDash, i_ball.transform.position, false, Vector3.zero, Vector3.one, i_ball.transform);
+				dunkDashFX = FeedbackManager.SendFeedback("event.DunkDashing", i_handTransform).GetVFX();
 				break;
 			case DunkState.Waiting:
-				waitingFX = FXManager.InstantiateFX(i_ballDatas.dunkIdle, i_handTransform.position, false, Vector3.zero, Vector3.one, i_handTransform);
+				dunkWaitingFX = FeedbackManager.SendFeedback("event.DunkWaiting", i_handTransform).GetVFX();
 				break;
 			case DunkState.Canceling:
+				if (dunkWaitingFX) { Destroy(dunkWaitingFX); }
 				i_playerAnimator.SetTrigger("DunkMissedTrigger");
-				Destroy(waitingFX);
 				break;
 			case DunkState.Receiving:
-				FXManager.InstantiateFX(i_ballDatas.dunkReceiving, i_ball.transform.position, false, Vector3.zero, Vector3.one, i_ball.transform);
+				if (dunkWaitingFX) { Destroy(dunkWaitingFX); }
 				i_playerAnimator.SetTrigger("DunkTrigger");
+				FeedbackManager.SendFeedback("event.DunkCatchingBall", i_handTransform);
 				break;
 			case DunkState.Explosing:
-				if (dashFX != null)
-				{
-					Destroy(dashFX);
-				}
-				FXManager.InstantiateFX(i_ballDatas.dunkExplosion, i_ball.transform.position, false, Vector3.zero, Vector3.one);
+				if (dunkDashFX) { Destroy(dunkDashFX); }
+				FeedbackManager.SendFeedback("event.DunkSmashingOnGround", playerController);
 				break;
 		}
 		dunkState = _newState;

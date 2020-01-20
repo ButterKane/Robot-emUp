@@ -138,10 +138,13 @@ public class SoundManager
 
 	public static void PlaySoundInEditor ( string soundName )
 	{
+#if UNITY_EDITOR
 		PlaySoundInEditor(SoundManager.GetSoundClip(SoundManager.GetSoundData(soundName)));
+#endif
 	}
 	public static void PlaySoundInEditor ( AudioClip _clip, int _startSample = 0, bool _loop = false )
 	{
+#if UNITY_EDITOR
 		StopAllClips();
 		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
 		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
@@ -156,10 +159,11 @@ public class SoundManager
 			null,
 			new object[] { _clip, _startSample, _loop }
 		);
+#endif
 	}
-
 	public static void StopAllClips ()
 	{
+#if UNITY_EDITOR
 		System.Reflection.Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
 		System.Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
 		System.Reflection.MethodInfo method = audioUtilClass.GetMethod(
@@ -173,5 +177,6 @@ public class SoundManager
 			null,
 			new object[] { }
 		);
+#endif
 	}
 }
