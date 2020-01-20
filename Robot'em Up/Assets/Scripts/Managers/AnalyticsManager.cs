@@ -8,7 +8,7 @@ public class AnalyticsManager
 {
 	static AnalyticsDatas datas;
 
-	static AnalyticsDatas GetDatas()
+	public static AnalyticsDatas GetDatas()
 	{
 		return Resources.Load<AnalyticsDatas>("AnalyticsDatas");
 	}
@@ -88,7 +88,7 @@ public class AnalyticsManager
 	}
 
 	public static void CleanZoneDatas (string _zoneName)
-	{
+	{/*
 		foreach (AnalyticsData data in GetDatas())
 		{
 			if (data.sortPerZone)
@@ -96,6 +96,7 @@ public class AnalyticsManager
 
 			}
 		}
+        */
 	}
 
 	public static void CleanArenaDatas (string _arenaName)
