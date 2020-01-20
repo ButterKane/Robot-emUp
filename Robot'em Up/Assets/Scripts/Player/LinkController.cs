@@ -42,7 +42,7 @@ public class LinkController : MonoBehaviour
 
 	private LinkState linkState;
 
-	private void Awake ()
+	private void Start ()
 	{
         if (firstPawn == null)
         {
