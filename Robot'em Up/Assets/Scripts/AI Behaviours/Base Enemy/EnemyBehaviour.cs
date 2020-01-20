@@ -143,7 +143,7 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    void Update()
+    protected void Update()
     {
         UpdateDistancesToPlayers();
         UpdateState();
@@ -488,6 +488,13 @@ public class EnemyBehaviour : PawnController, IHitable
             case DamageSource.Dunk:
                 if (isBumpable)
                 {
+                    if (enemyType == EnemyTypes.RedBarrel)
+                    {
+                        EnemyRedBarrel i_selfRef = GetComponent<EnemyRedBarrel>();
+                        Debug.Log("Touched with dunk avec " + i_selfRef);
+                        i_selfRef.willExplode = false;
+                    }
+
                     damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_thrower.GetComponent<DunkController>() != null)
