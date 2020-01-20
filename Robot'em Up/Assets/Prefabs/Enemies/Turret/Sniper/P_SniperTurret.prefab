@@ -531,7 +531,7 @@ GameObject:
   - component: {fileID: 6736872995242432900}
   - component: {fileID: 6704740834070537280}
   - component: {fileID: 8681543399049038298}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: P_SniperTurret
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -642,6 +642,7 @@ MonoBehaviour:
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
+  enemyType: 0
   energyGainedOnHit: 1
   damage: 10
   powerLevel: 1
@@ -661,16 +662,9 @@ MonoBehaviour:
   distanceToAttack: 5
   maxAnticipationTime: 2.5
   rotationSpeedPreparingAttack: 0.2
-  attackMaxDistance: 8
-  maxAttackDuration: 0.5
-  attackSpeedCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   whenToTriggerEndOfAttackAnim: 0
   attackHitBoxPrefab: {fileID: 0}
+  attackHitBoxCenterPoint: {fileID: 0}
   hitBoxOffset: {x: 0, y: 0, z: 0}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2

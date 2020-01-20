@@ -89,7 +89,7 @@ MonoBehaviour:
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
+  timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
   distanceToAttack: 7
@@ -108,11 +108,13 @@ MonoBehaviour:
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 15, y: 15}
   shield: {fileID: 907304710442746487}
-  deactivateShieldWhenAttacking: 0
+  deactivateShieldWhenAttacking: 1
+  angleToBounceBackToPlayer: 20
   angleRangeForRebound: 45
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
+  timeShieldDisappearAfterHit: 0
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
@@ -249,6 +251,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -344,11 +351,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.2147
       objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
-      objectReference: {fileID: 0}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Controller
@@ -364,8 +366,12 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    m_RemovedComponents:
-    - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
+    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: enemyType
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
 --- !u!1 &6181108247738804025 stripped
 GameObject:

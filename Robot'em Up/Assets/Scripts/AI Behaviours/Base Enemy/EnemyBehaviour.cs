@@ -333,7 +333,6 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
         {
-            //attackHitBoxInstance = Instantiate(attackHitBoxPrefab, transform.position + (transform.forward * attackHitBoxPrefab.transform.localScale.x / 2) + (transform.up * attackHitBoxPrefab.transform.localScale.y / 2), Quaternion.LookRotation(transform.right, transform.up));
             attackHitBoxInstance = Instantiate(attackHitBoxPrefab, attackHitBoxCenterPoint.position, Quaternion.identity);
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
             attackPreviewPlaneRenderer = attackHitBoxInstance.GetComponent<EnemyArmAttack>().plane.GetComponent<MeshRenderer>();
@@ -405,6 +404,7 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.PreparingAttack:
                 break;
             case EnemyState.Attacking:
+                navMeshAgent.enabled = true;
                 Destroy(myAttackHitBox);
                 break;
             case EnemyState.PauseAfterAttack:
@@ -451,15 +451,28 @@ public class EnemyBehaviour : PawnController, IHitable
         {
             if (_ball != null) // Check if it's the ball that touched
             {
-                EnemyShield selfRef = GetComponent<EnemyShield>();
-                if ((_impactVector.normalized + transform.forward.normalized).magnitude < (selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
+                EnemyShield i_selfRef = GetComponent<EnemyShield>();
+
+                if ((_impactVector.normalized + transform.forward.normalized).magnitude < (i_selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
                 {
                     FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
-                    Vector3 i_newDirection = Vector3.Reflect(_impactVector, transform.forward);
-                    i_newDirection.y = _impactVector.y;
-                    _ball.Bounce(i_newDirection, 1f);
 
+                    Vector3 i_normalReboundDirection = Vector3.Reflect(_impactVector, transform.forward);
+
+                    Vector3 i_newDirection = new Vector3 (i_normalReboundDirection.x, _impactVector.y, i_normalReboundDirection.z);
+
+                    Vector3 i_directionToPlayerOne = playerOneTransform.position - i_selfRef.shield.transform.position;
+                    Vector3 i_directionToPlayerTwo = playerTwoTransform.position - i_selfRef.shield.transform.position;
+
+                    i_newDirection = SwissArmyKnife.GetClosestDirection(i_directionToPlayerOne, i_directionToPlayerTwo, i_newDirection, i_selfRef.angleToBounceBackToPlayer);
+
+                    _ball.Bounce(i_newDirection, 1f);
+                    
                     return;
+                }
+                else
+                {
+                    StartCoroutine(i_selfRef.DeactivateShieldForGivenTime(i_selfRef.timeShieldDisappearAfterHit));
                 }
             }
         }
