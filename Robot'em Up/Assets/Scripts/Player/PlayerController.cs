@@ -4,6 +4,7 @@ using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
 using UnityEngine.Analytics;
+using UnityEngine.SceneManagement;
 
 [ExecuteAlways]
 public class PlayerController : PawnController, IHitable
@@ -47,13 +48,17 @@ public class PlayerController : PawnController, IHitable
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
 
-	public override void Awake ()
+	public void Start ()
 	{
 		base.Awake();
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
+		if (Application.isPlaying)
+		{
+			AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
+		}
 	}
 	private void Update ()
 	{
