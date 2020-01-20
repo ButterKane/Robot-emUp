@@ -1,4 +1,5 @@
 ﻿using MyBox;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyBoss : PawnController, IHitable
@@ -8,6 +9,15 @@ public class EnemyBoss : PawnController, IHitable
     public HealthBar healthBar1;
     public HealthBar healthBar2;
     public GameObject healthBarPrefab;
+    [SerializeField] protected Transform playerOneTransform;
+    protected PawnController playerOnePawnController;
+    [SerializeField] protected Transform playerTwoTransform;
+    protected PawnController playerTwoPawnController;
+    protected bool playerOneInRange;
+    protected bool playerTwoInRange;
+    protected float meleeRange = 20;
+    protected float distanceWithPlayerOne;
+    protected float distanceWithPlayerTwo;
 
     [Separator("Boss Variables")]
     public Renderer[] renderers;
@@ -20,6 +30,7 @@ public class EnemyBoss : PawnController, IHitable
     public enum BossState
     {
         Idle,
+        Moving,
         Stagger,
         PunchAttack,
         RangeAttack,
@@ -30,16 +41,21 @@ public class EnemyBoss : PawnController, IHitable
         ChangingPhase
     }
 
+    public List<BossState> ListPatternPhase1;
+    public List<BossState> ListPatternPhase2;
+    public float waitingBeforeNextState;
+    public bool isPhase1;
+
     public BossState bossState = BossState.Idle;
     public int Health1Bar_Value_Max = 100;
     public int Health2Bar_Value_Max = 50;
     [ReadOnly] public int Health1Bar_CurrentValue = 0;
     [ReadOnly] public int Health2Bar_CurrentValue = 0;
-    
+
 
     [Space(2)]
     [Header("Punch Attack")]
-    public int PunchAttack_DamageInflicted = 20; 
+    public int PunchAttack_DamageInflicted = 20;
     public float RecoverTime = 1.5f;
 
     public void Start()
@@ -54,16 +70,88 @@ public class EnemyBoss : PawnController, IHitable
         healthBar2.customHealthBar = true;
         healthBar2.customDeltaPosition = -1;
         healthBar2.target = this;
-        
+
         healthBar1.ToggleHealthBar(true);
         healthBar2.ToggleHealthBar(true);
+
+
+        playerOneTransform = GameManager.playerOne.transform;
+        playerTwoTransform = GameManager.playerTwo.transform;
     }
 
 
     public void Update()
     {
+        navMeshAgent.enabled = true;
+        navMeshAgent.SetDestination(playerOneTransform.position);
         healthBar1.customValueToCheck = (float)Health1Bar_CurrentValue / Health1Bar_Value_Max;
         healthBar2.customValueToCheck = (float)Health2Bar_CurrentValue / Health2Bar_Value_Max;
+        UpdateDistancesToPlayers();
+        UpdateAnimatorBlendTree();
+        waitingBeforeNextState -= Time.deltaTime;
+        if (waitingBeforeNextState < 0)
+        {
+            ChangeState();
+        }
+    }
+
+    public void ChangeState()
+    {
+        if (isPhase1)
+        {
+
+            if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange)
+            {
+                navMeshAgent.enabled = true;
+                navMeshAgent.SetDestination(playerOneTransform.position);
+            }
+
+
+            if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange)
+            {
+                navMeshAgent.enabled = true;
+                navMeshAgent.SetDestination(playerTwoTransform.position);
+            }
+
+        }
+        else
+        {
+
+        }
+    }
+
+
+    public override void UpdateAnimatorBlendTree()
+    {
+        base.UpdateAnimatorBlendTree();
+        if (canMove)
+        {
+            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
+        }
+    }
+
+    void UpdateDistancesToPlayers()
+    {
+        distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
+    }
+
+    Transform GetClosestAndAvailablePlayer()
+    {
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
+            || !playerOnePawnController.IsTargetable())
+        {
+            return playerTwoTransform;
+        }
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && playerOnePawnController.IsTargetable())
+            || !playerTwoPawnController.IsTargetable())
+        {
+            return playerOneTransform;
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
