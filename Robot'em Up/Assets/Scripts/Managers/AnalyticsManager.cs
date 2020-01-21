@@ -96,13 +96,8 @@ public class AnalyticsManager
 	}
 
 	public static void CleanZoneDatas (string _zoneName)
-<<<<<<< HEAD
-	{/*
-		foreach (AnalyticsData data in GetDatas())
-=======
 	{
 		foreach (AnalyticsData data in GetDatas().analyticsDatas)
->>>>>>> develop
 		{
 			if (data.currentZone == _zoneName)
 			{
@@ -110,7 +105,6 @@ public class AnalyticsManager
 				data.currentZone = "none";
 			}
 		}
-        */
 	}
 
 	public static void SendData(AnalyticsData _data)
