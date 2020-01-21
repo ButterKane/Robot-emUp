@@ -83,27 +83,36 @@ public class EnemyBehaviour : PawnController, IHitable
     private WhatBumps whatBumps;
 
     [Space(3)]
-    [Header("Attack")]
-    public float distanceToAttack = 5;
+    [Header("Common attack variables")]
     public float maxAnticipationTime = 0.5f;
-    private float maxPartAnticipationTime;
-    [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
+    public float maxTimePauseAfterAttack = 1;
+    public Vector3 hitBoxOffset;
+
+    [Header("Melee Variables")]
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public float distanceToAttack = 5;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public GameObject attackHitBoxPrefab;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public Transform attackHitBoxCenterPoint;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public float attackRaycastDistance = 2;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float portionOfAnticipationWithRotation = 0.3f;
+    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float portionOfAnticipationWithFlickering = 0.2f;
+
+    private MeshRenderer attackPreviewPlaneRenderer;
     protected float anticipationTime;
     protected float attackDuration;
-    [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
     protected bool endOfAttackTriggerLaunched;
-    public GameObject attackHitBoxPrefab;
-    public Transform attackHitBoxCenterPoint;
-    private float partAnticipationTime;
     private GameObject attackHitBoxInstance;
-    private MeshRenderer attackPreviewPlaneRenderer;
+    private GameObject attackPreviewPlane;
     GameObject myAttackHitBox;
-    public Vector3 hitBoxOffset;
-    public float maxTimePauseAfterAttack = 1;
+    
     float timePauseAfterAttack;
-    public float attackRaycastDistance = 2;
     protected bool mustCancelAttack;
     private EnemyArmAttack armScript;
+    
+    //[ConditionalField(nameof(enemyType), false, EnemyTypes.Turret)]
+    //[ConditionalField(nameof(enemyType), false, EnemyTypes.Sniper)]
+
 
     [Space(3)]
     [Header("Surrounding")]
@@ -313,12 +322,10 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void EnterPreparingAttackState()
     {
-        maxPartAnticipationTime = maxAnticipationTime * 0.66f;
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
-        partAnticipationTime = maxPartAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
-        attackPreviewPlaneRenderer = null;
+        attackPreviewPlane = null;
     }
 
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
@@ -333,43 +340,44 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
         {
-            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, attackHitBoxCenterPoint.position, Quaternion.identity);
+            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, new Vector3(attackHitBoxCenterPoint.position.x, attackHitBoxCenterPoint.position.y + attackHitBoxCenterPoint.localScale.y/2, attackHitBoxCenterPoint.position.z), Quaternion.identity, transform);
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
-            attackPreviewPlaneRenderer = attackHitBoxInstance.GetComponent<EnemyArmAttack>().plane.GetComponent<MeshRenderer>();
+            attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
+            attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
         }
 
-        if (attackPreviewPlaneRenderer != null)
+        if (attackPreviewPlane != null)
         {
-
             // Make attack zone appear progressively
-            if (partAnticipationTime >= 0)
+            if (anticipationTime > portionOfAnticipationWithFlickering * maxAnticipationTime)
             {
-                attackPreviewPlaneRenderer.material.color = new Color(attackPreviewPlaneRenderer.material.color.r, attackPreviewPlaneRenderer.material.color.g, attackPreviewPlaneRenderer.material.color.b, 1 - (partAnticipationTime / maxPartAnticipationTime));
+                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
             }
-            else if (anticipationTime <= 0.20f) // If attack will happen in less than 0.2 sec
+            // If max size is reached, flicker the color
+            else 
             {
-                // Blinking, imminent attack
                 attackPreviewPlaneRenderer.enabled = !attackPreviewPlaneRenderer.enabled;
             }
         }
 
-        Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
-        _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+        if (anticipationTime > portionOfAnticipationWithRotation * maxAnticipationTime)
+        {
+            Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+            _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+        }
         anticipationTime -= Time.deltaTime;
-        partAnticipationTime -= Time.deltaTime;
 
         if (anticipationTime <= 0)
         {
-            if (attackPreviewPlaneRenderer) { attackPreviewPlaneRenderer.enabled = false; } // making preview zone disappear
+            if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
     }
 
     public virtual void AttackingState()
     {
-
         //ChangeState(EnemyState.PauseAfterAttack);
     }
 

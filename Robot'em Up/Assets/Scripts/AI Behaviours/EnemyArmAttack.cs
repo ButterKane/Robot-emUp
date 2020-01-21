@@ -7,18 +7,20 @@ public class EnemyArmAttack : MonoBehaviour
     public EnemyBehaviour spawnParent;
     Collider meleeCollider;
     public int attackDamage;
-    public GameObject plane;
+    public GameObject mainPlane;
+    public GameObject highlightPlane;
 
     void Awake()
     {
         meleeCollider = GetComponent<Collider>();
-        plane = transform.GetChild(0).gameObject;
+        mainPlane = transform.GetChild(0).gameObject;
+        highlightPlane = mainPlane.transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = spawnParent.attackHitBoxCenterPoint.position;
+        transform.position = new Vector3(spawnParent.attackHitBoxCenterPoint.position.x, spawnParent.attackHitBoxCenterPoint.position.y + spawnParent.attackHitBoxCenterPoint.localScale.y / 2, spawnParent.attackHitBoxCenterPoint.position.z);
         transform.LookAt(transform.position + spawnParent.transform.forward);
     }
 
@@ -36,15 +38,15 @@ public class EnemyArmAttack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("something entered");
         Vector3 i_colliderSize = meleeCollider.bounds.size;
-        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, i_colliderSize/4, transform.rotation); // DOesn't rotate the overlapbox
+        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, i_colliderSize/4, Quaternion.identity); 
         int i = 0;
         while (i < i_hitColliders.Length)
         {
             IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
             if (i_potentialHitableObject != null)
             {
-                Debug.Log("Touched with enemy at " + (i_hitColliders[i].transform.position - transform.position).magnitude + " from player, alors que bound est à " + i_colliderSize.z/4);
                 i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
             }
             i++;
@@ -52,9 +54,9 @@ public class EnemyArmAttack : MonoBehaviour
         ToggleArmCollider(false);
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, meleeCollider.bounds.size / 2);
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireCube(transform.position, meleeCollider.bounds.size / 2);
+    //}
 }
