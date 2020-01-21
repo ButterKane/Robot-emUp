@@ -272,7 +272,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
-    public virtual void LaunchProjectile()
+    public virtual void Shoot()
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;

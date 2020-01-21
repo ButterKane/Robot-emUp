@@ -48,6 +48,7 @@ public class HealthBar : MonoBehaviour
         if(target != null)
         {
             fillRect.sizeDelta = new Vector2(((float)target.currentHealth / target.maxHealth) * _initialWidth, _rect.height);
+            Debug.Log(fillRect.sizeDelta + ", and " + _initialWidth + " is the other value");
 			Color newColor = healthBarGradient.Evaluate(fillRect.sizeDelta.magnitude / _initialWidth);
 			newColor.a = barFill.color.a;
 			barFill.color = newColor;

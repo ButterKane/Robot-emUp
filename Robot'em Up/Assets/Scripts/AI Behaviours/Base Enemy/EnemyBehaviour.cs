@@ -335,6 +335,7 @@ public class EnemyBehaviour : PawnController, IHitable
         {
             attackHitBoxInstance = Instantiate(attackHitBoxPrefab, attackHitBoxCenterPoint.position, Quaternion.identity);
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
             attackPreviewPlaneRenderer = attackHitBoxInstance.GetComponent<EnemyArmAttack>().plane.GetComponent<MeshRenderer>();
         }
 

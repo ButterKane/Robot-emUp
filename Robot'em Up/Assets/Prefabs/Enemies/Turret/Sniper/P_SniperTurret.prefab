@@ -231,7 +231,7 @@ Animator:
   m_GameObject: {fileID: 3565533733829296298}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9ea9fe196fda238498fc6e467135d7a6, type: 2}
+  m_Controller: {fileID: 9100000, guid: ba24912337c9d4946865fed7e2c00696, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -252,7 +252,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06114c3c4d746248960ee19ba8470ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myScript: {fileID: 8681543399049038298}
+  myScript: {fileID: 8681543399049038298, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
+    type: 3}
 --- !u!1 &4194175701387704102
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,7 +531,7 @@ GameObject:
   - component: {fileID: 2227829331840288604}
   - component: {fileID: 6736872995242432900}
   - component: {fileID: 6704740834070537280}
-  - component: {fileID: 8681543399049038298}
+  - component: {fileID: 675602643}
   m_Layer: 10
   m_Name: P_SniperTurret
   m_TagString: Enemy
@@ -585,7 +586,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 3
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &8681543399049038298
+--- !u!114 &675602643
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -594,7 +595,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8681543399049038297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f56b6d92130ddb4468812410f2db6e98, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c436931fcd342d4ead74d6c5199f357, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
@@ -616,13 +617,13 @@ MonoBehaviour:
   onGroundGravityMultiplyer: 0
   deadzone: 0.2
   turnSpeed: 0.25
-  canClimb: 1
+  canClimb: 0
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
   climbDuration: 0.5
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
-  isBumpable: 1
+  isBumpable: 0
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2
@@ -631,7 +632,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   bumpRaycastDistance: 1
-  whenToTriggerFallingAnim: 0
+  whenToTriggerFallingAnim: 0.302
   eventOnBeingHit: event.PlayerBeingHit
   eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
   eventOnBeingGrounded: event.PlayerGrounded
@@ -642,17 +643,17 @@ MonoBehaviour:
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  enemyType: 0
+  enemyType: 4
   energyGainedOnHit: 1
   damage: 10
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 1.5
+  lockHitboxSize: 0
   arenaRobot: 0
-  focusDistance: 50
-  unfocusDistance: 55
+  focusDistance: 3
+  unfocusDistance: 20
   timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 2
+  distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
@@ -660,7 +661,7 @@ MonoBehaviour:
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
   distanceToAttack: 5
-  maxAnticipationTime: 2.5
+  maxAnticipationTime: 0.5
   rotationSpeedPreparingAttack: 0.2
   whenToTriggerEndOfAttackAnim: 0
   attackHitBoxPrefab: {fileID: 0}
@@ -678,30 +679,47 @@ MonoBehaviour:
   arenaTurret: 0
   defaultForwardPredictionRatio: 0
   minMaxRandomRangePredictionRatio: {x: 0, y: 0}
-  maxRotationSpeed: 110.95
-  maxRestTime: 4
-  randomRangeRestTime: 0.5
+  maxRotationSpeed: 0
+  maxRestTime: 0
+  randomRangeRestTime: 0
   aimingCubeTransform: {fileID: 6678318211773809441}
   aimingCubeRenderer: {fileID: 788040119959061173}
   aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
   aimingCubeLockedScale: {x: 0.17, y: 0.17, z: 1}
-  lockingAimingColor: {r: 0.9882353, g: 1, b: 0, a: 1}
+  lockingAimingColor: {r: 1, g: 0.91027665, b: 0, a: 1}
   lockingAimingColorIntensity: 8
-  followingAimingColor: {r: 1, g: 0.03529412, b: 0, a: 0}
+  followingAimingColor: {r: 1, g: 0, b: 0, a: 0}
   followingAimingColorIntensity: 5
   layersToCheckToScale:
     serializedVersion: 2
     m_Bits: 4096
-  bulletPrefab: {fileID: 3937835393218686174, guid: 5123b33b6acbb164e8b524799f9a4324,
+  bulletPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
     type: 3}
   bulletSpawn: {fileID: 1311322156898505201}
-  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.15}
+  canBulletTouchEnemies: 0
+  bulletDamageRatioToEnemies: 0.5
+  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.5}
   aimingAtPlayerFXTransform: {fileID: 7429455705988075639}
   aimingAtPlayerFXRenderer: {fileID: 7429455705988075637}
   aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
-  endAimingFXScaleMultiplier: 0.44
-  startAimingFXCircleThickness: 0.15
+  endAimingFXScaleMultiplier: 0
+  startAimingFXCircleThickness: 0
+  laserPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
+    type: 3}
+  laserLength: 10
+  shootingLaserTime: 3
+  damagePerSecond: 50
+  reducingOfLaserWidth:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  repulseCircleRadius: 0
+  repulseCircleStrength: 0
+  finalRepulseCircleRadius: 0
+  finalRepulseCircleStrength: 0
 --- !u!1001 &4870783270699171655
 PrefabInstance:
   m_ObjectHideFlags: 0
