@@ -357,6 +357,7 @@ public class EnemyBehaviour : PawnController, IHitable
             // If max size is reached, flicker the color
             else 
             {
+                attackPreviewPlane.transform.localScale = Vector3.one;
                 attackPreviewPlaneRenderer.enabled = !attackPreviewPlaneRenderer.enabled;
             }
         }
@@ -371,7 +372,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (anticipationTime <= 0)
         {
-            if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
+            //if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
     }
