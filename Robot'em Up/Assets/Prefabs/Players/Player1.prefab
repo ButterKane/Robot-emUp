@@ -177,8 +177,8 @@ MonoBehaviour:
   perfectReceptionBufferOnFail: 0.65
   perfectReceptionMinDistance: 10
   perfectReceptionMinDelay: 0.2
-  perfectReceptionExplosionRadius: 2
-  perfectReceptionExplosionDamages: 1
+  perfectReceptionExplosionRadius: 7
+  perfectReceptionExplosionDamages: 10
   curveMaxLateralDistance: 0
   curveMaxPlayerDistance: 0
   curveRaycastIteration: 25
@@ -324,9 +324,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d4ffa449969482468ffd2f0357fda26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDistance: 1
+  minDistance: 0.1
   maxDistance: 7.5
-  duration: 0.12
+  duration: 0.2
   dashDistanceCurve:
     serializedVersion: 2
     m_Curve:
@@ -354,7 +354,9 @@ MonoBehaviour:
   maxStackAmount: 3
   unstoppableDash: 0
   invincibleDuringDash: 1
-  pushForce: 20
+  pushForce: 150
+  pushHeight: 0.7
+  dashHitboxSize: 0.7
   useCooldown: 0.2
   defaultStackRecoveryDuration: 3
   minStackRecoverySpeedMultiplier: 1

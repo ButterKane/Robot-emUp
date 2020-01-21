@@ -14,9 +14,9 @@ public class AnalyticsData
 {
 	public string dataName;
 	public bool sortPerZone;
-	public bool sortPerArena;
 	public bool perPlayer;
 	public int playerOneValue;
 	public int playerTwoValue;
 	public int totalValue;
+	public string currentZone;
 }
