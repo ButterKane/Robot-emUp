@@ -362,6 +362,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableCollisions();
 				break;
 			case BallState.Flying:
+				Highlighter.DetachBallFromPlayer();
 				CursorManager.SetBallPointerParent(null);
 				ballTrail = FeedbackManager.SendFeedback("event.BallFlying", this).GetVFX();
 				Vector3 newBallScale = ballTrail.transform.localScale;

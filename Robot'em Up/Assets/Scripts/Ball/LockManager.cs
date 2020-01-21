@@ -24,7 +24,7 @@ public class LockManager : MonoBehaviour
         {
             AimLock i_newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
             i_newLock.transform.SetParent(i_canvas.transform);
-            i_newLock.Init(_target, _hitboxSize);
+            i_newLock.Init(_target, _hitboxSize, datas.defaultLockColor, datas.defaultLockIconColor);
             lockedTargets.Add(i_newLock);
         }
     }
@@ -76,7 +76,7 @@ public class LockManager : MonoBehaviour
 				if (potentialTarget != null && potentialTarget.lockable_access)
 				{
 					i_foundTargets.Add(hit.transform);
-					LockManager.LockTarget(hit.transform, potentialTarget.lockHitboxSize_access);
+					LockTarget(hit.transform, potentialTarget.lockHitboxSize_access);
 				}
 			}
 		}
@@ -84,7 +84,7 @@ public class LockManager : MonoBehaviour
 		{
 			if (!i_foundTargets.Contains(lockedTarget.linkedTarget))
 			{
-				LockManager.UnlockTarget(lockedTarget);
+				UnlockTarget(lockedTarget);
 			}
 		}
 	}
