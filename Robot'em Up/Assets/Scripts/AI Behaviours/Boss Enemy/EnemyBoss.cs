@@ -15,7 +15,7 @@ public class EnemyBoss : PawnController, IHitable
     protected PawnController playerTwoPawnController;
     protected bool playerOneInRange;
     protected bool playerTwoInRange;
-    protected float meleeRange = 20;
+    public float meleeRange = 20;
     protected float distanceWithPlayerOne;
     protected float distanceWithPlayerTwo;
 
@@ -87,6 +87,8 @@ public class EnemyBoss : PawnController, IHitable
 
         playerOneTransform = GameManager.playerOne.transform;
         playerTwoTransform = GameManager.playerTwo.transform;
+        playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
+        playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
     }
 
 
@@ -127,6 +129,13 @@ public class EnemyBoss : PawnController, IHitable
                         animator.SetTrigger("EndOfPunchAttackTrigger");
                         DestroyAttackHitBox();
                         PunchAttack_Attacking = false;
+                    }
+
+                    if (waitingBeforeNextState < PunchAttack_RecoverTime / 3)
+                    {
+                        navMeshAgent.enabled = true;
+                        navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
+
                     }
 
                     break;
@@ -192,7 +201,7 @@ public class EnemyBoss : PawnController, IHitable
 
 
                 //If a player is very close -> punch attack
-                if (distanceWithPlayerTwo < meleeRange | distanceWithPlayerTwo < meleeRange)
+                if (distanceWithPlayerTwo < meleeRange | distanceWithPlayerOne < meleeRange)
                 {
                     bossState = BossState.PunchAttack;
                     waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
@@ -217,7 +226,7 @@ public class EnemyBoss : PawnController, IHitable
 
     public void ActivateAttackHitBox()
     {
-        PunchAttack_attackHitBoxInstance = Instantiate(PunchAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
+        PunchAttack_attackHitBoxInstance = Instantiate(PunchAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, transform.rotation, transform);
     }
 
     public void DestroyAttackHitBox()
@@ -265,12 +274,15 @@ public class EnemyBoss : PawnController, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        InflictDamage(_damages, 1f);
-        FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
-        EnergyManager.IncreaseEnergy(0.2f);
-        if (_source == DamageSource.Dunk)
+        if (_ball != null)
         {
-            InflictDamage(_damages, 1.5f);
+            InflictDamage(_damages, 1f);
+            FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+            EnergyManager.IncreaseEnergy(0.2f);
+            if (_source == DamageSource.Dunk)
+            {
+                InflictDamage(_damages, 1.5f);
+            }
         }
         
     }
