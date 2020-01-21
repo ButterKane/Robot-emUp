@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Analytics;
 using MyBox;
 
 public enum DashState
@@ -20,7 +19,9 @@ public class DashController : MonoBehaviour
 
 	public bool unstoppableDash;
 	public bool invincibleDuringDash;
-	public float pushForce = 20f;
+	public float pushForce = 80f;
+	public float pushHeight = 0.2f;
+	public float dashHitboxSize = 0.7f;
 
 	public float useCooldown = 0.2f;
 	public float defaultStackRecoveryDuration = 8f;
@@ -82,11 +83,7 @@ public class DashController : MonoBehaviour
 		}
 		if (!CanDash()) { return; }
 
-		Analytics.CustomEvent("dash", new Dictionary<string, object>
-		{
-			{ "test", 1 },
-			{ "test2", 0 }
-		});
+		AnalyticsManager.IncrementData("PlayerDash");
 		_direction = _direction.normalized;
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = transform.position + _direction * maxDistance; 
@@ -185,18 +182,6 @@ public class DashController : MonoBehaviour
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )
 	{
 		Vector3 i_dashDirection = _endPosition - _startPosition;
-		if (duration <= 0.4f)
-		{
-			RaycastHit hit;
-			if (Physics.Raycast(_startPosition,_endPosition - _startPosition, out hit, Vector3.Distance(_startPosition, _endPosition)))
-			{
-				PawnController hitPawn = hit.transform.gameObject.GetComponent<PawnController>();
-				if (hitPawn)
-				{
-					hitPawn.Push(i_dashDirection, pushForce);
-				}
-			}
-		}
 		ChangeState(DashState.Dashing);
 		if (invincibleDuringDash) { linkedPawn.SetInvincible(true); }
 		float i_cloneCounter = 0;
@@ -208,13 +193,28 @@ public class DashController : MonoBehaviour
 				GenerateClone();
 				i_cloneCounter = 0;
 			}
-			RaycastHit hit;
-			if (Physics.Raycast(transform.position, i_dashDirection.normalized, out hit, 0.4f))
+			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition(), dashHitboxSize, i_dashDirection.normalized, 0.4f) ;
+			foreach (RaycastHit hit in hits)
 			{
-				PawnController hitPawn = hit.transform.gameObject.GetComponent<PawnController>();
+				PlayerController hitPawn = hit.collider.transform.gameObject.GetComponent<PlayerController>();
 				if (hitPawn)
 				{
-					hitPawn.Push(i_dashDirection, pushForce);
+					if (hitPawn != linkedPawn)
+					{
+						DashController dashController = hitPawn.GetComponent<DashController>();
+						if (dashController != null)
+						{
+							dashController.StopAllCoroutines();
+							dashController.ChangeState(DashState.None);
+							linkedPawn.Push(-i_dashDirection, pushForce / 2f, pushHeight);
+						}
+						hitPawn.Push(i_dashDirection, pushForce, pushHeight);
+						if (!unstoppableDash)
+						{
+							ChangeState(DashState.None);
+							StopAllCoroutines();
+						}
+					}
 				}
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{

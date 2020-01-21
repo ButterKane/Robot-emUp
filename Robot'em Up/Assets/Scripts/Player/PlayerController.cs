@@ -4,6 +4,7 @@ using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
 using UnityEngine.Analytics;
+using UnityEngine.SceneManagement;
 
 [ExecuteAlways]
 public class PlayerController : PawnController, IHitable
@@ -47,7 +48,7 @@ public class PlayerController : PawnController, IHitable
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
 
-	public override void Awake ()
+	public void Start ()
 	{
 		base.Awake();
 		cam = Camera.main;
@@ -268,6 +269,7 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
+			AnalyticsManager.IncrementData("DamageTaken", _amount);
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
@@ -280,6 +282,11 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
+		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
+		if (GameManager.deadPlayers.Count > 0)
+		{
+			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
+		}
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -295,6 +302,7 @@ public class PlayerController : PawnController, IHitable
 	public void Revive(PlayerController _player)
 	{
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
+		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");

@@ -132,6 +132,7 @@ public class PassController : MonoBehaviour
 
 	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
+		AnalyticsManager.IncrementData("PerfectReception");
 		Receive(_ball);
 		keepPerfectReceptionModifiers = true;
 		ChangePassState(PassState.Aiming);
@@ -278,6 +279,7 @@ public class PassController : MonoBehaviour
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
+		AnalyticsManager.IncrementData("PlayerPass");
 		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
 		if (!keepPerfectReceptionModifiers)
 		{

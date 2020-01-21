@@ -5,10 +5,12 @@ using UnityEngine;
 public class LinkBehaviourToAnimator : MonoBehaviour
 {
     EnemyBehaviour enemyScriptRef;
+    EnemyBoss BossScriptRef;
     // Start is called before the first frame update
     void Start()
     {
         enemyScriptRef = GetComponentInParent<EnemyBehaviour>();
+        BossScriptRef = GetComponentInParent<EnemyBoss>();
     }
 
 
@@ -20,6 +22,19 @@ public class LinkBehaviourToAnimator : MonoBehaviour
     {
         enemyScriptRef.DestroyAttackHitBox();
     }
+
+
+    public void Boss_ActivateMeleeHitBox()
+    {
+        BossScriptRef.ActivateAttackHitBox();
+    }
+    public void Boss_DestroyMeleeHitBox()
+    {
+        BossScriptRef.DestroyAttackHitBox();
+    }
+
+
+
     public void EndAttack()
     {
         enemyScriptRef.ChangeState(EnemyState.PauseAfterAttack);

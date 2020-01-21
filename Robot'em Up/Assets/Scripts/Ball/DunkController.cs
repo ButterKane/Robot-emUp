@@ -81,6 +81,7 @@ public class DunkController : MonoBehaviour
 
 	public void Explode ()
 	{
+		AnalyticsManager.IncrementData("SuccessfulDunk");
 		BallBehaviour i_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
 		EnergyManager.DecreaseEnergy(1f);
