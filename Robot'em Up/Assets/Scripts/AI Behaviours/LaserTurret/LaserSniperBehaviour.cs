@@ -128,15 +128,17 @@ public class LaserSniperBehaviour : TurretBehaviour
 
     public override void AttackingUpdateState()
     {
-        bool i_aimAtPlayer;
-        
-        if(Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
+        bool i_aimAtPlayer = false;
+        if (focusedPlayer)
         {
-            i_aimAtPlayer = false;
-        }
-        else
-        {
-            i_aimAtPlayer = true;
+            if (Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
+            {
+                i_aimAtPlayer = false;
+            }
+            else
+            {
+                i_aimAtPlayer = true;
+            }
         }
         //Adapt aimCube Scale and Position
         RaycastHit hit;
