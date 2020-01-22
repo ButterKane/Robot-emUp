@@ -179,6 +179,7 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   meleeRange: 13
+  missileRange: 30
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
@@ -202,8 +203,16 @@ MonoBehaviour:
     type: 3}
   PunchAttack_attackHitBoxInstance: {fileID: 0}
   PunchAttack_hitBoxOffset: {x: 0, y: 0, z: 7}
-  RangeAttackAttackDuration: 1.2
+  RangeAttack_Anticipation: 0.5
+  RangeAttack_AttackDuration: 1.2
   RangeAttack_RecoverTime: 0.8
+  RangeAttack_Damage: 0.4
+  RangeAttack_SpawnPosition: {x: 0, y: 0, z: 0}
+  RangeAttack_BulletPrefab: {fileID: 3937835393218686174, guid: b8e3861787e70b145a85cd7de75f14e5,
+    type: 3}
+  RangeAttack_spawnedBullet1: {fileID: 0}
+  RangeAttack_spawnedBullet2: {fileID: 0}
+  RangeAttack_Attacking: 0
 --- !u!1 &6225446
 GameObject:
   m_ObjectHideFlags: 0
@@ -3549,7 +3558,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1005291876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4100,6 +4109,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MusicPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1096068004699470610, guid: 2957e7b7696641c49a07097e7139566d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1096068004699470608, guid: 2957e7b7696641c49a07097e7139566d,
         type: 3}

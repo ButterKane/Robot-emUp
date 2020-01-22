@@ -15,11 +15,13 @@ public class EnemyBoss : PawnController, IHitable
     protected PawnController playerTwoPawnController;
     protected bool playerOneInRange;
     protected bool playerTwoInRange;
-    public float meleeRange = 20;
-    protected float distanceWithPlayerOne;
-    protected float distanceWithPlayerTwo;
 
     [Separator("Boss Variables")]
+    public float meleeRange = 20;
+    public float missileRange = 40;
+    protected float distanceWithPlayerOne;
+    protected float distanceWithPlayerTwo;
+    
     public Renderer[] renderers;
     public Color normalColor = Color.blue;
     public Color attackingColor = Color.red;
@@ -65,8 +67,15 @@ public class EnemyBoss : PawnController, IHitable
     public Vector3 PunchAttack_hitBoxOffset;
 
     [Header("Range Attack")]
-    public float RangeAttackAttackDuration = 1.2f;
+    public float RangeAttack_Anticipation = 0.5f;
+    public float RangeAttack_AttackDuration = 1.2f;
     public float RangeAttack_RecoverTime = 0.8f;
+    public float RangeAttack_Damage = 0.4f;
+    public Vector3 RangeAttack_SpawnPosition;
+    public GameObject RangeAttack_BulletPrefab;
+    public GameObject RangeAttack_spawnedBullet1;
+    public GameObject RangeAttack_spawnedBullet2;
+    public bool RangeAttack_Attacking = false;
 
     public void Start()
     {
@@ -140,6 +149,22 @@ public class EnemyBoss : PawnController, IHitable
 
                     break;
                 case BossState.RangeAttack:
+
+                    if (waitingBeforeNextState < RangeAttack_AttackDuration + RangeAttack_RecoverTime && RangeAttack_Attacking == false)
+                    {
+                        animator.SetTrigger("RangeAttackTrigger");
+                        RangeAttack_Attacking = true;
+                    }
+
+                    if (waitingBeforeNextState < RangeAttack_RecoverTime / 3)
+                    {
+                        RangeAttack_Attacking = false;
+                        navMeshAgent.enabled = true;
+                        navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
+
+                    }
+
+
                     break;
                 case BossState.Shield:
                     break;
@@ -172,11 +197,11 @@ public class EnemyBoss : PawnController, IHitable
         {
 
             // If players are too far -> range attack
-            if (distanceWithPlayerTwo > meleeRange* 2.5f && distanceWithPlayerOne > meleeRange * 2.5f)
+            if (distanceWithPlayerTwo > missileRange && distanceWithPlayerOne > missileRange)
             {
                 navMeshAgent.enabled = false;
                 bossState = BossState.RangeAttack;
-                waitingBeforeNextState = 0.2f;
+                waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
             }
             else
             {
@@ -201,7 +226,7 @@ public class EnemyBoss : PawnController, IHitable
 
 
                 //If a player is very close -> punch attack
-                if (distanceWithPlayerTwo < meleeRange | distanceWithPlayerOne < meleeRange)
+                if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
                 {
                     bossState = BossState.PunchAttack;
                     waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
@@ -226,7 +251,23 @@ public class EnemyBoss : PawnController, IHitable
 
     public void ActivateAttackHitBox()
     {
+        if (bossState == BossState.PunchAttack)
+        {
+            FeedbackManager.SendFeedback("event.BossPunchAttack", this);
+
+        }
         PunchAttack_attackHitBoxInstance = Instantiate(PunchAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, transform.rotation, transform);
+    }
+
+    public void LaunchMissiles()
+    {
+        Vector3 i_spawnPosition;
+        i_spawnPosition = RangeAttack_SpawnPosition + transform.position;
+        RangeAttack_spawnedBullet1 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.LookRotation(playerOneTransform.position));
+        RangeAttack_spawnedBullet1.GetComponent<TurretBasicBullet>().canHitEnemies = false;
+        RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.LookRotation(playerTwoTransform.position));
+        RangeAttack_spawnedBullet2.GetComponent<TurretBasicBullet>().canHitEnemies = false;
+
     }
 
     public void DestroyAttackHitBox()
