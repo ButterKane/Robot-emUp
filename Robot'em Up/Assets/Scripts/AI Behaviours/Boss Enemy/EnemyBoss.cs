@@ -77,6 +77,17 @@ public class EnemyBoss : PawnController, IHitable
     public GameObject RangeAttack_spawnedBullet2;
     public bool RangeAttack_Attacking = false;
 
+
+    [Header("Shield Invocation")]
+    public GameObject BossShield;
+    public bool ShieldIsActivated = false;
+    public float ShieldInvocation_Rate = 0.03f;
+    public float ShieldInvaction_MinHeath = 0.75f;
+    public float ShieldInvaction_TimeInvocation = 0.75f;
+    public float ShieldInvocation_ShieldTimeLasting = 15f;
+    public float ShieldInvocation_CurrentTimeLasting = 0;
+
+
     public void Start()
     {
         Health1Bar_CurrentValue = Health1Bar_Value_Max;
@@ -108,6 +119,13 @@ public class EnemyBoss : PawnController, IHitable
         UpdateDistancesToPlayers();
         UpdateAnimatorBlendTree();
         waitingBeforeNextState -= Time.deltaTime;
+        ShieldInvocation_CurrentTimeLasting -= Time.deltaTime;
+
+        if (ShieldInvocation_CurrentTimeLasting < 0 && ShieldIsActivated)
+        {
+            BossShield.SetActive(false);
+            ShieldIsActivated = false;
+        }
 
         if (waitingBeforeNextState > 0)
         {
@@ -195,58 +213,96 @@ public class EnemyBoss : PawnController, IHitable
     {
         if (isPhase1)
         {
+            float temproll = Random.Range(0, 100);
+            bool WantToInvokeShield = false;
+            if (temproll < ShieldInvocation_Rate * 100)
+            {
+                if (!ShieldIsActivated) //Health1Bar_CurrentValue / Health1Bar_Value_Max < ShieldInvaction_MinHeath &&
+                {
+                    WantToInvokeShield = true;
+                }
+            }
+
+
 
             // If players are too far -> range attack
             if (distanceWithPlayerTwo > missileRange && distanceWithPlayerOne > missileRange)
             {
                 navMeshAgent.enabled = false;
-                bossState = BossState.RangeAttack;
-                waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
+                if (WantToInvokeShield)
+                {
+                    Debug.Log("Shield Step2");
+                    InvokingShieldAttack(); //Shield Invocation is prioritary to firing missile
+                }
+                else
+                {
+                    bossState = BossState.RangeAttack;
+                    waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
+
+                }
+
             }
             else
             {
-                //If player are closer but not enough -> walk towards them
-                if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange)
+                //If player are closer but not enough -> walk towards them if alive
+                if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange && playerOnePawnController.currentHealth > 0)
                 {
-                    bossState = BossState.Moving;
-                    waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
-                    navMeshAgent.enabled = true;
-                    navMeshAgent.SetDestination(playerOneTransform.position);
-                }
-
-
-                //If player are closer but not enough -> walk towards them
-                if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange)
-                {
-                    bossState = BossState.Moving;
-                    waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
-                    navMeshAgent.enabled = true;
-                    navMeshAgent.SetDestination(playerTwoTransform.position);
-                }
-
-
-                //If a player is very close -> punch attack
-                if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
-                {
-                    bossState = BossState.PunchAttack;
-                    waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
-                    navMeshAgent.enabled = false;
-                    animator.SetTrigger("PunchAttackAnticipationTrigger");
-
-                    foreach (var renderer in renderers)
+                    if (WantToInvokeShield)
                     {
-                        renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
+                        InvokingShieldAttack(); //Shield Invocation is prioritary to moving
+                    }
+                    else
+                    {
+                        bossState = BossState.Moving;
+                        waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
+                        navMeshAgent.enabled = true;
+                        navMeshAgent.SetDestination(playerOneTransform.position);
                     }
                 }
 
+
+                //If player are closer but not enough -> walk towards them if alive
+                if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange && playerTwoPawnController.currentHealth > 0)
+                {
+                    if (WantToInvokeShield)
+                    {
+                        InvokingShieldAttack(); //Shield Invocation is prioritary to moving
+                    }
+                    else
+                    {
+                        bossState = BossState.Moving;
+                        waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
+                        navMeshAgent.enabled = true;
+                        navMeshAgent.SetDestination(playerTwoTransform.position);
+                    }
+                }
+
+            //If a player is very close -> punch attack
+            if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
+            {
+                bossState = BossState.PunchAttack;
+                waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
+                navMeshAgent.enabled = false;
+                animator.SetTrigger("PunchAttackAnticipationTrigger");
+
+                foreach (var renderer in renderers)
+                {
+                    renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
+                }
             }
+        }
+
+        }
             
+    }
 
-        }
-        else
-        {
-
-        }
+    public void InvokingShieldAttack()
+    {
+        Debug.Log("InvokingShieldAttack");
+        animator.SetTrigger("InvokingShieldTrigger");
+        bossState = BossState.Shield;
+        ShieldIsActivated = true;
+        waitingBeforeNextState = ShieldInvaction_TimeInvocation;
     }
 
     public void ActivateAttackHitBox()
@@ -259,13 +315,24 @@ public class EnemyBoss : PawnController, IHitable
         PunchAttack_attackHitBoxInstance = Instantiate(PunchAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, transform.rotation, transform);
     }
 
+
+    public void InvokeShield()
+    {
+        Debug.Log("InvokeShield");
+        ShieldInvocation_CurrentTimeLasting = ShieldInvocation_ShieldTimeLasting;
+        BossShield.SetActive(true);
+    }
+
     public void LaunchMissiles()
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = RangeAttack_SpawnPosition + transform.position;
-        RangeAttack_spawnedBullet1 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.LookRotation(playerOneTransform.position));
+        RangeAttack_spawnedBullet1 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.identity);
+        RangeAttack_spawnedBullet1.transform.LookAt(playerOneTransform.position);
+        Debug.DrawRay(transform.position, RangeAttack_spawnedBullet1.transform.forward* 100, Color.red, 5f);
         RangeAttack_spawnedBullet1.GetComponent<TurretBasicBullet>().canHitEnemies = false;
-        RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.LookRotation(playerTwoTransform.position));
+        RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.identity);
+        RangeAttack_spawnedBullet1.transform.LookAt(playerTwoTransform.position);
         RangeAttack_spawnedBullet2.GetComponent<TurretBasicBullet>().canHitEnemies = false;
 
     }
