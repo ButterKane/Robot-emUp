@@ -75,6 +75,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     [Header("Bullet")]
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
+    public bool canBulletTouchEnemies = false;
+    [Range(0,1)] public float bulletDamageRatioToEnemies = 0.5f;
 
     new void Start()
     {
@@ -90,7 +92,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
     }
 
-    public virtual void Update()
+    new protected virtual void Update()
     {
         UpdateDistancesToPlayers();
         UpdateState();
@@ -270,11 +272,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
-    public virtual void LaunchProjectile()
+    public virtual void Shoot()
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet.GetComponent<TurretBasicBullet>().canHitEnemies = canBulletTouchEnemies;
+        spawnedBullet.GetComponent<TurretBasicBullet>().damageModificator = bulletDamageRatioToEnemies;
     }
 
     void ChangingFocus(Transform _newFocus)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretSniperBehaviour : TurretBehaviour
+public class LaserSniperBehaviour : TurretBehaviour
 {
     public Vector2 minMaxFollowingAimingCubeScale;
     public Transform aimingAtPlayerFXTransform;
@@ -11,14 +11,50 @@ public class TurretSniperBehaviour : TurretBehaviour
     public Vector3 aimingAtPlayerFXScaleOnPlayer;
     public float endAimingFXScaleMultiplier;
     public float startAimingFXCircleThickness;
+    public GameObject laserPrefab;
+    public float laserLength = 10f;
+    public float shootingLaserTime = 3;
+    public int damagePerSecond = 50;
+    public AnimationCurve reducingOfLaserWidth;
+    public float repulseCircleRadius;
+    public float repulseCircleStrength;
+    public float finalRepulseCircleRadius;
+    public float finalRepulseCircleStrength;
 
     public override void Shoot()
     {
-        Vector3 i_spawnPosition;
-        i_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+        StartCoroutine(ShootingLaser_C());
+    }
+
+    public void RaycastToHitWithLaser()
+    {
+        RaycastHit[] hitObjects = Physics.RaycastAll(transform.position, transform.TransformDirection(Vector3.forward), laserLength);
+        if (hitObjects.Length > 0)
+        {
+            foreach (var touched in hitObjects)
+            {
+                IHitable potentialHitableObject = touched.transform.GetComponent<IHitable>();
+                if (potentialHitableObject != null)
+                {
+                    potentialHitableObject.OnHit(null, (touched.transform.position - transform.position).normalized, null, damagePerSecond/60, DamageSource.Laser, Vector3.zero);
+                }
+            }
+        }
+    }
+
+    public IEnumerator ShootingLaser_C()
+    {
+        if (spawnedBullet)
+        {
+            Vector3 i_spawnPosition;
+            i_spawnPosition = bulletSpawn.position;
+            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+        }
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
+        spawnedBullet.transform.localScale = new Vector3 (spawnedBullet.transform.localScale.x, spawnedBullet.transform.localScale.y, laserLength); 
+        RaycastToHitWithLaser();
+        yield return null;
     }
 
     public override void Die()
@@ -92,15 +128,17 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void AttackingUpdateState()
     {
-        bool i_aimAtPlayer;
-        
-        if(Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
+        bool i_aimAtPlayer = false;
+        if (focusedPlayer)
         {
-            i_aimAtPlayer = false;
-        }
-        else
-        {
-            i_aimAtPlayer = true;
+            if (Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
+            {
+                i_aimAtPlayer = false;
+            }
+            else
+            {
+                i_aimAtPlayer = true;
+            }
         }
         //Adapt aimCube Scale and Position
         RaycastHit hit;

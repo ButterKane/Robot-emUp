@@ -9,6 +9,7 @@ public class EnemyShield : EnemyBehaviour
     [Separator("Shield Variables")]
     public GameObject shield;       // It's only cosmetic now
     public bool deactivateShieldWhenAttacking = true;
+    public float angleToBounceBackToPlayer = 20;
 
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
     [Range(0,90)]
@@ -17,6 +18,8 @@ public class EnemyShield : EnemyBehaviour
     public Renderer[] renderers;
     public Color normalColor = Color.blue;
     public Color attackingColor = Color.red;
+
+    public float timeShieldDisappearAfterHit;
 
     public bool isShieldActivated_accesss
     {
@@ -97,7 +100,7 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            navMeshAgent.speed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression));
+            navMeshAgent.speed = Mathf.Lerp(minMaxAttackSpeed.y, minMaxAttackSpeed.x, attackSpeedVariation.Evaluate(attackTimeProgression));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
 
@@ -130,6 +133,8 @@ public class EnemyShield : EnemyBehaviour
                 renderer.material.SetColor("_Color", Color.Lerp(normalColor,  attackingColor, i_rationalizedProgression)); // Time prgression isn't good
             }
         }
+
+        attackTimeProgression += Time.deltaTime;
     }
 
     // Ususally called when hitting player
@@ -162,6 +167,13 @@ public class EnemyShield : EnemyBehaviour
     public override void Kill()
     {
         base.Kill();   // Override the death sound with the right one 
+    }
+
+    public IEnumerator DeactivateShieldForGivenTime( float timeToDeactivate)
+    {
+        isShieldActivated_accesss = false;
+        yield return new WaitForSeconds(timeToDeactivate);
+        isShieldActivated_accesss = true;
     }
 
 }
