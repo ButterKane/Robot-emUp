@@ -106,6 +106,8 @@ public class GameManager : MonoBehaviour
         surrounderPlayerTwo = Instantiate(SurrounderPrefab, playerTwo.transform.position, Quaternion.identity);
         surrounderPlayerTwo.GetComponent<Surrounder>().playerTransform = playerTwo.transform;
 
+		CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
+
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
 
