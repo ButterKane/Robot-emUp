@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06114c3c4d746248960ee19ba8470ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myScript: {fileID: 0}
+  myScript: {fileID: 4966143793828746274}
 --- !u!1 &3158914843825606604
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,7 +375,7 @@ GameObject:
   - component: {fileID: 8174936212591820110}
   - component: {fileID: 4966143793828746274}
   - component: {fileID: 8142821643506368650}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: P_EnemyTurret
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -472,6 +472,7 @@ MonoBehaviour:
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
+  enemyType: 3
   energyGainedOnHit: 1
   damage: 10
   powerLevel: 1
@@ -491,16 +492,9 @@ MonoBehaviour:
   distanceToAttack: 5
   maxAnticipationTime: 1
   rotationSpeedPreparingAttack: 0.2
-  attackMaxDistance: 8
-  maxAttackDuration: 0.5
-  attackSpeedCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   whenToTriggerEndOfAttackAnim: 0
   attackHitBoxPrefab: {fileID: 0}
+  attackHitBoxCenterPoint: {fileID: 0}
   hitBoxOffset: {x: 0, y: 0, z: 0}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
@@ -531,6 +525,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3937835393218686174, guid: b8e3861787e70b145a85cd7de75f14e5,
     type: 3}
   bulletSpawn: {fileID: 4485545553351095611}
+  canBulletTouchEnemies: 0
+  bulletDamageRatioToEnemies: 0.5
 --- !u!135 &8142821643506368650
 SphereCollider:
   m_ObjectHideFlags: 0

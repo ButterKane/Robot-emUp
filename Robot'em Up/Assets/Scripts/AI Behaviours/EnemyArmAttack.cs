@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class EnemyArmAttack : MonoBehaviour
 {
+    public EnemyBehaviour spawnParent;
     Collider meleeCollider;
     public int attackDamage;
-    public GameObject plane;
+    public GameObject mainPlane;
+    public GameObject highlightPlane;
 
     void Awake()
     {
         meleeCollider = GetComponent<Collider>();
-        plane = transform.GetChild(0).gameObject;
+        mainPlane = transform.GetChild(0).gameObject;
+        highlightPlane = mainPlane.transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        transform.position = new Vector3(spawnParent.attackHitBoxCenterPoint.position.x, spawnParent.attackHitBoxCenterPoint.position.y + spawnParent.attackHitBoxCenterPoint.localScale.y / 2, spawnParent.attackHitBoxCenterPoint.position.z);
+        transform.LookAt(transform.position + spawnParent.transform.forward);
     }
 
     public void ToggleArmCollider(bool? value)
@@ -34,8 +38,9 @@ public class EnemyArmAttack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Vector3 colliderSize = meleeCollider.bounds.size;
-        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, colliderSize/2, Quaternion.identity);
+        Debug.Log("something entered");
+        Vector3 i_colliderSize = meleeCollider.bounds.size;
+        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, i_colliderSize/4, Quaternion.identity); 
         int i = 0;
         while (i < i_hitColliders.Length)
         {
@@ -48,4 +53,10 @@ public class EnemyArmAttack : MonoBehaviour
         }
         ToggleArmCollider(false);
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireCube(transform.position, meleeCollider.bounds.size / 2);
+    //}
 }

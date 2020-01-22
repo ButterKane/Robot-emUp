@@ -16,6 +16,8 @@ public class PlayerController : PawnController, IHitable
 	GamePadState state;
 	private Camera cam;
 	private bool inputDisabled;
+	public Color highlightedColor;
+	public Color highlightedSecondColor;
 
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
@@ -47,6 +49,7 @@ public class PlayerController : PawnController, IHitable
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
+	private bool leftShouldWaitForRelease;
 
 	public void Start ()
 	{
@@ -55,14 +58,10 @@ public class PlayerController : PawnController, IHitable
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
-		if (Application.isPlaying)
-		{
-			AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
-		}
 	}
 	private void Update ()
 	{
-		if (Application.isPlaying)
+		if (Application.isPlaying && !inputDisabled)
 		{
 			GetInput();
 		}
@@ -119,7 +118,17 @@ public class PlayerController : PawnController, IHitable
 		{
 			rightTriggerWaitForRelease = false;
 		}
-		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
+		if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
+		{
+			Highlighter.HighlightBall();
+			//Highlighter.HighlightObject(transform.Find("Model"), highlightedColor, highlightedSecondColor);
+			leftShouldWaitForRelease = true;
+		}
+		if (state.Buttons.LeftShoulder == ButtonState.Released)
+		{
+			leftShouldWaitForRelease = false;
+		}
+		if (state.Buttons.RightShoulder == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
 			dunkController.Dunk();
 		}
@@ -273,6 +282,7 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
+			AnalyticsManager.IncrementData("DamageTaken", _amount);
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
@@ -285,6 +295,11 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
+		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
+		if (GameManager.deadPlayers.Count > 0)
+		{
+			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
+		}
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -300,6 +315,7 @@ public class PlayerController : PawnController, IHitable
 	public void Revive(PlayerController _player)
 	{
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
+		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");

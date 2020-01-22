@@ -134,5 +134,29 @@ public static class SwissArmyKnife
         return _throwLength / (_initialSpeed * Mathf.Cos(radAngle));
     }
 
+    public static Vector3 GetClosestDirection(Vector3 firstDirection, Vector3 secondDirection, Vector3 comparativeDirection, float deltaAngle)
+    {
+        Vector3 closestDirection = comparativeDirection;
+
+        float i_angleToPlayerOne = Vector3.Angle(comparativeDirection, firstDirection);
+        float i_angleToPlayerTwo = Vector3.Angle(comparativeDirection, secondDirection);
+
+        if (i_angleToPlayerOne <= i_angleToPlayerTwo)
+        {
+            if (i_angleToPlayerOne <= deltaAngle)
+            {
+                closestDirection = firstDirection;
+            }
+        }
+        else
+        {
+            if (i_angleToPlayerTwo <= deltaAngle)
+            {
+                closestDirection = secondDirection;
+            }
+        }
+
+        return closestDirection;
+    }
     
 }

@@ -349,6 +349,7 @@ public class BallBehaviour : MonoBehaviour
 			case BallState.Grounded:
 				if (destroyTrailFX != null) { StopCoroutine(destroyTrailFX); Destroy(ballTrail); }
 				if (ballTrail) { destroyTrailFX = StartCoroutine(DisableEmitterThenDestroyAfterDelay(ballTrail.GetComponent<ParticleSystem>(), 0.5f)); }
+				AnalyticsManager.IncrementData("GroundedBallAmount");
 				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
@@ -361,6 +362,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableCollisions();
 				break;
 			case BallState.Flying:
+				Highlighter.DetachBallFromPlayer();
 				CursorManager.SetBallPointerParent(null);
 				ballTrail = FeedbackManager.SendFeedback("event.BallFlying", this).GetVFX();
 				Vector3 newBallScale = ballTrail.transform.localScale;
@@ -445,6 +447,7 @@ public class BallBehaviour : MonoBehaviour
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
+							AnalyticsManager.IncrementData("BallBounceOnWallCount");
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
