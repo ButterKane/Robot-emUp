@@ -26,7 +26,7 @@ public class EnemyArmAttack : MonoBehaviour
 
     public void ToggleArmCollider(bool? value)
     {
-        if(value != null)
+        if (value != null)
         {
             meleeCollider.enabled = (bool)value;
         }
@@ -38,25 +38,17 @@ public class EnemyArmAttack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("something entered");
-        Vector3 i_colliderSize = meleeCollider.bounds.size;
-        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, i_colliderSize/4, Quaternion.identity); 
+        Collider[] i_hitColliders = Physics.OverlapBox(transform.position, meleeCollider.bounds.size/2, Quaternion.identity);
         int i = 0;
         while (i < i_hitColliders.Length)
         {
-            IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
+            IHitable i_potentialHitableObject = i_hitColliders[i].GetComponent<IHitable>();
             if (i_potentialHitableObject != null)
             {
-                i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
+                i_potentialHitableObject.OnHit(null, (other.transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
             }
             i++;
         }
         ToggleArmCollider(false);
     }
-
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireCube(transform.position, meleeCollider.bounds.size / 2);
-    //}
 }
