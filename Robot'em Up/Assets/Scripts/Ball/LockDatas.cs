@@ -8,4 +8,6 @@ public class LockDatas : ScriptableObject
 {
 	[Separator("General settings")]
 	public bool enableLock = true;
+	public Color defaultLockColor = Color.red;
+	public Color defaultLockIconColor = Color.white;
 }

@@ -16,6 +16,8 @@ public class PlayerController : PawnController, IHitable
 	GamePadState state;
 	private Camera cam;
 	private bool inputDisabled;
+	public Color highlightedColor;
+	public Color highlightedSecondColor;
 
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
@@ -47,6 +49,7 @@ public class PlayerController : PawnController, IHitable
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
+	private bool leftShouldWaitForRelease;
 
 	public void Start ()
 	{
@@ -58,7 +61,7 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void Update ()
 	{
-		if (Application.isPlaying)
+		if (Application.isPlaying && !inputDisabled)
 		{
 			GetInput();
 		}
@@ -115,7 +118,17 @@ public class PlayerController : PawnController, IHitable
 		{
 			rightTriggerWaitForRelease = false;
 		}
-		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
+		if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
+		{
+			Highlighter.HighlightBall();
+			//Highlighter.HighlightObject(transform.Find("Model"), highlightedColor, highlightedSecondColor);
+			leftShouldWaitForRelease = true;
+		}
+		if (state.Buttons.LeftShoulder == ButtonState.Released)
+		{
+			leftShouldWaitForRelease = false;
+		}
+		if (state.Buttons.RightShoulder == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
 			dunkController.Dunk();
 		}

@@ -12,7 +12,7 @@ public class TurretSniperBehaviour : TurretBehaviour
     public float endAimingFXScaleMultiplier;
     public float startAimingFXCircleThickness;
 
-    public override void LaunchProjectile()
+    public override void Shoot()
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
@@ -31,7 +31,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         Destroy(gameObject);
     }
 
-    public override void Update()
+    protected override void Update()
     {
         base.Update();
         UpdateAimingCubeState();
