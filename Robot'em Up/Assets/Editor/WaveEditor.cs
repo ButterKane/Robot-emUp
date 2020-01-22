@@ -59,6 +59,15 @@ public class WaveEditor : Editor
 			{
 				UpdateDoorCounter();
 			}
+
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			if (GUILayout.Button("Update door counter", GUILayout.Width(200), GUILayout.Height(30)))
+			{
+				UpdateDoorCounter();
+			}
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
 			GUILayout.Space(10);
 			GUILayout.EndVertical();
 			GUILayout.Space(20);

@@ -87,10 +87,16 @@ public class PlayerController : PawnController, IHitable
 	void GamepadInput ()
 	{
 		state = GamePad.GetState(playerIndex);
-		moveInput = (state.ThumbSticks.Left.X * cam.transform.right) + (state.ThumbSticks.Left.Y * cam.transform.forward);
+		Vector3 camForwardNormalized = cam.transform.forward;
+		camForwardNormalized.y = 0;
+		camForwardNormalized = camForwardNormalized.normalized;
+		Vector3 camRightNormalized = cam.transform.right;
+		camRightNormalized.y = 0;
+		camRightNormalized = camRightNormalized.normalized;
+		moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
 		moveInput.y = 0;
 		moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-		lookInput = (state.ThumbSticks.Right.X * cam.transform.right) + (state.ThumbSticks.Right.Y * cam.transform.forward);
+		lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
 		if (lookInput.magnitude > 0.1f)
 		{
 			passController.Aim();
