@@ -80,7 +80,7 @@ public class EnemyBoss : PawnController, IHitable
     public Renderer aimingCube1_Renderer;
     public Transform aimingCube2_Transform;
     public Renderer aimingCube2_Renderer;
-    public AimingCubeState aimingCubeState;
+    public AimingRedDotState aimingCubeState;
     public Color lockingAimingColor;
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
