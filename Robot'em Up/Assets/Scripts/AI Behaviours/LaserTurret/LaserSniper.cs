@@ -79,10 +79,13 @@ public class LaserSniper : MonoBehaviour
                 if (i_potentialHitableObject != null)
                 {
                     i_potentialHitableObject.OnHit(null, (touched.transform.position - transform.position).normalized, null, enemyScript.damagePerSecond / 60, DamageSource.Laser, Vector3.zero);
+                    
                 }
 
                 if ((touched.collider.tag == "Player" || touched.collider.tag == "Environment") && i_touchedSomething == false)
                 {
+                    GameObject i_impactFX = Instantiate(impactFX, touched.point, Quaternion.identity);
+                    i_impactFX.transform.localScale = impactFXScale;
                     laserLength = touched.distance;
                     i_touchedSomething = true;
                 }
@@ -100,24 +103,6 @@ public class LaserSniper : MonoBehaviour
     //    transform.position = enemyScript.bulletSpawn.position;
     //    transform.LookAt(transform.position + spawnParent.transform.forward);
     //}
-
-    private void OnTriggerEnter(Collider _other)
-    {
-        if (_other.tag == "Enemy")
-        {
-            _other.GetComponent<PawnController>().Damage(damageDealt);
-            GameObject i_impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
-            i_impactFX.transform.localScale = impactFXScale;
-            Destroy(i_impactFX, 1);
-        }
-        else if (_other.tag == "Player")
-        {
-            _other.GetComponent<PawnController>().Damage(damageDealt);
-            GameObject i_impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
-            i_impactFX.transform.localScale = impactFXScale;
-            Destroy(i_impactFX, 1);
-        }
-    }
 
     private void OnTriggerStay(Collider other)
     {

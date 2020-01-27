@@ -44,12 +44,13 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     public IEnumerator ShootingLaser_C()
     {
+        LaserSniper i_instance = null;
         if (spawnedBullet == null)
         {
             Vector3 i_spawnPosition;
             i_spawnPosition = bulletSpawn.position;
             spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
-            LaserSniper i_instance = spawnedBullet.GetComponent<LaserSniper>();
+            i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
             i_instance.target = focusedPlayer;
             i_instance.spawnParent = transform;
@@ -65,6 +66,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             if (shootingLaserTimeProgression < whenToTriggerLaserReduction)
             {
                 float reducingLaserFactor = reducingOfLaserWidth.Evaluate((whenToTriggerLaserReduction- shootingLaserTimeProgression) / (whenToTriggerLaserReduction));
+                if (i_instance!=null)
+                    i_instance.enabled = false;
 
                 spawnedBullet.transform.localScale = new Vector3(spawnedBullet.transform.localScale.x * reducingLaserFactor, spawnedBullet.transform.localScale.y * reducingLaserFactor, spawnedBullet.transform.localScale.z);
             }
@@ -190,8 +193,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
                 //TRANSITION TO OTHER STATE
                 anticipationTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+                //aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
+                //aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
 
                 if (anticipationTime <= 0)
                 {
