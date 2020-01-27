@@ -80,7 +80,7 @@ public class EnemyBoss : PawnController, IHitable
     public Renderer aimingCube1_Renderer;
     public Transform aimingCube2_Transform;
     public Renderer aimingCube2_Renderer;
-    public AimingCubeState aimingCubeState;
+    public AimingRedDotState aimingCubeState;
     public Color lockingAimingColor;
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
@@ -188,7 +188,7 @@ public class EnemyBoss : PawnController, IHitable
                     RotateTowardsPlayerAndHisForward(playerTwoTransform, aimingCube2_Transform);
                     if (waitingBeforeNextState > RangeAttack_AttackDuration + RangeAttack_RecoverTime)
                     {
-                        ChangeAimingCubeState(AimingCubeState.Following);
+                        ChangeAimingCubeState(AimingRedDotState.Following);
                     }
                     if (waitingBeforeNextState < RangeAttack_AttackDuration + RangeAttack_RecoverTime && RangeAttack_Attacking == false)
                     {
@@ -271,7 +271,7 @@ public class EnemyBoss : PawnController, IHitable
                     {
                         bossState = BossState.RangeAttack;
                         waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
-                        ChangeAimingCubeState(AimingCubeState.Following);
+                        ChangeAimingCubeState(AimingRedDotState.Following);
 
                     }
 
@@ -416,7 +416,7 @@ public class EnemyBoss : PawnController, IHitable
         RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition + new Vector3(0,0,0.5f), Quaternion.identity);
         RangeAttack_spawnedBullet2.transform.LookAt(playerTwoTransform.position);
         RangeAttack_spawnedBullet2.GetComponent<TurretBasicBullet>().canHitEnemies = false;
-        ChangeAimingCubeState(AimingCubeState.NotVisible);
+        ChangeAimingCubeState(AimingRedDotState.NotVisible);
     }
 
     public void DestroyAttackHitBox()
@@ -518,9 +518,9 @@ public class EnemyBoss : PawnController, IHitable
     }
 
 
-    public virtual void ChangeAimingCubeState(AimingCubeState _newState)
+    public virtual void ChangeAimingCubeState(AimingRedDotState _newState)
     {
-        if (_newState == AimingCubeState.Following)
+        if (_newState == AimingRedDotState.Following)
         {
             aimingCube1_Transform.gameObject.SetActive(true);
             aimingCube2_Transform.gameObject.SetActive(true);
@@ -529,7 +529,7 @@ public class EnemyBoss : PawnController, IHitable
             aimingCube2_Renderer.material.color = followingAimingColor;
             aimingCube2_Renderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
         }
-        else if (_newState == AimingCubeState.Locking)
+        else if (_newState == AimingRedDotState.Locking)
         {
             aimingCube1_Transform.gameObject.SetActive(true);
             aimingCube2_Transform.gameObject.SetActive(true);
@@ -538,7 +538,7 @@ public class EnemyBoss : PawnController, IHitable
             aimingCube2_Renderer.material.color = lockingAimingColor;
             aimingCube2_Renderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
         }
-        else if (_newState == AimingCubeState.NotVisible)
+        else if (_newState == AimingRedDotState.NotVisible)
         {
             aimingCube1_Transform.gameObject.SetActive(false);
             aimingCube2_Transform.gameObject.SetActive(false);
