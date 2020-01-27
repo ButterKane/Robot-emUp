@@ -47,7 +47,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                 item.Damage(puzzleData.DamageEletricPlate);
                 item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
 
-                SoundManager.PlaySound("EletricPlateDamage", transform.position, transform);
+				FeedbackManager.SendFeedback("event.PuzzleElectricPlateDamage", item);
             }
         }
         /*
@@ -135,7 +135,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             {
                 Destroy(myFx);
             }
-            myFx = FXManager.InstantiateFX(puzzleData.electricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+			myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
         }
     }
 }

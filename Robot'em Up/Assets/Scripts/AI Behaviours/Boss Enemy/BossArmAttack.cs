@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class EnemyArmAttack : MonoBehaviour
+public class BossArmAttack : MonoBehaviour
 {
     Collider meleeCollider;
     public int attackDamage;
@@ -40,9 +41,13 @@ public class EnemyArmAttack : MonoBehaviour
         while (i < i_hitColliders.Length)
         {
             IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
-            if (i_potentialHitableObject != null)
+            if (i_potentialHitableObject != null && i_hitColliders[i].gameObject.tag == "Player")
             {
                 i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
+            }
+            if (i_hitColliders[i].GetComponent<NavMeshObstacle>())
+            {
+                Destroy(i_hitColliders[i].gameObject);
             }
             i++;
         }

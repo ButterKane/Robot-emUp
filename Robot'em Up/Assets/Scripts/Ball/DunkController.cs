@@ -21,6 +21,7 @@ public class DunkController : MonoBehaviour
 	public float dunkJumpLength = 1f;
 	public float dunkJumpDuration = 2f;
 	public float dunkJumpFreezeDuration = 1f;
+	[Range(0f, 1f)] public float energyPercentLostOnFail = 0.2f;
 
     [Space(15)]
 	public float dunkDashSpeed = 5f;
@@ -81,6 +82,7 @@ public class DunkController : MonoBehaviour
 
 	public void Explode ()
 	{
+		AnalyticsManager.IncrementData("SuccessfulDunk");
 		BallBehaviour i_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
 		EnergyManager.DecreaseEnergy(1f);
@@ -179,6 +181,7 @@ public class DunkController : MonoBehaviour
 	{
 		ChangeState(DunkState.Canceling);
 		currentCD = dunkCooldown;
+		EnergyManager.DecreaseEnergy(energyPercentLostOnFail);
 		yield return FallOnGround_C(dunkCancelledFallSpeed);
 	}
 

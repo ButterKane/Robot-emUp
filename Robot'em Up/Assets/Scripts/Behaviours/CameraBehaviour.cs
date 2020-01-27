@@ -31,30 +31,46 @@ public class CameraBehaviour : MonoBehaviour
 	private CinemachineVirtualCamera virtualCamera;
 	private Quaternion defaultRotation;
 	private Vector3 defaultTranslation;
-	private bool activated;
+	[ReadOnly] public bool activated;
 
-	private PathCreator followedPath;
-	private float distanceTravelled;
+	private GameObject followPoint;
+	public float minCameraDistance = 30;
+	public float maxCameraDistance = 30;
+	public Transform pivot;
+
+	public static CameraBehaviour[] allCameras;
 
 	public void InitCamera ( CameraType _type, CameraZone _zone)
 	{
 		type = _type;
 		zone = _zone;
-		followedPath = GetComponentInParent<PathCreator>();
-		if (followedPath != null)
-		{
-			followedPath.pathUpdated += OnPathChanged;
-		}
+	}
+
+	[ExecuteAlways]
+	void OnDrawGizmos ()
+	{
+		Gizmos.DrawIcon(transform.position, "SpriteCollider", true);
 	}
 
 	public void ActivateCamera()
 	{
-		followedPath = GetComponentInParent<PathCreator>();
-		if (followedPath != null)
+		if (allCameras != null)
 		{
-			followedPath.pathUpdated += OnPathChanged;
+			foreach (CameraBehaviour b in allCameras)
+			{
+				if (b != this)
+					b.DesactivateCamera();
+			}
 		}
 		activated = true;
+		CinemachineFramingTransposer transposer = virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+		if (transposer != null)
+		{
+			transposer.m_MinimumDistance = minCameraDistance;
+			transposer.m_MaximumDistance = maxCameraDistance;
+		}
+		virtualCamera.m_Follow = followPoint.transform;
+		virtualCamera.m_LookAt = followPoint.transform;
 	}
 
 	public void DesactivateCamera() 
@@ -64,12 +80,17 @@ public class CameraBehaviour : MonoBehaviour
 
 	private void Awake ()
 	{
-		defaultRotation = transform.localRotation;
+		if (pivot == null) { pivot = transform.parent; }
+		defaultRotation = pivot.transform.localRotation;
+		followPoint = new GameObject();
+		followPoint.transform.SetParent(this.transform);
+		followPoint.name = "FollowPoint";
 	}
 
 	private void Update ()
 	{
 		if (virtualCamera == null) { virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
+		if (virtualCamera == null) { virtualCamera = GetComponent<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
 
 		if (activated)
 		{
@@ -94,14 +115,9 @@ public class CameraBehaviour : MonoBehaviour
 			virtualCamera.m_Priority = defaultPriority;
 		}
 	}
-	void OnPathChanged ()
-	{
-		distanceTravelled = followedPath.path.GetClosestDistanceAlongPath(transform.position);
-	}
 
 	void UpdateAdventureCamera()
 	{
-		if (followedPath == null) { return; }
 		Vector3 i_middlePosition = Vector3.zero;
 		if (GameManager.deadPlayers.Count > 0)
 		{
@@ -111,17 +127,12 @@ public class CameraBehaviour : MonoBehaviour
 		{
 			i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
 		}
-		i_middlePosition = Vector3.Lerp(i_middlePosition, focusPoint.position, focusImportance);
-		Quaternion i_wantedRotation = Quaternion.LookRotation(-(virtualCamera.transform.position - i_middlePosition));
-		float lerpCoef = Vector3.Distance(transform.position, followedPath.path.GetPointAtDistance(distanceTravelled, EndOfPathInstruction.Stop));
-		lerpCoef = Mathf.Clamp(lerpCoef, 1f, 10f);
-		transform.position = Vector3.Lerp(transform.position, followedPath.path.GetPointAtDistance(distanceTravelled, EndOfPathInstruction.Stop), Time.deltaTime * translationSpeed / lerpCoef) ;
-	//	virtualCamera.transform.LookAt(i_middlePosition);
-		distanceTravelled = followedPath.path.GetClosestDistanceAlongPath(i_middlePosition);
-		virtualCamera.transform.rotation = Quaternion.Lerp(virtualCamera.transform.rotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
-		Vector3 pivotLookDirection = followedPath.path.GetDirectionAtDistance(distanceTravelled);
-		pivotLookDirection = Quaternion.AngleAxis(90, Vector3.up) * pivotLookDirection;
-		transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(pivotLookDirection), Time.deltaTime * rotationSpeed / Quaternion.Angle(transform.rotation, Quaternion.LookRotation(pivotLookDirection)));
+		if (focusPoint != null)
+		{
+			i_middlePosition = Vector3.Lerp(i_middlePosition, focusPoint.position, focusImportance);
+		}
+		followPoint.transform.position = i_middlePosition;
+		//transform.position = i_middlePosition;
 	}
 	void UpdateCombatCamera()
 	{
@@ -155,7 +166,7 @@ public class CameraBehaviour : MonoBehaviour
 		currentDistanceY = i_yDistance;
 
 		Quaternion i_wantedRotation = Quaternion.Euler(defaultRotation.eulerAngles.x, defaultRotation.eulerAngles.y + i_wantedRotationAngle, defaultRotation.eulerAngles.z);
-		transform.localRotation = Quaternion.Lerp(transform.localRotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
+		pivot.transform.localRotation = Quaternion.Lerp(pivot.transform.localRotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
 		if (enableTranslation)
 		{
 			float i_wantedTranslation = Mathf.Lerp(-maxForwardTranslation, maxForwardTranslation, (i_yDistance + 1) / 2f);
@@ -179,7 +190,7 @@ public class CameraBehaviour : MonoBehaviour
 		i_directionToCenter.y = 0;
 		Quaternion i_wantedRotation = Quaternion.LookRotation(-i_directionToCenter);
 
-		transform.localPosition = Vector3.Lerp(transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
-		transform.localRotation = Quaternion.Lerp(transform.localRotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
+		pivot.transform.localPosition = Vector3.Lerp(pivot.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
+		pivot.transform.localRotation = Quaternion.Lerp(pivot.transform.localRotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
 	}
 }

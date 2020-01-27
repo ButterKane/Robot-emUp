@@ -15,7 +15,8 @@ public enum DamageSource
 	ReviveExplosion,
 	RedBarrelExplosion,
 	PerfectReceptionExplosion,
-    EnemyContact
+    EnemyContact,
+    Laser
 }
 
 public enum DamageModifierSource
@@ -72,6 +73,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+		AnalyticsManager.LoadDatas();
 		Time.timeScale = 1f;
 		i = this;
 		deadPlayers = new List<PlayerController>();
@@ -104,8 +106,15 @@ public class GameManager : MonoBehaviour
         surrounderPlayerTwo = Instantiate(SurrounderPrefab, playerTwo.transform.position, Quaternion.identity);
         surrounderPlayerTwo.GetComponent<Surrounder>().playerTransform = playerTwo.transform;
 
+		CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
+
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
+
+	private void OnDisable ()
+	{
+		AnalyticsManager.SaveDatas();
+	}
 
 	private void Update ()
 	{
@@ -145,6 +154,8 @@ public class GameManager : MonoBehaviour
 
 	private void OnApplicationQuit ()
 	{
+		AnalyticsManager.SaveDatas();
+		AnalyticsManager.SendDatas();
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 	}

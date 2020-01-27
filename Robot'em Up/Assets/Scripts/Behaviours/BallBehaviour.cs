@@ -349,6 +349,7 @@ public class BallBehaviour : MonoBehaviour
 			case BallState.Grounded:
 				if (destroyTrailFX != null) { StopCoroutine(destroyTrailFX); Destroy(ballTrail); }
 				if (ballTrail) { destroyTrailFX = StartCoroutine(DisableEmitterThenDestroyAfterDelay(ballTrail.GetComponent<ParticleSystem>(), 0.5f)); }
+				AnalyticsManager.IncrementData("GroundedBallAmount");
 				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
@@ -361,6 +362,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableCollisions();
 				break;
 			case BallState.Flying:
+				Highlighter.DetachBallFromPlayer();
 				CursorManager.SetBallPointerParent(null);
 				ballTrail = FeedbackManager.SendFeedback("event.BallFlying", this).GetVFX();
 				Vector3 newBallScale = ballTrail.transform.localScale;
@@ -432,7 +434,7 @@ public class BallBehaviour : MonoBehaviour
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
-						IHitable i_potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
+						IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
 						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
@@ -445,6 +447,7 @@ public class BallBehaviour : MonoBehaviour
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
+							AnalyticsManager.IncrementData("BallBounceOnWallCount");
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);

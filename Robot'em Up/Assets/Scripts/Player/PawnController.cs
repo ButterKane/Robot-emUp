@@ -119,7 +119,7 @@ public class PawnController : MonoBehaviour
     [System.NonSerialized] public Rigidbody rb;
     [System.NonSerialized] public MoveState moveState;
 	private float accelerationTimer;
-    protected Vector3 moveInput;
+    public Vector3 moveInput;
 	protected Vector3 lookInput;
     private Quaternion turnRotation;
 	private float customDrag;
@@ -533,10 +533,11 @@ public class PawnController : MonoBehaviour
         StartCoroutine(Bump_C());
     }
 
-	public virtual void Push(Vector3 _pushDirection, float _pushForce)
+	public virtual void Push(Vector3 _pushDirection, float _pushForce, float _pushHeight)
 	{
 		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
-		_pushDirection.y = Mathf.Clamp((_pushForce/10f),0.1f, 0.75f);
+		_pushDirection.y = _pushHeight;
+		//_pushDirection.y = Mathf.Clamp((_pushForce/10f),0.1f, 0.75f);
 		rb.AddForce(_pushDirection.normalized * _pushForce, ForceMode.Impulse);
 	}
     #endregion
