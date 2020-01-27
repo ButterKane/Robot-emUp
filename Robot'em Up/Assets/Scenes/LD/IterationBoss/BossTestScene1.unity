@@ -172,6 +172,7 @@ MonoBehaviour:
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
+  moveInput: {x: 0, y: 0, z: 0}
   healthBar1: {fileID: 0}
   healthBar2: {fileID: 0}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
@@ -459,6 +460,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -678,6 +684,10 @@ MonoBehaviour:
   currentDistanceY: 0
   type: 0
   zone: {fileID: 459775954}
+  activated: 0
+  minCameraDistance: 30
+  maxCameraDistance: 30
+  pivot: {fileID: 0}
 --- !u!1001 &177495320
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -951,6 +961,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -1038,6 +1053,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -1351,6 +1371,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -1438,6 +1463,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -2335,6 +2365,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -2613,6 +2648,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -3043,6 +3083,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -3130,6 +3175,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -3330,6 +3380,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -3608,6 +3663,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -3695,6 +3755,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -4404,6 +4469,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -4495,6 +4565,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -4582,6 +4657,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -4873,6 +4953,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -5155,6 +5240,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -5242,6 +5332,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -5641,6 +5736,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -5841,6 +5941,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -5928,6 +6033,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -6050,6 +6160,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -6299,6 +6414,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -6374,6 +6494,10 @@ MonoBehaviour:
   currentDistanceY: 0
   type: 0
   zone: {fileID: 1394527579}
+  activated: 0
+  minCameraDistance: 30
+  maxCameraDistance: 30
+  pivot: {fileID: 0}
 --- !u!1 &1315567732
 GameObject:
   m_ObjectHideFlags: 0
@@ -6494,6 +6618,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -6649,6 +6778,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -6938,6 +7072,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -7025,6 +7164,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -7120,6 +7264,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -7207,6 +7356,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -7439,6 +7593,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -7796,6 +7955,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -8431,6 +8595,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -8588,6 +8757,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -8725,6 +8899,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -8812,6 +8991,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -8999,6 +9183,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -9086,6 +9275,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -9181,6 +9375,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -9268,6 +9467,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -9560,6 +9764,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -10277,6 +10486,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
       propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
@@ -10851,6 +11065,11 @@ PrefabInstance:
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
