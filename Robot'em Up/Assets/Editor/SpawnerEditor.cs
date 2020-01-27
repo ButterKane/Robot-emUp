@@ -15,8 +15,14 @@ public class SpawnerEditor : Editor
 	public override void OnInspectorGUI ()
 	{
 		this.serializedObject.Update();
+
+		EditorGUI.BeginChangeCheck();
 		SerializedProperty m_type = serializedObject.FindProperty("type");
 		EditorGUILayout.PropertyField(m_type);
+		if (EditorGUI.EndChangeCheck())
+		{
+			spawner.RecalculateEndspawnLocation();
+		}
 
 		Transform previousStartPosition = spawner.startPosition;
 		EditorGUI.BeginChangeCheck();

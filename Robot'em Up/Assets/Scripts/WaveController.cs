@@ -160,8 +160,17 @@ public class WaveController : MonoBehaviour
 		int i_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
 		i_chosenSpawnerIndex = _enemy.spawnIndexes[i_chosenSpawnerIndex];
 		i_enemyBehaviour.GetNavMesh().enabled = false;
-		i_newEnemy.transform.position = spawnList[i_chosenSpawnerIndex].transform.position;
-		i_enemyBehaviour.GetNavMesh().enabled = true;
+		GameObject spawner = spawnList[i_chosenSpawnerIndex].transform.gameObject;
+		Spawner foundSpawnerComponent = spawner.GetComponent<Spawner>();
+		if (foundSpawnerComponent != null)
+		{
+			foundSpawnerComponent.SpawnEnemy(i_enemyBehaviour);
+		}
+		else
+		{
+			i_newEnemy.transform.position = spawnList[i_chosenSpawnerIndex].transform.position;
+			i_enemyBehaviour.GetNavMesh().enabled = true;
+		}
 		currentEnemies.Add(i_enemyBehaviour);
 		UpdateCurrentPowerLevel();
 	}

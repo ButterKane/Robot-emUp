@@ -17,6 +17,7 @@ public enum EnemyState
     Attacking,
     PauseAfterAttack,
     Dying,
+	Spawning,
 }
 public enum WhatBumps
 {
@@ -236,11 +237,14 @@ public class EnemyBehaviour : PawnController, IHitable
                         // Calculating position on bezier curve, following start point, end point and avancement
                         // In this version, the avancement has been replaced by a constant because it's recalculated every frame
                         Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-                        navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position));
+						if (navMeshAgent != null) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position)); }
                     }
                     else
                     {
-                        navMeshAgent.SetDestination(focusedPlayer.position);
+						if (navMeshAgent != null)
+						{
+							navMeshAgent.SetDestination(focusedPlayer.position);
+						}
                     }
 
                     if (distanceWithFocusedPlayer <= distanceToAttack)
@@ -310,6 +314,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
             case EnemyState.Dying:
                 break;
+			case EnemyState.Spawning:
+				break;
         }
     }
 

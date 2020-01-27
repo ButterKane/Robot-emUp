@@ -22,6 +22,56 @@ public class Spawner : MonoBehaviour
 	public SpriteRenderer endPositionVisualizer;
 	public LineRenderer spawnVisualizer;
 
+
+	[ExecuteAlways]
+	private void Awake ()
+	{
+		if (endPositionVisualizer != null)
+		{
+			if (Application.isPlaying)
+			{
+				endPositionVisualizer.enabled = false;
+			} else
+			{
+				endPositionVisualizer.enabled = true;
+			}
+		}
+		if (spawnVisualizer != null)
+		{
+			if (Application.isPlaying)
+			{
+				spawnVisualizer.enabled = false;
+			}
+			else
+			{
+				spawnVisualizer.enabled = true;
+			}
+		}
+	}
+	public void SpawnEnemy(EnemyBehaviour _enemy)
+	{
+		StartCoroutine(SpawnEnemy_C(_enemy));
+	}
+
+	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy)
+	{
+		PawnController enemyPawn = (PawnController)_enemy;
+		_enemy.ChangeState(EnemyState.Spawning);
+		_enemy.GetNavMesh().enabled = false;
+		//enemyPawn.Freeze();
+		for (float i = 0; i < spawnDuration; i += Time.deltaTime)
+		{
+			enemyPawn.transform.position = Vector3.Lerp(startPosition.position, endPosition, i / spawnDuration) + (Vector3.up * 3f);
+			yield return null;
+		}
+		_enemy.ChangeState(EnemyState.Spawning);
+		_enemy.GetNavMesh().enabled = false;
+		yield return new WaitForSeconds(delayBeforeActivation);
+		//enemyPawn.UnFreeze();
+		_enemy.GetNavMesh().enabled = true;
+		_enemy.ChangeState(EnemyState.Idle);
+	}
+
 	[ExecuteInEditMode]
 	public void RecalculateEndspawnLocation ()
 	{
@@ -69,7 +119,7 @@ public class Spawner : MonoBehaviour
 				{
 					endPosition = hit.point;
 				}
-				spawnVisualizer.positionCount = 10;
+				spawnVisualizer.positionCount = 11;
 				for (int i = 0; i < 10; i++)
 				{
 					Vector3 horizontalPosition = Vector3.Lerp(startPosition.position, endPosition, horizontalLerpCurve.Evaluate((float)i / 10f));
@@ -78,6 +128,7 @@ public class Spawner : MonoBehaviour
 					finalPosition.y = verticalPosition.y;
 					spawnVisualizer.SetPosition(i, finalPosition);
 				}
+				spawnVisualizer.SetPosition(10, endPosition);
 				break;
 			case SpawnerType.Underground:
 				if (Physics.Raycast(startPosition.position + (Vector3.up * 50), Vector3.down, out hit, Mathf.Infinity, layerMask))
