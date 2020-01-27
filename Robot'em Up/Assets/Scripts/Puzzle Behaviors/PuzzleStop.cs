@@ -20,7 +20,7 @@ public class PuzzleStop : MonoBehaviour, IHitable
         {
             Destroy(fX_StopBall);
         }
-        fX_StopBall = FXManager.InstantiateFX(puzzleData.linkStop, Vector3.zero, true, -_impactVector, Vector3.one * 5, transform);
+		fX_StopBall = FeedbackManager.SendFeedback("event.PuzzleBlockBall", this, _ball.transform.position, -_impactVector, _impactVector).GetVFX();
 
         //Will desactivate all puzzle links
         PuzzleLink[] i_links = FindObjectsOfType<PuzzleLink>();

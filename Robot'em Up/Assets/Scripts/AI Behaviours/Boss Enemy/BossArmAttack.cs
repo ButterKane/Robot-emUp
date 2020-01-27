@@ -13,6 +13,7 @@ public class BossArmAttack : MonoBehaviour
     {
         meleeCollider = GetComponent<Collider>();
         plane = transform.GetChild(0).gameObject;
+        attackDamage = GetComponentInParent<EnemyBoss>().PunchAttack_DamageInflicted;
     }
 
     // Update is called once per frame
