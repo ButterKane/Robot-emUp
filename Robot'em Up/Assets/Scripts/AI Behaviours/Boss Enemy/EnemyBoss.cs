@@ -518,9 +518,9 @@ public class EnemyBoss : PawnController, IHitable
     }
 
 
-    public virtual void ChangeAimingCubeState(AimingCubeState _newState)
+    public virtual void ChangeAimingCubeState(AimingRedDotState _newState)
     {
-        if (_newState == AimingCubeState.Following)
+        if (_newState == AimingRedDotState.Following)
         {
             aimingCube1_Transform.gameObject.SetActive(true);
             aimingCube2_Transform.gameObject.SetActive(true);
@@ -529,7 +529,7 @@ public class EnemyBoss : PawnController, IHitable
             aimingCube2_Renderer.material.color = followingAimingColor;
             aimingCube2_Renderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
         }
-        else if (_newState == AimingCubeState.Locking)
+        else if (_newState == AimingRedDotState.Locking)
         {
             aimingCube1_Transform.gameObject.SetActive(true);
             aimingCube2_Transform.gameObject.SetActive(true);
@@ -538,7 +538,7 @@ public class EnemyBoss : PawnController, IHitable
             aimingCube2_Renderer.material.color = lockingAimingColor;
             aimingCube2_Renderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
         }
-        else if (_newState == AimingCubeState.NotVisible)
+        else if (_newState == AimingRedDotState.NotVisible)
         {
             aimingCube1_Transform.gameObject.SetActive(false);
             aimingCube2_Transform.gameObject.SetActive(false);
