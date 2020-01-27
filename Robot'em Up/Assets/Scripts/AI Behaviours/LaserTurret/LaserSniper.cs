@@ -43,8 +43,10 @@ public class LaserSniper : MonoBehaviour
             {
                 target.GetComponent<PawnController>().Damage(damageDealt);
             }
+
         }
-            RaycastToHitWithLaser();
+
+        RaycastToHitWithLaser();
         UpdateLaserLength(laserLength);
 
         //UpdateLaserPosition();
@@ -66,20 +68,23 @@ public class LaserSniper : MonoBehaviour
 
     public void RaycastToHitWithLaser()
     {
+        bool i_touchedSomething = false;
         RaycastHit[] i_hitObjects = Physics.RaycastAll(transform.position, transform.TransformDirection(Vector3.forward), enemyScript.laserMaxLength);
         if (i_hitObjects.Length > 0)
         {
             foreach (var touched in i_hitObjects)
             {
+                Debug.DrawRay(touched.transform.position, Vector3.up * 4, Color.green);
                 IHitable i_potentialHitableObject = touched.transform.GetComponent<IHitable>();
                 if (i_potentialHitableObject != null)
                 {
                     i_potentialHitableObject.OnHit(null, (touched.transform.position - transform.position).normalized, null, enemyScript.damagePerSecond / 60, DamageSource.Laser, Vector3.zero);
                 }
 
-                if (touched.transform.tag == "Player" || touched.transform.tag == "Environment")
+                if ((touched.collider.tag == "Player" || touched.collider.tag == "Environment") && i_touchedSomething == false)
                 {
                     laserLength = touched.distance;
+                    i_touchedSomething = true;
                 }
             }
         }
