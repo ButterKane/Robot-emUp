@@ -188,7 +188,7 @@ public class EnemyBoss : PawnController, IHitable
                     RotateTowardsPlayerAndHisForward(playerTwoTransform, aimingCube2_Transform);
                     if (waitingBeforeNextState > RangeAttack_AttackDuration + RangeAttack_RecoverTime)
                     {
-                        ChangeAimingCubeState(AimingCubeState.Following);
+                        ChangeAimingCubeState(AimingRedDotState.Following);
                     }
                     if (waitingBeforeNextState < RangeAttack_AttackDuration + RangeAttack_RecoverTime && RangeAttack_Attacking == false)
                     {
@@ -271,7 +271,7 @@ public class EnemyBoss : PawnController, IHitable
                     {
                         bossState = BossState.RangeAttack;
                         waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
-                        ChangeAimingCubeState(AimingCubeState.Following);
+                        ChangeAimingCubeState(AimingRedDotState.Following);
 
                     }
 
@@ -416,7 +416,7 @@ public class EnemyBoss : PawnController, IHitable
         RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition + new Vector3(0,0,0.5f), Quaternion.identity);
         RangeAttack_spawnedBullet2.transform.LookAt(playerTwoTransform.position);
         RangeAttack_spawnedBullet2.GetComponent<TurretBasicBullet>().canHitEnemies = false;
-        ChangeAimingCubeState(AimingCubeState.NotVisible);
+        ChangeAimingCubeState(AimingRedDotState.NotVisible);
     }
 
     public void DestroyAttackHitBox()
