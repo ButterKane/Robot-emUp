@@ -56,7 +56,7 @@ public class PuzzlePressurePlate : PuzzleActivator
             {
 				if (isActivated)
 				{
-					FeedbackManager.SendFeedback("event.PuzzlePresurePlateDesactivation", this);
+					FeedbackManager.SendFeedback("event.PuzzlePressurePlateDesactivation", this);
 				}
 				isActivated = false;
                 DesactiveLinkedObjects();
