@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LaserSniperBehaviour : TurretBehaviour
+public class LaserSniperTurretBehaviour : TurretBehaviour
 {
     public Vector2 minMaxFollowingAimingCubeScale;
     public Transform aimingAtPlayerFXTransform;
@@ -11,49 +11,56 @@ public class LaserSniperBehaviour : TurretBehaviour
     public Vector3 aimingAtPlayerFXScaleOnPlayer;
     public float endAimingFXScaleMultiplier;
     public float startAimingFXCircleThickness;
-    public GameObject laserPrefab;
-    public float laserLength = 10f;
-    public float shootingLaserTime = 3;
-    public int damagePerSecond = 50;
-    public AnimationCurve reducingOfLaserWidth;
+    
+    
+    
     public float repulseCircleRadius;
     public float repulseCircleStrength;
     public float finalRepulseCircleRadius;
     public float finalRepulseCircleStrength;
+
+    public GameObject laserPrefab;
+    public int damagePerSecond = 50;
+    public float laserMaxLength = 10f;
+    public float shootingLaserMaxTime = 3;
+    private float shootingLaserTimeProgression;
+    public float whenToTriggerLaserReduction;
+    public AnimationCurve reducingOfLaserWidth;
+
+
 
     public override void Shoot()
     {
         StartCoroutine(ShootingLaser_C());
     }
 
-    public void RaycastToHitWithLaser()
-    {
-        RaycastHit[] hitObjects = Physics.RaycastAll(transform.position, transform.TransformDirection(Vector3.forward), laserLength);
-        if (hitObjects.Length > 0)
-        {
-            foreach (var touched in hitObjects)
-            {
-                IHitable potentialHitableObject = touched.transform.GetComponent<IHitable>();
-                if (potentialHitableObject != null)
-                {
-                    potentialHitableObject.OnHit(null, (touched.transform.position - transform.position).normalized, null, damagePerSecond/60, DamageSource.Laser, Vector3.zero);
-                }
-            }
-        }
-    }
 
     public IEnumerator ShootingLaser_C()
     {
-        if (spawnedBullet)
+        if (spawnedBullet == null)
         {
             Vector3 i_spawnPosition;
             i_spawnPosition = bulletSpawn.position;
             spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+            LaserSniper i_instance = spawnedBullet.GetComponent<LaserSniper>();
+            i_instance.enemyScript = this;
+            i_instance.target = focusedPlayer;
+            i_instance.spawnParent = transform;
+            shootingLaserTimeProgression = shootingLaserMaxTime;
+            whenToTriggerLaserReduction = shootingLaserMaxTime - (shootingLaserMaxTime * 0.8f); // will trigger reducing width when there's 20% of the max time left
         }
-        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
-        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
-        spawnedBullet.transform.localScale = new Vector3 (spawnedBullet.transform.localScale.x, spawnedBullet.transform.localScale.y, laserLength); 
-        RaycastToHitWithLaser();
+        
+        // IF nothing is touched
+        spawnedBullet.transform.localScale = new Vector3 (spawnedBullet.transform.localScale.x, spawnedBullet.transform.localScale.y, laserMaxLength);
+
+        if (shootingLaserTimeProgression < whenToTriggerLaserReduction)
+        {
+            float reducingLaserFactor = reducingOfLaserWidth.Evaluate((shootingLaserTimeProgression - whenToTriggerLaserReduction) / (shootingLaserMaxTime - whenToTriggerLaserReduction));
+
+            spawnedBullet.transform.localScale = new Vector3(spawnedBullet.transform.localScale.x * reducingLaserFactor, spawnedBullet.transform.localScale.y * reducingLaserFactor, spawnedBullet.transform.localScale.z);
+        }
+
+        shootingLaserTimeProgression -= Time.deltaTime;
         yield return null;
     }
 
