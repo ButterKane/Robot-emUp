@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 public sealed class EditorExtend
 {
+#if UNITY_EDITOR
 	#region Text AutoComplete
 	private const string m_AutoCompleteField = "AutoCompleteField";
 	private static List<string> m_CacheCheckList = null;
@@ -125,4 +126,5 @@ public sealed class EditorExtend
 		return TextFieldAutoComplete(rect, input, source, maxShownCount, levenshteinDistance);
 	}
 	#endregion
+#endif
 }

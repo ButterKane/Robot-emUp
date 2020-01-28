@@ -16,17 +16,17 @@ public class WaveData
 	public void SetEnemySpawnProbability(EnemyData _enemy, float _newProbability)
 	{
 		if (currentEnemies.Count <= 1) { return; }
-		float internal_difference = 0f;
-		float internal_otherTotal = 0;
+		float i_difference = 0f;
+		float i_otherTotal = 0;
 		foreach (WaveEnemy wep in currentEnemies)
 		{
 			if (_enemy.name == wep.enemyType.name)
 			{
-				internal_difference = _newProbability - wep.probability;
+				i_difference = _newProbability - wep.probability;
 				wep.probability = _newProbability;
 			} else
 			{
-				internal_otherTotal += wep.probability;
+				i_otherTotal += wep.probability;
 			}
 		}
 
@@ -35,18 +35,18 @@ public class WaveData
 		{
 			if (_enemy.name != wep.enemyType.name)
 			{
-				if (internal_difference > 0)
+				if (i_difference > 0)
 				{
-					if (internal_otherTotal != 0)
+					if (i_otherTotal != 0)
 					{
-						float force = wep.probability / internal_otherTotal;
-						wep.probability -= force * internal_difference;
+						float force = wep.probability / i_otherTotal;
+						wep.probability -= force * i_difference;
 					}
 				} else
 				{
-					if ((float)(currentEnemies.Count - 1) - internal_otherTotal != 0) {
-						float force = (1f - wep.probability) / ((float)(currentEnemies.Count - 1) - internal_otherTotal);
-						wep.probability -= force * internal_difference;
+					if ((float)(currentEnemies.Count - 1) - i_otherTotal != 0) {
+						float force = (1f - wep.probability) / ((float)(currentEnemies.Count - 1) - i_otherTotal);
+						wep.probability -= force * i_difference;
 					}
 				}
 			}
@@ -56,21 +56,21 @@ public class WaveData
 
 	public void RemoveEnemySpawnProbability( WaveEnemy _wep)
 	{
-		float internal_difference = _wep.probability;
+		float i_difference = _wep.probability;
 		currentEnemies.Remove(_wep);
-		float internal_totalProba = 0;
+		float i_totalProba = 0;
 		foreach (WaveEnemy wep in currentEnemies)
 		{
-			internal_totalProba += wep.probability;
+			i_totalProba += wep.probability;
 		}
 
 		//Reduce or improve all the other probabilities (So it keep a maximum of 1)
 		foreach (WaveEnemy wep in currentEnemies)
 		{
-			if (internal_totalProba != 0)
+			if (i_totalProba != 0)
 			{
-				float force = wep.probability / internal_totalProba;
-				wep.probability += force * internal_difference;
+				float force = wep.probability / i_totalProba;
+				wep.probability += force * i_difference;
 				wep.probability = Mathf.Clamp(wep.probability, 0f, 1f);
 			} else
 			{

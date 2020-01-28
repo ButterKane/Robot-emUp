@@ -7,14 +7,6 @@ using UnityEngine.SceneManagement;
 using XInputDotNetPure;
 #pragma warning disable 0649
 
-public enum VibrationForce
-{
-    VeryHeavy,
-	Heavy,
-	Medium,
-	Light,
-    VeryLight,
-}
 public enum DamageSource
 {
 	Ball,
@@ -22,7 +14,8 @@ public enum DamageSource
 	DeathExplosion,
 	ReviveExplosion,
 	RedBarrelExplosion,
-	PerfectReceptionExplosion
+	PerfectReceptionExplosion,
+    EnemyContact
 }
 
 public enum DamageModifierSource
@@ -79,6 +72,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+		AnalyticsManager.LoadDatas();
 		Time.timeScale = 1f;
 		i = this;
 		deadPlayers = new List<PlayerController>();
@@ -113,6 +107,11 @@ public class GameManager : MonoBehaviour
 
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }
+
+	private void OnDisable ()
+	{
+		AnalyticsManager.SaveDatas();
+	}
 
 	private void Update ()
 	{
@@ -152,6 +151,8 @@ public class GameManager : MonoBehaviour
 
 	private void OnApplicationQuit ()
 	{
+		AnalyticsManager.SaveDatas();
+		AnalyticsManager.SendDatas();
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 	}
@@ -286,10 +287,10 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(ball.gameObject);
 		}
-		GameObject internal_newBall = Instantiate(i.ballPrefab, null);
-		BallBehaviour.instance = internal_newBall.GetComponent<BallBehaviour>();
-        i.ball = internal_newBall.GetComponent<BallBehaviour>();
-		internal_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
+		GameObject i_newBall = Instantiate(i.ballPrefab, null);
+		BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
+        i.ball = i_newBall.GetComponent<BallBehaviour>();
+		i_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
 	void LoadMomentumManager()

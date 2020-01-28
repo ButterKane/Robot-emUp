@@ -21,8 +21,8 @@ public enum PassState
 public class PassController : MonoBehaviour
 {
     [Separator("Private references")]
-    [SerializeField] private Transform handTransform;
-    [SerializeField] private BallDatas ballDatas;
+    [SerializeField] private Transform handTransform = default;
+    [SerializeField] private BallDatas ballDatas = default;
 
     [Separator("General settings")]
 	public bool passPreviewInEditor;
@@ -35,10 +35,11 @@ public class PassController : MonoBehaviour
 	public int minBouncesBeforePickingOwnBall;
 
 	[Separator("Reception settings")]
-	public float receptionMinDistance = 0.2f;
-	public float receptionMinDelay = 0.2f;
-	public float receptionExplosionRadius = 2f;
-	public int receptionExplosionDamage = 1;
+	public float perfectReceptionBufferOnFail = 0.25f;
+	public float perfectReceptionMinDistance = 0.2f;
+	public float perfectReceptionMinDelay = 0.2f;
+	public float perfectReceptionExplosionRadius = 2f;
+	public int perfectReceptionExplosionDamages = 1;
 
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
 	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
@@ -62,7 +63,9 @@ public class PassController : MonoBehaviour
 	private float ballTimeInHand;
 	private bool didPerfectReception;
 	private PassState previousState;
-    [ReadOnly] public PassState passState;
+	private float perfectReceptionBuffer;
+	private bool keepPerfectReceptionModifiers;
+	[ReadOnly] public PassState passState;
 
     private void Awake ()
 	{
@@ -85,71 +88,72 @@ public class PassController : MonoBehaviour
 		if (ball != null)
 		{
 			ballTimeInHand += Time.deltaTime;
+			if (ballTimeInHand > perfectReceptionMinDelay + 0.1f)
+			{
+				BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
+			}
 		}
 
 		if (!otherPlayer.IsTargetable() && passMode == PassMode.Curve) { DisablePassPreview(); }
 
 		if (passPreview)
 		{
-			bool internal_snapped = false;
+			bool i_snapped = false;
 			switch (passMode)
 			{
 				case PassMode.Bounce:
-					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out internal_snapped), ballDatas.maxPreviewDistance);
+					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out i_snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
 					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer.transform, linkedPlayer.GetLookInput());
 					break;
 			}
-			if (internal_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
+			if (i_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates,0);
-			if (passPreviewInEditor)
-			{
-				//PreviewPathInEditor(pathCoordinates);
-			}
 		}
 
 	}
 	public void TryReception() //Player tries to do a perfect reception
 	{
 		if (didPerfectReception) { return; }
-		BallBehaviour internal_mainBall = BallBehaviour.instance;
-		if (internal_mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
+		if (perfectReceptionBuffer > 0) { return; }
+		BallBehaviour i_mainBall = BallBehaviour.instance;
+		if (i_mainBall.GetCurrentThrower() == this.linkedPlayer) { return; }
 		if (ball == null)
 		{
-			if (Vector3.Distance(handTransform.position, internal_mainBall.transform.position) > receptionMinDistance) { return; }
+			if (Vector3.Distance(handTransform.position, i_mainBall.transform.position) > perfectReceptionMinDistance) { perfectReceptionBuffer += perfectReceptionBufferOnFail; return; }
 		} else
 		{
-			if (ballTimeInHand > receptionMinDelay) { return; }
+			if (ballTimeInHand > perfectReceptionMinDelay) { perfectReceptionBuffer = 0; return; }
 		}
-		ExecutePerfectReception(internal_mainBall);
+		ExecutePerfectReception(i_mainBall);
 	}
 
 	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
+		AnalyticsManager.IncrementData("PerfectReception");
 		Receive(_ball);
+		keepPerfectReceptionModifiers = true;
 		ChangePassState(PassState.Aiming);
 		EnablePassPreview();
-		StartCoroutine(ShootAfterDelay_C(receptionMinDelay - ballTimeInHand));
+		StartCoroutine(ShootAfterDelay_C(perfectReceptionMinDelay - ballTimeInHand));
 		didPerfectReception = true;
-		SoundManager.PlaySound("PerfectReception", transform.position, transform);
 		_ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
 		_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
-		float internal_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
-		Color internal_newColor = ballDatas.colorOverDamage.Evaluate(internal_lerpValue);
-		GameObject internal_perfectFX = FXManager.InstantiateFX(ballDatas.perfectReception, handTransform.position, false, Vector3.zero, Vector3.one * 5);
-		ParticleColorer.ReplaceParticleColor(internal_perfectFX, new Color(122f / 255f, 0, 122f / 255f), internal_newColor);
+		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1); //Used for color
+		GameObject i_perfectReceptionFX = FeedbackManager.SendFeedback("event.PlayerPerfectReception", linkedPlayer, handTransform.position, _ball.GetCurrentDirection(), default).GetVFX();
+		ParticleColorer.ReplaceParticleColor(i_perfectReceptionFX, Color.white, ballDatas.colorOverDamage.Evaluate(i_lerpValue));
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
-		Collider[] internal_hitColliders = Physics.OverlapSphere(transform.position, receptionExplosionRadius);
-		PawnController internal_pawnController = GetComponent<PawnController>();
+		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, perfectReceptionExplosionRadius);
+		PawnController i_pawnController = GetComponent<PawnController>();
 		int i = 0;
-		while (i < internal_hitColliders.Length)
+		while (i < i_hitColliders.Length)
 		{
-			IHitable internal_potentialHitableObject = internal_hitColliders[i].GetComponentInParent<IHitable>();
-			if (internal_potentialHitableObject != null)
+			IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
+			if (i_potentialHitableObject != null)
 			{
-				internal_potentialHitableObject.OnHit(_ball, (internal_hitColliders[i].transform.position - transform.position).normalized, internal_pawnController, receptionExplosionDamage, DamageSource.PerfectReceptionExplosion);
+				i_potentialHitableObject.OnHit(_ball, (i_hitColliders[i].transform.position - transform.position).normalized, i_pawnController, perfectReceptionExplosionDamages, DamageSource.PerfectReceptionExplosion);
 			}
 			i++;
 		}
@@ -159,20 +163,20 @@ public class PassController : MonoBehaviour
 	public List<Vector3> GetBouncingPathCoordinates(Vector3 _startPosition, Vector3 _direction, float _maxLength)
 	{
 		RaycastHit hit;
-		float internal_remainingLength = _maxLength;
-		List<Vector3> internal_pathCoordinates = new List<Vector3>();
-		internal_pathCoordinates.Add(_startPosition);
+		float i_remainingLength = _maxLength;
+		List<Vector3> i_pathCoordinates = new List<Vector3>();
+		i_pathCoordinates.Add(_startPosition);
 
-		while (internal_remainingLength > 0)
+		while (i_remainingLength > 0)
 		{
-			Vector3 internal_actualPosition = internal_pathCoordinates[internal_pathCoordinates.Count - 1];
-			if (Physics.Raycast(internal_actualPosition, _direction, out hit, internal_remainingLength, ~0, QueryTriggerInteraction.Ignore))
+			Vector3 i_actualPosition = i_pathCoordinates[i_pathCoordinates.Count - 1];
+			if (Physics.Raycast(i_actualPosition, _direction, out hit, i_remainingLength, ~0, QueryTriggerInteraction.Ignore))
 			{
-				Debug.DrawRay(internal_actualPosition, hit.normal, Color.red);
+				Debug.DrawRay(i_actualPosition, hit.normal, Color.red);
 				_direction = Vector3.Reflect(_direction, hit.normal);
 				Debug.DrawRay(hit.point, _direction, Color.blue);
-				internal_pathCoordinates.Add(hit.point);
-				internal_remainingLength -= Vector3.Distance(internal_actualPosition, hit.point);
+				i_pathCoordinates.Add(hit.point);
+				i_remainingLength -= Vector3.Distance(i_actualPosition, hit.point);
 				if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Environment"))
 				{
 					break;
@@ -180,64 +184,64 @@ public class PassController : MonoBehaviour
 				if (hit.collider.isTrigger) { continue; }
 			} else
 			{
-				internal_pathCoordinates.Add(internal_actualPosition + _direction * internal_remainingLength);
-				internal_remainingLength = 0;
+				i_pathCoordinates.Add(i_actualPosition + _direction * i_remainingLength);
+				i_remainingLength = 0;
 			}
 		}
 
-		return internal_pathCoordinates;
+		return i_pathCoordinates;
 	}
 
 	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, Transform _target, Vector3 _lookDirection)
 	{
 		//Get the middle position for the curve
-		Vector3 internal_startPosition = _startPosition;
-		Vector3 internal_endPosition = _target.transform.position + Vector3.up;
-		Vector3 internal_direction = internal_endPosition - internal_startPosition;
-		float internal_lookDirectionAngle = Vector3.SignedAngle(new Vector3(internal_direction.x, 0, internal_direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
-		List<Vector3> internal_coordinates = new List<Vector3>();
+		Vector3 i_startPosition = _startPosition;
+		Vector3 i_endPosition = _target.transform.position + Vector3.up;
+		Vector3 i_direction = i_endPosition - i_startPosition;
+		float i_lookDirectionAngle = Vector3.SignedAngle(new Vector3(i_direction.x, 0, i_direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
+		List<Vector3> i_coordinates = new List<Vector3>();
 		_lookDirection.y = 0;
 
-		Vector3 internal_firstPoint = internal_startPosition;
-		Vector3 internal_firstHandle = internal_startPosition + _lookDirection.normalized * hanseLength;
-		Vector3 internal_secondPoint = internal_endPosition;
+		Vector3 i_firstPoint = i_startPosition;
+		Vector3 i_firstHandle = i_startPosition + _lookDirection.normalized * hanseLength;
+		Vector3 i_secondPoint = i_endPosition;
 		for (int i = 0; i < curveRaycastIteration; i++)
 		{
-			if (Mathf.Abs(internal_lookDirectionAngle) > curveMinAngle)
+			if (Mathf.Abs(i_lookDirectionAngle) > curveMinAngle)
 			{
-				internal_coordinates.Add(SwissArmyKnife.CubicBezierCurve(internal_firstPoint, internal_firstHandle, internal_secondPoint, internal_secondPoint, i / curveRaycastIteration));
+				i_coordinates.Add(SwissArmyKnife.CubicBezierCurve(i_firstPoint, i_firstHandle, i_secondPoint, i_secondPoint, i / curveRaycastIteration));
 			}
 			else
 			{
-				internal_coordinates.Add(Vector3.Lerp(internal_firstPoint ,internal_endPosition, i / curveRaycastIteration));
+				i_coordinates.Add(Vector3.Lerp(i_firstPoint ,i_endPosition, i / curveRaycastIteration));
 			}
 			if (i > 0)
 			{
-				foreach (RaycastHit hito in Physics.RaycastAll(internal_coordinates[i - 1], internal_coordinates[i] - internal_coordinates[i - 1], Vector3.Distance(internal_coordinates[i], internal_coordinates[i - 1]))) {
+				foreach (RaycastHit hito in Physics.RaycastAll(i_coordinates[i - 1], i_coordinates[i] - i_coordinates[i - 1], Vector3.Distance(i_coordinates[i], i_coordinates[i - 1]))) {
 					if (hito.collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
 					{
-						internal_coordinates.Add(hito.point);
-						Vector3 _direction = Vector3.Reflect(internal_coordinates[i] - internal_coordinates[i - 1], hito.normal);
+						i_coordinates.Add(hito.point);
+						Vector3 _direction = Vector3.Reflect(i_coordinates[i] - i_coordinates[i - 1], hito.normal);
 						_direction = _direction.normalized * 10;
-						internal_coordinates.Add(hito.point + _direction);
-						return internal_coordinates;
+						i_coordinates.Add(hito.point + _direction);
+						return i_coordinates;
 					}
 					else if (hito.collider.gameObject.GetComponentInParent<Shield>() != null)
 					{
-						Vector3 impactVector = (internal_coordinates[i] - internal_coordinates[i - 1]);
+						Vector3 impactVector = (i_coordinates[i] - i_coordinates[i - 1]);
 						if ((impactVector.normalized + hito.collider.gameObject.transform.forward.normalized).magnitude >= (hito.collider.gameObject.GetComponentInParent<Shield>().enemy.angleRangeForRebound / 63.5f))
 						{
-							internal_coordinates.Add(hito.point);
-							Vector3 _direction = Vector3.Reflect(internal_coordinates[i] - internal_coordinates[i - 1], hito.normal);
+							i_coordinates.Add(hito.point);
+							Vector3 _direction = Vector3.Reflect(i_coordinates[i] - i_coordinates[i - 1], hito.normal);
 							_direction = _direction.normalized * 10;
-							internal_coordinates.Add(hito.point + _direction);
-							return internal_coordinates;
+							i_coordinates.Add(hito.point + _direction);
+							return i_coordinates;
 						}
 					}
 				}
 			}
 		}
-		return internal_coordinates;
+		return i_coordinates;
 	}
 
 	public void Aim()
@@ -267,18 +271,23 @@ public class PassController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
+		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
 		Shoot();
 	}
 	public void Shoot()
 	{
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
-		FeedbackManager.SendFeedback("event.ThrowPass", this);
-		SoundManager.PlaySound("ThrowPass", transform.position, transform);
 		ChangePassState(PassState.Shooting);
-		if (ballTimeInHand > receptionMinDelay + 0.1f) { BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception); }
+		AnalyticsManager.IncrementData("PlayerPass");
+		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
+		if (!keepPerfectReceptionModifiers)
+		{
+			BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
+		}
+		keepPerfectReceptionModifiers = false;
 		currentPassCooldown = passCooldown;
-		BallBehaviour internal_shotBall = ball;
+		BallBehaviour i_shotBall = ball;
 		ball = null;
 		didPerfectReception = false;
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
@@ -290,13 +299,11 @@ public class PassController : MonoBehaviour
             {
 				if (passPreview)
 				{
-					internal_shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
-					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
+					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
-					internal_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
-					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false,otherPlayer.transform.position - transform.position, Vector3.one * 5f);
+					i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
 				}
             }
         }
@@ -306,14 +313,12 @@ public class PassController : MonoBehaviour
 			{
 				if (otherPlayer != null)
 				{
-					internal_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
-					FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, otherPlayer.transform.position - transform.position, Vector3.one * 5f);
+					i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
 				}
 			}
 			else // if aiming with right joystick
 			{
-				internal_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
-				FXManager.InstantiateFX(ballDatas.throwCore, handTransform.position, false, transform.forward, Vector3.one * 5f);
+				i_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
 			}
 		}
 		ChangePassState(PassState.None);
@@ -322,8 +327,7 @@ public class PassController : MonoBehaviour
 	public void Receive (BallBehaviour _ball)
 	{
 		if (!canReceive) { return; }
-		FeedbackManager.SendFeedback("event.ReceiveBall", this) ;
-		SoundManager.PlaySound("BallReception", transform.position, transform);
+		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPlayer, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection());
 		CursorManager.SetBallPointerParent(transform);
 		ball = _ball;
 		ball.GoToHands(handTransform, 0.2f,ballDatas) ;
@@ -355,13 +359,13 @@ public class PassController : MonoBehaviour
 
 	void ChangeColor ( Color _newColor )
 	{
-		Color internal_newStartColor = _newColor;
-		internal_newStartColor.a = lineRenderer.startColor.a;
-		lineRenderer.startColor = internal_newStartColor;
+		Color i_newStartColor = _newColor;
+		i_newStartColor.a = lineRenderer.startColor.a;
+		lineRenderer.startColor = i_newStartColor;
 
-		Color internal_newEndColor = _newColor;
-		internal_newEndColor.a = lineRenderer.endColor.a;
-		lineRenderer.endColor = internal_newEndColor;
+		Color i_newEndColor = _newColor;
+		i_newEndColor.a = lineRenderer.endColor.a;
+		lineRenderer.endColor = i_newEndColor;
 	}
 
 	public void ResetPreviewColor()
@@ -385,7 +389,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve))
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
 		{
 			return false;
 		} else
@@ -422,10 +426,10 @@ public class PassController : MonoBehaviour
 	{
 		for (int i = 0; i < _pathCoordinates.Count - 1; i++)
 		{
-			Vector3 internal_actualPosition = _pathCoordinates[i];
-			Vector3 internal_nextPosition = _pathCoordinates[i + 1];
-			Vector3 internal_dir = internal_nextPosition - internal_actualPosition;
-			Debug.DrawRay(internal_actualPosition, internal_dir, Color.yellow);
+			Vector3 i_actualPosition = _pathCoordinates[i];
+			Vector3 i_nextPosition = _pathCoordinates[i + 1];
+			Vector3 i_dir = i_nextPosition - i_actualPosition;
+			Debug.DrawRay(i_actualPosition, i_dir, Color.yellow);
 		}
 	}
 
@@ -442,9 +446,9 @@ public class PassController : MonoBehaviour
 		float totalLength = 0;
 		for (int i = 0; i < _pathCoordinates.Count - 1; i++)
 		{
-			Vector3 internal_actualPosition = _pathCoordinates[i];
-			Vector3 internal_nextPosition = _pathCoordinates[i + 1];
-			totalLength += Vector3.Distance(internal_actualPosition, internal_nextPosition);
+			Vector3 i_actualPosition = _pathCoordinates[i];
+			Vector3 i_nextPosition = _pathCoordinates[i + 1];
+			totalLength += Vector3.Distance(i_actualPosition, i_nextPosition);
 		}
 		return totalLength;
 	}
@@ -453,6 +457,10 @@ public class PassController : MonoBehaviour
 		if (currentPassCooldown >= 0)
 		{
 			currentPassCooldown -= Time.deltaTime;
+		}
+		if (perfectReceptionBuffer >= 0)
+		{
+			perfectReceptionBuffer -= Time.deltaTime;
 		}
 	}
 

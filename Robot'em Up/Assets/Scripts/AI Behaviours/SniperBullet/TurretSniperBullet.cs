@@ -35,9 +35,9 @@ public class TurretSniperBullet : MonoBehaviour
 
         RaycastHit hit;
         if(Physics.Raycast(transform.position, rb.velocity, out hit, distanceToRaycast, layerToCheck)){
-            GameObject internal_impactFX = Instantiate(impactFX, hit.point, Quaternion.identity);
-            internal_impactFX.transform.localScale = impactFXScale;
-            Destroy(internal_impactFX, .25f);
+            GameObject i_impactFX = Instantiate(impactFX, hit.point, Quaternion.identity);
+            i_impactFX.transform.localScale = impactFXScale;
+            Destroy(i_impactFX, .25f);
             if (isAimingPlayer && Vector3.Distance(hit.point, target.position) < distanceAoEDamage)
             {
                 target.GetComponent<PawnController>().Damage(damageDealt);
@@ -52,9 +52,9 @@ public class TurretSniperBullet : MonoBehaviour
         if (_other.tag == "Player")
         {
             _other.GetComponent<PawnController>().Damage(damageDealt);
-            GameObject internal_impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
-            internal_impactFX.transform.localScale = impactFXScale;
-            Destroy(internal_impactFX, 1);
+            GameObject i_impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
+            i_impactFX.transform.localScale = impactFXScale;
+            Destroy(i_impactFX, 1);
             Destroy(gameObject);
         }
     }

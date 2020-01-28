@@ -28,10 +28,10 @@ public class PuzzleElevator : PuzzleActivable
     {
         if (state == ElevatorState.MovingUp)
         {
-            float internal_distCovered = (Time.time - startTime) * speed;
-            float internal_fractionOfJourney = internal_distCovered / journeyLength;
-            transform.position = Vector3.Lerp(downPosition, upPosition, internal_fractionOfJourney);
-            if (internal_fractionOfJourney > 0.99f)
+            float i_distCovered = (Time.time - startTime) * speed;
+            float i_fractionOfJourney = i_distCovered / journeyLength;
+            transform.position = Vector3.Lerp(downPosition, upPosition, i_fractionOfJourney);
+            if (i_fractionOfJourney > 0.99f)
             {
                 state = ElevatorState.Up;
                 if (!isActivated)
@@ -45,10 +45,10 @@ public class PuzzleElevator : PuzzleActivable
 
         if (state == ElevatorState.MovingDown)
         {
-            float internal_distCovered = (Time.time - startTime) * speed;
-            float internal_fractionOfJourney = internal_distCovered / journeyLength;
-            transform.position = Vector3.Lerp(upPosition, downPosition, internal_fractionOfJourney);
-            if (internal_fractionOfJourney > 0.99f)
+            float i_distCovered = (Time.time - startTime) * speed;
+            float i_fractionOfJourney = i_distCovered / journeyLength;
+            transform.position = Vector3.Lerp(upPosition, downPosition, i_fractionOfJourney);
+            if (i_fractionOfJourney > 0.99f)
             {
                 state = ElevatorState.Down;
                 if (isActivated)

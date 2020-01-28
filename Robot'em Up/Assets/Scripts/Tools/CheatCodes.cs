@@ -37,7 +37,7 @@ public class CheatCodes : MonoBehaviour
 
     void OnGUI()
     {
-        Color internal_normalColor = GUI.color;
+        Color i_normalColor = GUI.color;
 
         if (activateCheat)
         {
@@ -56,7 +56,7 @@ public class CheatCodes : MonoBehaviour
                 ToggleInvicibility();
             }
 
-            GUI.backgroundColor = internal_normalColor;
+            GUI.backgroundColor = i_normalColor;
 
             if (GUI.Button(new Rect(10, 70, 100, 25), "Charge Energy"))
             {
@@ -109,26 +109,26 @@ public class CheatCodes : MonoBehaviour
 
     public IEnumerator KillEnemies()
     {
-        List<EnemyBehaviour> internal_enemies = EnemyManager.i.enemies;
-        int count = internal_enemies.Count;
+        List<EnemyBehaviour> i_enemies = EnemyManager.i.enemies;
+        int count = i_enemies.Count;
         for (int i = 0; i < count; i++)
         {
-            Debug.Log("destroying " + internal_enemies[0]);
-            if (internal_enemies[0].transform.GetComponent<EnemyRedBarrel>())
+            Debug.Log("destroying " + i_enemies[0]);
+            if (i_enemies[0].transform.GetComponent<EnemyRedBarrel>())
             {
-                EnemyBehaviour temp = internal_enemies[0];
+                EnemyBehaviour temp = i_enemies[0];
                 EnemyManager.i.enemies.Remove(temp);
                 Destroy(temp.gameObject);
             }
             else
             {
-                internal_enemies[0].Die(); 
+                i_enemies[0].Kill(); 
             }
             yield return null;
         }
 
-        TurretBehaviour[] internal_turrets = FindObjectsOfType<TurretBehaviour>();
-        foreach(var turret in internal_turrets)
+        TurretBehaviour[] i_turrets = FindObjectsOfType<TurretBehaviour>();
+        foreach(var turret in i_turrets)
         {
             turret.Die();
             yield return null;

@@ -7,8 +7,8 @@ public class EnemyRedBarrel : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Red Barrel Death variables")]
-    [SerializeField] GameObject buildUpExplosionFX = null;
-    [SerializeField] GameObject explosionFX = null;
+    public string buildUpExplosionFX = "event.RedBarrelEnemyDeathPart1";
+    public string explosionFX = "event.RedBarrelEnemyDeathPart2";
     public float explosionRadius = 3f;
     public int explosionDamage = 10;
     public float buildUpBeforeExplosion = 0.5f;
@@ -44,7 +44,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         bodyRenderer.material = materialOnExplosion;
     }
 
-    public override void Die(string deathSound = "EnemyDeath")
+    public override void Kill()
     {
         if (Explosion_C == null)
         {
@@ -56,18 +56,15 @@ public class EnemyRedBarrel : EnemyBehaviour
     private IEnumerator ExplosionSequence_C()
     {
         animator.SetTrigger("DeathTrigger");
-        SoundManager.PlaySound("RedBarrelExplosionAnticipation", transform.position, transform);
-
-        GameObject internal_hitParticle = Instantiate(buildUpExplosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
-        internal_hitParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
+        FeedbackManager.SendFeedback(buildUpExplosionFX, this);
 
         //hitParticle.transform.localScale = 3f;
         explosionRadiusTransform.gameObject.SetActive(true);
-        float internal_time = 0;
-        while (internal_time < 1)
+        float i_time = 0;
+        while (i_time < 1)
         {
-            explosionGrowingRenderer.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, internal_time);
-            internal_time += Time.deltaTime/ buildUpBeforeExplosion;
+            explosionGrowingRenderer.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, i_time);
+            i_time += Time.deltaTime/ buildUpBeforeExplosion;
 
             //Color flicker on death
             if (Random.Range(0f, 1f) > 0.5f)
@@ -78,26 +75,21 @@ public class EnemyRedBarrel : EnemyBehaviour
             yield return null;
         }
         //yield return new WaitForSeconds(buildUpBeforeExplosion);
-        
-        GameObject internal_explosionParticle = Instantiate(explosionFX, transform.position, Quaternion.Euler(-90, 0, 0));
-        internal_explosionParticle.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
+        FeedbackManager.SendFeedback(explosionFX, this);
 
-        Collider[] internal_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
+        Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
         int i = 0;
-        while (i < internal_hitColliders.Length)
+        while (i < i_hitColliders.Length)
         {
-            IHitable potentialHitableObject = internal_hitColliders[i].GetComponent<IHitable>();
+            IHitable potentialHitableObject = i_hitColliders[i].GetComponent<IHitable>();
             if (potentialHitableObject != null)
             {
-                potentialHitableObject.OnHit(null, (internal_hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
+                potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
             }
             i++;
         }
 
-        Destroy(internal_explosionParticle, 1f);
-        FeedbackManager.SendFeedback("event.RedBarrelExplosion", this);
-        SoundManager.PlaySound("RedBarrelExplosion", transform.position, transform);
-        base.Die();
+        base.Kill();
     }
 
     

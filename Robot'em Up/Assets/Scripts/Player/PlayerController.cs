@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
 using MyBox;
+using UnityEngine.Analytics;
+using UnityEngine.SceneManagement;
 
+[ExecuteAlways]
 public class PlayerController : PawnController, IHitable
 {
 	[Space(2)]
@@ -22,10 +25,7 @@ public class PlayerController : PawnController, IHitable
     public bool enableMagnet;
 
 	[Separator("Revive settings")]
-	public GameObject FX_hit;
-	public GameObject FX_heal;
-	public GameObject FX_death;
-	public GameObject FX_revive;
+	public string eventOnResurrecting = "event.PlayerResurrecting";
 
 	public float deathExplosionRadius = 5;
 	public int deathExplosionDamage = 10;
@@ -46,8 +46,9 @@ public class PlayerController : PawnController, IHitable
 	private ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
+	private bool rightTriggerWaitForRelease;
 
-	public override void Awake ()
+	public void Start ()
 	{
 		base.Awake();
 		cam = Camera.main;
@@ -57,8 +58,17 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void Update ()
 	{
-		if (!inputDisabled) { GetInput(); }
-	}
+		if (Application.isPlaying)
+		{
+			GetInput();
+		}
+#if !UNITY_EDITOR
+			if (!inputDisabled) { GetInput(); }
+#endif
+
+
+
+    }
 	void GetInput ()
 	{
 		if (HasGamepad())
@@ -69,11 +79,6 @@ public class PlayerController : PawnController, IHitable
 		{
 			KeyboardInput();
 		}
-	}
-
-	public void Vibrate ( float _duration, VibrationForce _force )
-	{
-		StartCoroutine(Vibrate_C(_duration, _force));
 	}
 
 	void GamepadInput ()
@@ -103,8 +108,12 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
-			passController.TryReception();
-			passController.Shoot();
+			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
+			rightTriggerWaitForRelease = true;
+		}
+		if (state.Triggers.Right < triggerTreshold)
+		{
+			rightTriggerWaitForRelease = false;
 		}
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
@@ -115,7 +124,12 @@ public class PlayerController : PawnController, IHitable
 			//extendingArmsController.ExtendArm();
 			if (enableDash && revivablePlayers.Count <= 0 && dashPressed == false)
 			{
-				dashController.Dash();
+				Vector3 dashDirection = moveInput;
+				if (moveInput.magnitude <= 0)
+				{
+					dashDirection = transform.forward;
+				}
+				dashController.Dash(dashDirection);
 			}
 			dashPressed = true;
 		} else
@@ -150,9 +164,9 @@ public class PlayerController : PawnController, IHitable
 	void KeyboardInput ()
 	{
 		if (playerIndex != PlayerIndex.One) { return; }
-		Vector3 internal_inputX = Input.GetAxisRaw("Horizontal") * cam.transform.right;
-		Vector3 internal_inputZ = Input.GetAxisRaw("Vertical") * cam.transform.forward;
-		moveInput = internal_inputX + internal_inputZ;
+		Vector3 i_inputX = Input.GetAxisRaw("Horizontal") * cam.transform.right;
+		Vector3 i_inputZ = Input.GetAxisRaw("Vertical") * cam.transform.forward;
+		moveInput = i_inputX + i_inputZ;
 		moveInput.y = 0;
 		moveInput.Normalize();
 		lookInput = SwissArmyKnife.GetMouseDirection(cam, transform.position);
@@ -190,7 +204,12 @@ public class PlayerController : PawnController, IHitable
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
 			//extendingArmsController.ExtendArm();
-			dashController.Dash();
+			Vector3 dashDirection = moveInput;
+			if (moveInput.magnitude <= 0)
+			{
+				dashDirection = transform.forward;
+			}
+			dashController.Dash(dashDirection);
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
 		{
@@ -231,42 +250,13 @@ public class PlayerController : PawnController, IHitable
 		return lookInput;
 	}
 
-	IEnumerator Vibrate_C ( float _duration, VibrationForce _force )
-	{
-		float internal_momentumMultiplier = MomentumManager.GetValue(MomentumManager.datas.vibrationMultiplier);
-		for (float i = 0; i < _duration; i += Time.deltaTime)
-		{
-			switch (_force)
-			{
-                case VibrationForce.VeryLight:
-                    GamePad.SetVibration(playerIndex, 0.1f* internal_momentumMultiplier, 0.1f* internal_momentumMultiplier);
-                    break;
-				case VibrationForce.Light:
-					GamePad.SetVibration(playerIndex, 0.2f* internal_momentumMultiplier, 0.2f* internal_momentumMultiplier);
-					break;
-				case VibrationForce.Medium:
-					GamePad.SetVibration(playerIndex, 0.3f* internal_momentumMultiplier, 0.3f* internal_momentumMultiplier);
-					break;
-				case VibrationForce.Heavy:
-					GamePad.SetVibration(playerIndex, 0.4f* internal_momentumMultiplier, 0.4f* internal_momentumMultiplier);
-					break;
-                case VibrationForce.VeryHeavy:
-                    GamePad.SetVibration(playerIndex, 0.5f* internal_momentumMultiplier, 0.5f* internal_momentumMultiplier);
-                    break;
-			}
-			yield return new WaitForEndOfFrame();
-		}
-		GamePad.SetVibration(playerIndex, 0f, 0f);
-	}
-
 	public override void Heal ( int _amount )
 	{
 		base.Heal(_amount);
-		FXManager.InstantiateFX(FX_heal, Vector3.zero, true, Vector3.zero, Vector3.one * 3.25f, transform);
-		PlayerUI internal_potentialPlayerUI = GetComponent<PlayerUI>();
-		if (internal_potentialPlayerUI != null)
+		PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
+		if (i_potentialPlayerUI != null)
 		{
-			internal_potentialPlayerUI.DisplayHealth(HealthAnimationType.Gain);
+			i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Gain);
 		}
 	}
 
@@ -279,33 +269,26 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
-			FeedbackManager.SendFeedback("event.PlayerHitWithoutBump", this);
-			SoundManager.PlaySound("PlayerHitNoBump", transform.position);
-			PlayerUI internal_potentialPlayerUI = GetComponent<PlayerUI>();
-			if (internal_potentialPlayerUI != null)
+			AnalyticsManager.IncrementData("DamageTaken", _amount);
+			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
+			if (i_potentialPlayerUI != null)
 			{
-				internal_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
+				i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
-            base.Damage(_amount);
-            FXManager.InstantiateFX(FX_hit, Vector3.zero, true, Vector3.zero, Vector3.one * 4.25f, transform);
+            base.Damage(_amount);   // manages the recovery time as well
         }
 	}
 
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
-		if (playerIndex == PlayerIndex.One)
+		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
+		if (GameManager.deadPlayers.Count > 0)
 		{
-			FeedbackManager.SendFeedback("event.DeathFromPlayer1", this);
-		} else if (playerIndex == PlayerIndex.Two)
-		{
-			FeedbackManager.SendFeedback("event.DeathFromPlayer2", this);
+			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
 		}
-		FeedbackManager.SendFeedback("event.EnemyHitByBall", this);
-		SoundManager.PlaySound("DeathFromOneCharacter", transform.position, transform);
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
-		FXManager.InstantiateFX(FX_death, GetCenterPosition(), false, Vector3.zero, Vector3.one);
 		DropBall();
 		SetUntargetable();
 		Freeze();
@@ -318,6 +301,8 @@ public class PlayerController : PawnController, IHitable
 
 	public void Revive(PlayerController _player)
 	{
+		FeedbackManager.SendFeedback(eventOnResurrecting, this);
+		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
@@ -327,40 +312,36 @@ public class PlayerController : PawnController, IHitable
 		_player.transform.position = transform.position + Vector3.up * 7 + Vector3.left * 0.1f;
 		_player.FreezeTemporarly(reviveFreezeDuration);
 		_player.EnableInput();
-		//_player.StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		StartCoroutine(DisableInputsTemporarly(reviveFreezeDuration * 2));
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
-		List<ReviveInformations> internal_newRevivablePlayers = new List<ReviveInformations>();
-		FXManager.InstantiateFX(FX_revive, GetCenterPosition(), false, Vector3.zero, Vector3.one * 5);
-		SoundManager.PlaySound("AllyResurrection", _player.transform.position, transform);
-		FeedbackManager.SendFeedback("event.AllyResurrection", this);
+		List<ReviveInformations> i_newRevivablePlayers = new List<ReviveInformations>();
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
 			if (inf.linkedPlayer != _player)
 			{
-				internal_newRevivablePlayers.Add(inf);
+				i_newRevivablePlayers.Add(inf);
 			}
 		}
-		revivablePlayers = internal_newRevivablePlayers;
+		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
 	}
 
 	void GenerateReviveParts()
 	{
-		float internal_currentAngle = 0;
-		float internal_defaultAngleDifference = 360 / revivePartsCount;
+		float i_currentAngle = 0;
+		float i_defaultAngleDifference = 360 / revivePartsCount;
 		for (int i = 0; i < revivePartsCount; i++)
 		{
-			GameObject internal_revivePart = Instantiate(Resources.Load<GameObject>("PlayerResource/PlayerCore"), null);
-			internal_revivePart.name = "Part " + i + " of " + gameObject.name;
-			internal_revivePart.transform.position = transform.position;
-			Vector3 internal_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, internal_currentAngle, 0));
-			float internal_throwForce = Random.Range(minMaxProjectionForce.x, minMaxProjectionForce.y);
-			internal_wantedDirectionAngle.y = internal_throwForce * 0.035f;
-			internal_revivePart.GetComponent<CorePart>().Init(this, internal_wantedDirectionAngle.normalized * internal_throwForce, revivePartsCount, 0);
-			internal_currentAngle += internal_defaultAngleDifference + Random.Range(-internal_defaultAngleDifference * partExplosionAngleRandomness, internal_defaultAngleDifference * partExplosionAngleRandomness);
+			GameObject i_revivePart = Instantiate(Resources.Load<GameObject>("PlayerResource/PlayerCore"), null);
+			i_revivePart.name = "Part " + i + " of " + gameObject.name;
+			i_revivePart.transform.position = transform.position;
+			Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, i_currentAngle, 0));
+			float i_throwForce = Random.Range(minMaxProjectionForce.x, minMaxProjectionForce.y);
+			i_wantedDirectionAngle.y = i_throwForce * 0.035f;
+			i_revivePart.GetComponent<CorePart>().Init(this, i_wantedDirectionAngle.normalized * i_throwForce, revivePartsCount, 0);
+			i_currentAngle += i_defaultAngleDifference + Random.Range(-i_defaultAngleDifference * partExplosionAngleRandomness, i_defaultAngleDifference * partExplosionAngleRandomness);
 		}
 	}
 
@@ -424,12 +405,15 @@ public class PlayerController : PawnController, IHitable
 			case DamageSource.RedBarrelExplosion:
 				Damage(_damages);
 				break;
+
+            case DamageSource.EnemyContact:
+                Damage(_damages);
+                break;
 		}
 	}
 
 	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
 	{
-		FeedbackManager.SendFeedback("event.PlayerBumpedAway", this);
 		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
 	}
 }

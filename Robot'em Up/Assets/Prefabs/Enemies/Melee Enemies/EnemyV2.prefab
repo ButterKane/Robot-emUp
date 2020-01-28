@@ -321,9 +321,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
+  totalHeight: 2.25
   invincibilityTime: 1
-  onHitSound: 
-  onDeathSound: 
+  canMove: 1
   jumpForce: 0
   accelerationCurve:
     serializedVersion: 2
@@ -339,15 +339,12 @@ MonoBehaviour:
   onGroundGravityMultiplyer: 0
   deadzone: 0.2
   turnSpeed: 0.25
+  canClimb: 1
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
   climbDuration: 0.5
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
-  deathParticlePrefab: {fileID: 130332, guid: 2e30d40b54f77704d815fabce00d7b2e, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 107336, guid: 3547e5e490f502041ae6e8a59042e4bd, type: 3}
-  hitParticleScale: 3
   isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
@@ -374,9 +371,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0.9
   bumpRaycastDistance: 1
-  rb: {fileID: 0}
+  whenToTriggerFallingAnim: 0.9
+  eventOnBeingHit: event.EnemyHit
+  eventOnBeingBumpedAway: event.EnemyBeingBumpedAway
+  eventOnBeingGrounded: event.EnemyGrounded
+  eventOnDeath: event.EnemyDeath
+  eventOnHealing: 
   healthBarRef: {fileID: 1286583807845663263}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -394,9 +395,9 @@ MonoBehaviour:
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
-  slowFromPass: 0.6
+  speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0.5
-  slowFromDunk: 0.4
+  speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
   distanceToAttack: 5
   maxAnticipationTime: 0.5
@@ -433,6 +434,7 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0.5, z: 1}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 0.1
@@ -543,7 +545,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9546577c3ff3c754388e9cd32fc84d96, type: 2}
+  - {fileID: 2100000, guid: 984e26c1bac365c47b78120f0b2c5100, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

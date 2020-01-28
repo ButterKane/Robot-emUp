@@ -20,60 +20,60 @@ public class ParticleColorer : MonoBehaviour
 		switch (main.startColor.mode)
 		{
 			case ParticleSystemGradientMode.Color:
-				var internal_newStartColor = main.startColor;
-				if (IsEqualTo(internal_newStartColor.color, _currentColor))
+				var i_newStartColor = main.startColor;
+				if (IsEqualTo(i_newStartColor.color, _currentColor))
 				{
-					internal_newStartColor.color = _newColor;
-					main.startColor = internal_newStartColor;
+					i_newStartColor.color = _newColor;
+					main.startColor = i_newStartColor;
 				}
 				break;
 
 			case ParticleSystemGradientMode.Gradient:
-				var internal_sgradient = main.startColor.gradient;
-				GradientColorKey[] scolorKeys = new GradientColorKey[internal_sgradient.colorKeys.Length];
-				GradientAlphaKey[] salphaKeys = new GradientAlphaKey[internal_sgradient.alphaKeys.Length];
-				for (int i = 0; i < internal_sgradient.colorKeys.Length; i++)
+				var i_sgradient = main.startColor.gradient;
+				GradientColorKey[] scolorKeys = new GradientColorKey[i_sgradient.colorKeys.Length];
+				GradientAlphaKey[] salphaKeys = new GradientAlphaKey[i_sgradient.alphaKeys.Length];
+				for (int i = 0; i < i_sgradient.colorKeys.Length; i++)
 				{
-					GradientColorKey newKey = internal_sgradient.colorKeys[i];
+					GradientColorKey newKey = i_sgradient.colorKeys[i];
 					//if (IsEqualTo(sgradient.colorKeys[i].color,_currentColor))
 					//{
 						newKey.color = _newColor;
 					//}
 					scolorKeys[i] = newKey;
 				}
-				for (int i = 0; i < internal_sgradient.alphaKeys.Length; i++)
+				for (int i = 0; i < i_sgradient.alphaKeys.Length; i++)
 				{
-					GradientAlphaKey newKey = internal_sgradient.alphaKeys[i];
+					GradientAlphaKey newKey = i_sgradient.alphaKeys[i];
 					salphaKeys[i] = newKey;
 				}
-				Gradient internal_newSGradient = new Gradient();
-				internal_newSGradient.SetKeys(scolorKeys, salphaKeys);
-				main.startColor = internal_newSGradient;
+				Gradient i_newSGradient = new Gradient();
+				i_newSGradient.SetKeys(scolorKeys, salphaKeys);
+				main.startColor = i_newSGradient;
 				break;
 		}
 
 		//Replace color over lifetime
-		ParticleSystem.ColorOverLifetimeModule internal_colorOverLifetime = _ps.colorOverLifetime;
-		var internal_colgradient = internal_colorOverLifetime.color.gradient;
-		GradientColorKey[] internal_colorKeys = new GradientColorKey[internal_colgradient.colorKeys.Length];
-		GradientAlphaKey[] internal_alphaKeys = new GradientAlphaKey[internal_colgradient.alphaKeys.Length];
-		for (int i = 0; i < internal_colgradient.colorKeys.Length; i++)
+		ParticleSystem.ColorOverLifetimeModule i_colorOverLifetime = _ps.colorOverLifetime;
+		var i_colgradient = i_colorOverLifetime.color.gradient;
+		GradientColorKey[] i_colorKeys = new GradientColorKey[i_colgradient.colorKeys.Length];
+		GradientAlphaKey[] i_alphaKeys = new GradientAlphaKey[i_colgradient.alphaKeys.Length];
+		for (int i = 0; i < i_colgradient.colorKeys.Length; i++)
 		{
-			GradientColorKey internal_newKey = internal_colgradient.colorKeys[i];
+			GradientColorKey i_newKey = i_colgradient.colorKeys[i];
 			//if (IsEqualTo(colgradient.colorKeys[i].color, _currentColor))
 			//{
-				internal_newKey.color = _newColor;
+				i_newKey.color = _newColor;
 			//}
-			internal_colorKeys[i] = internal_newKey;
+			i_colorKeys[i] = i_newKey;
 		}
-		for (int i = 0; i < internal_colgradient.alphaKeys.Length; i++)
+		for (int i = 0; i < i_colgradient.alphaKeys.Length; i++)
 		{
-			GradientAlphaKey internal_newKey = internal_colgradient.alphaKeys[i];
-			internal_alphaKeys[i] = internal_newKey;
+			GradientAlphaKey i_newKey = i_colgradient.alphaKeys[i];
+			i_alphaKeys[i] = i_newKey;
 		}
 		Gradient newGradient = new Gradient();
-		newGradient.SetKeys(internal_colorKeys, internal_alphaKeys);
-		internal_colorOverLifetime.color = newGradient;
+		newGradient.SetKeys(i_colorKeys, i_alphaKeys);
+		i_colorOverLifetime.color = newGradient;
 	}
 
 

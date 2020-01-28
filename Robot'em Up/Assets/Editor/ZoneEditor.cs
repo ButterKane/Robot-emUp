@@ -2,97 +2,142 @@
 using UnityEngine;
 using Cinemachine;
 using System.Collections.Generic;
+using PathCreation;
 
 public class ZoneEditor
 {
-	[MenuItem("Zone/Create combat zone")]
+	[MenuItem("CameraZone/Create combat zone")]
 	static void GenerateCombatZone ()
 	{
 		//Restricted tool list
-		List<Tool> internal_restrictedTools = new List<Tool>();
-		internal_restrictedTools.Add(Tool.Move);
-		internal_restrictedTools.Add(Tool.Rotate);
-		internal_restrictedTools.Add(Tool.Scale);
+		List<Tool> i_restrictedTools = new List<Tool>();
+		i_restrictedTools.Add(Tool.Move);
+		i_restrictedTools.Add(Tool.Rotate);
+		i_restrictedTools.Add(Tool.Scale);
 
 		//Generates main zone object
-		GameObject internal_newZone = new GameObject();
-		internal_newZone.name = "Fight Zone";
-		internal_newZone.AddComponent<ToolRestrictor>().restrictedTools = internal_restrictedTools;
+		GameObject i_newZone = new GameObject();
+		i_newZone.name = "Fight Zone";
+		i_newZone.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
 
 		//Add wave component
-		internal_newZone.AddComponent<WaveController>();
+		i_newZone.AddComponent<WaveController>();
 
 		//Generates zone selector object
-		GameObject internal_zoneSelector = new GameObject();
-		internal_zoneSelector.name = "Camera zone";
-		internal_zoneSelector.transform.SetParent(internal_newZone.transform);
-		CameraZone camZone = internal_zoneSelector.AddComponent<CameraZone>();
+		GameObject i_zoneSelector = new GameObject();
+		i_zoneSelector.name = "Camera zone";
+		i_zoneSelector.transform.SetParent(i_newZone.transform);
+		CameraZone camZone = i_zoneSelector.AddComponent<CameraZone>();
 		camZone.GenerateZone(CameraType.Combat);
 
 		//Generate the camera pivot
-		GameObject internal_cameraPivot = new GameObject();
-		internal_cameraPivot.name = "Camera pivot";
-		internal_cameraPivot.transform.SetParent(internal_newZone.transform);
-		CameraBehaviour cam = internal_cameraPivot.AddComponent<CameraBehaviour>();
+		GameObject i_cameraPivot = new GameObject();
+		i_cameraPivot.name = "Camera pivot";
+		i_cameraPivot.transform.SetParent(i_newZone.transform);
+		CameraBehaviour cam = i_cameraPivot.AddComponent<CameraBehaviour>();
 		cam.InitCamera(CameraType.Combat, camZone);
-		internal_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = internal_restrictedTools;
+		i_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
+		camZone.linkedCameraBehaviour = cam;
 
 		//Generate the virtual camera
-		GameObject internal_virtualCamera = new GameObject();
-		internal_virtualCamera.name = "Virtual camera";
-		internal_virtualCamera.transform.SetParent(internal_cameraPivot.transform);
-		CinemachineVirtualCamera virtualCameraScript = internal_virtualCamera.AddComponent<CinemachineVirtualCamera>();
+		GameObject i_virtualCamera = new GameObject();
+		i_virtualCamera.name = "Virtual camera";
+		i_virtualCamera.transform.SetParent(i_cameraPivot.transform);
+		CinemachineVirtualCamera virtualCameraScript = i_virtualCamera.AddComponent<CinemachineVirtualCamera>();
 		virtualCameraScript.m_Lens.FieldOfView = 60;
-		internal_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
-		internal_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
+		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
+		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
 
-		internal_newZone.transform.position = new Vector3(0, 0.5f, 0);
-		Selection.activeGameObject = internal_zoneSelector;
+		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
+		Selection.activeGameObject = i_zoneSelector;
 	}
 
-	[MenuItem("Zone/Create circle zone")]
+	[MenuItem("CameraZone/Create circle zone")]
 	static void GenerateCircleZone ()
 	{
 		//Restricted tool list
-		List<Tool> internal_restrictedTools = new List<Tool>();
-		internal_restrictedTools.Add(Tool.Move);
-		internal_restrictedTools.Add(Tool.Rotate);
-		internal_restrictedTools.Add(Tool.Scale);
+		List<Tool> i_restrictedTools = new List<Tool>();
+		i_restrictedTools.Add(Tool.Move);
+		i_restrictedTools.Add(Tool.Rotate);
+		i_restrictedTools.Add(Tool.Scale);
 
 		//Generates main zone object
-		GameObject internal_newZone = new GameObject();
-		internal_newZone.name = "Circle Zone";
-		internal_newZone.AddComponent<ToolRestrictor>().restrictedTools = internal_restrictedTools;
+		GameObject i_newZone = new GameObject();
+		i_newZone.name = "Circle Zone";
+		i_newZone.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
 
 		//Add wave component
-		internal_newZone.AddComponent<WaveController>();
+		i_newZone.AddComponent<WaveController>();
 
 		//Generates zone selector object
-		GameObject internal_zoneSelector = new GameObject();
-		internal_zoneSelector.name = "Camera zone";
-		internal_zoneSelector.transform.SetParent(internal_newZone.transform);
-		CameraZone camZone = internal_zoneSelector.AddComponent<CameraZone>();
+		GameObject i_zoneSelector = new GameObject();
+		i_zoneSelector.name = "Camera zone";
+		i_zoneSelector.transform.SetParent(i_newZone.transform);
+		CameraZone camZone = i_zoneSelector.AddComponent<CameraZone>();
 		camZone.GenerateZone(CameraType.Circle);
 
 		//Generate the camera pivot
-		GameObject internal_cameraPivot = new GameObject();
-		internal_cameraPivot.name = "Camera pivot";
-		internal_cameraPivot.transform.SetParent(internal_newZone.transform);
-		CameraBehaviour cam = internal_cameraPivot.AddComponent<CameraBehaviour>();
+		GameObject i_cameraPivot = new GameObject();
+		i_cameraPivot.name = "Camera pivot";
+		i_cameraPivot.transform.SetParent(i_newZone.transform);
+		CameraBehaviour cam = i_cameraPivot.AddComponent<CameraBehaviour>();
 		cam.InitCamera(CameraType.Circle, camZone);
-		internal_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = internal_restrictedTools;
+		i_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
+		camZone.linkedCameraBehaviour = cam;
 
 		//Generate the virtual camera
-		GameObject internal_virtualCamera = new GameObject();
-		internal_virtualCamera.name = "Virtual camera";
-		internal_virtualCamera.transform.SetParent(internal_cameraPivot.transform);
-		CinemachineVirtualCamera virtualCameraScript = internal_virtualCamera.AddComponent<CinemachineVirtualCamera>();
+		GameObject i_virtualCamera = new GameObject();
+		i_virtualCamera.name = "Virtual camera";
+		i_virtualCamera.transform.SetParent(i_cameraPivot.transform);
+		CinemachineVirtualCamera virtualCameraScript = i_virtualCamera.AddComponent<CinemachineVirtualCamera>();
 		virtualCameraScript.m_Lens.FieldOfView = 60;
-		internal_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
-		internal_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
+		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
+		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
 
-		internal_newZone.transform.position = new Vector3(0, 0.5f, 0);
-		Selection.activeGameObject = internal_zoneSelector;
+		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
+		Selection.activeGameObject = i_zoneSelector;
+	}
+
+	[MenuItem("CameraZone/Create adventure camera")]
+	static void GenerateAdventureZone ()
+	{
+		//Restricted tool list
+		List<Tool> i_restrictedTools = new List<Tool>();
+		i_restrictedTools.Add(Tool.Move);
+		i_restrictedTools.Add(Tool.Rotate);
+		i_restrictedTools.Add(Tool.Scale);
+
+		//Generates main zone object
+		GameObject i_newZone = new GameObject();
+		i_newZone.name = "Adventure Zone";
+		i_newZone.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
+
+
+		//Generates zone selector object
+		GameObject i_zoneSelector = new GameObject();
+		i_zoneSelector.name = "Camera path";
+		i_zoneSelector.transform.SetParent(i_newZone.transform);
+		i_zoneSelector.AddComponent<PathCreator>();
+
+		//Generate the camera pivot
+		GameObject i_cameraPivot = new GameObject();
+		i_cameraPivot.name = "Camera pivot";
+		i_cameraPivot.transform.SetParent(i_zoneSelector.transform);
+		CameraBehaviour cam = i_cameraPivot.AddComponent<CameraBehaviour>();
+		cam.InitCamera(CameraType.Adventure, null);
+		i_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
+
+		//Generate the virtual camera
+		GameObject i_virtualCamera = new GameObject();
+		i_virtualCamera.name = "Virtual camera";
+		i_virtualCamera.transform.SetParent(i_cameraPivot.transform);
+		CinemachineVirtualCamera virtualCameraScript = i_virtualCamera.AddComponent<CinemachineVirtualCamera>();
+		virtualCameraScript.m_Lens.FieldOfView = 60;
+		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
+		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
+
+		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
+		Selection.activeGameObject = i_zoneSelector;
 	}
 
 	[CustomEditor(typeof(CameraZone)), CanEditMultipleObjects]
@@ -100,15 +145,15 @@ public class ZoneEditor
 	{
 		protected virtual void OnSceneGUI ()
 		{
-			CameraZone internal_zone = (CameraZone)target;
+			CameraZone i_zone = (CameraZone)target;
 
-			switch (internal_zone.type)
+			switch (i_zone.type)
 			{
 				case CameraType.Combat:
-					EditCombatZone(internal_zone);
+					EditCombatZone(i_zone);
 					break;
 				case CameraType.Circle:
-					EditCircleZone(internal_zone);
+					EditCircleZone(i_zone);
 					break;
 			}
 		}

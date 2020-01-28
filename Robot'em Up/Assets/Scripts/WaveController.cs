@@ -18,7 +18,7 @@ public class WaveController : MonoBehaviour
 	public UnityEvent onStartEvents;
 	public List<WaveData> waveList = new List<WaveData>(); 
 	public List<SpawnInformation> spawnList = new List<SpawnInformation>();
-
+	public ArenaDoor exitDoor;
 
 	private bool waveStarted = false;
 	private int currentWaveIndex = -1;
@@ -28,19 +28,23 @@ public class WaveController : MonoBehaviour
 	public List<EnemyBehaviour> currentEnemies;
 	private WaveEnemy nextEnemyToSpawn;
 	private float delayBeforeNextWave;
+	private bool enemiesKilled = false;
+	private bool arenaFinished = false;
 
 	private void Awake ()
 	{
+		arenaFinished = false;
 		currentWaveIndex = -1;
 		zone = GetComponentInChildren<CameraZone>();
 		if (startOnTriggerEnter && zone != null)
 		{
-			zone.onZoneActivation.AddListener(StartNextWave);
+			zone.onZoneActivation.AddListener(StartArena);
 		}
 	}
 
 	private void Update ()
 	{
+		if (arenaFinished) { return; }
 		if (waveStarted) { 
 			if (nextEnemyToSpawn == null)
 			{
@@ -59,6 +63,7 @@ public class WaveController : MonoBehaviour
 			{
 				if (currentPowerLevel <= 0)
 				{
+					EnemiesKilled();
 					delayBeforeNextWave -= Time.deltaTime;
 					if (delayBeforeNextWave <= 0)
 					{
@@ -69,15 +74,46 @@ public class WaveController : MonoBehaviour
 		}
 	}
 
+	public void StartArena()
+	{
+		if (currentWaveIndex >= 0) { return; } else
+		{
+			StartNextWave();
+		}
+		onStartEvents.Invoke();
+		if (exitDoor != null)
+		{
+			exitDoor.OnArenaEnter();
+		}
+	}
+
+	public void EnemiesKilled()
+	{
+		if (!enemiesKilled)
+		{
+			FeedbackManager.SendFeedback("event.ArenaWaveFinished", this);
+			if (exitDoor != null) { exitDoor.OnWaveFinished(); }
+			enemiesKilled = true;
+		}
+	}
+	public void EndArena()
+	{
+		if (arenaFinished) { return; }
+		arenaFinished = true;
+		if (exitDoor != null) { exitDoor.OnWaveFinished(); }
+		FeedbackManager.SendFeedback("event.ArenaFinished", this);
+		if (exitDoor != null)
+		{
+			exitDoor.OnArenaFinished();
+		}
+	}
 	public void StartNextWave()
 	{
 		if (waveStarted) { return; }
-		if (currentWaveIndex+1 >= waveList.Count) { return; }
 		currentWaveIndex++;
-		if (currentWaveIndex == 0)
-		{
-			onStartEvents.Invoke();
-		}
+		if (currentWaveIndex >= waveList.Count - 1) { EndArena(); return; }
+		if (exitDoor != null) { exitDoor.OnWaveStart(); }
+		enemiesKilled = false;
 		waveStarted = true;
 		StartCoroutine(StartWave_C(currentWaveIndex));
 	}
@@ -102,31 +138,31 @@ public class WaveController : MonoBehaviour
 	public WaveEnemy GetRandomEnemy()
 	{
 		if (waveList[currentWaveIndex].currentEnemies.Count <= 0) { Debug.LogWarning("Wave can't instantiate enemies: no list defined"); return null; }
-		float internal_pickChances = Random.value;
-		int internal_chosenIndex = 0;
-		float internal_cumulativeChances = waveList[currentWaveIndex].currentEnemies[internal_chosenIndex].probability;
+		float i_pickChances = Random.value;
+		int i_chosenIndex = 0;
+		float i_cumulativeChances = waveList[currentWaveIndex].currentEnemies[i_chosenIndex].probability;
 
-		while (internal_pickChances > internal_cumulativeChances && internal_chosenIndex < waveList[currentWaveIndex].currentEnemies.Count)
+		while (i_pickChances > i_cumulativeChances && i_chosenIndex < waveList[currentWaveIndex].currentEnemies.Count)
 		{
-			internal_chosenIndex++;
-			internal_cumulativeChances += waveList[currentWaveIndex].currentEnemies[internal_chosenIndex].probability;
+			i_chosenIndex++;
+			i_cumulativeChances += waveList[currentWaveIndex].currentEnemies[i_chosenIndex].probability;
 		}
-		return waveList[currentWaveIndex].currentEnemies[internal_chosenIndex];
+		return waveList[currentWaveIndex].currentEnemies[i_chosenIndex];
 	}
 	public void InstantiateEnemy ( WaveEnemy _enemy )
 	{
 		if (_enemy.spawnIndexes.Count <= 0) { Debug.LogWarning("Can't spawn enemy: no spawn assigned"); return; }
-		GameObject internal_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
-		EnemyBehaviour internal_enemyBehaviour = internal_newEnemy.GetComponent<EnemyBehaviour>();
-		if (internal_enemyBehaviour == null) { Destroy(internal_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
-		internal_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(internal_enemyBehaviour); });
+		GameObject i_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
+		EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
+		if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
+		i_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
 
-		int internal_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
-		internal_chosenSpawnerIndex = _enemy.spawnIndexes[internal_chosenSpawnerIndex];
-		internal_enemyBehaviour.GetNavMesh().enabled = false;
-		internal_newEnemy.transform.position = spawnList[internal_chosenSpawnerIndex].transform.position;
-		internal_enemyBehaviour.GetNavMesh().enabled = true;
-		currentEnemies.Add(internal_enemyBehaviour);
+		int i_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
+		i_chosenSpawnerIndex = _enemy.spawnIndexes[i_chosenSpawnerIndex];
+		i_enemyBehaviour.GetNavMesh().enabled = false;
+		i_newEnemy.transform.position = spawnList[i_chosenSpawnerIndex].transform.position;
+		i_enemyBehaviour.GetNavMesh().enabled = true;
+		currentEnemies.Add(i_enemyBehaviour);
 		UpdateCurrentPowerLevel();
 	}
 

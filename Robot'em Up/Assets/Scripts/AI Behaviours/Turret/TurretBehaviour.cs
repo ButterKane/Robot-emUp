@@ -33,11 +33,7 @@ public enum AimingCubeState
 public class TurretBehaviour : EnemyBehaviour, IHitable
 {
     [Space(2)]
-    [Separator("Auto-assigned References")]
-    public Transform target;
-
-    [Space(2)]
-    [Separator("Variables")]
+    [Separator("Turret Variables")]
     public TurretState turretState;
     [NonSerialized] public TurretAttackState attackState;
     [NonSerialized] public AimingCubeState aimingCubeState;
@@ -83,8 +79,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     new void Start()
     {
         base.Start();
-
-		onHitSound = "TurretHit";
         isBumpable = false;
         if (arenaTurret)
         {
@@ -100,7 +94,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     {
         UpdateDistancesToPlayers();
         UpdateState();
-    }
+		UpdateHealthBar();
+	}
 
     void UpdateDistancesToPlayers()
     {
@@ -277,11 +272,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void LaunchProjectile()
     {
-        Vector3 internal_spawnPosition;
-        internal_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, internal_spawnPosition, Quaternion.LookRotation(transform.forward));
-        FeedbackManager.SendFeedback("event.BasicTurretAttack", this);
-        SoundManager.PlaySound("BasicTurretAttack", transform.position);
+        Vector3 i_spawnPosition;
+        i_spawnPosition = bulletSpawn.position;
+        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -363,17 +356,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void Die()
     {
-        GameObject internal_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        internal_deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(internal_deathParticle, 1.5f);
 
         if (UnityEngine.Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();
         }
-
-        FeedbackManager.SendFeedback("event.BasicTurretDeath", this);
-        SoundManager.PlaySound("BasicTurretDeath", transform.position);
 
         Destroy(gameObject);
     }

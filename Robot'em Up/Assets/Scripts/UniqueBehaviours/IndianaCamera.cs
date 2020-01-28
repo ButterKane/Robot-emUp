@@ -14,14 +14,14 @@ public class IndianaCamera : MonoBehaviour
     {
         if (onRail)
         {
-            Vector3 internal_playerPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
-            Vector3 internal_wantedPosition = (internal_playerPosition + railPositionWanted) / 2;
-            transform.position = Vector3.Lerp(transform.position, internal_wantedPosition, Time.deltaTime);
+            Vector3 i_playerPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
+            Vector3 i_wantedPosition = (i_playerPosition + railPositionWanted) / 2;
+            transform.position = Vector3.Lerp(transform.position, i_wantedPosition, Time.deltaTime);
         }
         else
         {
-            Vector3 internal_wantedPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
-            transform.position = Vector3.Lerp(transform.position, internal_wantedPosition, Time.deltaTime);
+            Vector3 i_wantedPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
+            transform.position = Vector3.Lerp(transform.position, i_wantedPosition, Time.deltaTime);
         }
         if (shakeAmount > 0)
         {

@@ -46,18 +46,18 @@ public static class SwissArmyKnife
 
 	public static Vector3 GetMouseDirection(Camera _camera, Vector3 _objectPosition) //Returns the direction from the object to the mouse
     {
-        Vector3 internal_mousePosInWorld = Input.mousePosition;
-        internal_mousePosInWorld.z = Vector3.Distance(_objectPosition, _camera.transform.position);
+        Vector3 i_mousePosInWorld = Input.mousePosition;
+        i_mousePosInWorld.z = Vector3.Distance(_objectPosition, _camera.transform.position);
 
         RaycastHit hit;
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit))
         {
-            internal_mousePosInWorld.z = Vector3.Distance(_camera.transform.position, hit.point);
+            i_mousePosInWorld.z = Vector3.Distance(_camera.transform.position, hit.point);
         }
-        internal_mousePosInWorld = _camera.ScreenToWorldPoint(internal_mousePosInWorld);
-        internal_mousePosInWorld.y = _objectPosition.y;
-        return (internal_mousePosInWorld - _objectPosition).normalized;
+        i_mousePosInWorld = _camera.ScreenToWorldPoint(i_mousePosInWorld);
+        i_mousePosInWorld.y = _objectPosition.y;
+        return (i_mousePosInWorld - _objectPosition).normalized;
     }
 
     public static Vector3 GetBallisticVelocityVector(Vector3 _start, Vector3 _target, float _angle, Vector3 _planReference)

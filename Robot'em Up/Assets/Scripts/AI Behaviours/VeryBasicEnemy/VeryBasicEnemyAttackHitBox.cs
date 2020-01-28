@@ -6,21 +6,21 @@ public class VeryBasicEnemyAttackHitBox : MonoBehaviour
 {
     void OnTriggerEnter(Collider _other)
     {
-        Vector3 internal_impactVector = _other.transform.position - transform.position;
-        Vector3 internal_flattedDownImpactVector = new Vector3(internal_impactVector.x, 0, internal_impactVector.z);
+        Vector3 i_impactVector = _other.transform.position - transform.position;
+        Vector3 i_flattedDownImpactVector = new Vector3(i_impactVector.x, 0, i_impactVector.z);
 
         if (_other.tag == "Player")
         {
             if (_other.GetComponent<PawnController>() != null)
                 _other.GetComponent<PawnController>().Damage(transform.parent.GetComponent<EnemyBehaviour>().damage);
 
-            EnemyShield internal_enemyShield = GetComponentInParent<EnemyShield>();
-            if (internal_enemyShield !=null)
+            EnemyShield i_enemyShield = GetComponentInParent<EnemyShield>();
+            if (i_enemyShield !=null)
             {
-                internal_enemyShield.StopAttack();
+                i_enemyShield.StopAttack();
 
                 if (_other.GetComponent<PawnController>() != null && _other.GetComponent<DunkController>() != null && _other.GetComponent<DunkController>().isDunking() == false)
-                    _other.GetComponent<PawnController>().BumpMe(10,1,1, internal_flattedDownImpactVector.normalized, internal_enemyShield.BumpOtherDistanceMod, internal_enemyShield.BumpOtherDurationMod, internal_enemyShield.BumpOtherRestDurationMod);
+                    _other.GetComponent<PawnController>().BumpMe(10,1,1, i_flattedDownImpactVector.normalized, i_enemyShield.BumpOtherDistanceMod, i_enemyShield.BumpOtherDurationMod, i_enemyShield.BumpOtherRestDurationMod);
             }
         }
     }

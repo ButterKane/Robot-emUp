@@ -237,6 +237,18 @@ public class PlayerUIEditor : Editor
 			}
 			GUILayout.EndHorizontal();
 
+			GUILayout.BeginHorizontal();
+			{
+				SerializedProperty m_healthBarPrefab = serializedObject.FindProperty("healthBarPrefab");
+				GUILayout.Label("Health bar prefab", GUILayout.Width(200));
+				EditorGUILayout.PropertyField(m_healthBarPrefab, GUIContent.none, GUILayout.Width(175));
+
+				SerializedProperty m_healthBarHeight = serializedObject.FindProperty("healthBarHeight");
+				GUILayout.Label("Health bar height", GUILayout.Width(200));
+				EditorGUILayout.PropertyField(m_healthBarHeight, GUIContent.none, GUILayout.Width(175));
+			}
+			GUILayout.EndHorizontal();
+
 			GUILayout.Space(10);
 			GUILayout.EndVertical();
 		}

@@ -427,40 +427,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a120f4e62c7884a43822b8d03f446de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 3668126503491773334}
-  rb: {fileID: 8174936212591820110}
-  animator: {fileID: 1833733463821956502}
-  navMeshAgent: {fileID: 0}
+  maxHealth: 30
+  totalHeight: 1.5
+  invincibilityTime: 1
+  canMove: 0
+  jumpForce: 0
+  accelerationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minWalkSpeed: 0.1
+  moveSpeed: 15
+  acceleration: 200
+  movingDrag: 0.4
+  idleDrag: 0.4
+  onGroundGravityMultiplyer: 0
+  deadzone: 0.2
+  turnSpeed: 0.25
+  canClimb: 1
+  timeBeforeClimb: 0.2
+  minDistanceToClimb: 1
+  climbDuration: 0.5
+  climbForwardPushForce: 450
+  climbUpwardPushForce: 450
+  isBumpable: 1
+  maxGettingUpDuration: 0.6
+  bumpDistanceCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpRaycastDistance: 1
+  whenToTriggerFallingAnim: 0
+  eventOnBeingHit: event.PlayerBeingHit
+  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
+  eventOnBeingGrounded: event.PlayerGrounded
+  eventOnDeath: event.Player1Death
+  eventOnHealing: event.PlayerHealing
   healthBarRef: {fileID: 3348403758328978162}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  maxHealth: 30
-  energyAmount: 0.08
+  energyGainedOnHit: 1
   damage: 10
   powerLevel: 1
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 1.5
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 2
   maxTimeBetweenCheck: 0.25
-  normalSpeed: 7
-  normalAcceleration: 30
   randomSpeedMod: 0
-  slowFromPass: 0
+  speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0
-  slowFromDunk: 0
+  speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  speedRecoverCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   distanceToAttack: 5
   maxAnticipationTime: 1
   rotationSpeedPreparingAttack: 0.2
@@ -477,27 +504,12 @@ MonoBehaviour:
   hitBoxOffset: {x: 0, y: 0, z: 0}
   maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
-  isBumpable: 1
-  maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  whenToTriggerFallingAnim: 0
-  bumpRaycastDistance: 1
-  damageAfterBump: 0
-  deathParticlePrefab: {fileID: 103296, guid: 64213efe87b202141b44b6a613b892e9, type: 3}
-  deathParticleScale: 2
-  hitParticlePrefab: {fileID: 102696, guid: 185035e4680c4b344b62bf5ace4674b8, type: 3}
-  hitParticleScale: 3
+  canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   coreDropChances: 0.15
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
-  target: {fileID: 0}
   turretState: 0
   arenaTurret: 0
   defaultForwardPredictionRatio: 0.85

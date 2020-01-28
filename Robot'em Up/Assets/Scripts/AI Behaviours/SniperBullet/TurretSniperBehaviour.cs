@@ -14,29 +14,19 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void LaunchProjectile()
     {
-        Vector3 internal_spawnPosition;
-        internal_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, internal_spawnPosition, Quaternion.LookRotation(transform.forward));
+        Vector3 i_spawnPosition;
+        i_spawnPosition = bulletSpawn.position;
+        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
-
-        FeedbackManager.SendFeedback("event.SniperTurretAttack", this);
-        SoundManager.PlaySound("SniperTurretAttack", transform.position);
     }
 
     public override void Die()
     {
-        GameObject internal_deathParticle = Instantiate(deathParticlePrefab, transform.position, Quaternion.identity);
-        internal_deathParticle.transform.localScale *= deathParticleScale;
-        Destroy(internal_deathParticle, 1.5f);
-
         if (Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();
         }
-
-        FeedbackManager.SendFeedback("event.SniperTurretDeath", this);
-        SoundManager.PlaySound("SniperTurretDeath", transform.position);
 
         Destroy(gameObject);
     }
@@ -102,15 +92,15 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void AttackingUpdateState()
     {
-        bool internal_aimAtPlayer;
+        bool i_aimAtPlayer;
         
         if(Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
         {
-            internal_aimAtPlayer = false;
+            i_aimAtPlayer = false;
         }
         else
         {
-            internal_aimAtPlayer = true;
+            i_aimAtPlayer = true;
         }
         //Adapt aimCube Scale and Position
         RaycastHit hit;
@@ -127,7 +117,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
                 //ADAPT FXs
-                if (internal_aimAtPlayer)
+                if (i_aimAtPlayer)
                 {
                     aimingAtPlayerFXTransform.position = focusedPlayer.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
@@ -164,7 +154,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Attack:
                 //ADAPT FXs----------------------------------
-                if (internal_aimAtPlayer)
+                if (i_aimAtPlayer)
                 {
                     aimingAtPlayerFXTransform.position = focusedPlayer.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
@@ -211,8 +201,8 @@ public class TurretSniperBehaviour : TurretBehaviour
         switch (aimingCubeState)
         {
             case AimingCubeState.Following:
-                float internal_randomFloat = Random.Range(0f, 1f);
-                if (internal_randomFloat>0.5f)
+                float i_randomFloat = Random.Range(0f, 1f);
+                if (i_randomFloat>0.5f)
                 {
                     aimingCubeTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.x, minMaxFollowingAimingCubeScale.x, aimingCubeTransform.localScale.z);
                 }
