@@ -93,11 +93,6 @@ public class WaveEditor : Editor
 				SerializedProperty m_spawnTransform = serializedObject.FindProperty("spawnList.Array.data[" + i + "].transform");
 				EditorGUILayout.PropertyField(m_spawnTransform, new GUIContent(""));
 				this.serializedObject.ApplyModifiedProperties();
-				if (waveEditor.spawnList[i].transform != null)
-				{
-					//waveEditor.spawnList[i].transform.name = "WaveSpawn[" + waveEditor.spawnList[i].customName + "]";
-					//waveEditor.spawnList[i].transform = EditorGUILayout.ObjectField(waveEditor.spawnList[i].transform, typeof(Transform), true) as Transform;
-				}
 				if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
 				{
 					SpawnInformation deletedObject = updatedList[i];

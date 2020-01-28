@@ -21,6 +21,9 @@ public class Spawner : MonoBehaviour
 	public Vector3 endPosition;
 	public SpriteRenderer endPositionVisualizer;
 	public LineRenderer spawnVisualizer;
+	float currentDelayBeforeBeingFree;
+	private EnemyBehaviour lastSpawnedEnemy;
+	private bool spawning;
 
 
 	[ExecuteAlways]
@@ -48,27 +51,105 @@ public class Spawner : MonoBehaviour
 			}
 		}
 	}
+
+	private void Update ()
+	{
+		if (currentDelayBeforeBeingFree > 0 && !spawning) { currentDelayBeforeBeingFree -= Time.deltaTime; }
+	}
+
+	public bool IsFree()
+	{
+		if (currentDelayBeforeBeingFree > 0) { return false; }
+		if (lastSpawnedEnemy == null) { return true; }
+		LayerMask mask = LayerMask.GetMask("Environment");
+		mask = ~mask;
+		foreach (Collider c in Physics.OverlapSphere(endPosition, 1f, mask))
+		{
+			EnemyBehaviour enemyFound = c.GetComponent<EnemyBehaviour>();
+			if (enemyFound == lastSpawnedEnemy)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 	public void SpawnEnemy(EnemyBehaviour _enemy)
 	{
+		spawning = true;
+		lastSpawnedEnemy = _enemy;
+		currentDelayBeforeBeingFree = delayBeforeBeingFree;
+		_enemy.ChangeState(EnemyState.Spawning);
+		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		StartCoroutine(SpawnEnemy_C(_enemy));
 	}
 
 	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy)
 	{
-		PawnController enemyPawn = (PawnController)_enemy;
+		_enemy.transform.position = startPosition.position;
+		yield return new WaitForEndOfFrame();
 		_enemy.ChangeState(EnemyState.Spawning);
-		_enemy.GetNavMesh().enabled = false;
-		//enemyPawn.Freeze();
+		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
+		GameObject explosionVisualizer = default;
+		if (type == SpawnerType.Air)
+		{
+			explosionVisualizer = new GameObject();
+			explosionVisualizer.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("ExplosionVisualiseur");
+			explosionVisualizer.transform.position = endPosition + Vector3.up * 0.01f;
+			explosionVisualizer.transform.rotation = Quaternion.LookRotation(Vector3.up);
+			explosionVisualizer.transform.localScale = Vector3.one * 0.2f * _enemy.spawnImpactRadius;
+			Vector3 explosionVisualizerMaxScale = Vector3.one * 0.2f * _enemy.spawnImpactRadius; 
+			for (float i = 0; i < zonePreviewDuration / 3f; i+= Time.deltaTime)
+			{
+				explosionVisualizer.transform.localScale = Vector3.Lerp(Vector3.zero, explosionVisualizerMaxScale, i / (zonePreviewDuration / 3f));
+				yield return null;
+			}
+			yield return new WaitForSeconds(2 * (zonePreviewDuration / 3f));
+
+		}
+		PawnController enemyPawn = (PawnController)_enemy;
+		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		for (float i = 0; i < spawnDuration; i += Time.deltaTime)
 		{
-			enemyPawn.transform.position = Vector3.Lerp(startPosition.position, endPosition, i / spawnDuration) + (Vector3.up * 3f);
+			_enemy.ChangeState(EnemyState.Spawning);
+			if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
+			switch (type)
+			{
+				case SpawnerType.Ground:
+					Vector3 i_horizontalPosition = Vector3.Lerp(startPosition.position, endPosition, horizontalLerpCurve.Evaluate(i / spawnDuration));
+					Vector3 i_verticalPosition = Vector3.Lerp(startPosition.position, endPosition, verticalLerpCurve.Evaluate(i / spawnDuration));
+					Vector3 i_finalPosition = i_horizontalPosition;
+					i_finalPosition.y = i_verticalPosition.y;
+					enemyPawn.transform.position = i_horizontalPosition;
+					break;
+				case SpawnerType.Air:
+					enemyPawn.transform.position = Vector3.Lerp(startPosition.position, endPosition, verticalLerpCurve.Evaluate(i / spawnDuration));
+					break;
+				case SpawnerType.Underground:
+					enemyPawn.transform.position = Vector3.Lerp(startPosition.position, endPosition, verticalLerpCurve.Evaluate(i / spawnDuration));
+					break;
+			}
 			yield return null;
 		}
+		enemyPawn.transform.position = endPosition;
+		if (type == SpawnerType.Air)
+		{
+			Destroy(explosionVisualizer);
+			foreach (Collider col in Physics.OverlapSphere(explosionVisualizer.transform.position, _enemy.spawnImpactRadius))
+			{
+				IHitable hitableTarget = col.GetComponent<IHitable>();
+				if (hitableTarget != null)
+				{
+					hitableTarget.OnHit(default, explosionVisualizer.transform.position - col.transform.position, _enemy, _enemy.spawnImpactDamages, DamageSource.SpawnImpact);
+				}
+			}
+			FeedbackManager.SendFeedback("event.EnemyGroundImpact", _enemy);
+			
+		}
+		spawning = false;
 		_enemy.ChangeState(EnemyState.Spawning);
-		_enemy.GetNavMesh().enabled = false;
+		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		yield return new WaitForSeconds(delayBeforeActivation);
-		//enemyPawn.UnFreeze();
-		_enemy.GetNavMesh().enabled = true;
+		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = true; }
 		_enemy.ChangeState(EnemyState.Idle);
 	}
 
@@ -91,6 +172,7 @@ public class Spawner : MonoBehaviour
 		{
 			spawnVisualizer = transform.gameObject.AddComponent<LineRenderer>();
 			spawnVisualizer.material = Resources.Load<Material>("ArenaResource/Spawners/spawnVisualizerMaterial");
+			spawnVisualizer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 		}
 
 		if (startPosition == null)

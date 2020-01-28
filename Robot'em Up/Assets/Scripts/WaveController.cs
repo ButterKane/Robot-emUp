@@ -54,7 +54,6 @@ public class WaveController : MonoBehaviour
 				if (nextEnemyToSpawn.enemyType.prefab.GetComponent<EnemyBehaviour>().powerLevel + currentPowerLevel <= currentMaxPowerLevel)
 				{
 					InstantiateEnemy(nextEnemyToSpawn);
-					nextEnemyToSpawn = null;
 				}
 			}
 		} else
@@ -152,18 +151,22 @@ public class WaveController : MonoBehaviour
 	public void InstantiateEnemy ( WaveEnemy _enemy )
 	{
 		if (_enemy.spawnIndexes.Count <= 0) { Debug.LogWarning("Can't spawn enemy: no spawn assigned"); return; }
+		int i_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
+		i_chosenSpawnerIndex = _enemy.spawnIndexes[i_chosenSpawnerIndex];
+		GameObject spawner = spawnList[i_chosenSpawnerIndex].transform.gameObject;
+
+		Spawner foundSpawnerComponent = spawner.GetComponent<Spawner>();
+		if (foundSpawnerComponent != null && !foundSpawnerComponent.IsFree()) { return; }
+
 		GameObject i_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
 		EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
 		if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
 		i_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
+		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
 
-		int i_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
-		i_chosenSpawnerIndex = _enemy.spawnIndexes[i_chosenSpawnerIndex];
-		i_enemyBehaviour.GetNavMesh().enabled = false;
-		GameObject spawner = spawnList[i_chosenSpawnerIndex].transform.gameObject;
-		Spawner foundSpawnerComponent = spawner.GetComponent<Spawner>();
 		if (foundSpawnerComponent != null)
 		{
+			if (!foundSpawnerComponent.IsFree()) { return; }
 			foundSpawnerComponent.SpawnEnemy(i_enemyBehaviour);
 		}
 		else
@@ -173,6 +176,7 @@ public class WaveController : MonoBehaviour
 		}
 		currentEnemies.Add(i_enemyBehaviour);
 		UpdateCurrentPowerLevel();
+		nextEnemyToSpawn = null;
 	}
 
 	public float UpdateCurrentPowerLevel()

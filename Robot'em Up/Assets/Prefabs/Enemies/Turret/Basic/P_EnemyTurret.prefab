@@ -389,6 +389,7 @@ MonoBehaviour:
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 3348403758328978162}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -425,6 +426,8 @@ MonoBehaviour:
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
+  spawnImpactRadius: 1
+  spawnImpactDamages: 1
   coreDropChances: 0.15
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
@@ -435,10 +438,10 @@ MonoBehaviour:
   maxRotationSpeed: 5
   maxRestTime: 2
   randomRangeRestTime: 0.5
-  aimingCubeTransform: {fileID: 8116397337583495147}
-  aimingCubeRenderer: {fileID: 2802001169725089407}
-  aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
-  aimingCubeLockedScale: {x: 0.05, y: 0.05, z: 1}
+  aimingRedDotTransform: {fileID: 8116397337583495147}
+  aimingRedDotRenderer: {fileID: 2802001169725089407}
+  aimingRedDotDefaultScale: {x: 0, y: 0, z: 0}
+  aimingRedDotLockedScale: {x: 0, y: 0, z: 0}
   lockingAimingColor: {r: 0.9882878, g: 1, b: 0, a: 1}
   lockingAimingColorIntensity: 8
   followingAimingColor: {r: 1, g: 0.037245974, b: 0, a: 1}
