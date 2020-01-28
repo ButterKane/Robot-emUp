@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BossArmAttack : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class BossArmAttack : MonoBehaviour
     {
         meleeCollider = GetComponent<Collider>();
         plane = transform.GetChild(0).gameObject;
+        attackDamage = GetComponentInParent<EnemyBoss>().PunchAttack_DamageInflicted;
     }
 
     // Update is called once per frame
@@ -43,6 +45,10 @@ public class BossArmAttack : MonoBehaviour
             if (i_potentialHitableObject != null && i_hitColliders[i].gameObject.tag == "Player")
             {
                 i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
+            }
+            if (i_hitColliders[i].GetComponent<NavMeshObstacle>())
+            {
+                Destroy(i_hitColliders[i].gameObject);
             }
             i++;
         }

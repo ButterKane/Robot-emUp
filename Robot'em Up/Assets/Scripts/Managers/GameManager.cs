@@ -15,7 +15,9 @@ public enum DamageSource
 	ReviveExplosion,
 	RedBarrelExplosion,
 	PerfectReceptionExplosion,
-    EnemyContact
+    EnemyContact,
+    Laser,
+	SpawnImpact
 }
 
 public enum DamageModifierSource
@@ -104,6 +106,8 @@ public class GameManager : MonoBehaviour
         if (surrounderPlayerTwo != null) { Destroy(surrounderPlayerTwo); }
         surrounderPlayerTwo = Instantiate(SurrounderPrefab, playerTwo.transform.position, Quaternion.identity);
         surrounderPlayerTwo.GetComponent<Surrounder>().playerTransform = playerTwo.transform;
+
+		CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
 
         //if (playerOne && playerTwo) { AssignPlayers(); }
     }

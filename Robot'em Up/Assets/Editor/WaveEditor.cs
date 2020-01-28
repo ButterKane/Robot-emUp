@@ -59,6 +59,15 @@ public class WaveEditor : Editor
 			{
 				UpdateDoorCounter();
 			}
+
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			if (GUILayout.Button("Update door counter", GUILayout.Width(200), GUILayout.Height(30)))
+			{
+				UpdateDoorCounter();
+			}
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
 			GUILayout.Space(10);
 			GUILayout.EndVertical();
 			GUILayout.Space(20);
@@ -81,12 +90,9 @@ public class WaveEditor : Editor
 				SerializedProperty m_spawnName = serializedObject.FindProperty("spawnList.Array.data[" + i + "].customName");
 				this.serializedObject.Update();
 				EditorGUILayout.PropertyField(m_spawnName, new GUIContent(""));
+				SerializedProperty m_spawnTransform = serializedObject.FindProperty("spawnList.Array.data[" + i + "].transform");
+				EditorGUILayout.PropertyField(m_spawnTransform, new GUIContent(""));
 				this.serializedObject.ApplyModifiedProperties();
-				if (waveEditor.spawnList[i].transform != null)
-				{
-					waveEditor.spawnList[i].transform.name = "WaveSpawn[" + waveEditor.spawnList[i].customName + "]";
-					waveEditor.spawnList[i].transform = EditorGUILayout.ObjectField(waveEditor.spawnList[i].transform, typeof(Transform), true) as Transform;
-				}
 				if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
 				{
 					SpawnInformation deletedObject = updatedList[i];

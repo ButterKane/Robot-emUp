@@ -32,6 +32,14 @@ public class LinkBehaviourToAnimator : MonoBehaviour
     {
         BossScriptRef.DestroyAttackHitBox();
     }
+    public void Boss_LaunchMissile()
+    {
+        BossScriptRef.LaunchMissiles();
+    }
+    public void Boss_InvokeShield()
+    {
+        BossScriptRef.InvokeShield();
+    }
 
 
 

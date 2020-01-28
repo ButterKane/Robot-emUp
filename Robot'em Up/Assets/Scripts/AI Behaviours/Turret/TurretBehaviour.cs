@@ -23,7 +23,7 @@ public enum TurretAttackState
     Rest,
 }
 
-public enum AimingCubeState
+public enum AimingRedDotState
 {
     NotVisible,
     Following,
@@ -36,7 +36,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     [Separator("Turret Variables")]
     public TurretState turretState;
     [NonSerialized] public TurretAttackState attackState;
-    [NonSerialized] public AimingCubeState aimingCubeState;
+    [NonSerialized] public AimingRedDotState aimingRedDotState;
 
     //[Space(2)]
     //[Header("Global")]
@@ -58,10 +58,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 	[Space(2)]
     [Header("Aiming Cube")]
     //CUBE
-    public Transform aimingCubeTransform;
-    public Renderer aimingCubeRenderer;
-    public Vector3 aimingCubeDefaultScale;
-    public Vector3 aimingCubeLockedScale;
+    public Transform aimingRedDotTransform;
+    public Renderer aimingRedDotRenderer;
+    public Vector3 aimingRedDotDefaultScale;
+    public Vector3 aimingRedDotLockedScale;
     public Color lockingAimingColor;
     public float lockingAimingColorIntensity;
     public Color followingAimingColor;
@@ -75,6 +75,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     [Header("Bullet")]
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
+    public bool canBulletTouchEnemies = false;
+    [Range(0,1)] public float bulletDamageRatioToEnemies = 0.5f;
 
     new void Start()
     {
@@ -90,7 +92,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
     }
 
-    public virtual void Update()
+    new protected virtual void Update()
     {
         UpdateDistancesToPlayers();
         UpdateState();
@@ -133,6 +135,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - transform.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
 		transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
+    }
+
+    protected virtual void RotateTowardsPlayerPosition()
+    {
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+        wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
     public virtual void UpdateState()
@@ -249,9 +258,9 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                     animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
                 }
-                if(aimingCubeState != AimingCubeState.NotVisible)
+                if(aimingRedDotState != AimingRedDotState.NotVisible)
                 {
-                    ChangeAimingCubeState(AimingCubeState.NotVisible);
+                    ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
                 break;
         }
@@ -260,8 +269,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
-            aimingCubeTransform.position = transform.position + transform.up * .5f + (aimingCubeTransform.localScale.z / 2 * transform.forward);
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
+            aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
         }
     }
 
@@ -270,11 +279,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
-    public virtual void LaunchProjectile()
+    public virtual void Shoot()
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet.GetComponent<TurretBasicBullet>().canHitEnemies = canBulletTouchEnemies;
+        spawnedBullet.GetComponent<TurretBasicBullet>().damageModificator = bulletDamageRatioToEnemies;
     }
 
     void ChangingFocus(Transform _newFocus)
@@ -374,25 +385,25 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
     }
 
-    public virtual void ChangeAimingCubeState(AimingCubeState _newState)
+    public virtual void ChangeAimingRedDotState(AimingRedDotState _newState)
     {
-        if (_newState == AimingCubeState.Following)
+        if (_newState == AimingRedDotState.Following)
         {
-            aimingCubeRenderer.material.color = followingAimingColor;
-            aimingCubeRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
-            aimingCubeTransform.localScale = aimingCubeDefaultScale;
+            aimingRedDotRenderer.material.color = followingAimingColor;
+            aimingRedDotRenderer.material.SetColor("_EmissionColor", followingAimingColor * followingAimingColorIntensity);
+            aimingRedDotTransform.localScale = aimingRedDotDefaultScale;
             forwardPredictionRatio = defaultForwardPredictionRatio + UnityEngine.Random.Range(minMaxRandomRangePredictionRatio.x, minMaxRandomRangePredictionRatio.y);
         }
-        else if(_newState == AimingCubeState.Locking)
+        else if(_newState == AimingRedDotState.Locking)
         {
-            aimingCubeRenderer.material.color = lockingAimingColor;
-            aimingCubeRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
-            aimingCubeTransform.localScale = aimingCubeLockedScale;
+            aimingRedDotRenderer.material.color = lockingAimingColor;
+            aimingRedDotRenderer.material.SetColor("_EmissionColor", lockingAimingColor * lockingAimingColorIntensity);
+            aimingRedDotTransform.localScale = aimingRedDotLockedScale;
         }
-        else if(_newState == AimingCubeState.NotVisible)
+        else if(_newState == AimingRedDotState.NotVisible)
         {
-            aimingCubeTransform.localScale = Vector3.zero;
+            aimingRedDotTransform.localScale = Vector3.zero;
         }
-        aimingCubeState = _newState;
+        aimingRedDotState = _newState;
     }
 }

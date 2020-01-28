@@ -34,10 +34,7 @@ public class ZoneEditor
 		GameObject i_cameraPivot = new GameObject();
 		i_cameraPivot.name = "Camera pivot";
 		i_cameraPivot.transform.SetParent(i_newZone.transform);
-		CameraBehaviour cam = i_cameraPivot.AddComponent<CameraBehaviour>();
-		cam.InitCamera(CameraType.Combat, camZone);
 		i_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
-		camZone.linkedCameraBehaviour = cam;
 
 		//Generate the virtual camera
 		GameObject i_virtualCamera = new GameObject();
@@ -47,6 +44,11 @@ public class ZoneEditor
 		virtualCameraScript.m_Lens.FieldOfView = 60;
 		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
 		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
+
+		CameraBehaviour cam = i_virtualCamera.AddComponent<CameraBehaviour>();
+		cam.pivot = i_cameraPivot.transform;
+		cam.InitCamera(CameraType.Combat, camZone);
+		camZone.linkedCameraBehaviour = cam;
 
 		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
 		Selection.activeGameObject = i_zoneSelector;
@@ -80,10 +82,7 @@ public class ZoneEditor
 		GameObject i_cameraPivot = new GameObject();
 		i_cameraPivot.name = "Camera pivot";
 		i_cameraPivot.transform.SetParent(i_newZone.transform);
-		CameraBehaviour cam = i_cameraPivot.AddComponent<CameraBehaviour>();
-		cam.InitCamera(CameraType.Circle, camZone);
 		i_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
-		camZone.linkedCameraBehaviour = cam;
 
 		//Generate the virtual camera
 		GameObject i_virtualCamera = new GameObject();
@@ -93,6 +92,10 @@ public class ZoneEditor
 		virtualCameraScript.m_Lens.FieldOfView = 60;
 		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
 		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
+		CameraBehaviour cam = i_virtualCamera.AddComponent<CameraBehaviour>();
+		cam.pivot = i_cameraPivot.transform;
+		cam.InitCamera(CameraType.Circle, camZone);
+		camZone.linkedCameraBehaviour = cam;
 
 		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
 		Selection.activeGameObject = i_zoneSelector;
@@ -110,34 +113,51 @@ public class ZoneEditor
 		//Generates main zone object
 		GameObject i_newZone = new GameObject();
 		i_newZone.name = "Adventure Zone";
-		i_newZone.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
-
-
-		//Generates zone selector object
-		GameObject i_zoneSelector = new GameObject();
-		i_zoneSelector.name = "Camera path";
-		i_zoneSelector.transform.SetParent(i_newZone.transform);
-		i_zoneSelector.AddComponent<PathCreator>();
-
-		//Generate the camera pivot
-		GameObject i_cameraPivot = new GameObject();
-		i_cameraPivot.name = "Camera pivot";
-		i_cameraPivot.transform.SetParent(i_zoneSelector.transform);
-		CameraBehaviour cam = i_cameraPivot.AddComponent<CameraBehaviour>();
-		cam.InitCamera(CameraType.Adventure, null);
-		i_cameraPivot.AddComponent<ToolRestrictor>().restrictedTools = i_restrictedTools;
 
 		//Generate the virtual camera
 		GameObject i_virtualCamera = new GameObject();
 		i_virtualCamera.name = "Virtual camera";
-		i_virtualCamera.transform.SetParent(i_cameraPivot.transform);
+		i_virtualCamera.transform.SetParent(i_newZone.transform);
 		CinemachineVirtualCamera virtualCameraScript = i_virtualCamera.AddComponent<CinemachineVirtualCamera>();
 		virtualCameraScript.m_Lens.FieldOfView = 60;
 		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
 		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
+		CameraBehaviour cam = i_virtualCamera.AddComponent<CameraBehaviour>();
+		cam.InitCamera(CameraType.Adventure, null);
+		ApplyDefaultSettings(virtualCameraScript);
+
+		//Generate the enter transition object
+		GameObject i_enterTransition = new GameObject();
+		GameObject i_comeBackTransition = new GameObject();
+		i_enterTransition.name = "EnterTransition";
+		i_comeBackTransition.name = "ComebackTransition";
+		i_enterTransition.transform.SetParent(i_newZone.transform);
+		i_comeBackTransition.transform.SetParent(i_newZone.transform);
+		i_enterTransition.transform.localPosition = new Vector3(0, 0, -15f);
+		i_comeBackTransition.transform.localPosition = new Vector3(0, 0, 15f);
+		i_enterTransition.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+		i_comeBackTransition.transform.localRotation = Quaternion.Euler(new Vector3(90, 0, 0));
+		i_enterTransition.transform.localScale = new Vector3(12f, 3f, 1f);
+		i_comeBackTransition.transform.localScale = new Vector3(12f, 3f, 1f);
+		SpriteRenderer sp1 = i_enterTransition.AddComponent<SpriteRenderer>();
+		sp1.sprite = Resources.Load<Sprite>("CameraEditor/AdventureCameraSeparator");
+		SpriteRenderer sp2 = i_comeBackTransition.AddComponent<SpriteRenderer>();
+		sp2.sprite = Resources.Load<Sprite>("CameraEditor/AdventureCameraSeparator");
+		sp2.color = new Color(1, 0.5f, 0);
+		sp1.color = new Color(0, 1f, 1f);
+		i_enterTransition.AddComponent<CameraTransition>().linkedCamera = cam;
+		i_comeBackTransition.AddComponent<CameraTransition>().linkedCamera = cam;
+		BoxCollider col1 = i_enterTransition.AddComponent<BoxCollider>();
+		BoxCollider col2 = i_comeBackTransition.AddComponent<BoxCollider>();
+		col1.isTrigger = true;
+		col2.isTrigger = true;
+		col1.size = new Vector3(5, 0.3f, 50);
+		col1.center = new Vector3(0, 0, -25);
+		col2.size = new Vector3(5, 0.3f, 50);
+		col2.center = new Vector3(0, 0, -25);
 
 		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
-		Selection.activeGameObject = i_zoneSelector;
+		Selection.activeGameObject = i_newZone;
 	}
 
 	[CustomEditor(typeof(CameraZone)), CanEditMultipleObjects]
@@ -210,5 +230,21 @@ public class ZoneEditor
 	public static Vector3 RotatePointAroundPivot ( Vector3 _point, Vector3 _pivot, Vector3 _angle)
 	{
 		return Quaternion.Euler(_angle) * (_point - _pivot) + _pivot;
+	}
+
+	public static void ApplyDefaultSettings(CinemachineVirtualCamera _camera )
+	{
+		CameraDefaultDatas defaultDatas = Resources.Load<CameraDefaultDatas>("CameraAdventureDefaultDatas");
+		_camera.m_Lens.FieldOfView = defaultDatas.fov;
+		_camera.AddCinemachineComponent<CinemachineFramingTransposer>();
+		CinemachineFramingTransposer transposer = _camera.GetCinemachineComponent<CinemachineFramingTransposer>();
+		transposer.m_DeadZoneWidth = defaultDatas.deadZoneWidth;
+		transposer.m_DeadZoneHeight = defaultDatas.deadZoneHeight;
+		transposer.m_DeadZoneDepth = defaultDatas.deadZoneDepth;
+		transposer.m_SoftZoneWidth = defaultDatas.softZoneWidth;
+		transposer.m_SoftZoneHeight = defaultDatas.softZoneHeight;
+		transposer.m_CameraDistance = defaultDatas.distance;
+		transposer.m_MinimumDistance = defaultDatas.minDistance;
+		transposer.m_MaximumDistance = defaultDatas.maxDistance;
 	}
 }

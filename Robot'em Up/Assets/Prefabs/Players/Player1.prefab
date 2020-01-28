@@ -132,8 +132,11 @@ MonoBehaviour:
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
+  moveInput: {x: 0, y: 0, z: 0}
   playerIndex: 0
   triggerTreshold: 0.1
+  highlightedColor: {r: 1, g: 0.99777603, b: 0, a: 1}
+  highlightedSecondColor: {r: 1, g: 0.60341835, b: 0, a: 1}
   lockable: 0
   lockHitboxSize: 0
   enableDash: 1
@@ -201,6 +204,7 @@ MonoBehaviour:
   dunkJumpLength: 0.4
   dunkJumpDuration: 0.17
   dunkJumpFreezeDuration: 1
+  energyPercentLostOnFail: 0.2
   dunkDashSpeed: 40
   dunkExplosionRadius: 10
   dunkDamages: 15

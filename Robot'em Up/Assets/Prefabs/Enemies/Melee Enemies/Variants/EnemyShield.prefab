@@ -70,6 +70,7 @@ MonoBehaviour:
   eventOnBeingGrounded: event.EnemyShieldGrounded
   eventOnDeath: event.EnemyShieldDeath
   eventOnHealing: 
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 4697345455816352529}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -89,30 +90,36 @@ MonoBehaviour:
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
+  timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  distanceToAttack: 7
   maxAnticipationTime: 1.5
+  maxTimePauseAfterAttack: 1
+  hitBoxOffset: {x: 0.5, y: 1, z: 0}
+  distanceToAttack: 7
   rotationSpeedPreparingAttack: 0.2
   whenToTriggerEndOfAttackAnim: 0.9
   attackHitBoxPrefab: {fileID: 0}
   attackHitBoxCenterPoint: {fileID: 0}
-  hitBoxOffset: {x: 0.5, y: 1, z: 0}
-  maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  portionOfAnticipationWithRotation: 0.3
+  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
+  spawnImpactRadius: 3
+  spawnImpactDamages: 3
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 15, y: 15}
   shield: {fileID: 907304710442746487}
-  deactivateShieldWhenAttacking: 0
+  deactivateShieldWhenAttacking: 1
+  angleToBounceBackToPlayer: 20
   angleRangeForRebound: 45
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
+  timeShieldDisappearAfterHit: 0
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
@@ -249,6 +256,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: enemyType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -309,11 +320,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Radius
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Radius
@@ -324,11 +330,11 @@ PrefabInstance:
       propertyPath: m_Speed
       value: 5.5
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -349,17 +355,22 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1.842
       objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

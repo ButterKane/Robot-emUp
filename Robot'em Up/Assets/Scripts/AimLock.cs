@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AimLock : MonoBehaviour
 {
@@ -8,13 +9,14 @@ public class AimLock : MonoBehaviour
 	private Animator animator;
 	private SphereCollider extendedCollider;
 
-	public void Init(Transform _linkedTarget, float _radius)
+	public void Init(Transform _linkedTarget, float _radius, Color _color, Color _iconColor)
 	{
 		linkedTarget = _linkedTarget;
 		animator = GetComponent<Animator>();
 		extendedCollider = _linkedTarget.gameObject.AddComponent<SphereCollider>();
 		extendedCollider.isTrigger = true;
 		extendedCollider.radius = _radius;
+		SetColor(_color, _iconColor) ;
 	}
 
 	private void Update ()
@@ -35,6 +37,21 @@ public class AimLock : MonoBehaviour
 		if (animator != null)
 		{
 			animator.SetTrigger("Unlock");
+		}
+	}
+
+	public void SetColor(Color _newColor, Color _iconColor)
+	{
+		foreach (Image image in GetComponentsInChildren<Image>())
+		{
+			if (image.gameObject.name == "Icon")
+			{
+				image.color = _iconColor;
+			}
+			else
+			{
+				image.color = _newColor;
+			}
 		}
 	}
 }
