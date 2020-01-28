@@ -68,34 +68,41 @@ public class LaserSniper : MonoBehaviour
 
     public void RaycastToHitWithLaser()
     {
-        bool i_touchedSomething = false;
+        // First raycast pass to determine the laser length
+        float closestDistance = enemyScript.laserMaxLength;
         RaycastHit[] i_hitObjects = Physics.RaycastAll(transform.position, transform.TransformDirection(Vector3.forward), enemyScript.laserMaxLength);
         if (i_hitObjects.Length > 0)
         {
             foreach (var touched in i_hitObjects)
             {
-                Debug.DrawRay(touched.transform.position, Vector3.up * 4, Color.green);
-                IHitable i_potentialHitableObject = touched.transform.GetComponent<IHitable>();
-                if (i_potentialHitableObject != null)
+                if ((touched.collider.tag == "Player" || touched.collider.tag == "Environment") && touched.distance < closestDistance)
                 {
-                    i_potentialHitableObject.OnHit(null, (touched.transform.position - transform.position).normalized, null, enemyScript.damagePerSecond / 60, DamageSource.Laser, Vector3.zero);
-                    
-                }
-
-                if ((touched.collider.tag == "Player" || touched.collider.tag == "Environment") && i_touchedSomething == false)
-                {
-                    GameObject i_impactFX = Instantiate(impactFX, touched.point, Quaternion.identity);
-                    i_impactFX.transform.localScale = impactFXScale;
-                    laserLength = touched.distance;
-                    i_touchedSomething = true;
+                    closestDistance = touched.distance;
                 }
             }
         }
-        else // if nothing has been hit (no wall, no player, nada)
-        {
-            laserLength = enemyScript.laserMaxLength;
-        }
 
+        laserLength = closestDistance;
+
+        // Second raycast pass to determine what the laser hit and damage it
+        RaycastHit[] i_hitObjectsWithRightLength = Physics.RaycastAll(transform.position, transform.TransformDirection(Vector3.forward), closestDistance);
+        {
+            if (i_hitObjectsWithRightLength.Length > 0)
+            {
+                foreach (var touched in i_hitObjectsWithRightLength)
+                {
+                    Debug.DrawRay(touched.transform.position, Vector3.up * 4, Color.green);
+                    IHitable i_potentialHitableObject = touched.collider.GetComponent<IHitable>();
+                    if (i_potentialHitableObject != null)
+                    {
+                        i_potentialHitableObject.OnHit(null, (touched.transform.position - touched.point).normalized, null, enemyScript.damagePerSecond / 60, DamageSource.Laser, Vector3.zero);
+
+                        GameObject i_impactFX = Instantiate(impactFX, touched.point, Quaternion.identity);
+                        i_impactFX.transform.localScale = impactFXScale;
+                    }
+                }
+            }
+        }
     }
 
     //public void UpdateLaserPosition()

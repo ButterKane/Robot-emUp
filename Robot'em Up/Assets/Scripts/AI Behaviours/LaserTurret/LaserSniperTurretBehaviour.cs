@@ -49,7 +49,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         {
             Vector3 i_spawnPosition;
             i_spawnPosition = bulletSpawn.position;
-            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward), transform);
             i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
             i_instance.target = focusedPlayer;
