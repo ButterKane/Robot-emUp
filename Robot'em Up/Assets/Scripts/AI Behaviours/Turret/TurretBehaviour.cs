@@ -137,6 +137,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 		transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
+    protected virtual void RotateTowardsPlayerPosition()
+    {
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
+        wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
+    }
+
     public virtual void UpdateState()
     {
         //print("Global State : " + State);

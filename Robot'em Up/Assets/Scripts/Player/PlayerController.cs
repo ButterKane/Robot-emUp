@@ -428,6 +428,7 @@ public class PlayerController : PawnController, IHitable
             case DamageSource.EnemyContact:
                 Damage(_damages);
                 break;
+
             case DamageSource.Laser:
                 Damage(_damages);
                 break;
