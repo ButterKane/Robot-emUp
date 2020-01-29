@@ -107,15 +107,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845049387934562887}
-  m_LocalRotation: {x: -0.3482105, y: -0, z: -0, w: 0.9374164}
-  m_LocalPosition: {x: 0, y: -0.04, z: -0.1}
+  m_LocalRotation: {x: -0.24121, y: -0.6760779, z: -0.25113434, w: 0.6493597}
+  m_LocalPosition: {x: 0, y: -0.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.46139}
   m_Children:
   - {fileID: 3339283935309371001}
   - {fileID: 2950884111546952476}
   m_Father: {fileID: 5738937565884906333}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -40.756, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -40.756, y: -92.310005, z: 0}
 --- !u!33 &8487450834907683470
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -194,84 +194,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myScript: {fileID: 0}
---- !u!1 &1336399905363825145
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7381191969145207244}
-  - component: {fileID: 7860040589444730533}
-  - component: {fileID: 3471936295985215576}
-  m_Layer: 0
-  m_Name: AimingCube
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7381191969145207244
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1336399905363825145}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0}
-  m_Children: []
-  m_Father: {fileID: 2606373637356797361}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &7860040589444730533
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1336399905363825145}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3471936295985215576
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1336399905363825145}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 23cc87b2a10449b48913abbbbe291da3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!1 &2798787559611071523
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +267,6 @@ GameObject:
   - component: {fileID: 7475777131856372585}
   - component: {fileID: 7479744203220967085}
   - component: {fileID: 4233777253254011454}
-  - component: {fileID: 4233777252262345080}
   m_Layer: 10
   m_Name: P_LaserTurret
   m_TagString: Enemy
@@ -360,7 +281,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4808274588740219700}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -47.4, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -452,6 +373,7 @@ MonoBehaviour:
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 3164548329669528513}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -464,7 +386,7 @@ MonoBehaviour:
   lockable: 1
   lockHitboxSize: 0
   arenaRobot: 0
-  focusDistance: 3
+  focusDistance: 50
   unfocusDistance: 20
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
@@ -474,200 +396,89 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
+  maxAnticipationTime: 3
+  maxTimePauseAfterAttack: 1
+  hitBoxOffset: {x: 0, y: 0, z: 0}
   distanceToAttack: 5
-  maxAnticipationTime: 0.5
   rotationSpeedPreparingAttack: 0.2
   whenToTriggerEndOfAttackAnim: 0
   attackHitBoxPrefab: {fileID: 0}
   attackHitBoxCenterPoint: {fileID: 0}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  portionOfAnticipationWithRotation: 0.3
+  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
+  spawnImpactRadius: 1
+  spawnImpactDamages: 1
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
   turretState: 0
   arenaTurret: 0
-  defaultForwardPredictionRatio: 0
-  minMaxRandomRangePredictionRatio: {x: 0, y: 0}
-  maxRotationSpeed: 0
-  maxRestTime: 0
-  randomRangeRestTime: 0
-  aimingCubeTransform: {fileID: 7381191969145207244}
-  aimingCubeRenderer: {fileID: 3471936295985215576}
-  aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
-  aimingCubeLockedScale: {x: 0.17, y: 0.17, z: 1}
+  defaultForwardPredictionRatio: 0.85
+  minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
+  maxRotationSpeed: 5
+  maxRestTime: 4
+  randomRangeRestTime: 0.5
+  aimingRedDotTransform: {fileID: 7381191969145207244}
+  aimingRedDotRenderer: {fileID: 3471936295985215576}
+  aimingRedDotDefaultScale: {x: 0.05, y: 0.05, z: 0.05}
+  aimingRedDotLockedScale: {x: 0.1, y: 0.1, z: 0.1}
   lockingAimingColor: {r: 1, g: 0.91027665, b: 0, a: 1}
   lockingAimingColorIntensity: 8
-  followingAimingColor: {r: 1, g: 0, b: 0, a: 0}
+  followingAimingColor: {r: 1, g: 0, b: 0, a: 1}
   followingAimingColorIntensity: 5
   layersToCheckToScale:
     serializedVersion: 2
     m_Bits: 4096
-  bulletPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
+  bulletPrefab: {fileID: 98529408051223827, guid: 9f1e04e3f52292b469d5528f887eea43,
     type: 3}
   bulletSpawn: {fileID: 2950884111546952476}
   canBulletTouchEnemies: 0
   bulletDamageRatioToEnemies: 0.5
-  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.5}
+  minMaxFollowingAimingRedDotScale: {x: 0.1, y: 0.2}
   aimingAtPlayerFXTransform: {fileID: 6763244872527407770}
   aimingAtPlayerFXRenderer: {fileID: 6763244872527407768}
   aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
   endAimingFXScaleMultiplier: 0
-  startAimingFXCircleThickness: 0
-  laserPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
-    type: 3}
-  laserLength: 10
-  shootingLaserTime: 3
-  damagePerSecond: 50
-  reducingOfLaserWidth:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  rotationSpeedReductionRatio: 0
   repulseCircleRadius: 0
   repulseCircleStrength: 0
   finalRepulseCircleRadius: 0
   finalRepulseCircleStrength: 0
---- !u!114 &4233777252262345080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4808274588740219700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c436931fcd342d4ead74d6c5199f357, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 30
-  totalHeight: 1.5
-  invincibilityTime: 1
-  canMove: 0
-  jumpForce: 0
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minWalkSpeed: 0.1
-  moveSpeed: 15
-  acceleration: 200
-  movingDrag: 0.4
-  idleDrag: 0.4
-  onGroundGravityMultiplyer: 0
-  deadzone: 0.2
-  turnSpeed: 0.25
-  canClimb: 0
-  timeBeforeClimb: 0.2
-  minDistanceToClimb: 1
-  climbDuration: 0.5
-  climbForwardPushForce: 450
-  climbUpwardPushForce: 450
-  isBumpable: 0
-  maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  bumpRaycastDistance: 1
-  whenToTriggerFallingAnim: 0.302
-  eventOnBeingHit: event.PlayerBeingHit
-  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
-  eventOnBeingGrounded: event.PlayerGrounded
-  eventOnDeath: event.Player1Death
-  eventOnHealing: event.PlayerHealing
-  healthBarRef: {fileID: 3164548329669528513}
-  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
-    type: 3}
-  playerOneTransform: {fileID: 0}
-  playerTwoTransform: {fileID: 0}
-  enemyType: 4
-  energyGainedOnHit: 1
-  damage: 10
-  powerLevel: 1
-  lockable: 1
-  lockHitboxSize: 0
-  arenaRobot: 0
-  focusDistance: 3
-  unfocusDistance: 20
-  timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 3
-  maxTimeBetweenCheck: 0.25
-  randomSpeedMod: 0
-  speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
-  speedMultiplierFromDunkHit: 0
-  timeToRecoverSlowFromDunk: 0
-  distanceToAttack: 5
-  maxAnticipationTime: 0.5
-  rotationSpeedPreparingAttack: 0.2
-  whenToTriggerEndOfAttackAnim: 0
-  attackHitBoxPrefab: {fileID: 0}
-  attackHitBoxCenterPoint: {fileID: 0}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  maxTimePauseAfterAttack: 1
-  attackRaycastDistance: 2
-  canSurroundPlayer: 0
-  bezierCurveHeight: 0.5
-  bezierDistanceToHeightRatio: 100
-  coreDropChances: 1
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
-  turretState: 0
-  arenaTurret: 0
-  defaultForwardPredictionRatio: 0
-  minMaxRandomRangePredictionRatio: {x: 0, y: 0}
-  maxRotationSpeed: 0
-  maxRestTime: 0
-  randomRangeRestTime: 0
-  aimingCubeTransform: {fileID: 7381191969145207244}
-  aimingCubeRenderer: {fileID: 3471936295985215576}
-  aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
-  aimingCubeLockedScale: {x: 0.17, y: 0.17, z: 1}
-  lockingAimingColor: {r: 1, g: 0.91027665, b: 0, a: 1}
-  lockingAimingColorIntensity: 8
-  followingAimingColor: {r: 1, g: 0, b: 0, a: 0}
-  followingAimingColorIntensity: 5
-  layersToCheckToScale:
-    serializedVersion: 2
-    m_Bits: 4096
-  bulletPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
-    type: 3}
-  bulletSpawn: {fileID: 2950884111546952476}
-  canBulletTouchEnemies: 0
-  bulletDamageRatioToEnemies: 0.5
-  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.5}
-  aimingAtPlayerFXTransform: {fileID: 6763244872527407770}
-  aimingAtPlayerFXRenderer: {fileID: 6763244872527407768}
-  aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
-  aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
-  endAimingFXScaleMultiplier: 0
-  startAimingFXCircleThickness: 0
-  laserPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
-    type: 3}
-  laserLength: 10
-  shootingLaserTime: 3
-  damagePerSecond: 50
+  damagePerSecond: 60
+  laserMaxLength: 30
+  shootingLaserMaxTime: 10
+  whenToTriggerLaserReduction: 0.7
   reducingOfLaserWidth:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.99057007
+      inSlope: -0.98772013
+      outSlope: -0.98772013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9981079
+      value: 0.0047187805
+      inSlope: -0.98772013
+      outSlope: -0.98772013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repulseCircleRadius: 0
-  repulseCircleStrength: 0
-  finalRepulseCircleRadius: 0
-  finalRepulseCircleStrength: 0
+  redDotPrefab: {fileID: 3375806538578826111, guid: 2f19336969824d44d86c364a6cd7f8ac,
+    type: 3}
 --- !u!1 &5623966984315208129
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,6 +665,87 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1001 &4346710910731879046
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2606373637356797361}
+    m_Modifications:
+    - target: {fileID: 3375806538578826111, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_Name
+      value: MainAimingRedDot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2f19336969824d44d86c364a6cd7f8ac, type: 3}
+--- !u!4 &7381191969145207244 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
+    type: 3}
+  m_PrefabInstance: {fileID: 4346710910731879046}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3471936295985215576 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 899687628398852830, guid: 2f19336969824d44d86c364a6cd7f8ac,
+    type: 3}
+  m_PrefabInstance: {fileID: 4346710910731879046}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8744049214987765162
 PrefabInstance:
   m_ObjectHideFlags: 0

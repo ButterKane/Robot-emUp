@@ -25,8 +25,8 @@ public class PuzzleMoveableWall : PuzzleActivable
     void Awake()
     {
         startTime = Time.time;
-        journeyLength = Vector3.Distance(pos1, pos2);
-        RecalculatePositions();
+		RecalculatePositions();
+		journeyLength = Vector3.Distance(pos1, pos2);
 
     }
 

@@ -19,8 +19,7 @@ public class PuzzleDoor : PuzzleActivable
     {
         if (!open)
         {
-            FeedbackManager.SendFeedback("event.doorOpen", this);
-            SoundManager.PlaySound("DoorOpen", transform.position, transform);
+            FeedbackManager.SendFeedback("event.PuzzleDoorOpen", this, transform.position, Vector3.zero, Vector3.zero);
         }
 
         open = true;
@@ -31,9 +30,8 @@ public class PuzzleDoor : PuzzleActivable
         }
         if (destroyWhenOpened != null)
         {
-            //Debug.Log("Destroy a door");
             Destroy(destroyWhenOpened);
-            FXManager.InstantiateFX(puzzleData.linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
+            //FXManager.InstantiateFX(puzzleData.linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
         }
     }
 

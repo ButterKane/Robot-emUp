@@ -46,7 +46,7 @@ public class PuzzleRepeater : PuzzleActivator
         isActivated = false;
         UpdateLight();
 
-        SoundManager.PlaySound("RepeaterActivate", transform.position, transform);
+		FeedbackManager.SendFeedback("event.PuzzleRepeaterActivation", this);
     }
 
     public virtual void DeactivatedAction()
@@ -54,8 +54,8 @@ public class PuzzleRepeater : PuzzleActivator
         ActivateLinkedObjects();
         isActivated = true;
         UpdateLight();
-        SoundManager.PlaySound("RepeaterDesactivate", transform.position, transform);
-    }
+		FeedbackManager.SendFeedback("event.PuzzleRepeaterDesactivation", this);
+	}
 
 
 }
