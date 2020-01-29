@@ -645,6 +645,12 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 9ea9fe196fda238498fc6e467135d7a6, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9fc15aabcec4e5349935363d4a2ab8f4, type: 3}
+--- !u!23 &418172705 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7897330048882015340, guid: 60dff2fafe754694e8eb44c3b62bc836,
+    type: 3}
+  m_PrefabInstance: {fileID: 4233777251595655595}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &500299029
 GameObject:
   m_ObjectHideFlags: 0
@@ -2696,35 +2702,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-      propertyPath: shootingLaserMaxTime
+      propertyPath: redDotLoadersSpread
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-      propertyPath: whenToTriggerLaserReduction
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
-        type: 3}
-      propertyPath: laserMaxLength
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
-        type: 3}
-      propertyPath: laserPrefab
+      propertyPath: aimingRedDotRenderer
       value: 
-      objectReference: {fileID: 98529408051223827, guid: 9f1e04e3f52292b469d5528f887eea43,
+      objectReference: {fileID: 418172705}
+    - target: {fileID: 7381191969145207244, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-    - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154002914033431360, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-      propertyPath: bulletPrefab
-      value: 
-      objectReference: {fileID: 98529408051223827, guid: 9f1e04e3f52292b469d5528f887eea43,
-        type: 3}
-    - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
-        type: 3}
-      propertyPath: damagePerSecond
-      value: 60
+      propertyPath: m_Name
+      value: RedDotRenderer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60dff2fafe754694e8eb44c3b62bc836, type: 3}
