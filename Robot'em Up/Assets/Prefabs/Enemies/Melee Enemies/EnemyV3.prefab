@@ -379,6 +379,7 @@ MonoBehaviour:
   eventOnBeingGrounded: event.EnemyGrounded
   eventOnDeath: event.EnemyDeath
   eventOnHealing: 
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 1286583807845663263}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -401,19 +402,23 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
-  distanceToAttack: 5
   maxAnticipationTime: 1.5
+  maxTimePauseAfterAttack: 1
+  hitBoxOffset: {x: 0, y: 0.5, z: 1}
+  distanceToAttack: 5
   rotationSpeedPreparingAttack: 0.2
   whenToTriggerEndOfAttackAnim: 0.302
   attackHitBoxPrefab: {fileID: 3204598243110983843, guid: 34976ce2e8641614f9791ea7f5d31244,
     type: 3}
   attackHitBoxCenterPoint: {fileID: 1173559632710181653}
-  hitBoxOffset: {x: 0, y: 0.5, z: 1}
-  maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  portionOfAnticipationWithRotation: 0.3
+  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 1
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
+  spawnImpactRadius: 2
+  spawnImpactDamages: 2
   coreDropChances: 0.1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}

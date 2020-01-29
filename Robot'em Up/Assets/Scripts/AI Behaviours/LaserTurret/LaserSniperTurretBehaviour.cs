@@ -10,7 +10,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     public Vector3 aimingAtPlayerFXScaleOnWall;
     public Vector3 aimingAtPlayerFXScaleOnPlayer;
     public float endAimingFXScaleMultiplier;
-    public float startAimingFXCircleThickness;
 
     [Range(0, 1)] public float rotationSpeedReductionRatio;
     
@@ -19,7 +18,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     public float finalRepulseCircleRadius;
     public float finalRepulseCircleStrength;
 
-    public GameObject laserPrefab;
     public int damagePerSecond = 50;
     public float laserMaxLength = 10f;
     public float shootingLaserMaxTime = 3;
@@ -44,17 +42,19 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     public IEnumerator ShootingLaser_C()
     {
+        LaserSniper i_instance = null;
+        MeshRenderer i_laserRenderer = null;
         if (spawnedBullet == null)
         {
             Vector3 i_spawnPosition;
             i_spawnPosition = bulletSpawn.position;
-            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
-            LaserSniper i_instance = spawnedBullet.GetComponent<LaserSniper>();
+            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward), transform);
+            i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
             i_instance.target = focusedPlayer;
             i_instance.spawnParent = transform;
             shootingLaserTimeProgression = shootingLaserMaxTime;
-            timeToTriggerLaserReduction = shootingLaserMaxTime - ( whenToTriggerLaserReduction * shootingLaserMaxTime); // will trigger reducing width when there's 20% of the max time left
+            timeToTriggerLaserReduction = shootingLaserMaxTime - ( whenToTriggerLaserReduction * shootingLaserMaxTime); 
         }
 
         // IF nothing is touched
@@ -62,11 +62,16 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
         while (shootingLaserTimeProgression > 0)
         {
-            if (shootingLaserTimeProgression < whenToTriggerLaserReduction)
+            if (shootingLaserTimeProgression < timeToTriggerLaserReduction)
             {
-                float reducingLaserFactor = reducingOfLaserWidth.Evaluate((whenToTriggerLaserReduction- shootingLaserTimeProgression) / (whenToTriggerLaserReduction));
-
-                spawnedBullet.transform.localScale = new Vector3(spawnedBullet.transform.localScale.x * reducingLaserFactor, spawnedBullet.transform.localScale.y * reducingLaserFactor, spawnedBullet.transform.localScale.z);
+                float reducingLaserFactor = reducingOfLaserWidth.Evaluate((timeToTriggerLaserReduction - shootingLaserTimeProgression) / (timeToTriggerLaserReduction));
+                if (i_instance != null)
+                {
+                    i_instance.isLaserActive = false;
+                    i_laserRenderer = i_instance.laserRenderer;
+                }
+                i_laserRenderer.material.color = new Color(i_laserRenderer.material.color.r, i_laserRenderer.material.color.g, i_laserRenderer.material.color.b, i_laserRenderer.material.color.a * reducingLaserFactor);
+                i_instance.laserWidth = i_instance.laserWidth * reducingLaserFactor;
             }
             shootingLaserTimeProgression -= Time.deltaTime;
             yield return null;
@@ -105,7 +110,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
                 aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
                 break;
             case TurretState.Idle:
                 break;
@@ -185,13 +189,12 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //ROTATE TOWARDS PLAYER
                 if (focusedPlayer != null)
                 {
-                    RotateTowardsPlayerAndHisForward();
+                    RotateTowardsPlayerPosition();
                 }
 
                 //TRANSITION TO OTHER STATE
                 anticipationTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+                //aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
 
                 if (anticipationTime <= 0)
                 {
@@ -202,7 +205,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     // reset FX variables before attacking ! --------------------------------------------------------------------------
                     //aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 10);
                     //aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.yellow);
-                    //aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
                 }
                 break;
             //-------------------------------------------------------
@@ -224,7 +226,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //ROTATE TOWARDS PLAYER-------------------------------------
                 if (focusedPlayer != null)
                 {
-                    RotateTowardsPlayerAndHisForward();
+                    RotateTowardsPlayerPosition();
                 }
 
                 //TRANSITION TO OTHER STATE
@@ -254,14 +256,15 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
 
-                //if (focusedPlayer != null)
-                //{
-                //    RotateTowardsPlayerAndHisForward();
-                //}
+                if (focusedPlayer != null)
+                {
+                    RotateTowardsPlayerPosition();
+                }
                 break;
         }
     }
 
+    // Make RedDot flicker
     void UpdateAimingRedDotState()
     {
         switch (aimingRedDotState)

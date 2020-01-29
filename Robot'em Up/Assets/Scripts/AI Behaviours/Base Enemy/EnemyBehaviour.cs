@@ -17,6 +17,7 @@ public enum EnemyState
     Attacking,
     PauseAfterAttack,
     Dying,
+	Spawning,
 }
 public enum WhatBumps
 {
@@ -121,7 +122,12 @@ public class EnemyBehaviour : PawnController, IHitable
     public float bezierDistanceToHeightRatio = 100f;
     [System.NonSerialized] public Transform closestSurroundPoint;
 
-    [Space(3)]
+	[Space(3)]
+	[Header("Spawn")]
+	public float spawnImpactRadius = 1f;
+	public int spawnImpactDamages = 1;
+
+	[Space(3)]
     [Header("Death")]
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
@@ -236,11 +242,14 @@ public class EnemyBehaviour : PawnController, IHitable
                         // Calculating position on bezier curve, following start point, end point and avancement
                         // In this version, the avancement has been replaced by a constant because it's recalculated every frame
                         Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-                        navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position));
+						if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position)); }
                     }
                     else
                     {
-                        navMeshAgent.SetDestination(focusedPlayer.position);
+						if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
+						{
+							navMeshAgent.SetDestination(focusedPlayer.position);
+						}
                     }
 
                     if (distanceWithFocusedPlayer <= distanceToAttack)
@@ -310,6 +319,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
             case EnemyState.Dying:
                 break;
+			case EnemyState.Spawning:
+				break;
         }
     }
 
@@ -524,7 +535,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 else
                 {
                     Damage(_damages);
-                    //currentHealth -= _damages;
                 }
                 break;
 
@@ -532,7 +542,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 if (isBumpable)
                 {
                     damageAfterBump = _damages;
-                    EnergyManager.IncreaseEnergy(energyGainedOnHit);
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_bumpModificators != default(Vector3))
                     {
@@ -546,7 +555,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 else
                 {
                     Damage(_damages);
-                    //currentHealth -= _damages;
                 }
                 break;
 
@@ -559,7 +567,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 whatBumps = WhatBumps.Pass;
                 Staggered(whatBumps);
                 Damage(_damages);
-                //currentHealth -= _damages;
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
@@ -573,6 +580,27 @@ public class EnemyBehaviour : PawnController, IHitable
 				}
 				FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
 				break;
+			case DamageSource.SpawnImpact:
+				if (_thrower == this) { return; }
+				if (isBumpable)
+				{
+					damageAfterBump = _damages;
+					i_normalizedImpactVector = new Vector3(-_impactVector.x, 0, -_impactVector.z);
+					if (_bumpModificators != default(Vector3))
+					{
+						i_BumpDistanceMod = _bumpModificators.x;
+						i_BumpDurationMod = _bumpModificators.y;
+						i_BumpRestDurationMod = _bumpModificators.z;
+					}
+					BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
+					whatBumps = WhatBumps.Environment;
+				}
+				else
+				{
+					Damage(_damages);
+				}
+				break;
+
 		}
 
 
