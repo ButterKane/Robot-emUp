@@ -1,5 +1,96 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &214402291525250419
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2038447270898430734}
+  - component: {fileID: 7807252276807801241}
+  m_Layer: 0
+  m_Name: PossessionLight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2038447270898430734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214402291525250419}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.028862474, y: -0.018184762, z: -0.071307644}
+  m_LocalScale: {x: 0.08488965, y: 0.10696915, z: 0.08488965}
+  m_Children: []
+  m_Father: {fileID: 7519697661370609959}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &7807252276807801241
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214402291525250419}
+  m_Enabled: 1
+  serializedVersion: 9
+  m_Type: 2
+  m_Color: {r: 0.35536385, g: 0, b: 1, a: 1}
+  m_Intensity: 0
+  m_Range: 11.05
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!1 &7519697661106857834
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,6 +246,7 @@ Transform:
   m_Children:
   - {fileID: 7519697662618928311}
   - {fileID: 7519697662827275892}
+  - {fileID: 2038447270898430734}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -221,9 +313,48 @@ MonoBehaviour:
   topEyeTransform: {fileID: 7519697661372051066}
   maxEyeOffset: 0.065
   bugging: 0
+  possessed: 0
   myRend: {fileID: 7519697661370609953}
+  possessedMat: {fileID: 2100000, guid: 35c4ac0a8bb1a0340aea4ca272141228, type: 2}
   brokenScreenMat: {fileID: 2100000, guid: c4c74fc0ada4ee84b9a5faec3a3abd7b, type: 2}
+  notPossessedMat: {fileID: 2100000, guid: e7dcfe147f7dc304aaab6d35f1d20477, type: 2}
   eyeLerpIntensity: 0.1
+  possessionAnimationMaxTime: 0.25
+  possessionAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -0
+      outSlope: -0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.44908616
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0.014225261
+      outSlope: 0.014225261
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33159268
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  possessionLight: {fileID: 7807252276807801241}
+  maxLightIntensity: 100
   lockable: 0
   lockHitboxSize: 0
 --- !u!65 &7519697661370609954

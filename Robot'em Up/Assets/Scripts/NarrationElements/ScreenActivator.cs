@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScreenActivator : MonoBehaviour
 {
-    public ScreenBehavior myScreen;
+    public NarrativeInteractiveElements myScreen;
 
     private void OnTriggerEnter(Collider other)
     {

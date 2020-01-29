@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScreenBehavior : MonoBehaviour, IHitable
+public class ScreenBehavior : NarrativeInteractiveElements
 {
-
-    Transform player1Transform;
-    Transform player2Transform;
     public Transform leftEyeTransform;
     public Transform rightEyeTransform;
     public Transform topEyeTransform;
@@ -14,31 +11,14 @@ public class ScreenBehavior : MonoBehaviour, IHitable
     Vector3 eyesWantedPosition;
     public enum WhereToLook { Left, Middle, Right };
     WhereToLook whereToLook = WhereToLook.Middle;
-    public bool bugging;
-    bool broken;
-    public bool possessed;
+
     public Renderer myRend;
     public Material possessedMat;
     public Material brokenScreenMat;
     public Material notPossessedMat;
     public float eyeLerpIntensity;
 
-    //Possession variables
-    public float possessionAnimationMaxTime;
-    public AnimationCurve possessionAnimationCurve;
-    float possessionAnimationTimer;
-    public Light possessionLight;
-    public float maxLightIntensity;
-
-    [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
-    [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        player1Transform = GameManager.playerOne.transform;
-        player2Transform = GameManager.playerTwo.transform;
-    }
+    
 
     // Update is called once per frame
     void Update()
@@ -47,68 +27,32 @@ public class ScreenBehavior : MonoBehaviour, IHitable
         {
             UpdateEyeLocation();
 
-            if (bugging)
+            if (angry)
             {
-                BuggingMatModification();
+                AngryMatModification();
             }
         }
     }
 
-    public void SetAIPossession(bool _isPossessed)
+    public override void EndPossessionAnimationEvents()
     {
-        if (_isPossessed && !broken)
+        if (possessed)
         {
-            possessed = true;
-            possessionAnimationTimer = 0;
-            StartCoroutine(SetPossession( true));
+            myRend.material = possessedMat;
+            topEyeTransform.gameObject.SetActive(true);
+            leftEyeTransform.gameObject.SetActive(true);
+            rightEyeTransform.gameObject.SetActive(true);
         }
-        else if(!broken)
+        else
         {
-            possessed = false;
-            possessionAnimationTimer = 0;
-            StartCoroutine(SetPossession(false));
-        }
-    }
-
-    IEnumerator SetPossession(bool _isPossessed)
-    {
-        if (_isPossessed) //IS POSSESSED
-        {
-            possessionAnimationTimer += Time.deltaTime;
-            possessionLight.intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
-            yield return new WaitForEndOfFrame();
-            if (possessionAnimationTimer < possessionAnimationMaxTime)
-            {
-                StartCoroutine(SetPossession(true));
-            }
-            else
-            {
-                myRend.material = possessedMat;
-                topEyeTransform.gameObject.SetActive(true);
-                leftEyeTransform.gameObject.SetActive(true);
-                rightEyeTransform.gameObject.SetActive(true);
-            }
-        }
-        else // NOT POSSESSED
-        {
-            possessionAnimationTimer += Time.deltaTime;
-            possessionLight.intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
-            yield return new WaitForEndOfFrame();
-            if (possessionAnimationTimer < possessionAnimationMaxTime)
-            {
-                StartCoroutine(SetPossession(false));
-            }
-            else
-            {
-                myRend.material = notPossessedMat;
-                topEyeTransform.gameObject.SetActive(false);
-                leftEyeTransform.gameObject.SetActive(false);
-                rightEyeTransform.gameObject.SetActive(false);
-            }
+            myRend.material = notPossessedMat;
+            topEyeTransform.gameObject.SetActive(false);
+            leftEyeTransform.gameObject.SetActive(false);
+            rightEyeTransform.gameObject.SetActive(false);
         }
     }
 
-    void BuggingMatModification()
+    void AngryMatModification()
     {
         myRend.material.SetFloat("_SinFrequency", 40);
         myRend.material.SetFloat("_AdditiveEmissive", 2.5f);
@@ -117,11 +61,11 @@ public class ScreenBehavior : MonoBehaviour, IHitable
         myRend.material.SetFloat("_RedEmissiveIntensity", Random.Range(1f, 1.2f));
     }
 
-    void SetBuggingState(bool _isBugging)
+    void SetAngryState(bool _isAngry)
     {
-        if (_isBugging)
+        if (_isAngry)
         {
-            bugging = true;
+            angry = true;
         }
         else //reset default values
         {
@@ -174,21 +118,13 @@ public class ScreenBehavior : MonoBehaviour, IHitable
         }
     }
 
-    public void BreakScreen()
+    public override void Break()
     {
-        broken = true;
+        base.Break();
         myRend.material = brokenScreenMat;
         leftEyeTransform.gameObject.SetActive(false);
         rightEyeTransform.gameObject.SetActive(false);
         leftEyeTransform.gameObject.SetActive(false);
         topEyeTransform.gameObject.SetActive(false);
-    }
-
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
-    {
-        if (!broken)
-        {
-            BreakScreen();
-        }
     }
 }
