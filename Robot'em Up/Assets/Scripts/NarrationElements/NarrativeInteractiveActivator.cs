@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScreenActivator : MonoBehaviour
+public class NarrativeInteractiveActivator : MonoBehaviour
 {
     public NarrativeInteractiveElements myScreen;
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Player" && other.name.Contains("Player") && !myScreen.possessed)
+        if (other.tag == "Player" && other.name.Contains("Player") && !myScreen.possessed)
         {
             print("possessed");
             myScreen.SetAIPossession(true);
         }
-        else if(other.tag == "Player" && other.name.Contains("Player") && myScreen.possessed)
+        else if (other.tag == "Player" && other.name.Contains("Player") && myScreen.possessed)
         {
             print("NOT possessed");
             myScreen.SetAIPossession(false);

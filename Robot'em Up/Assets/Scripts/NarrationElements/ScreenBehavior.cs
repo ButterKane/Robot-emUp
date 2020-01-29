@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class ScreenBehavior : NarrativeInteractiveElements
 {
@@ -36,12 +37,14 @@ public class ScreenBehavior : NarrativeInteractiveElements
 
     public override void EndPossessionAnimationEvents()
     {
+        base.EndPossessionAnimationEvents();
         if (possessed)
         {
             myRend.material = possessedMat;
             topEyeTransform.gameObject.SetActive(true);
             leftEyeTransform.gameObject.SetActive(true);
             rightEyeTransform.gameObject.SetActive(true);
+            myAudioSource.enabled = true;
         }
         else
         {
@@ -49,6 +52,7 @@ public class ScreenBehavior : NarrativeInteractiveElements
             topEyeTransform.gameObject.SetActive(false);
             leftEyeTransform.gameObject.SetActive(false);
             rightEyeTransform.gameObject.SetActive(false);
+            myAudioSource.enabled = false;
         }
     }
 

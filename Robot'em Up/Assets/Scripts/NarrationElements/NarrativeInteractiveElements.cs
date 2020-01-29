@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class NarrativeInteractiveElements : MonoBehaviour, IHitable
 {
@@ -9,6 +10,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     [HideInInspector] public bool broken;
     [HideInInspector] public bool angry;
     [HideInInspector] public bool possessed;
+    public AudioSource myAudioSource;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
     
@@ -16,8 +18,9 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public float possessionAnimationMaxTime;
     public AnimationCurve possessionAnimationCurve;
     [HideInInspector] public float possessionAnimationTimer;
-    public Light possessionLight;
+    public Light[] possessionLights;
     public float maxLightIntensity;
+    public float normalLightIntensity;
 
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
@@ -36,6 +39,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public virtual void Break()
     {
         broken = true;
+        if(possessed)
+            SetAIPossession(false);
     }
 
     public virtual void SetAIPossession(bool _isPossessed)
@@ -44,26 +49,29 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         {
             possessed = true;
             possessionAnimationTimer = 0;
-            StartCoroutine(SetPossession(true));
+            StartCoroutine(PossessionCoroutine(true));
         }
         else if (!broken)
         {
             possessed = false;
             possessionAnimationTimer = 0;
-            StartCoroutine(SetPossession(false));
+            StartCoroutine(PossessionCoroutine(false));
         }
     }
 
-    public virtual IEnumerator SetPossession(bool _isPossessed)
+    public virtual IEnumerator PossessionCoroutine(bool _isPossessed)
     {
         if (_isPossessed) //IS POSSESSED
         {
             possessionAnimationTimer += Time.deltaTime;
-            possessionLight.intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
+            for (int i = 0; i < possessionLights.Length; i++)
+            {
+                possessionLights[i].intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
+            }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
             {
-                StartCoroutine(SetPossession(true));
+                StartCoroutine(PossessionCoroutine(true));
             }
             else
             {
@@ -73,11 +81,14 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         else // NOT POSSESSED
         {
             possessionAnimationTimer += Time.deltaTime;
-            possessionLight.intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
+            for (int i = 0; i < possessionLights.Length; i++)
+            {
+                possessionLights[i].intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
+            }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
             {
-                StartCoroutine(SetPossession(false));
+                StartCoroutine(PossessionCoroutine(false));
             }
             else
             {
@@ -90,11 +101,17 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     {
         if (possessed)
         {
-
+            for (int i = 0; i < possessionLights.Length; i++)
+            {
+                possessionLights[i].intensity = normalLightIntensity;
+            }
         }
         else
         {
-
+            for (int i = 0; i < possessionLights.Length; i++)
+            {
+                possessionLights[i].intensity = 0;
+            }
         }
     }
 }
