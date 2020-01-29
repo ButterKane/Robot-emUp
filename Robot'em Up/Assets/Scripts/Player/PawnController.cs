@@ -61,6 +61,7 @@ public class PawnController : MonoBehaviour
 
 	private bool isInvincible;
     public float invincibilityTime = 1;
+    public bool ignoreEletricPlates = false;
     private IEnumerator invincibilityCoroutine;
 
     [Space(2)]
