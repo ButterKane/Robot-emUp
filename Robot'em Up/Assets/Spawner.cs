@@ -24,11 +24,15 @@ public class Spawner : MonoBehaviour
 	float currentDelayBeforeBeingFree;
 	private EnemyBehaviour lastSpawnedEnemy;
 	private bool spawning;
+	private Animator animator;
+	private bool opened;
 
 
 	[ExecuteAlways]
 	private void Awake ()
 	{
+		opened = false;
+		animator = GetComponent<Animator>();
 		if (endPositionVisualizer != null)
 		{
 			if (Application.isPlaying)
@@ -54,23 +58,37 @@ public class Spawner : MonoBehaviour
 
 	private void Update ()
 	{
-		if (currentDelayBeforeBeingFree > 0 && !spawning) { currentDelayBeforeBeingFree -= Time.deltaTime; }
+		if (currentDelayBeforeBeingFree > 0 && !spawning && !opened) { currentDelayBeforeBeingFree -= Time.deltaTime; }
+		if (opened)
+		{
+			if (!IsBlocked() && !spawning)
+			{
+				opened = false;
+				if (animator != null) { animator.SetTrigger("Close"); }
+			}
+		}
+	}
+
+	public bool IsBlocked()
+	{
+		LayerMask mask = LayerMask.GetMask("Environment");
+		mask = ~mask;
+		foreach (Collider c in Physics.OverlapSphere(endPosition, 1f, mask))
+		{
+			EnemyBehaviour enemyFound = c.GetComponent<EnemyBehaviour>();
+			if (lastSpawnedEnemy != null && enemyFound == lastSpawnedEnemy)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public bool IsFree()
 	{
 		if (currentDelayBeforeBeingFree > 0) { return false; }
 		if (lastSpawnedEnemy == null) { return true; }
-		LayerMask mask = LayerMask.GetMask("Environment");
-		mask = ~mask;
-		foreach (Collider c in Physics.OverlapSphere(endPosition, 1f, mask))
-		{
-			EnemyBehaviour enemyFound = c.GetComponent<EnemyBehaviour>();
-			if (enemyFound == lastSpawnedEnemy)
-			{
-				return false;
-			}
-		}
+		if (IsBlocked()) { return false; }
 		return true;
 	}
 	public void SpawnEnemy(EnemyBehaviour _enemy)
@@ -85,13 +103,19 @@ public class Spawner : MonoBehaviour
 
 	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy)
 	{
+		_enemy.gameObject.SetActive(false);
 		_enemy.transform.position = startPosition.position;
-		yield return new WaitForEndOfFrame();
+		yield return new WaitForSeconds(Random.Range(1.5f, 3f));
+
+		opened = true;
+		if (animator) { animator.SetTrigger("Open"); }
+		yield return new WaitForSeconds(0.1f);
 		_enemy.ChangeState(EnemyState.Spawning);
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		GameObject explosionVisualizer = default;
 		if (type == SpawnerType.Air)
 		{
+			_enemy.gameObject.SetActive(false);
 			explosionVisualizer = new GameObject();
 			explosionVisualizer.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("ExplosionVisualiseur");
 			explosionVisualizer.transform.position = endPosition + Vector3.up * 0.01f;
@@ -104,7 +128,12 @@ public class Spawner : MonoBehaviour
 				yield return null;
 			}
 			yield return new WaitForSeconds(2 * (zonePreviewDuration / 3f));
+			_enemy.gameObject.SetActive(true);
 
+		}
+		else
+		{
+			_enemy.gameObject.SetActive(true);
 		}
 		PawnController enemyPawn = (PawnController)_enemy;
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
@@ -118,8 +147,12 @@ public class Spawner : MonoBehaviour
 					Vector3 i_horizontalPosition = Vector3.Lerp(startPosition.position, endPosition, horizontalLerpCurve.Evaluate(i / spawnDuration));
 					Vector3 i_verticalPosition = Vector3.Lerp(startPosition.position, endPosition, verticalLerpCurve.Evaluate(i / spawnDuration));
 					Vector3 i_finalPosition = i_horizontalPosition;
+					Vector3 i_flatDirection = endPosition - startPosition.position;
+					i_flatDirection.y = 0;
+					Quaternion i_wantedRotation = Quaternion.Lerp(startPosition.rotation, Quaternion.LookRotation(i_flatDirection), rotationLerpCurve.Evaluate(i / spawnDuration));
 					i_finalPosition.y = i_verticalPosition.y;
 					enemyPawn.transform.position = i_horizontalPosition;
+					enemyPawn.transform.rotation = i_wantedRotation;
 					break;
 				case SpawnerType.Air:
 					enemyPawn.transform.position = Vector3.Lerp(startPosition.position, endPosition, verticalLerpCurve.Evaluate(i / spawnDuration));
