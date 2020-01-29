@@ -424,10 +424,11 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
+                Destroy(attackHitBoxInstance);
                 break;
             case EnemyState.Attacking:
                 navMeshAgent.enabled = true;
-                Destroy(myAttackHitBox);
+                Destroy(attackHitBoxInstance);
                 break;
             case EnemyState.PauseAfterAttack:
                 break;
