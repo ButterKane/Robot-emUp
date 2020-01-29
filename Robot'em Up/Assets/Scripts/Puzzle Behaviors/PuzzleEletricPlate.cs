@@ -24,6 +24,9 @@ public class PuzzleEletricPlate : PuzzleActivable
         boxCollider = GetComponent<BoxCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
+
+
+        PawnTrapped.Clear();
     }
 
     void FixedUpdate()
@@ -99,6 +102,14 @@ public class PuzzleEletricPlate : PuzzleActivable
     }
 
 
+
+    void OnDisable()
+    {
+        PawnTrapped.Clear();
+    }
+
+
+
     override public void WhenActivate()
     {
         isActivated = true;
@@ -125,7 +136,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                 i_checkAllConditionsCustom = false;
             }
         }
-        PawnTrapped.Clear();
+        
         if (i_checkAllConditionsCustom)
         {
 
