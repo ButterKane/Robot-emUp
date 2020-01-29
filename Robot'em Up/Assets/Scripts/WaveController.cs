@@ -110,11 +110,21 @@ public class WaveController : MonoBehaviour
 	{
 		if (waveStarted) { return; }
 		currentWaveIndex++;
-		if (currentWaveIndex >= waveList.Count - 1) { EndArena(); return; }
+		if (currentWaveIndex >= waveList.Count) { EndArena(); return; }
 		if (exitDoor != null) { exitDoor.OnWaveStart(); }
 		enemiesKilled = false;
 		waveStarted = true;
-		StartCoroutine(StartWave_C(currentWaveIndex));
+		if (waveList[currentWaveIndex].onStartSpawnEvent.isEnabled)
+		{
+			waveList[currentWaveIndex].onStartSpawnEvent.linkedWaveController = this;
+			waveList[currentWaveIndex].onStartSpawnEvent.onEnd.AddListener(() => { StartCoroutine(StartWave_C(currentWaveIndex)); });
+			waveList[currentWaveIndex].onStartSpawnEvent.StartEvent();
+			return;
+		}
+		else
+		{
+			StartCoroutine(StartWave_C(currentWaveIndex));
+		}
 	}
 
 	public void StopWave()
@@ -158,23 +168,27 @@ public class WaveController : MonoBehaviour
 		Spawner foundSpawnerComponent = spawner.GetComponent<Spawner>();
 		if (foundSpawnerComponent != null && !foundSpawnerComponent.IsFree()) { return; }
 
-		GameObject i_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
-		EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
-		if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
-		i_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
-		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
-
+		//A custom spawner is assigned, it can be used to spawn enemy
 		if (foundSpawnerComponent != null)
 		{
 			if (!foundSpawnerComponent.IsFree()) { return; }
-			foundSpawnerComponent.SpawnEnemy(i_enemyBehaviour);
+			EnemyBehaviour spawnedEnemy = foundSpawnerComponent.SpawnEnemy(_enemy.enemyType, true);
+			spawnedEnemy.onDeath.AddListener(() => { OnEnemyDeath(spawnedEnemy); });
+			currentEnemies.Add(spawnedEnemy);
 		}
+
+		//No custom spawner found, it'll spawn the enemy instantly on the assigned position
 		else
 		{
+			GameObject i_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
+			EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
+			if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
+			i_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
+			if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
 			i_newEnemy.transform.position = spawnList[i_chosenSpawnerIndex].transform.position;
 			i_enemyBehaviour.GetNavMesh().enabled = true;
+			currentEnemies.Add(i_enemyBehaviour);
 		}
-		currentEnemies.Add(i_enemyBehaviour);
 		UpdateCurrentPowerLevel();
 		nextEnemyToSpawn = null;
 	}
