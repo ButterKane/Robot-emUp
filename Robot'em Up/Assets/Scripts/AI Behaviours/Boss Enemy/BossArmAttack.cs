@@ -13,6 +13,7 @@ public class BossArmAttack : MonoBehaviour
     {
         meleeCollider = GetComponent<Collider>();
         plane = transform.GetChild(0).gameObject;
+        attackDamage = GetComponentInParent<EnemyBoss>().PunchAttack_DamageInflicted;
     }
 
     // Update is called once per frame
@@ -45,7 +46,7 @@ public class BossArmAttack : MonoBehaviour
             {
                 i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
             }
-            if (i_hitColliders[i].GetComponent<NavMeshObstacle>())
+            if (i_hitColliders[i].gameObject.tag == "Boss_Destructible")
             {
                 Destroy(i_hitColliders[i].gameObject);
             }

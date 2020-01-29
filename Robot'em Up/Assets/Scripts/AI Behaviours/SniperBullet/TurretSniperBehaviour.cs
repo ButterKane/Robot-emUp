@@ -106,8 +106,8 @@ public class TurretSniperBehaviour : TurretBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingCubeTransform.localScale = new Vector3(aimingCubeTransform.localScale.x, aimingCubeTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
-            aimingCubeTransform.position = transform.position + transform.up * .5f + (aimingCubeTransform.localScale.z / 2 * transform.forward);
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
+            aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
         }
 
         //Adapt PlayerFXRenderer
@@ -125,7 +125,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 }
                 else
                 {
-                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingCubeTransform.position.y, hit.point.z) + hit.normal * 0.2f;
+                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
                     aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
@@ -162,7 +162,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 }
                 else
                 {
-                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingCubeTransform.position.y, hit.point.z) + hit.normal * 0.2f;
+                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
                     aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
@@ -182,9 +182,9 @@ public class TurretSniperBehaviour : TurretBehaviour
                     ChangingState(TurretState.Idle);
                 }
 
-                if (aimingCubeState != AimingCubeState.NotVisible)
+                if (aimingRedDotState != AimingRedDotState.NotVisible)
                 {
-                    ChangeAimingCubeState(AimingCubeState.NotVisible);
+                    ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
 
                 if (focusedPlayer != null)
@@ -198,22 +198,22 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     void UpdateAimingCubeState()
     {
-        switch (aimingCubeState)
+        switch (aimingRedDotState)
         {
-            case AimingCubeState.Following:
+            case AimingRedDotState.Following:
                 float i_randomFloat = Random.Range(0f, 1f);
                 if (i_randomFloat>0.5f)
                 {
-                    aimingCubeTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.x, minMaxFollowingAimingCubeScale.x, aimingCubeTransform.localScale.z);
+                    aimingRedDotTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.x, minMaxFollowingAimingCubeScale.x, aimingRedDotTransform.localScale.z);
                 }
                 else
                 {
-                    aimingCubeTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.y, minMaxFollowingAimingCubeScale.y, aimingCubeTransform.localScale.z);
+                    aimingRedDotTransform.localScale = new Vector3(minMaxFollowingAimingCubeScale.y, minMaxFollowingAimingCubeScale.y, aimingRedDotTransform.localScale.z);
                 }
                 break;
-            case AimingCubeState.Locking:
+            case AimingRedDotState.Locking:
                 break;
-            case AimingCubeState.NotVisible:
+            case AimingRedDotState.NotVisible:
                 break;
         }
     }

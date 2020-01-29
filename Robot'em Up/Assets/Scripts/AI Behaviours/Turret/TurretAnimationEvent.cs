@@ -37,14 +37,14 @@ public class TurretAnimationEvent : MonoBehaviour
     {
         if (canCallFollowingState)
         {
-            myScript.ChangeAimingCubeState(AimingCubeState.Following);
+            myScript.ChangeAimingRedDotState(AimingRedDotState.Following);
             canCallFollowingState = false;
         }
     }
 
     void AimingCubeRotateFalse()
     {
-        myScript.ChangeAimingCubeState(AimingCubeState.Locking);
+        myScript.ChangeAimingRedDotState(AimingRedDotState.Locking);
     }
 
     void GoToRestAttackState()

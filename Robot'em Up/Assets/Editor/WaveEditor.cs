@@ -78,27 +78,42 @@ public class WaveEditor : Editor
 			GUILayout.Box("Spawns", i_headerStyle);
 			GUI.color = Color.white;
 			GUILayout.Space(10);
-			List<SpawnInformation> updatedList = new List<SpawnInformation>();
 			for (int i = 0; i < waveEditor.spawnList.Count; i++)
 			{
-				if (waveEditor.spawnList[i].transform != null) 
-				{
-					updatedList.Add(waveEditor.spawnList[i]); 
-				}
 				GUILayout.BeginHorizontal();
 				waveEditor.spawnList[i].color = EditorGUILayout.ColorField(waveEditor.spawnList[i].color, GUILayout.Width(50), GUILayout.Height(20));
-				SerializedProperty m_spawnName = serializedObject.FindProperty("spawnList.Array.data[" + i + "].customName");
 				this.serializedObject.Update();
+
+				EditorGUI.BeginChangeCheck();
+				SerializedProperty m_spawnName = serializedObject.FindProperty("spawnList.Array.data[" + i + "].customName");
 				EditorGUILayout.PropertyField(m_spawnName, new GUIContent(""));
 				this.serializedObject.ApplyModifiedProperties();
-				if (waveEditor.spawnList[i].transform != null)
+				if (EditorGUI.EndChangeCheck())
 				{
-					waveEditor.spawnList[i].transform.name = "WaveSpawn[" + waveEditor.spawnList[i].customName + "]";
-					waveEditor.spawnList[i].transform = EditorGUILayout.ObjectField(waveEditor.spawnList[i].transform, typeof(Transform), true) as Transform;
+					if (waveEditor.spawnList[i].transform != null)
+					{
+						waveEditor.spawnList[i].transform.name = waveEditor.spawnList[i].customName;
+					}
 				}
+
+				Transform previousTransform = waveEditor.spawnList[i].transform;
+				EditorGUI.BeginChangeCheck();
+				SerializedProperty m_spawnTransform = serializedObject.FindProperty("spawnList.Array.data[" + i + "].transform"); 
+				EditorGUILayout.PropertyField(m_spawnTransform, new GUIContent(""));
+				this.serializedObject.ApplyModifiedProperties();
+				if (EditorGUI.EndChangeCheck())
+				{
+					if (previousTransform != waveEditor.spawnList[i].transform)
+					{
+						IconManager.SetIcon(waveEditor.spawnList[i].transform.gameObject, IconManager.LabelIcon.Blue);
+						waveEditor.spawnList[i].customName = waveEditor.spawnList[i].transform.name;
+						return;
+					}
+				}
+
+
 				if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
 				{
-					SpawnInformation deletedObject = updatedList[i];
 					foreach (WaveData wave in waveEditor.waveList)
 					{
 						foreach (WaveEnemy enemy in wave.currentEnemies)
@@ -109,12 +124,12 @@ public class WaveEditor : Editor
 							}
 						}
 					}
-					updatedList.Remove(updatedList[i]);
-					DestroyImmediate(deletedObject.transform.gameObject);
+
+					waveEditor.spawnList.RemoveAt(i);
+					return;
 				}
 				GUILayout.EndHorizontal();
 			}
-			waveEditor.spawnList = updatedList;
 
 			GUILayout.Space(10);
 			GUILayout.BeginHorizontal();
@@ -309,17 +324,12 @@ public class WaveEditor : Editor
 
 	void AddSpawn()
 	{
-		GameObject i_newSpawn = new GameObject();
-		i_newSpawn.name = "Wave-Spawn [" + (waveEditor.spawnList.Count + 1) + "]";
-		i_newSpawn.transform.SetParent(waveEditor.transform);
-		i_newSpawn.transform.position = waveEditor.GetComponentInChildren<CameraZone>().GetCenterPosition();
-		Texture2D tex = EditorGUIUtility.IconContent("sv_label_0").image as Texture2D; 
-		Type editorGUIUtilityType = typeof(EditorGUIUtility);
-		BindingFlags bindingFlags = BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic;
-		object[] args = new object[] { i_newSpawn, tex };
-		editorGUIUtilityType.InvokeMember("SetIconForObject", bindingFlags, null, null, args);
+		//GameObject i_newSpawn = new GameObject();
+		//i_newSpawn.name = "Wave-Spawn [" + (waveEditor.spawnList.Count + 1) + "]";
+		//i_newSpawn.transform.SetParent(waveEditor.transform);
+		//i_newSpawn.transform.position = waveEditor.GetComponentInChildren<CameraZone>().GetCenterPosition();
 		SpawnInformation i_newSpawnInf = new SpawnInformation();
-		i_newSpawnInf.transform = i_newSpawn.transform;
+		i_newSpawnInf.transform = null;
 		i_newSpawnInf.customName = "SpawnName";
 		i_newSpawnInf.color = Color.white;
 		waveEditor.spawnList.Add(i_newSpawnInf);

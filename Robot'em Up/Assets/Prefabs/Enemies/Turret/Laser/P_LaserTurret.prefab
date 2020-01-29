@@ -107,15 +107,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 845049387934562887}
-  m_LocalRotation: {x: -0.3482105, y: -0, z: -0, w: 0.9374164}
-  m_LocalPosition: {x: 0, y: -0.04, z: -0.1}
+  m_LocalRotation: {x: -0.24121, y: -0.6760779, z: -0.25113434, w: 0.6493597}
+  m_LocalPosition: {x: 0, y: -0.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.46139}
   m_Children:
   - {fileID: 3339283935309371001}
   - {fileID: 2950884111546952476}
   m_Father: {fileID: 5738937565884906333}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -40.756, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -40.756, y: -92.310005, z: 0}
 --- !u!33 &8487450834907683470
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 7860040589444730533}
   - component: {fileID: 3471936295985215576}
   m_Layer: 0
-  m_Name: AimingCube
+  m_Name: AimingRedDot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -345,7 +345,6 @@ GameObject:
   - component: {fileID: 7475777131856372585}
   - component: {fileID: 7479744203220967085}
   - component: {fileID: 4233777253254011454}
-  - component: {fileID: 4233777252262345080}
   m_Layer: 10
   m_Name: P_LaserTurret
   m_TagString: Enemy
@@ -360,7 +359,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4808274588740219700}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -47.4, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -452,6 +451,7 @@ MonoBehaviour:
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 3164548329669528513}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
@@ -464,7 +464,7 @@ MonoBehaviour:
   lockable: 1
   lockHitboxSize: 0
   arenaRobot: 0
-  focusDistance: 3
+  focusDistance: 50
   unfocusDistance: 20
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
@@ -474,15 +474,17 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  distanceToAttack: 5
   maxAnticipationTime: 0.5
+  maxTimePauseAfterAttack: 1
+  hitBoxOffset: {x: 0, y: 0, z: 0}
+  distanceToAttack: 5
   rotationSpeedPreparingAttack: 0.2
   whenToTriggerEndOfAttackAnim: 0
   attackHitBoxPrefab: {fileID: 0}
   attackHitBoxCenterPoint: {fileID: 0}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  maxTimePauseAfterAttack: 1
   attackRaycastDistance: 2
+  portionOfAnticipationWithRotation: 0.3
+  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
@@ -491,15 +493,15 @@ MonoBehaviour:
   minMaxCoreHealthValue: {x: 10, y: 10}
   turretState: 0
   arenaTurret: 0
-  defaultForwardPredictionRatio: 0
-  minMaxRandomRangePredictionRatio: {x: 0, y: 0}
-  maxRotationSpeed: 0
-  maxRestTime: 0
-  randomRangeRestTime: 0
-  aimingCubeTransform: {fileID: 7381191969145207244}
-  aimingCubeRenderer: {fileID: 3471936295985215576}
-  aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
-  aimingCubeLockedScale: {x: 0.17, y: 0.17, z: 1}
+  defaultForwardPredictionRatio: 0.85
+  minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
+  maxRotationSpeed: 5
+  maxRestTime: 4
+  randomRangeRestTime: 0.5
+  aimingRedDotTransform: {fileID: 7381191969145207244}
+  aimingRedDotRenderer: {fileID: 3471936295985215576}
+  aimingRedDotDefaultScale: {x: 0, y: 0, z: 0}
+  aimingRedDotLockedScale: {x: 0, y: 0, z: 0}
   lockingAimingColor: {r: 1, g: 0.91027665, b: 0, a: 1}
   lockingAimingColorIntensity: 8
   followingAimingColor: {r: 1, g: 0, b: 0, a: 0}
@@ -507,167 +509,52 @@ MonoBehaviour:
   layersToCheckToScale:
     serializedVersion: 2
     m_Bits: 4096
-  bulletPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
+  bulletPrefab: {fileID: 98529408051223827, guid: 814c591543e20214691cd67bc1ddca3f,
     type: 3}
   bulletSpawn: {fileID: 2950884111546952476}
   canBulletTouchEnemies: 0
   bulletDamageRatioToEnemies: 0.5
-  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.5}
+  minMaxFollowingAimingRedDotScale: {x: 0, y: 0}
   aimingAtPlayerFXTransform: {fileID: 6763244872527407770}
   aimingAtPlayerFXRenderer: {fileID: 6763244872527407768}
   aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
   endAimingFXScaleMultiplier: 0
   startAimingFXCircleThickness: 0
-  laserPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
-    type: 3}
-  laserLength: 10
-  shootingLaserTime: 3
-  damagePerSecond: 50
-  reducingOfLaserWidth:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   repulseCircleRadius: 0
   repulseCircleStrength: 0
   finalRepulseCircleRadius: 0
   finalRepulseCircleStrength: 0
---- !u!114 &4233777252262345080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4808274588740219700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c436931fcd342d4ead74d6c5199f357, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 30
-  totalHeight: 1.5
-  invincibilityTime: 1
-  canMove: 0
-  jumpForce: 0
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minWalkSpeed: 0.1
-  moveSpeed: 15
-  acceleration: 200
-  movingDrag: 0.4
-  idleDrag: 0.4
-  onGroundGravityMultiplyer: 0
-  deadzone: 0.2
-  turnSpeed: 0.25
-  canClimb: 0
-  timeBeforeClimb: 0.2
-  minDistanceToClimb: 1
-  climbDuration: 0.5
-  climbForwardPushForce: 450
-  climbUpwardPushForce: 450
-  isBumpable: 0
-  maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  bumpRaycastDistance: 1
-  whenToTriggerFallingAnim: 0.302
-  eventOnBeingHit: event.PlayerBeingHit
-  eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
-  eventOnBeingGrounded: event.PlayerGrounded
-  eventOnDeath: event.Player1Death
-  eventOnHealing: event.PlayerHealing
-  healthBarRef: {fileID: 3164548329669528513}
-  healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
+  laserPrefab: {fileID: 98529408051223827, guid: 814c591543e20214691cd67bc1ddca3f,
     type: 3}
-  playerOneTransform: {fileID: 0}
-  playerTwoTransform: {fileID: 0}
-  enemyType: 4
-  energyGainedOnHit: 1
-  damage: 10
-  powerLevel: 1
-  lockable: 1
-  lockHitboxSize: 0
-  arenaRobot: 0
-  focusDistance: 3
-  unfocusDistance: 20
-  timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 3
-  maxTimeBetweenCheck: 0.25
-  randomSpeedMod: 0
-  speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
-  speedMultiplierFromDunkHit: 0
-  timeToRecoverSlowFromDunk: 0
-  distanceToAttack: 5
-  maxAnticipationTime: 0.5
-  rotationSpeedPreparingAttack: 0.2
-  whenToTriggerEndOfAttackAnim: 0
-  attackHitBoxPrefab: {fileID: 0}
-  attackHitBoxCenterPoint: {fileID: 0}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  maxTimePauseAfterAttack: 1
-  attackRaycastDistance: 2
-  canSurroundPlayer: 0
-  bezierCurveHeight: 0.5
-  bezierDistanceToHeightRatio: 100
-  coreDropChances: 1
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
-  turretState: 0
-  arenaTurret: 0
-  defaultForwardPredictionRatio: 0
-  minMaxRandomRangePredictionRatio: {x: 0, y: 0}
-  maxRotationSpeed: 0
-  maxRestTime: 0
-  randomRangeRestTime: 0
-  aimingCubeTransform: {fileID: 7381191969145207244}
-  aimingCubeRenderer: {fileID: 3471936295985215576}
-  aimingCubeDefaultScale: {x: 0.01, y: 0.01, z: 1}
-  aimingCubeLockedScale: {x: 0.17, y: 0.17, z: 1}
-  lockingAimingColor: {r: 1, g: 0.91027665, b: 0, a: 1}
-  lockingAimingColorIntensity: 8
-  followingAimingColor: {r: 1, g: 0, b: 0, a: 0}
-  followingAimingColorIntensity: 5
-  layersToCheckToScale:
-    serializedVersion: 2
-    m_Bits: 4096
-  bulletPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
-    type: 3}
-  bulletSpawn: {fileID: 2950884111546952476}
-  canBulletTouchEnemies: 0
-  bulletDamageRatioToEnemies: 0.5
-  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.5}
-  aimingAtPlayerFXTransform: {fileID: 6763244872527407770}
-  aimingAtPlayerFXRenderer: {fileID: 6763244872527407768}
-  aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
-  aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
-  endAimingFXScaleMultiplier: 0
-  startAimingFXCircleThickness: 0
-  laserPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
-    type: 3}
-  laserLength: 10
-  shootingLaserTime: 3
   damagePerSecond: 50
+  laserMaxLength: 10
+  shootingLaserMaxTime: 3
+  whenToTriggerLaserReduction: 0
   reducingOfLaserWidth:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.99057007
+      inSlope: -0.98772013
+      outSlope: -0.98772013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9981079
+      value: 0.0047187805
+      inSlope: -0.98772013
+      outSlope: -0.98772013
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repulseCircleRadius: 0
-  repulseCircleStrength: 0
-  finalRepulseCircleRadius: 0
-  finalRepulseCircleStrength: 0
 --- !u!1 &5623966984315208129
 GameObject:
   m_ObjectHideFlags: 0
