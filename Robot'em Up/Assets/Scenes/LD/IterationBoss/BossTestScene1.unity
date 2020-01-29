@@ -135,6 +135,7 @@ MonoBehaviour:
   maxHealth: 30
   totalHeight: 4
   invincibilityTime: 1
+  ignoreEletricPlates: 1
   canMove: 1
   jumpForce: 0
   accelerationCurve:
@@ -277,6 +278,10 @@ MonoBehaviour:
   - {fileID: 1833105420}
   - {fileID: 261109618}
   - {fileID: 1904682280}
+  GroundAttack_Attacking: 0
+  GroundAttackInvocation_Rate: 50
+  GroundAttack_AnticipationTime: 1
+  GroundAttack_AttackTime: 1
   HammerAttack_Attacking: 0
   NumberHammerAttackMax: 6
   NumberHammerLeft: 0
@@ -1679,16 +1684,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6181108247297046206}
     m_Modifications:
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_Name
-      value: AimingCube P1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1742,6 +1737,16 @@ PrefabInstance:
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_Name
+      value: AimingCube P1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4000,16 +4005,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6181108247297046206}
     m_Modifications:
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_Name
-      value: AimingCube P2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4063,6 +4058,16 @@ PrefabInstance:
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_Name
+      value: AimingCube P2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -73,7 +73,11 @@ public class PuzzleEletricPlate : PuzzleActivable
             
             PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
-            PawnTrapped.Add(_pawn);
+
+            if (_pawn.ignoreEletricPlates == false)
+            {
+                PawnTrapped.Add(_pawn);
+            }
 
             if (!isActivated)
             {
@@ -121,7 +125,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                 i_checkAllConditionsCustom = false;
             }
         }
-        
+        PawnTrapped.Clear();
         if (i_checkAllConditionsCustom)
         {
 
