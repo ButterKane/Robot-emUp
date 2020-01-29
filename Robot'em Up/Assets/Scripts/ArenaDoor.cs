@@ -3,15 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class ArenaDoor : MonoBehaviour
 {
 	public bool closeOnArenaStart;
 	public Counter currentCounter;
 	public float delayBeforeOpening = 1f;
+	private List<PlayerController> playerGoneThroughDoor;
+	private Collider collider;
 
 	private Animator animator;
 	private void Awake ()
 	{
+		collider = GetComponent<Collider>();
+		playerGoneThroughDoor = new List<PlayerController>();
 		animator = GetComponent<Animator>();
 		if (!closeOnArenaStart)
 		{
@@ -56,5 +61,29 @@ public class ArenaDoor : MonoBehaviour
 		yield return new WaitForSeconds(delayBeforeOpening);
 		animator.SetBool("Opened", true);
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
+	}
+
+	private void OnTriggerExit ( Collider other )
+	{
+		PlayerController potentialPlayer = other.GetComponent<PlayerController>();
+		if (potentialPlayer != null && playerGoneThroughDoor.Contains(potentialPlayer))
+		{
+			playerGoneThroughDoor.Remove(potentialPlayer);
+		}
+		if (potentialPlayer != null && !playerGoneThroughDoor.Contains(potentialPlayer))
+		{
+			playerGoneThroughDoor.Add(potentialPlayer);
+		}
+		if (playerGoneThroughDoor.Count > 1)
+		{
+			collider.isTrigger = false;
+			animator.SetBool("Opened", false);
+			FeedbackManager.SendFeedback("event.ArenaDoorClosing", this);
+		}
+	}
+
+	private void OnTriggerEnter ( Collider other )
+	{
+		PlayerController potentialPlayer = other.GetComponent<PlayerController>();
 	}
 }
