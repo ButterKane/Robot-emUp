@@ -15,7 +15,6 @@ public class SpeakerBehavior : NarrativeInteractiveElements
         speakerRB.transform.parent = null;
         speakerRB.isKinematic = false;
         speakerRB.AddForce(transform.forward * forwardForceThrow + -transform.up * downForceThrow);
-        print("cassé");
     }
 
     public override void EndPossessionAnimationEvents()
