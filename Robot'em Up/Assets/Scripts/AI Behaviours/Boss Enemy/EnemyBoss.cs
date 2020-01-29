@@ -107,6 +107,18 @@ public class EnemyBoss : PawnController, IHitable
     public List<PuzzleEletricPlate> ListEletricPlates;
 
 
+    [Header("HammerAttack")]
+    public bool HammerAttack_Attacking;
+    public int NumberHammerAttackMax = 6;
+    public int NumberHammerLeft = 0;
+    public float HammerAttack_Anticipation = 1f;
+    public float HammerAttack_AttackingTime = 0.7f;
+    public float HammerAttack_RecoverTime = 1.0f;
+    public GameObject HammerAttack_attackHitBoxPrefab;
+    public GameObject HammerAttack_attackHitBoxInstance;
+    public GameObject ObstacleHammerAttackPrefab;
+
+
     public void Start()
     {
         Health1Bar_CurrentValue = Health1Bar_Value_Max;
@@ -128,6 +140,8 @@ public class EnemyBoss : PawnController, IHitable
         playerTwoTransform = GameManager.playerTwo.transform;
         playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
+
+        NumberHammerLeft = NumberHammerAttackMax;
     }
 
 
@@ -170,7 +184,6 @@ public class EnemyBoss : PawnController, IHitable
                             renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, PunchAttack_RecoverTime));
                         }
                         animator.SetTrigger("EndOfPunchAttackTrigger");
-                        DestroyAttackHitBox();
                         PunchAttack_Attacking = false;
                     }
 
@@ -207,6 +220,31 @@ public class EnemyBoss : PawnController, IHitable
                 case BossState.Shield:
                     break;
                 case BossState.HammerPunchAttack:
+
+                    if (waitingBeforeNextState < HammerAttack_AttackingTime + HammerAttack_RecoverTime && HammerAttack_Attacking == false)
+                    {
+                        animator.SetTrigger("HammerAttackTrigger");
+                        HammerAttack_Attacking = true;
+
+                    }
+                    if (waitingBeforeNextState < HammerAttack_AttackingTime && HammerAttack_Attacking == true)
+                    {
+                        foreach (var renderer in renderers)
+                        {
+                            renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, HammerAttack_RecoverTime));
+                        }
+                        animator.SetTrigger("HammerEndOfAttackTrigger");
+                        HammerAttack_Attacking = false;
+                    }
+
+                    if (waitingBeforeNextState < PunchAttack_RecoverTime / 3)
+                    {
+                        navMeshAgent.enabled = true;
+                        navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
+
+                    }
+
+
                     break;
                 case BossState.GroundAttack:
                     break;
@@ -311,6 +349,12 @@ public class EnemyBoss : PawnController, IHitable
                         }
                     }
 
+
+                    if (true)
+                    {
+
+                    }
+
                 //If a player is very close -> punch attack
                 if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
                 {
@@ -332,6 +376,8 @@ public class EnemyBoss : PawnController, IHitable
         }
         else
         {
+
+            //PHASE 2
 
             // If players are too far -> range attack
             if (distanceWithPlayerTwo > missileRange && distanceWithPlayerOne > missileRange)
@@ -363,8 +409,23 @@ public class EnemyBoss : PawnController, IHitable
                     navMeshAgent.SetDestination(playerTwoTransform.position);
                 }
 
-                //If a player is very close -> punch attack
+
+
+                //If a player is very close -> hammer attack
                 if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
+                {
+
+                if (NumberHammerLeft > 0)
+                {
+                    NumberHammerLeft--;
+                    bossState = BossState.HammerPunchAttack;
+                    waitingBeforeNextState = HammerAttack_Anticipation + HammerAttack_AttackingTime + HammerAttack_RecoverTime;
+                    navMeshAgent.enabled = false;
+                    animator.SetTrigger("HammerAttackAnticipationTrigger");
+
+
+                }
+                else
                 {
                     bossState = BossState.PunchAttack;
                     waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
@@ -376,6 +437,8 @@ public class EnemyBoss : PawnController, IHitable
                         renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
                     }
                 }
+            }
+                
         }    
     }
 
@@ -400,6 +463,17 @@ public class EnemyBoss : PawnController, IHitable
     }
 
 
+    public void ActivateHammerAttackHitBox()
+    {
+        if (bossState == BossState.HammerPunchAttack)
+        {
+            FeedbackManager.SendFeedback("event.BossPunchAttack", this);
+
+        }
+        HammerAttack_attackHitBoxInstance = Instantiate(HammerAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, transform.rotation, transform);
+    }
+
+
     public void InvokeShield()
     {
         Debug.Log("InvokeShield");
@@ -421,10 +495,19 @@ public class EnemyBoss : PawnController, IHitable
 
     public void DestroyAttackHitBox()
     {
+        Debug.Log("DestroyAttackHitBox");
         if (PunchAttack_attackHitBoxInstance != null)
         {
+            Debug.Log("PunchAttack_attackHitBoxInstance");
             Destroy(PunchAttack_attackHitBoxInstance);
             PunchAttack_attackHitBoxInstance = null;
+        }
+        if (HammerAttack_attackHitBoxInstance != null)
+        {
+            Debug.Log("HammerAttack_attackHitBoxInstance");
+            Instantiate(ObstacleHammerAttackPrefab, transform.position + transform.forward * 8 + new Vector3(0, -1.5f, 0), Quaternion.identity);
+            Destroy(HammerAttack_attackHitBoxInstance);
+            HammerAttack_attackHitBoxInstance = null;
         }
     }
 

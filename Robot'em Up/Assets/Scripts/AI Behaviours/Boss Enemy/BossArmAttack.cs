@@ -46,7 +46,7 @@ public class BossArmAttack : MonoBehaviour
             {
                 i_potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
             }
-            if (i_hitColliders[i].GetComponent<NavMeshObstacle>())
+            if (i_hitColliders[i].gameObject.tag == "Boss_Destructible")
             {
                 Destroy(i_hitColliders[i].gameObject);
             }
