@@ -422,6 +422,8 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
+                Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                BumpMe(5, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
 				Damage(_damages);
 				break;
 

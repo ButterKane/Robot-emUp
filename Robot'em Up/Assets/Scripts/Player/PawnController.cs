@@ -595,7 +595,7 @@ public class PawnController : MonoBehaviour
     private IEnumerator Bump_C()
     {
         EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
-        enemy.ChangeState(EnemyState.Bumped);
+        if (enemy != null) { enemy.ChangeState(EnemyState.Bumped); }
 
         float i_bumpTimeProgression = 0;
         bool i_mustCancelBump = false;
