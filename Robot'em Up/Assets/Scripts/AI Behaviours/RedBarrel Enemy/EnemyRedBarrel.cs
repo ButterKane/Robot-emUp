@@ -87,8 +87,9 @@ public class EnemyRedBarrel : EnemyBehaviour
         }
         else
         {
-            //yield return new WaitForSeconds(buildUpBeforeExplosion);
-            FeedbackManager.SendFeedback(explosionFX, this);
+            //Spawn explosion FX
+            GameObject explosionFXInstance = FeedbackManager.SendFeedback(explosionFX, this).GetVFX();  
+            explosionFXInstance.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
 
             Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
             int i = 0;
