@@ -69,6 +69,7 @@ public class Counter : MonoBehaviour
 		for (int i = 0; i < _amount; i++)
 		{
 			currentActivatedIndex += 1;
+			if (currentActivatedIndex >= counterList.Count) { return; }
 			SetCounterToGreen(counterList[currentActivatedIndex]);
 			if (currentActivatedIndex >= counterList.Count - 1 ) { currentActivatedIndex = 0; SetCounterToGreen(counterList[currentActivatedIndex]); }
 			if (isWaveCounter)

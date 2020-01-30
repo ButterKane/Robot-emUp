@@ -10,6 +10,7 @@ public class WaveData
 	public float duration = 20f;
 	public float pauseBeforeNextWave = 1f;
 	public UnityEvent onEndEvents;
+	public SpawnEvent onStartSpawnEvent;
 
 	public List<WaveEnemy> currentEnemies = new List<WaveEnemy>();
 

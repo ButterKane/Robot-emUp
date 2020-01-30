@@ -91,21 +91,26 @@ public class Spawner : MonoBehaviour
 		if (IsBlocked()) { return false; }
 		return true;
 	}
-	public void SpawnEnemy(EnemyBehaviour _enemy)
+	public EnemyBehaviour SpawnEnemy(EnemyData _enemy, bool _addSmallRandomDelay)
 	{
 		spawning = true;
-		lastSpawnedEnemy = _enemy;
+		GameObject i_newEnemy = Instantiate(_enemy.prefab).gameObject;
+		EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
+		if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Spawner can't instantiate enemy: invalid prefab"); return null; }
+		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
+		lastSpawnedEnemy = i_enemyBehaviour;
 		currentDelayBeforeBeingFree = delayBeforeBeingFree;
-		_enemy.ChangeState(EnemyState.Spawning);
-		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
-		StartCoroutine(SpawnEnemy_C(_enemy));
+		i_enemyBehaviour.ChangeState(EnemyState.Spawning);
+		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
+		StartCoroutine(SpawnEnemy_C(i_enemyBehaviour, _addSmallRandomDelay));
+		return i_enemyBehaviour;
 	}
 
-	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy)
+	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy, bool _addSmallRandomDelay)
 	{
 		_enemy.gameObject.SetActive(false);
 		_enemy.transform.position = startPosition.position;
-		yield return new WaitForSeconds(Random.Range(1.5f, 3f));
+		if (_addSmallRandomDelay) { yield return new WaitForSeconds(Random.Range(1.5f, 3f)); }
 
 		opened = true;
 		if (animator) { animator.SetTrigger("Open"); }

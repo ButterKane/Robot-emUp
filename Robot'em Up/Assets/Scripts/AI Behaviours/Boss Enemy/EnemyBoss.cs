@@ -105,6 +105,10 @@ public class EnemyBoss : PawnController, IHitable
 
     [Header("GroundAttack")]
     public List<PuzzleEletricPlate> ListEletricPlates;
+    public bool GroundAttack_Attacking = false;
+    public float GroundAttackInvocation_Rate = 0.03f;
+    public float GroundAttack_AnticipationTime = 1f;
+    public float GroundAttack_AttackTime = 1f;
 
 
     [Header("HammerAttack")]
@@ -247,6 +251,21 @@ public class EnemyBoss : PawnController, IHitable
 
                     break;
                 case BossState.GroundAttack:
+
+                    if (waitingBeforeNextState < GroundAttack_AttackTime && GroundAttack_Attacking == false)
+                    {
+                        animator.SetTrigger("GroundAttackAnticipationTrigger");
+                        GroundAttack_Attacking = true;
+                        ActivateEletricPlate();
+
+                    }
+                    if (waitingBeforeNextState < GroundAttack_AttackTime / 7 && GroundAttack_Attacking == true)
+                    {
+                        animator.SetTrigger("GroundAttackEndTrigger");
+
+                    }
+                    
+
                     break;
                 case BossState.Laser:
                     break;
@@ -267,6 +286,16 @@ public class EnemyBoss : PawnController, IHitable
 
         if (waitingBeforeNextState < 0)
         {
+
+            if (bossState == BossState.GroundAttack)
+            {
+                DesactivateEletricPlate();
+                foreach (var item in ListEletricPlates)
+                {
+                    item.gameObject.SetActive(false);
+                }
+            }
+
             ChangeState();
         }
     }
@@ -276,6 +305,7 @@ public class EnemyBoss : PawnController, IHitable
 
     public void ChangeState()
     {
+
         if (isPhase1)
         {
             if (Health1Bar_CurrentValue <= 0)
@@ -355,23 +385,23 @@ public class EnemyBoss : PawnController, IHitable
 
                     }
 
-                //If a player is very close -> punch attack
-                if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
-                {
-                    bossState = BossState.PunchAttack;
-                    waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
-                    navMeshAgent.enabled = false;
+                    //If a player is very close -> punch attack
+                    if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
+                    {
+                        bossState = BossState.PunchAttack;
+                        waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
+                        navMeshAgent.enabled = false;
                         animator.SetTrigger("PunchAttackAnticipationTrigger");
 
-                    foreach (var renderer in renderers)
-                    {
-                        renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
+                        foreach (var renderer in renderers)
+                        {
+                            renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
+                        }
                     }
                 }
+
+
             }
-
-
-                }
 
         }
         else
@@ -379,24 +409,37 @@ public class EnemyBoss : PawnController, IHitable
 
             //PHASE 2
 
-            // If players are too far -> range attack
-            if (distanceWithPlayerTwo > missileRange && distanceWithPlayerOne > missileRange)
+
+            float temproll = Random.Range(0, 100);
+            bool GroundAttacking = false;
+            if (temproll > GroundAttackInvocation_Rate)
             {
+                GroundAttacking = true;
+            }
+
+            if (GroundAttacking)
+            {
+                bossState = BossState.GroundAttack;
+                waitingBeforeNextState = GroundAttack_AnticipationTime + GroundAttack_AttackTime;
                 navMeshAgent.enabled = false;
-                bossState = BossState.RangeAttack;
-                waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
+                foreach (var item in ListEletricPlates)
+                {
+                    item.gameObject.SetActive(true);
+                }
+                GroundAttack_Attacking = false;
+                animator.SetTrigger("GroundAttackAnticipationTrigger");
 
             }
             else
             {
+
                 //If player are closer but not enough -> walk towards them if alive
                 if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange && playerOnePawnController.currentHealth > 0)
                 {
-                        bossState = BossState.Moving;
-                        waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
-                        navMeshAgent.enabled = true;
-                        navMeshAgent.SetDestination(playerOneTransform.position);
-                    }
+                    bossState = BossState.Moving;
+                    waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
+                    navMeshAgent.enabled = true;
+                    navMeshAgent.SetDestination(playerOneTransform.position);
                 }
 
 
@@ -415,31 +458,32 @@ public class EnemyBoss : PawnController, IHitable
                 if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
                 {
 
-                if (NumberHammerLeft > 0)
-                {
-                    NumberHammerLeft--;
-                    bossState = BossState.HammerPunchAttack;
-                    waitingBeforeNextState = HammerAttack_Anticipation + HammerAttack_AttackingTime + HammerAttack_RecoverTime;
-                    navMeshAgent.enabled = false;
-                    animator.SetTrigger("HammerAttackAnticipationTrigger");
-
-
-                }
-                else
-                {
-                    bossState = BossState.PunchAttack;
-                    waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
-                    navMeshAgent.enabled = false;
-                    animator.SetTrigger("PunchAttackAnticipationTrigger");
-
-                    foreach (var renderer in renderers)
+                    if (NumberHammerLeft > 0)
                     {
-                        renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
+                        NumberHammerLeft--;
+                        bossState = BossState.HammerPunchAttack;
+                        waitingBeforeNextState = HammerAttack_Anticipation + HammerAttack_AttackingTime + HammerAttack_RecoverTime;
+                        navMeshAgent.enabled = false;
+                        animator.SetTrigger("HammerAttackAnticipationTrigger");
+
+
+                    }
+                    else
+                    {
+                        bossState = BossState.PunchAttack;
+                        waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
+                        navMeshAgent.enabled = false;
+                        animator.SetTrigger("PunchAttackAnticipationTrigger");
+
+                        foreach (var renderer in renderers)
+                        {
+                            renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, PunchAttack_Anticipation));
+                        }
                     }
                 }
             }
-                
-        }    
+
+        }
     }
 
     public void InvokingShieldAttack()
@@ -559,6 +603,24 @@ public class EnemyBoss : PawnController, IHitable
         }
         
     }
+
+    public void ActivateEletricPlate()
+    {
+        foreach (var item in ListEletricPlates)
+        {
+            item.WhenDesactivate();
+        }
+    }
+
+    public void DesactivateEletricPlate()
+    {
+        foreach (var item in ListEletricPlates)
+        {
+            item.WhenActivate();
+        }
+    }
+
+
 
     public void InflictDamage(float _damages, float modifier=1)
     {
