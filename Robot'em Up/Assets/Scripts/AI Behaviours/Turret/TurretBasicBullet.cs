@@ -43,5 +43,11 @@ public class TurretBasicBullet : MonoBehaviour
             Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
             Destroy(gameObject);
         }
+
+        else if (_other.tag == "Boss_Destructible")
+        {
+            Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
+            Destroy(gameObject);
+        }
     }
 }
