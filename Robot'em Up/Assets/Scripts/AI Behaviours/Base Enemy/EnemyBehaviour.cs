@@ -17,7 +17,7 @@ public enum EnemyState
     Attacking,
     PauseAfterAttack,
     Dying,
-	Spawning,
+    Spawning,
 }
 public enum WhatBumps
 {
@@ -106,11 +106,11 @@ public class EnemyBehaviour : PawnController, IHitable
     private GameObject attackHitBoxInstance;
     private GameObject attackPreviewPlane;
     GameObject myAttackHitBox;
-    
+
     float timePauseAfterAttack;
     protected bool mustCancelAttack;
     private EnemyArmAttack armScript;
-    
+
     //[ConditionalField(nameof(enemyType), false, EnemyTypes.Turret)]
     //[ConditionalField(nameof(enemyType), false, EnemyTypes.Sniper)]
 
@@ -122,12 +122,12 @@ public class EnemyBehaviour : PawnController, IHitable
     public float bezierDistanceToHeightRatio = 100f;
     [System.NonSerialized] public Transform closestSurroundPoint;
 
-	[Space(3)]
-	[Header("Spawn")]
-	public float spawnImpactRadius = 1f;
-	public int spawnImpactDamages = 1;
+    [Space(3)]
+    [Header("Spawn")]
+    public float spawnImpactRadius = 1f;
+    public int spawnImpactDamages = 1;
 
-	[Space(3)]
+    [Space(3)]
     [Header("Death")]
     public float coreDropChances = 1;
     public Vector2 minMaxDropForce;
@@ -242,14 +242,14 @@ public class EnemyBehaviour : PawnController, IHitable
                         // Calculating position on bezier curve, following start point, end point and avancement
                         // In this version, the avancement has been replaced by a constant because it's recalculated every frame
                         Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-						if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position)); }
+                        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.position)); }
                     }
                     else
                     {
-						if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
-						{
-							navMeshAgent.SetDestination(focusedPlayer.position);
-						}
+                        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
+                        {
+                            navMeshAgent.SetDestination(focusedPlayer.position);
+                        }
                     }
 
                     if (distanceWithFocusedPlayer <= distanceToAttack)
@@ -319,8 +319,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
             case EnemyState.Dying:
                 break;
-			case EnemyState.Spawning:
-				break;
+            case EnemyState.Spawning:
+                break;
         }
     }
 
@@ -351,7 +351,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
         {
-            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, new Vector3(attackHitBoxCenterPoint.position.x, attackHitBoxCenterPoint.position.y + attackHitBoxCenterPoint.localScale.y/2, attackHitBoxCenterPoint.position.z), Quaternion.identity, transform);
+            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, new Vector3(attackHitBoxCenterPoint.position.x, attackHitBoxCenterPoint.position.y + attackHitBoxCenterPoint.localScale.y / 2, attackHitBoxCenterPoint.position.z), Quaternion.identity, transform);
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
             attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
@@ -366,7 +366,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
             }
             // If max size is reached, flicker the color
-            else 
+            else
             {
                 attackPreviewPlane.transform.localScale = Vector3.one;
                 attackPreviewPlaneRenderer.enabled = !attackPreviewPlaneRenderer.enabled;
@@ -424,10 +424,11 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
+                Destroy(attackHitBoxInstance);
                 break;
             case EnemyState.Attacking:
                 navMeshAgent.enabled = true;
-                Destroy(myAttackHitBox);
+                Destroy(attackHitBoxInstance);
                 break;
             case EnemyState.PauseAfterAttack:
                 break;
@@ -471,32 +472,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (enemyType == EnemyTypes.Shield)
         {
-            if (_ball != null) // Check if it's the ball that touched
-            {
-                EnemyShield i_selfRef = GetComponent<EnemyShield>();
-
-                if ((_impactVector.normalized + transform.forward.normalized).magnitude < (i_selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
-                {
-                    FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
-
-                    Vector3 i_normalReboundDirection = Vector3.Reflect(_impactVector, transform.forward);
-
-                    Vector3 i_newDirection = new Vector3 (i_normalReboundDirection.x, _impactVector.y, i_normalReboundDirection.z);
-
-                    Vector3 i_directionToPlayerOne = playerOneTransform.position - i_selfRef.shield.transform.position;
-                    Vector3 i_directionToPlayerTwo = playerTwoTransform.position - i_selfRef.shield.transform.position;
-
-                    i_newDirection = SwissArmyKnife.GetClosestDirection(i_directionToPlayerOne, i_directionToPlayerTwo, i_newDirection, i_selfRef.angleToBounceBackToPlayer);
-
-                    _ball.Bounce(i_newDirection, 1f);
-                    
-                    return;
-                }
-                else
-                {
-                    StartCoroutine(i_selfRef.DeactivateShieldForGivenTime(i_selfRef.timeShieldDisappearAfterHit));
-                }
-            }
+            EnemyShield i_selfRef = GetComponent<EnemyShield>();
+            StartCoroutine(i_selfRef.DeactivateShieldForGivenTime(i_selfRef.timeShieldDisappearAfterHit));
         }
 
         Vector3 i_normalizedImpactVector;
@@ -518,8 +495,8 @@ public class EnemyBehaviour : PawnController, IHitable
                     }
 
                     damageAfterBump = _damages;
-					AnalyticsManager.IncrementData("DamageWithDunk", _damages);
-					damageAfterBump = _damages;
+                    AnalyticsManager.IncrementData("DamageWithDunk", _damages);
+                    damageAfterBump = _damages;
 
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_thrower.GetComponent<DunkController>() != null)
@@ -559,8 +536,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
-				AnalyticsManager.IncrementData("DamageWithPass", _damages);
-				animator.SetTrigger("HitTrigger");
+                AnalyticsManager.IncrementData("DamageWithPass", _damages);
+                animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 damageAfterBump = 0;
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
@@ -572,36 +549,36 @@ public class EnemyBehaviour : PawnController, IHitable
                     ChangeState(EnemyState.Dying);
                 }
                 break;
-			case DamageSource.PerfectReceptionExplosion:
-				Damage(_damages);
-				if (currentHealth <= 0)
-				{
-					ChangeState(EnemyState.Dying);
-				}
-				FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
-				break;
-			case DamageSource.SpawnImpact:
-				if (_thrower == this) { return; }
-				if (isBumpable)
-				{
-					damageAfterBump = _damages;
-					i_normalizedImpactVector = new Vector3(-_impactVector.x, 0, -_impactVector.z);
-					if (_bumpModificators != default(Vector3))
-					{
-						i_BumpDistanceMod = _bumpModificators.x;
-						i_BumpDurationMod = _bumpModificators.y;
-						i_BumpRestDurationMod = _bumpModificators.z;
-					}
-					BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
-					whatBumps = WhatBumps.Environment;
-				}
-				else
-				{
-					Damage(_damages);
-				}
-				break;
+            case DamageSource.PerfectReceptionExplosion:
+                Damage(_damages);
+                if (currentHealth <= 0)
+                {
+                    ChangeState(EnemyState.Dying);
+                }
+                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+                break;
+            case DamageSource.SpawnImpact:
+                if (_thrower == this) { return; }
+                if (isBumpable)
+                {
+                    damageAfterBump = _damages;
+                    i_normalizedImpactVector = new Vector3(-_impactVector.x, 0, -_impactVector.z);
+                    if (_bumpModificators != default(Vector3))
+                    {
+                        i_BumpDistanceMod = _bumpModificators.x;
+                        i_BumpDurationMod = _bumpModificators.y;
+                        i_BumpRestDurationMod = _bumpModificators.z;
+                    }
+                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
+                    whatBumps = WhatBumps.Environment;
+                }
+                else
+                {
+                    Damage(_damages);
+                }
+                break;
 
-		}
+        }
 
 
     }

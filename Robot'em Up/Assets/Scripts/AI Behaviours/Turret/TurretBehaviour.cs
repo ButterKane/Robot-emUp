@@ -284,6 +284,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet.GetComponent<TurretBasicBullet>().launcher = transform;
         spawnedBullet.GetComponent<TurretBasicBullet>().canHitEnemies = canBulletTouchEnemies;
         spawnedBullet.GetComponent<TurretBasicBullet>().damageModificator = bulletDamageRatioToEnemies;
     }

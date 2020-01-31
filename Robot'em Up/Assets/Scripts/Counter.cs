@@ -42,6 +42,7 @@ public class Counter : MonoBehaviour
 	{
 		if (counterEnd) { return; }
 		int index = currentActivatedIndex+1;
+		if (index > counterList.Count) { return; }
 		Material matInstance = counterList[index].GetComponent<MeshRenderer>().material;
 		matInstance.SetColor("_EmissionColor", waitingColor * waitingColorIntensity);
 	}
@@ -69,6 +70,7 @@ public class Counter : MonoBehaviour
 		for (int i = 0; i < _amount; i++)
 		{
 			currentActivatedIndex += 1;
+			if (currentActivatedIndex >= counterList.Count) { return; }
 			SetCounterToGreen(counterList[currentActivatedIndex]);
 			if (currentActivatedIndex >= counterList.Count - 1 ) { currentActivatedIndex = 0; SetCounterToGreen(counterList[currentActivatedIndex]); }
 			if (isWaveCounter)
