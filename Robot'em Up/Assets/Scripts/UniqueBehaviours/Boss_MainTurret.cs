@@ -8,6 +8,7 @@ public class Boss_MainTurret : MonoBehaviour
     public float speed;
     public float multiplier;
     public int damageToPlayer;
+    public bool selfRotating = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,6 +18,8 @@ public class Boss_MainTurret : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (selfRotating)
+        {
         if (Boss_Manager.i.OnePlayerLeft)
         {
 
@@ -25,6 +28,8 @@ public class Boss_MainTurret : MonoBehaviour
         else
         {
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y + Time.deltaTime * speed * Boss_Manager.i.difficulty * multiplier, transform.rotation.eulerAngles.z);
+
+            }
 
         }
     }
