@@ -45,13 +45,13 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
 
     public virtual void SetAIPossession(bool _isPossessed)
     {
-        if (_isPossessed && !broken)
+        if (_isPossessed)
         {
             possessed = true;
             possessionAnimationTimer = 0;
             StartCoroutine(PossessionCoroutine(true));
         }
-        else if (!broken)
+        else
         {
             possessed = false;
             possessionAnimationTimer = 0;
@@ -112,6 +112,18 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             {
                 possessionLights[i].intensity = 0;
             }
+        }
+    }
+
+    public virtual Transform GetCloserPlayer()
+    {
+        if (Vector3.Distance(transform.position, player1Transform.position) > Vector3.Distance(transform.position, player2Transform.position))
+        {
+            return player2Transform;
+        }
+        else
+        {
+            return player1Transform;
         }
     }
 }

@@ -57,17 +57,19 @@ public class CameraZone : MonoBehaviour
 		playersInside = new List<PlayerController>();
 	}
 
-	private void Start ()
+	[ExecuteAlways]
+	private void Awake ()
 	{
-#if UNITY_EDITOR
-		EditorApplication.playModeStateChanged += RegenerateVisualizer;
-#endif
-		if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
-	}
-#if UNITY_EDITOR
-	private void RegenerateVisualizer ( PlayModeStateChange state )
-	{
-		if (state == PlayModeStateChange.EnteredPlayMode)
+		playersInside = new List<PlayerController>();
+		if (GetComponent<SpriteRenderer>() == null)
+		{
+			visualizer = gameObject.AddComponent<SpriteRenderer>();
+		}
+		else
+		{
+			visualizer = GetComponent<SpriteRenderer>();
+		}
+		if (Application.isPlaying)
 		{
 			switch (type)
 			{
@@ -78,7 +80,7 @@ public class CameraZone : MonoBehaviour
 					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
 					break;
 			}
-		} else if (state == PlayModeStateChange.ExitingPlayMode)
+		} else
 		{
 			switch (type)
 			{
@@ -91,7 +93,11 @@ public class CameraZone : MonoBehaviour
 			}
 		}
 	}
-#endif
+
+	private void Start ()
+	{
+		if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
+	}
 
 	public void GenerateZone(CameraType _type) {
 		type = _type;

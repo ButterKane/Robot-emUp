@@ -50,6 +50,7 @@ public class PlayerController : PawnController, IHitable
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
 	private bool leftShouldWaitForRelease;
+	public static Transform middlePoint;
 
 	public void Start ()
 	{
@@ -58,9 +59,25 @@ public class PlayerController : PawnController, IHitable
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
+		if (Application.isPlaying)
+		{
+			if (middlePoint == null)
+			{
+				middlePoint = new GameObject().transform;
+				middlePoint.name = "MiddlePoint";
+				middlePoint.tag = "MiddlePoint";
+				middlePoint.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+				SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
+				col.isTrigger = true;
+			}
+		}
 	}
 	private void Update ()
 	{
+		if (middlePoint != null && playerIndex == PlayerIndex.One)
+		{
+			middlePoint.transform.position = GameManager.playerOne.transform.position + ((GameManager.playerTwo.transform.position - GameManager.playerOne.transform.position) / 2f);
+		}
 		if (Application.isPlaying && !inputDisabled)
 		{
 			GetInput();
@@ -134,7 +151,7 @@ public class PlayerController : PawnController, IHitable
 		{
 			leftShouldWaitForRelease = false;
 		}
-		if (state.Buttons.RightShoulder == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
+		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
 			dunkController.Dunk();
 		}
@@ -422,6 +439,8 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
+                Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                BumpMe(5, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
 				Damage(_damages);
 				break;
 

@@ -110,18 +110,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
         topEyeTransform.localPosition = Vector3.Lerp(topEyeTransform.localPosition, eyesWantedPosition, eyeLerpIntensity);
     }
 
-    Transform GetCloserPlayer()
-    {
-        if(Vector3.Distance(transform.position, player1Transform.position) > Vector3.Distance(transform.position, player2Transform.position))
-        {
-            return player2Transform;
-        }
-        else
-        {
-            return player1Transform;
-        }
-    }
-
     public override void Break()
     {
         base.Break();
