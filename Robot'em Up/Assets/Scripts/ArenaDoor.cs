@@ -63,27 +63,10 @@ public class ArenaDoor : MonoBehaviour
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
 	}
 
-	private void OnTriggerExit ( Collider other )
+	public void CloseDoor()
 	{
-		PlayerController potentialPlayer = other.GetComponent<PlayerController>();
-		if (potentialPlayer != null && playerGoneThroughDoor.Contains(potentialPlayer))
-		{
-			playerGoneThroughDoor.Remove(potentialPlayer);
-		}
-		if (potentialPlayer != null && !playerGoneThroughDoor.Contains(potentialPlayer))
-		{
-			playerGoneThroughDoor.Add(potentialPlayer);
-		}
-		if (playerGoneThroughDoor.Count > 1)
-		{
-			collider.isTrigger = false;
-			animator.SetBool("Opened", false);
-			FeedbackManager.SendFeedback("event.ArenaDoorClosing", this);
-		}
-	}
-
-	private void OnTriggerEnter ( Collider other )
-	{
-		PlayerController potentialPlayer = other.GetComponent<PlayerController>();
+		collider.isTrigger = false;
+		animator.SetBool("Opened", false);
+		FeedbackManager.SendFeedback("event.ArenaDoorClosing", this);
 	}
 }

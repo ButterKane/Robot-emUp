@@ -168,6 +168,13 @@ public class GameManager : MonoBehaviour
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 		Time.timeScale = 1f;
 	}
+	public static void LoadNextScene ()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+		GamePad.SetVibration(PlayerIndex.One, 0, 0);
+		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+		Time.timeScale = 1f;
+	}
 
 	public static void OpenLevelMenu()
 	{

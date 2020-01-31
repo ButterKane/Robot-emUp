@@ -136,12 +136,20 @@ public class WaveController : MonoBehaviour
 
 	IEnumerator StartWave_C (int _waveIndex)
 	{
-		for (float i = 0; i < waveList[_waveIndex].duration; i+=Time.deltaTime)
+		float waveDuration = waveList[_waveIndex].duration;
+		if (waveDuration <= -1)
 		{
-			yield return null;
-			currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
+			currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(0);
 		}
-		StopWave();
+		else
+		{
+			for (float i = 0; i < waveDuration; i += Time.deltaTime)
+			{
+				yield return null;
+				currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
+			}
+			StopWave();
+		}
 	}
 
 	public WaveEnemy GetRandomEnemy()

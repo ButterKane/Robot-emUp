@@ -54,6 +54,7 @@ public class Spawner : MonoBehaviour
 				spawnVisualizer.enabled = true;
 			}
 		}
+		RecalculateEndspawnLocation();
 	}
 
 	private void Update ()
