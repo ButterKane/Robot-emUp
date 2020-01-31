@@ -42,6 +42,7 @@ public class Counter : MonoBehaviour
 	{
 		if (counterEnd) { return; }
 		int index = currentActivatedIndex+1;
+		if (index > counterList.Count) { return; }
 		Material matInstance = counterList[index].GetComponent<MeshRenderer>().material;
 		matInstance.SetColor("_EmissionColor", waitingColor * waitingColorIntensity);
 	}
