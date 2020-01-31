@@ -434,15 +434,34 @@ public class BallBehaviour : MonoBehaviour
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
-						IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
+                        EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
+                        if (i_selfRef != null)
+                        {
+                            if ((currentDirection.normalized + i_selfRef.shield.transform.forward.normalized).magnitude < (i_selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
+                            {
+                                FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
+
+                                Vector3 i_normalReboundDirection = Vector3.Reflect(currentDirection, transform.forward);
+
+                                Vector3 i_newDirection = new Vector3(i_normalReboundDirection.x, currentDirection.y, i_normalReboundDirection.z);
+
+                                Vector3 i_directionToPlayerOne = GameManager.playerOne.transform.position - i_selfRef.shield.transform.position;
+                                Vector3 i_directionToPlayerTwo = GameManager.playerTwo.transform.position - i_selfRef.shield.transform.position;
+
+                                i_newDirection = SwissArmyKnife.GetClosestDirection(i_directionToPlayerOne, i_directionToPlayerTwo, i_newDirection, i_selfRef.angleToBounceBackToPlayer);
+                                Debug.Log("Bounce please");
+                                Bounce(i_newDirection, 1f);
+                            }
+                            Debug.Log("Shield");
+                        }
+
+                        IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
 						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
-						if (raycast.collider.GetComponentInParent<EnemyShield>().shield != null) {
-							Debug.Log("Shield");
-						}
+
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
