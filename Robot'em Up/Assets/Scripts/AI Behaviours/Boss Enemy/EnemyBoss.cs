@@ -123,6 +123,16 @@ public class EnemyBoss : PawnController, IHitable
     public GameObject ObstacleHammerAttackPrefab;
 
 
+    [Header("LaserAttack")]
+    public int SequenceLaserAttack;
+    public float LaserAttack_Anticipation = 1.0f;
+    public float LaserAttack_AttackingTime = 5.0f;
+    public float laserAttackInvocation_Rate = 90;
+    public float laserSpeed = 130;
+    public GameObject LaserAttack_LaserObject;
+    public Vector3 LaserAttack_ArenaCenter;
+
+
     public void Start()
     {
         Health1Bar_CurrentValue = Health1Bar_Value_Max;
@@ -268,6 +278,41 @@ public class EnemyBoss : PawnController, IHitable
 
                     break;
                 case BossState.Laser:
+                    if (SequenceLaserAttack == 0)
+                    {
+                        navMeshAgent.enabled = true;
+                        navMeshAgent.SetDestination(LaserAttack_ArenaCenter);
+                        if (Vector3.Distance(transform.position, LaserAttack_ArenaCenter) < 5)
+                        {
+                            SequenceLaserAttack = 1;
+                        }
+                    }
+                    if (SequenceLaserAttack == 1)
+                    {
+                        waitingBeforeNextState = LaserAttack_Anticipation + LaserAttack_AttackingTime;
+                        navMeshAgent.enabled = false;
+                        SequenceLaserAttack = 2;
+                        animator.SetTrigger("LaserAnticipation");
+                    }
+                    if (waitingBeforeNextState < LaserAttack_AttackingTime && SequenceLaserAttack == 2)
+                    {
+                        animator.SetTrigger("LaserAttackAttacking");
+                        LaserAttack_LaserObject.SetActive(true);
+                        LaserAttack_LaserObject.GetComponent<ParticleSystem>().Play();
+                        SequenceLaserAttack = 3;
+
+                    }
+                    if (SequenceLaserAttack == 3)
+                    {
+                        LaserAttack_LaserObject.transform.rotation = Quaternion.Euler(LaserAttack_LaserObject.transform.rotation.eulerAngles.x, LaserAttack_LaserObject.transform.rotation.eulerAngles.y + laserSpeed * Time.deltaTime, LaserAttack_LaserObject.transform.rotation.eulerAngles.z);
+                    }
+                    if (waitingBeforeNextState < LaserAttack_AttackingTime / 8 && SequenceLaserAttack == 3)
+                    {
+                        animator.SetTrigger("LaserAttackEndAttacking");
+                        SequenceLaserAttack = 4;
+                        LaserAttack_LaserObject.SetActive(false);
+
+                    }
                     break;
                 case BossState.ChangingPhase:
                     if (waitingBeforeNextState < Stagger_TimeLasting / 4 && isPhase1)
@@ -412,9 +457,15 @@ public class EnemyBoss : PawnController, IHitable
 
             float temproll = Random.Range(0, 100);
             bool GroundAttacking = false;
-            if (temproll > GroundAttackInvocation_Rate)
+            if (temproll < GroundAttackInvocation_Rate)
             {
                 GroundAttacking = true;
+            }
+            temproll = Random.Range(0, 100);
+            bool LaserAttacking = false;
+            if (temproll < laserAttackInvocation_Rate)
+            {
+                LaserAttacking = true;
             }
 
             if (GroundAttacking)
@@ -428,6 +479,13 @@ public class EnemyBoss : PawnController, IHitable
                 }
                 GroundAttack_Attacking = false;
                 animator.SetTrigger("GroundAttackAnticipationTrigger");
+
+            }
+            else if(LaserAttacking)
+            {
+                bossState = BossState.Laser;
+                waitingBeforeNextState = 10f;
+                SequenceLaserAttack = 0;
 
             }
             else
