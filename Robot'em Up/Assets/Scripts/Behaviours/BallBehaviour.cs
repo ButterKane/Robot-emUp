@@ -440,8 +440,8 @@ public class BallBehaviour : MonoBehaviour
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
-						if (raycast.collider.GetComponentInParent<Shield>() != null) {
-							Debug.Log("Shield"); 
+						if (raycast.collider.GetComponentInParent<EnemyShield>().shield != null) {
+							Debug.Log("Shield");
 						}
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
