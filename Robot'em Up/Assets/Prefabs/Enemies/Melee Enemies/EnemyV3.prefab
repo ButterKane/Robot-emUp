@@ -335,7 +335,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   minWalkSpeed: 0.1
   moveSpeed: 7
-  acceleration: 30
+  acceleration: 60
   movingDrag: 0.4
   idleDrag: 0.4
   onGroundGravityMultiplyer: 0
@@ -387,15 +387,15 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 0
-  energyGainedOnHit: 1
-  damage: 10
+  energyGainedOnHit: 0.08
+  damage: 15
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 1.35
+  lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
-  timeBetweenCheck: 0
+  timeBetweenCheck: 0.2
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
@@ -403,18 +403,18 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
-  maxAnticipationTime: 1.5
+  maxAnticipationTime: 0.66
   maxTimePauseAfterAttack: 1
-  hitBoxOffset: {x: 0, y: 0.5, z: 1}
-  distanceToAttack: 5
+  hitBoxOffset: {x: 0, y: 0, z: 0}
+  distanceToAttack: 6
   rotationSpeedPreparingAttack: 0.2
   whenToTriggerEndOfAttackAnim: 0.302
   attackHitBoxPrefab: {fileID: 3204598243110983843, guid: 34976ce2e8641614f9791ea7f5d31244,
     type: 3}
   attackHitBoxCenterPoint: {fileID: 1173559632710181653}
   attackRaycastDistance: 2
-  portionOfAnticipationWithRotation: 0.3
-  portionOfAnticipationWithFlickering: 0.2
+  portionOfAnticipationWithRotation: 0.2
+  portionOfAnticipationWithFlickering: 0.234
   canSurroundPlayer: 1
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
