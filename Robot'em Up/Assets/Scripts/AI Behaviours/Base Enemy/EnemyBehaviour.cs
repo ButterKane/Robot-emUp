@@ -383,7 +383,8 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (anticipationTime <= 0)
         {
-            attackPreviewPlaneRenderer.enabled = true;
+            if(GetComponent<EnemyShield>() == null)
+                attackPreviewPlaneRenderer.enabled = true;
             //if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }

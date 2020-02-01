@@ -530,7 +530,7 @@ GameObject:
   - component: {fileID: 2227829331840288604}
   - component: {fileID: 6736872995242432900}
   - component: {fileID: 6704740834070537280}
-  - component: {fileID: 675602643}
+  - component: {fileID: 8226037312027061361}
   m_Layer: 10
   m_Name: P_SniperTurret
   m_TagString: Enemy
@@ -585,7 +585,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 3
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &675602643
+--- !u!114 &8226037312027061361
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -594,12 +594,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8681543399049038297}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c436931fcd342d4ead74d6c5199f357, type: 3}
+  m_Script: {fileID: 11500000, guid: f56b6d92130ddb4468812410f2db6e98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 1.5
-  invincibilityTime: 1
+  invincibilityTime: 0.1
   ignoreEletricPlates: 0
   canMove: 0
   jumpForce: 0
@@ -617,13 +617,13 @@ MonoBehaviour:
   onGroundGravityMultiplyer: 0
   deadzone: 0.2
   turnSpeed: 0.25
-  canClimb: 0
+  canClimb: 1
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
   climbDuration: 0.5
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
-  isBumpable: 0
+  isBumpable: 1
   maxGettingUpDuration: 0.6
   bumpDistanceCurve:
     serializedVersion: 2
@@ -647,21 +647,21 @@ MonoBehaviour:
   enemyType: 4
   energyGainedOnHit: 0.08
   damage: 100
-  powerLevel: 1
+  powerLevel: 3
   lockable: 1
   lockHitboxSize: 2
   arenaRobot: 0
-  focusDistance: 3
-  unfocusDistance: 20
+  focusDistance: 50
+  unfocusDistance: 55
   timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 3
+  distanceBeforeChangingPriority: 4
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  maxAnticipationTime: 0.5
+  maxAnticipationTime: 4
   maxTimePauseAfterAttack: 1
   hitBoxOffset: {x: 0, y: 0, z: 0}
   distanceToAttack: 5
@@ -677,55 +677,39 @@ MonoBehaviour:
   bezierDistanceToHeightRatio: 100
   spawnImpactRadius: 1
   spawnImpactDamages: 1
-  coreDropChances: 1
+  coreDropChances: 0.5
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
-  turretState: 0
+  turretState: 4
   arenaTurret: 0
   defaultForwardPredictionRatio: 0
   minMaxRandomRangePredictionRatio: {x: 0, y: 0}
-  maxRotationSpeed: 0
-  maxRestTime: 0
-  randomRangeRestTime: 0
-  aimingRedDotTransform: {fileID: 0}
-  aimingRedDotRenderer: {fileID: 0}
-  aimingRedDotDefaultScale: {x: 0, y: 0, z: 0}
-  aimingRedDotLockedScale: {x: 0, y: 0, z: 0}
-  lockingAimingColor: {r: 1, g: 0.91027665, b: 0, a: 1}
+  maxRotationSpeed: 110
+  maxRestTime: 4
+  randomRangeRestTime: 0.5
+  aimingRedDotTransform: {fileID: 6678318211773809441}
+  aimingRedDotRenderer: {fileID: 788040119959061173}
+  aimingRedDotDefaultScale: {x: 0.01, y: 0.01, z: 1}
+  aimingRedDotLockedScale: {x: 0.17, y: 0.17, z: 1}
+  lockingAimingColor: {r: 0.9529412, g: 0.87116206, b: 0.03921566, a: 1}
   lockingAimingColorIntensity: 8
-  followingAimingColor: {r: 1, g: 0, b: 0, a: 0}
+  followingAimingColor: {r: 0.990566, g: 0.0046724924, b: 0.0046724924, a: 1}
   followingAimingColorIntensity: 5
   layersToCheckToScale:
     serializedVersion: 2
     m_Bits: 4096
-  bulletPrefab: {fileID: 3937835393218686174, guid: f2fe7cb39b284a64c825c79454569bac,
+  bulletPrefab: {fileID: 3937835393218686174, guid: 5123b33b6acbb164e8b524799f9a4324,
     type: 3}
   bulletSpawn: {fileID: 1311322156898505201}
   canBulletTouchEnemies: 0
   bulletDamageRatioToEnemies: 0.5
-  minMaxFollowingAimingRedDotScale: {x: 0, y: 0}
+  minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.15}
   aimingAtPlayerFXTransform: {fileID: 7429455705988075639}
   aimingAtPlayerFXRenderer: {fileID: 7429455705988075637}
   aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
-  endAimingFXScaleMultiplier: 0
-  rotationSpeedReductionRatio: 0
-  repulseCircleRadius: 0
-  repulseCircleStrength: 0
-  finalRepulseCircleRadius: 0
-  finalRepulseCircleStrength: 0
-  damagePerSecond: 50
-  laserMaxLength: 10
-  laserActualLength: 0
-  shootingLaserMaxTime: 3
-  whenToTriggerLaserReduction: 0
-  reducingOfLaserWidth:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  redDotPrefab: {fileID: 0}
+  endAimingFXScaleMultiplier: 0.44
+  startAimingFXCircleThickness: 0.15
 --- !u!1001 &4870783270699171655
 PrefabInstance:
   m_ObjectHideFlags: 0

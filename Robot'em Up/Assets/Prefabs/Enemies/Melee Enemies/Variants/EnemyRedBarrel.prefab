@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 2.25
-  invincibilityTime: 1
+  invincibilityTime: 0.1
   ignoreEletricPlates: 0
   canMove: 0
   jumpForce: 0
@@ -235,11 +235,11 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 2
-  energyGainedOnHit: 1
-  damage: 10
+  energyGainedOnHit: 0.08
+  damage: 40
   powerLevel: 2.5
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
@@ -266,15 +266,15 @@ MonoBehaviour:
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   spawnImpactRadius: 1
-  spawnImpactDamages: 1
-  coreDropChances: 0.15
+  spawnImpactDamages: 20
+  coreDropChances: 0.35
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
   buildUpExplosionFX: event.EnemyRedBarrelDeathPart1
   explosionFX: event.EnemyRedBarrelDeathPart2
   explosionRadius: 10
   explosionDamage: 20
-  buildUpBeforeExplosion: 5
+  buildUpBeforeExplosion: 0.8
   explosionFXScale: 3
   willExplode: 1
   bumpDistanceMod: 1.5
@@ -294,6 +294,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -358,11 +363,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Speed
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}

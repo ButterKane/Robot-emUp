@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 2.25
-  invincibilityTime: 1
+  invincibilityTime: 0.1
+  ignoreEletricPlates: 0
   canMove: 1
   jumpForce: 0
   accelerationCurve:
@@ -77,14 +78,14 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 1
-  energyGainedOnHit: 1
+  energyGainedOnHit: 0.08
   damage: 15
   powerLevel: 4
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 2
   arenaRobot: 0
-  focusDistance: 40
-  unfocusDistance: 50
+  focusDistance: 50
+  unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 6
   maxTimeBetweenCheck: 0.25
@@ -108,10 +109,10 @@ MonoBehaviour:
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   spawnImpactRadius: 3
-  spawnImpactDamages: 3
+  spawnImpactDamages: 20
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 15, y: 15}
+  minMaxCoreHealthValue: {x: 10, y: 10}
   shield: {fileID: 907304710442746487}
   deactivateShieldWhenAttacking: 1
   angleToBounceBackToPlayer: 20
@@ -260,6 +261,11 @@ PrefabInstance:
       propertyPath: enemyType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -349,11 +355,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1.2147
-      objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
