@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2089267606570644894}
   - component: {fileID: 2089267606570644895}
+  - component: {fileID: 4479977207136349781}
   m_Layer: 0
   m_Name: P_IACamera
   m_TagString: Untagged
@@ -53,8 +54,9 @@ MonoBehaviour:
   angry: 0
   possessed: 0
   myAudioSource: {fileID: 2089267606576913617}
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 1.5
+  breakEventName: event.ScreenBreaking
   possessionAnimationMaxTime: 0.25
   possessionAnimationCurve:
     serializedVersion: 2
@@ -96,9 +98,22 @@ MonoBehaviour:
   normalLightIntensity: 5
   CameraRB: {fileID: 2089267608103532616}
   forwardForceThrow: 200
-  downForceThrow: 400
+  downForceThrow: -400
   cameraPivot: {fileID: 2089267607863976566}
   cameraPivotDefaultRotation: {x: 0, y: 0, z: 0, w: 0}
+--- !u!65 &4479977207136349781
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089267606570644892}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 10, z: 2}
+  m_Center: {x: 0, y: 4.98, z: 0}
 --- !u!1 &2089267606576913622
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,7 +283,6 @@ GameObject:
   - component: {fileID: 2089267607722197598}
   - component: {fileID: 2089267607722197595}
   - component: {fileID: 2089267607722197592}
-  - component: {fileID: 2089267607722197593}
   m_Layer: 0
   m_Name: Poteau
   m_TagString: Untagged
@@ -336,19 +350,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &2089267607722197593
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2089267607722197599}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2089267607863976567
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,6 +394,7 @@ GameObject:
   - component: {fileID: 2089267608103532618}
   - component: {fileID: 2089267608103532619}
   - component: {fileID: 2089267608103532616}
+  - component: {fileID: 2831797029878420225}
   m_Layer: 0
   m_Name: CameraModel
   m_TagString: Untagged
@@ -489,6 +491,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2831797029878420225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089267608103532617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47830175f0d3d0c46882df7dd3567702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2089267608217266657
 GameObject:
   m_ObjectHideFlags: 0

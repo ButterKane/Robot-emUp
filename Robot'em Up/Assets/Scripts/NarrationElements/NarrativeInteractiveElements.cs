@@ -13,6 +13,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public AudioSource myAudioSource;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+    public string breakEventName;
     
     //Possession variables
     public float possessionAnimationMaxTime;
@@ -41,6 +42,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         broken = true;
         if(possessed)
             SetAIPossession(false);
+        FeedbackManager.SendFeedback(breakEventName, this);
     }
 
     public virtual void SetAIPossession(bool _isPossessed)

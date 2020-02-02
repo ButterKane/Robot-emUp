@@ -182,8 +182,9 @@ MonoBehaviour:
   angry: 0
   possessed: 0
   myAudioSource: {fileID: 539808257543883976}
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 1.5
+  breakEventName: event.ScreenBreaking
   possessionAnimationMaxTime: 0.25
   possessionAnimationCurve:
     serializedVersion: 2
@@ -343,6 +344,7 @@ GameObject:
   - component: {fileID: 539808259295228610}
   - component: {fileID: 539808259295228611}
   - component: {fileID: 539808259295228612}
+  - component: {fileID: 3735810842786704395}
   m_Layer: 12
   m_Name: SpeakerModel
   m_TagString: Untagged
@@ -439,6 +441,18 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.50000006
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3735810842786704395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539808259295228614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47830175f0d3d0c46882df7dd3567702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1735331354792379353
 GameObject:
   m_ObjectHideFlags: 0
