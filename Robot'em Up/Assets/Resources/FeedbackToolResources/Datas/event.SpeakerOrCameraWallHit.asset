@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 826eac420e2c8b94fb654bfcf49dfcd5, type: 3}
-  m_Name: event.ScreenBreaking
+  m_Name: event.SpeakerOrCameraWallHit
   m_EditorClassIdentifier: 
-  eventName: event.ScreenBreaking
+  eventName: event.SpeakerOrCameraWallHit
   shakeData:
-    duration: 0.5
-    intensity: 2
+    duration: 0.2
+    intensity: 1
     frequency: 2
     intensityCurve:
       serializedVersion: 2
@@ -43,7 +43,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
-    force: 2
+    force: 3
     duration: 0.2
     target: 1
     forceCurve:
@@ -59,13 +59,22 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
+        time: 0.81984746
+        value: 0.79262245
+        inSlope: -0.8301439
+        outSlope: -0.8019605
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.12268518
+        outWeight: 0.6052844
+      - serializedVersion: 3
         time: 0.99810964
         value: 0.0023584906
-        inSlope: -2.9540596
-        outSlope: -2.9540596
+        inSlope: -10.420934
+        outSlope: -10.420934
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.04960831
+        inWeight: 0.058476772
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -82,9 +91,9 @@ MonoBehaviour:
     soundName: ScreenBreaking
     attachToTarget: 0
   vfxData:
-    vfxPrefab: {fileID: 121496, guid: 5e8a137808d7d374487f34e236c723db, type: 3}
+    vfxPrefab: {fileID: 0}
     offset: {x: 0, y: 0, z: 0}
-    scaleMultiplier: {x: 6, y: 6, z: 6}
+    scaleMultiplier: {x: 1, y: 1, z: 1}
     direction: 0
     position: 0
-    attachToTarget: 1
+    attachToTarget: 0

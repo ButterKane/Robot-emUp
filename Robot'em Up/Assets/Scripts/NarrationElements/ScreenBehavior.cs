@@ -44,7 +44,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
             topEyeTransform.gameObject.SetActive(true);
             leftEyeTransform.gameObject.SetActive(true);
             rightEyeTransform.gameObject.SetActive(true);
-            myAudioSource.enabled = true;
         }
         else
         {
@@ -52,7 +51,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
             topEyeTransform.gameObject.SetActive(false);
             leftEyeTransform.gameObject.SetActive(false);
             rightEyeTransform.gameObject.SetActive(false);
-            myAudioSource.enabled = false;
         }
     }
 
