@@ -82,7 +82,7 @@ MonoBehaviour:
   damage: 15
   powerLevel: 4
   lockable: 1
-  lockHitboxSize: 0.8
+  lockHitboxSize: 1.7
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
@@ -98,7 +98,7 @@ MonoBehaviour:
   maxTimePauseAfterAttack: 1
   hitBoxOffset: {x: 0.5, y: 1, z: 0}
   rotationSpeedPreparingAttack: 0.2
-  distanceToAttack: 5
+  distanceToAttack: 12
   portionOfAnticipationWithRotation: 0.3
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
@@ -109,14 +109,12 @@ MonoBehaviour:
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
   shield: {fileID: 907304710442746487}
-  deactivateShieldWhenAttacking: 1
-  angleRangeForRebound: 45
-  timeShieldDisappearAfterHit: 0
+  deactivateShieldWhenAttacking: 0
+  angleRangeForRebound: 75
+  timeShieldDisappearAfterHit: 0.6
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
-  whenToTriggerEndOfAttackAnim: 0.9
-  attackRaycastDistance: 2
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
@@ -142,6 +140,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  attackChargeDuration: 1.2
+  whenToTriggerEndOfAttackAnim: 0.9
+  attackRaycastDistance: 2
   maxRotationSpeed: 360
   BumpOtherDistanceMod: 0.5
   BumpOtherDurationMod: 0.2

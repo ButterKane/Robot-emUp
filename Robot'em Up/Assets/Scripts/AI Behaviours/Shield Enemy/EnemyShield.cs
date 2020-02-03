@@ -53,6 +53,7 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterPreparingAttackState()
     {
         initialSpeed = navMeshAgent.speed;
+        Debug.Log("initial speed " + initialSpeed + "and speed coef is " + GetSpeedCoef());
         acceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AttackTrigger");
@@ -182,6 +183,7 @@ public class EnemyShield : EnemyBehaviour
         if (other.transform.tag == "Player")
         {
             other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, damage, DamageSource.EnemyContact);
+            StopAttack();
         }
     }
 }

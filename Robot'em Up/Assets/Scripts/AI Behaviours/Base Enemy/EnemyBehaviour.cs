@@ -387,7 +387,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void ExitBumpedState()
     {
-        Staggered(whatBumps);
+        //Staggered(whatBumps);
     }
 
     void UpdateDistancesToPlayers()
@@ -483,7 +483,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 damageAfterBump = 0;
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
                 whatBumps = WhatBumps.Pass;
-                Staggered(whatBumps);
+                //Staggered(whatBumps);
                 Damage(_damages);
                 if (currentHealth <= 0)
                 {
@@ -585,27 +585,27 @@ public class EnemyBehaviour : PawnController, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
-        AddSpeedCoef(new SpeedCoef(0.5f, 0.2f, SpeedMultiplierReason.ChangingFocus, false));
+        //AddSpeedCoef(new SpeedCoef(0.5f, 0.2f, SpeedMultiplierReason.ChangingFocus, false));
     }
 
-    public void Staggered(WhatBumps? cause = default)
-    {
-        switch (cause)
-        {
-            case WhatBumps.Pass:
-                AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
-                break;
-            case WhatBumps.Dunk:
-                AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
-                break;
-            case WhatBumps.Environment:
-                AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
-                break;
-            default:
-                AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
-                break;
-        }
-    }
+    //public void Staggered(WhatBumps? cause = default)
+    //{
+    //    switch (cause)
+    //    {
+    //        case WhatBumps.Pass:
+    //            AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
+    //            break;
+    //        case WhatBumps.Dunk:
+    //            AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
+    //            break;
+    //        case WhatBumps.Environment:
+    //            AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
+    //            break;
+    //        default:
+    //            AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
+    //            break;
+    //    }
+    //}
 
     public override void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod)
     {

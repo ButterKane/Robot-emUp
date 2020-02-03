@@ -446,7 +446,7 @@ public class PlayerController : PawnController, IHitable
 
             case DamageSource.EnemyContact:
                 Damage(_damages);
-                BumpMe(5, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
+                //Push(_impactVector, 30, 2f);
                 break;
 
             case DamageSource.Laser:
@@ -455,7 +455,7 @@ public class PlayerController : PawnController, IHitable
 
 			case DamageSource.SpawnImpact:
 				Damage(_damages);
-				Push(-_impactVector, _damages * 10f, 1f);
+				//Push(-_impactVector, _damages * 10f, 1f);
 				break;
 		}
 	}
