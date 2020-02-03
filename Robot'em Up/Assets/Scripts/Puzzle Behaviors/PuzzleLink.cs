@@ -31,17 +31,15 @@ public class PuzzleLink : PuzzleActivator, IHitable
                     Destroy(fX_LinkEnd);
                 }
 
-                fX_Linked = FXManager.InstantiateFX(puzzleData.linked, Vector3.up * 2f, true, _impactVector, Vector3.one * 2f, transform);
-            
-                if (fX_Activation == null)
+				fX_Linked = FeedbackManager.SendFeedback("event.PuzzleLinkActivated", this, transform.position, _impactVector, _impactVector).GetVFX();
+
+				if (fX_Activation == null)
                 {
-                    fX_Activation = FXManager.InstantiateFX(puzzleData.linking, Vector3.up * 1.4f, true, Vector3.zero, Vector3.one * 1.4f, transform);
-                }
+                    fX_Activation = FeedbackManager.SendFeedback("event.PuzzleLinkActivation", this, transform.position, _impactVector, _impactVector).GetVFX();
+				}
 			    MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
                 chargingTime = puzzleData.nbSecondsLinkMaintained;
                 isActivated = true;
-
-                SoundManager.PlaySound("PuzzleLinkActivate", transform.position, transform);
 
                 ActivateLinkedObjects();
             }
@@ -64,8 +62,8 @@ public class PuzzleLink : PuzzleActivator, IHitable
         if (chargingTime <= 0 && isActivated)
         {
             isActivated = false;
-            fX_LinkEnd = FXManager.InstantiateFX(puzzleData.linkEnd, Vector3.up * 1, true, Vector3.forward, Vector3.one, transform);
-            if (fX_Activation != null)
+            fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
+			if (fX_Activation != null)
             {
                 Destroy(fX_Activation);
             }
@@ -73,8 +71,6 @@ public class PuzzleLink : PuzzleActivator, IHitable
             {
                 Destroy(fX_Linked);
             }
-
-            SoundManager.PlaySound("PuzzleLinkDesactivate", transform.position, transform);
             DesactiveLinkedObjects();
         }
     }

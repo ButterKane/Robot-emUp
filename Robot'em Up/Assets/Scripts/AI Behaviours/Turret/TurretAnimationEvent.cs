@@ -25,21 +25,26 @@ public class TurretAnimationEvent : MonoBehaviour
     }
     void Attack()
     {
-        myScript.LaunchProjectile();
+        myScript.Shoot();
+    }
+
+    void InititateLaser()
+    {
+        myScript.Shoot(); // For now, using this method to call coroutine of laser
     }
 
     void AimingCubeRotateTrue()
     {
         if (canCallFollowingState)
         {
-            myScript.ChangeAimingCubeState(AimingCubeState.Following);
+            myScript.ChangeAimingRedDotState(AimingRedDotState.Following);
             canCallFollowingState = false;
         }
     }
 
     void AimingCubeRotateFalse()
     {
-        myScript.ChangeAimingCubeState(AimingCubeState.Locking);
+        myScript.ChangeAimingRedDotState(AimingRedDotState.Locking);
     }
 
     void GoToRestAttackState()

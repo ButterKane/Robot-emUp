@@ -362,6 +362,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableCollisions();
 				break;
 			case BallState.Flying:
+				Highlighter.DetachBallFromPlayer();
 				CursorManager.SetBallPointerParent(null);
 				ballTrail = FeedbackManager.SendFeedback("event.BallFlying", this).GetVFX();
 				Vector3 newBallScale = ballTrail.transform.localScale;
@@ -428,20 +429,32 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
-					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
-
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
-						IHitable i_potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
+						if (raycast.collider.tag == "Enemy") { continue; }
+                        EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
+                        if (i_selfRef != null)
+                        {
+							if (i_selfRef.shield.transform.InverseTransformPoint(transform.position).z > 0.0)
+                            {
+                                FeedbackManager.SendFeedback("event.ShieldHitByBall", this);
+								Vector3 i_hitNormal = raycast.normal;
+								i_hitNormal.y = 0;
+								Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
+								i_newDirection.y = -currentDirection.y;
+								Bounce(i_newDirection, 1f);
+								return;
+                            }
+                        }
+
+                        IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
 						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
 						}
-						if (raycast.collider.GetComponentInParent<Shield>() != null) {
-							Debug.Log("Shield"); 
-						}
+
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
@@ -450,7 +463,7 @@ public class BallBehaviour : MonoBehaviour
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
-							i_newDirection.y = -currentDirection.y;
+							i_newDirection.y = -currentDirection.y;              
 							Bounce(i_newDirection, currentBallDatas.speedMultiplierOnBounce);
 							return;
 						}

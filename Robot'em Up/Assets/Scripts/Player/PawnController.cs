@@ -27,6 +27,7 @@ public enum SpeedMultiplierReason
 	Pass,
 	Environment,
 	Dunk,
+	ChangingFocus,
 	Unknown
 }
 
@@ -61,6 +62,7 @@ public class PawnController : MonoBehaviour
 
 	private bool isInvincible;
     public float invincibilityTime = 1;
+    public bool ignoreEletricPlates = false;
     private IEnumerator invincibilityCoroutine;
 
     [Space(2)]
@@ -119,7 +121,7 @@ public class PawnController : MonoBehaviour
     [System.NonSerialized] public Rigidbody rb;
     [System.NonSerialized] public MoveState moveState;
 	private float accelerationTimer;
-    protected Vector3 moveInput;
+    public Vector3 moveInput;
 	protected Vector3 lookInput;
     private Quaternion turnRotation;
 	private float customDrag;
@@ -549,7 +551,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (!CanClimb()) { return null; }
 		RaycastHit hit;
-		if (Physics.Raycast(GetHeadPosition(), transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
+		if (Physics.SphereCast(GetCenterPosition(), 1f, transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
 		{
 			if (hit.transform.tag == "Ledge")
 			{
@@ -594,6 +596,9 @@ public class PawnController : MonoBehaviour
 
     private IEnumerator Bump_C()
     {
+        EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
+        if (enemy != null) { enemy.ChangeState(EnemyState.Bumped); }
+
         float i_bumpTimeProgression = 0;
         bool i_mustCancelBump = false;
 
@@ -645,9 +650,7 @@ public class PawnController : MonoBehaviour
 			gettingUpDuration -= Time.deltaTime;
             if (gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
 			{
-				EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
 				enemy.ChangeState(EnemyState.Following);
-				enemy.ExitBumpedState();
 			}
 			yield return null;
 		}

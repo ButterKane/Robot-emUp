@@ -16,6 +16,8 @@ public class PlayerController : PawnController, IHitable
 	GamePadState state;
 	private Camera cam;
 	private bool inputDisabled;
+	public Color highlightedColor;
+	public Color highlightedSecondColor;
 
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
@@ -47,6 +49,8 @@ public class PlayerController : PawnController, IHitable
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
+	private bool leftShouldWaitForRelease;
+	public static Transform middlePoint;
 
 	public void Start ()
 	{
@@ -55,10 +59,26 @@ public class PlayerController : PawnController, IHitable
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
+		if (Application.isPlaying)
+		{
+			if (middlePoint == null)
+			{
+				middlePoint = new GameObject().transform;
+				middlePoint.name = "MiddlePoint";
+				middlePoint.tag = "MiddlePoint";
+				middlePoint.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+				SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
+				col.isTrigger = true;
+			}
+		}
 	}
 	private void Update ()
 	{
-		if (Application.isPlaying)
+		if (middlePoint != null && playerIndex == PlayerIndex.One)
+		{
+			middlePoint.transform.position = GameManager.playerOne.transform.position + ((GameManager.playerTwo.transform.position - GameManager.playerOne.transform.position) / 2f);
+		}
+		if (Application.isPlaying && !inputDisabled)
 		{
 			GetInput();
 		}
@@ -84,10 +104,16 @@ public class PlayerController : PawnController, IHitable
 	void GamepadInput ()
 	{
 		state = GamePad.GetState(playerIndex);
-		moveInput = (state.ThumbSticks.Left.X * cam.transform.right) + (state.ThumbSticks.Left.Y * cam.transform.forward);
+		Vector3 camForwardNormalized = cam.transform.forward;
+		camForwardNormalized.y = 0;
+		camForwardNormalized = camForwardNormalized.normalized;
+		Vector3 camRightNormalized = cam.transform.right;
+		camRightNormalized.y = 0;
+		camRightNormalized = camRightNormalized.normalized;
+		moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
 		moveInput.y = 0;
 		moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-		lookInput = (state.ThumbSticks.Right.X * cam.transform.right) + (state.ThumbSticks.Right.Y * cam.transform.forward);
+		lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
 		if (lookInput.magnitude > 0.1f)
 		{
 			passController.Aim();
@@ -114,6 +140,16 @@ public class PlayerController : PawnController, IHitable
 		if (state.Triggers.Right < triggerTreshold)
 		{
 			rightTriggerWaitForRelease = false;
+		}
+		if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
+		{
+			Highlighter.HighlightBall();
+			//Highlighter.HighlightObject(transform.Find("Model"), highlightedColor, highlightedSecondColor);
+			leftShouldWaitForRelease = true;
+		}
+		if (state.Buttons.LeftShoulder == ButtonState.Released)
+		{
+			leftShouldWaitForRelease = false;
 		}
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
@@ -403,12 +439,23 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
+                Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+                BumpMe(5, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
 				Damage(_damages);
 				break;
 
             case DamageSource.EnemyContact:
                 Damage(_damages);
                 break;
+
+            case DamageSource.Laser:
+                Damage(_damages);
+                break;
+
+			case DamageSource.SpawnImpact:
+				Damage(_damages);
+				Push(-_impactVector, _damages * 10f, 1f);
+				break;
 		}
 	}
 

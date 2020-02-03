@@ -24,6 +24,9 @@ public class PuzzleEletricPlate : PuzzleActivable
         boxCollider = GetComponent<BoxCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
+
+
+        PawnTrapped.Clear();
     }
 
     void FixedUpdate()
@@ -47,7 +50,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                 item.Damage(puzzleData.DamageEletricPlate);
                 item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
 
-                SoundManager.PlaySound("EletricPlateDamage", transform.position, transform);
+				FeedbackManager.SendFeedback("event.PuzzleElectricPlateDamage", item);
             }
         }
         /*
@@ -73,7 +76,11 @@ public class PuzzleEletricPlate : PuzzleActivable
             
             PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
             //pawn.Damage(puzzleData.DamageEletricPlate);
-            PawnTrapped.Add(_pawn);
+
+            if (_pawn.ignoreEletricPlates == false)
+            {
+                PawnTrapped.Add(_pawn);
+            }
 
             if (!isActivated)
             {
@@ -93,6 +100,14 @@ public class PuzzleEletricPlate : PuzzleActivable
         }
 
     }
+
+
+
+    void OnDisable()
+    {
+        PawnTrapped.Clear();
+    }
+
 
 
     override public void WhenActivate()
@@ -135,7 +150,7 @@ public class PuzzleEletricPlate : PuzzleActivable
             {
                 Destroy(myFx);
             }
-            myFx = FXManager.InstantiateFX(puzzleData.electricPlateActivate, transform.position, false, Vector3.zero, Vector3.one * 2.5f);
+			myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
         }
     }
 }
