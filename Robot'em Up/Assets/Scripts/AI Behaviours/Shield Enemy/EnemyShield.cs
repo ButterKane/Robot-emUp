@@ -177,4 +177,11 @@ public class EnemyShield : EnemyBehaviour
 		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.tag == "Player")
+        {
+            other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, damage, DamageSource.EnemyContact);
+        }
+    }
 }
