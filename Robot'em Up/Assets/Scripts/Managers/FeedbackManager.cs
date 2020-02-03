@@ -84,7 +84,10 @@ public class FeedbackManager
 			{
 				parent = target.transform;
 			}
-			SoundManager.PlaySound(feedback.soundData.soundName, target.transform.position, parent);
+			if (feedback.soundData.soundName != "")
+			{
+				SoundManager.PlaySound(feedback.soundData.soundName, target.transform.position, parent);
+			}
 		}
 		if (feedback.vfxData != null && feedback.vfxDataInited && feedback.vfxData.vfxPrefab != null)
 		{

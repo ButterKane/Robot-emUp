@@ -70,7 +70,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [Header("Focus")]
     public float focusDistance = 3;
     public float unfocusDistance = 20;
-    public float timeBetweenCheck = 0;
+    [HideInInspector] public float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
     public float maxTimeBetweenCheck = 0.25f;
 
@@ -383,7 +383,8 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (anticipationTime <= 0)
         {
-            attackPreviewPlaneRenderer.enabled = true;
+            if(GetComponent<EnemyShield>() == null)
+                attackPreviewPlaneRenderer.enabled = true;
             //if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }

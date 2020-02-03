@@ -429,30 +429,22 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
-					Debug.DrawRay(transform.position, currentDirection.normalized * currentSpeed * Time.deltaTime, Color.red);
-
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
                         EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
                         if (i_selfRef != null)
                         {
-                            if ((currentDirection.normalized + i_selfRef.shield.transform.forward.normalized).magnitude < (i_selfRef.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
+							if (i_selfRef.shield.transform.InverseTransformPoint(transform.position).z > 0.0)
                             {
-                                FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
-
-                                Vector3 i_normalReboundDirection = Vector3.Reflect(currentDirection, transform.forward);
-
-                                Vector3 i_newDirection = new Vector3(i_normalReboundDirection.x, currentDirection.y, i_normalReboundDirection.z);
-
-                                Vector3 i_directionToPlayerOne = GameManager.playerOne.transform.position - i_selfRef.shield.transform.position;
-                                Vector3 i_directionToPlayerTwo = GameManager.playerTwo.transform.position - i_selfRef.shield.transform.position;
-
-                                i_newDirection = SwissArmyKnife.GetClosestDirection(i_directionToPlayerOne, i_directionToPlayerTwo, i_newDirection, i_selfRef.angleToBounceBackToPlayer);
-                                Debug.Log("Bounce please");
-                                Bounce(i_newDirection, 1f);
+                                FeedbackManager.SendFeedback("event.ShieldHitByBall", this);
+								Vector3 i_hitNormal = raycast.normal;
+								i_hitNormal.y = 0;
+								Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
+								i_newDirection.y = -currentDirection.y;
+								Bounce(i_newDirection, 1f);
+								return;
                             }
-                            Debug.Log("Shield");
                         }
 
                         IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();

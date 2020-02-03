@@ -44,7 +44,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
             topEyeTransform.gameObject.SetActive(true);
             leftEyeTransform.gameObject.SetActive(true);
             rightEyeTransform.gameObject.SetActive(true);
-            myAudioSource.enabled = true;
         }
         else
         {
@@ -52,7 +51,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
             topEyeTransform.gameObject.SetActive(false);
             leftEyeTransform.gameObject.SetActive(false);
             rightEyeTransform.gameObject.SetActive(false);
-            myAudioSource.enabled = false;
         }
     }
 
@@ -65,7 +63,7 @@ public class ScreenBehavior : NarrativeInteractiveElements
         myRend.material.SetFloat("_RedEmissiveIntensity", Random.Range(1f, 1.2f));
     }
 
-    void SetAngryState(bool _isAngry)
+    public void SetAngryState(bool _isAngry)
     {
         if (_isAngry)
         {
@@ -73,6 +71,7 @@ public class ScreenBehavior : NarrativeInteractiveElements
         }
         else //reset default values
         {
+            angry = false;
             myRend.material.SetFloat("_SinFrequency", 5);
             myRend.material.SetFloat("_AdditiveEmissive", 0.77f);
             myRend.material.SetColor("_Noise1PannerSpeed", new Color(.1f, .1f, 0, 0));

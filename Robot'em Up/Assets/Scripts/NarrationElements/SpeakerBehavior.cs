@@ -20,13 +20,5 @@ public class SpeakerBehavior : NarrativeInteractiveElements
     public override void EndPossessionAnimationEvents()
     {
         base.EndPossessionAnimationEvents();
-        if (possessed)
-        {
-            myAudioSource.enabled = true;
-        }
-        else
-        {
-            myAudioSource.enabled = false;
-        }
     }
 }

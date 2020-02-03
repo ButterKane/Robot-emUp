@@ -10,9 +10,9 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     [HideInInspector] public bool broken;
     [HideInInspector] public bool angry;
     [HideInInspector] public bool possessed;
-    public AudioSource myAudioSource;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+    public string breakEventName;
     
     //Possession variables
     public float possessionAnimationMaxTime;
@@ -21,6 +21,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public Light[] possessionLights;
     public float maxLightIntensity;
     public float normalLightIntensity;
+
+    public AudioMixerGroup myAudioMixer;
 
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
@@ -41,6 +43,11 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         broken = true;
         if(possessed)
             SetAIPossession(false);
+        FeedbackManager.SendFeedback(breakEventName, this);
+        if (NarrationManager.narrationManager.currentNarrationElementActivated == this)
+        {
+            NarrationManager.narrationManager.ChangeActivatedNarrationElement(null);
+        }
     }
 
     public virtual void SetAIPossession(bool _isPossessed)
@@ -105,12 +112,18 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             {
                 possessionLights[i].intensity = normalLightIntensity;
             }
+            NarrationManager.narrationManager.ChangeActivatedNarrationElement(this);
         }
         else
         {
             for (int i = 0; i < possessionLights.Length; i++)
             {
                 possessionLights[i].intensity = 0;
+            }
+
+            if (NarrationManager.narrationManager.currentNarrationElementActivated == this)
+            {
+                NarrationManager.narrationManager.ChangeActivatedNarrationElement(null);
             }
         }
     }

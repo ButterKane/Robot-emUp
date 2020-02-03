@@ -6,6 +6,9 @@ public class NextSceneLoader : MonoBehaviour
 {
 	private void OnTriggerEnter ( Collider other )
 	{
-		GameManager.LoadNextScene();
+		if (other.GetComponent<PlayerController>() != null)
+		{
+			GameManager.LoadNextScene();
+		}
 	}
 }
