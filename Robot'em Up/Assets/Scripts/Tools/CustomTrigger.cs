@@ -11,15 +11,18 @@ public class CustomTrigger : MonoBehaviour
 	public bool singleUse;
 	public TriggerCondition triggerCondition;
 	public UnityEvent onTriggerEnterAction;
+	public UnityEvent onTriggerComebackAction;
 
 	private List<PlayerController> playerGoneThroughDoor;
 	private Collider col;
 	private bool used;
+	private int direction;
 
 	private void Awake ()
 	{
 		col = GetComponent<Collider>();
 		playerGoneThroughDoor = new List<PlayerController>();
+		direction = 1;
 	}
 
 	void CheckTrigger( Collider other )
@@ -34,7 +37,7 @@ public class CustomTrigger : MonoBehaviour
 			PlayerController potentialPlayer = other.transform.gameObject.GetComponent<PlayerController>();
 			if (potentialPlayer != null)
 			{
-				if (transform.InverseTransformPoint(potentialPlayer.transform.position).z > 0.0)
+				if (transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
 				{
 					if (!playerGoneThroughDoor.Contains(potentialPlayer))
 					{
@@ -77,6 +80,7 @@ public class CustomTrigger : MonoBehaviour
 
 	void TriggerEvent()
 	{
+		playerGoneThroughDoor.Clear();
 		if (singleUse)
 		{
 			if (used)
@@ -89,7 +93,16 @@ public class CustomTrigger : MonoBehaviour
 			}
 		} else
 		{
-			onTriggerEnterAction.Invoke();
+			if (direction == 1)
+			{
+				onTriggerEnterAction.Invoke();
+				Debug.Log("Trigger enter");
+			} else
+			{
+				onTriggerComebackAction.Invoke();
+				Debug.Log("Trigger comeback");
+			}
+			direction = -direction;
 		}
 	}
 }
