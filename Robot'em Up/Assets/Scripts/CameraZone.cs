@@ -127,7 +127,7 @@ public class CameraZone : MonoBehaviour
 			}
 			else
 			{
-				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
+				if (GetPlayersInside() != null && GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
 				{
 					ActivateZone();
 					linkedCameraBehaviour.ActivateCamera();
