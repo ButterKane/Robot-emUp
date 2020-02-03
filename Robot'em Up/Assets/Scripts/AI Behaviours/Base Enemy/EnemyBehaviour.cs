@@ -498,26 +498,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 break;
-            case DamageSource.SpawnImpact:
-                if (_thrower == this) { return; }
-                if (isBumpable)
-                {
-                    damageAfterBump = _damages;
-                    i_normalizedImpactVector = new Vector3(-_impactVector.x, 0, -_impactVector.z);
-                    if (_bumpModificators != default(Vector3))
-                    {
-                        i_BumpDistanceMod = _bumpModificators.x;
-                        i_BumpDurationMod = _bumpModificators.y;
-                        i_BumpRestDurationMod = _bumpModificators.z;
-                    }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
-                    whatBumps = WhatBumps.Environment;
-                }
-                else
-                {
-                    Damage(_damages);
-                }
-                break;
 
         }
 

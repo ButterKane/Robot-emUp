@@ -45,7 +45,7 @@ public class MainMenu : MonoBehaviour
 
 	public void OpenMenu()
 	{
-		SceneManager.LoadScene(0);
+		GameManager.LoadSceneByIndex(0);
 	}
 	public void OpenLevelSelector()
 	{
