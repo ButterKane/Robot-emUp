@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class DestructibleObject : Dummy
 {
@@ -24,15 +25,21 @@ public class DestructibleObject : Dummy
 
     public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+        transform.DOShakeScale(0.2f, 0.1f, 200).OnComplete(ResetScale);
+        hitCount_access++;
         if (hitCount_access >= maxHealth)
         {
             DestroyTheObject();
+        }
+        else
+        {
+            FeedbackManager.SendFeedback(hitEvent, this, transform.position - _impactVector *0.5f, transform.up, transform.up ) ;
         }
     }
 
     public void DestroyTheObject()
     {
+        FeedbackManager.SendFeedback(deathEvent, this, transform.position, transform.up, transform.up);
         Destroy(gameObject);
     }
 }

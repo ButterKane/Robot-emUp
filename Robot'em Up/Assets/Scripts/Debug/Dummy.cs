@@ -8,6 +8,8 @@ public class Dummy : MonoBehaviour, IHitable
 	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
+    public string hitEvent;
+    public string deathEvent;
 	public GameObject deathFX;
 	private int hitCount;
 	private Vector3 initialScale;
