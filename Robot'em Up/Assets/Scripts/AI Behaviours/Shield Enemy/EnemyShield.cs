@@ -31,15 +31,17 @@ public class EnemyShield : EnemyBehaviour
 
     [Space(2)]
     [Header("Attack")]
+    public Vector2 minMaxAttackSpeed = new Vector2(7, 15);
+    public AnimationCurve attackSpeedVariation;
+    public float attackChargeDuration = 5f;
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim = 0.9f;    // At what % of the attack duration do we want to stop animation to trigger?
     public float attackRaycastDistance = 2;
-    public Vector2 minMaxAttackSpeed = new Vector2(7,15);
-    public AnimationCurve attackSpeedVariation;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
     public float BumpOtherDistanceMod = 0.5f;
     public float BumpOtherDurationMod = 0.2f;
     public float BumpOtherRestDurationMod = 0.3f;
     private float attackTimeProgression;
+    private float initialSpeed;
 
     private new void Start()
     {
@@ -50,7 +52,7 @@ public class EnemyShield : EnemyBehaviour
     // ATTACK
     public override void EnterPreparingAttackState()
     {
-        currentSpeed = navMeshAgent.speed;
+        initialSpeed = navMeshAgent.speed;
         acceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AttackTrigger");
@@ -99,19 +101,18 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            navMeshAgent.speed = Mathf.Lerp(minMaxAttackSpeed.y, minMaxAttackSpeed.x, attackSpeedVariation.Evaluate(attackTimeProgression));
+            moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
-
             Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPlayer.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
 
             Debug.DrawRay(transform.position + i_direction * 5, Vector3.up, Color.green, 2f);
             navMeshAgent.SetDestination(transform.position + i_direction * 5);
         }
 
-        if (attackTimeProgression >= 1)
+        if (attackTimeProgression >= attackChargeDuration)
         {
-            navMeshAgent.speed = currentSpeed;
+            moveSpeed = initialSpeed;
             navMeshAgent.acceleration = acceleration;
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
@@ -119,11 +120,6 @@ public class EnemyShield : EnemyBehaviour
 
             navMeshAgent.enabled = false;
         }
-        /*else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
-        {
-            endOfAttackTriggerLaunched = true;
-            Animator.SetTrigger("EndOfAttackTrigger");
-        }*/
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
         {
             float i_rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);

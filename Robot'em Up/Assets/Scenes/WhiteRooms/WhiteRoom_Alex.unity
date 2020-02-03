@@ -380,12 +380,12 @@ PrefabInstance:
     - target: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6181108247738804001, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -36.11
+      value: -43.22
       objectReference: {fileID: 0}
     - target: {fileID: 6181108247738804001, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
@@ -395,7 +395,7 @@ PrefabInstance:
     - target: {fileID: 6181108247738804001, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.87
+      value: -0.87
       objectReference: {fileID: 0}
     - target: {fileID: 6181108247738804001, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
@@ -437,25 +437,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6181108247738804024, guid: 48c032c58b057434aa1457c10558af0b,
-        type: 3}
-      propertyPath: m_Speed
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
-      propertyPath: distanceToAttack
-      value: 5
+      propertyPath: attackSpeedVariation.m_Curve.Array.size
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
       propertyPath: attackMaxDistance
       value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
-        type: 3}
-      propertyPath: maxAnticipationTime
-      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
@@ -469,8 +459,78 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
         type: 3}
-      propertyPath: whenToTriggerEndOfAttackAnim
-      value: 0.9
+      propertyPath: distanceToAttack
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[1].time
+      value: 0.75435805
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[1].value
+      value: 0.7831717
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[1].inSlope
+      value: -1.048723
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[1].outSlope
+      value: -1.048723
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[1].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[1].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[2].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[2].inSlope
+      value: -2.8573632
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[2].outSlope
+      value: -2.8573632
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[2].inWeight
+      value: 0.08080238
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[0].inSlope
+      value: 0.023539867
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[0].outSlope
+      value: 0.023539867
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackSpeedVariation.m_Curve.Array.data[0].outWeight
+      value: 0.13348325
+      objectReference: {fileID: 0}
+    - target: {fileID: -107054244876289124, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+      propertyPath: attackChargeDuration
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48c032c58b057434aa1457c10558af0b, type: 3}
@@ -2365,6 +2425,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EnemyV3 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
