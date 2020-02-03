@@ -145,8 +145,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minWalkSpeed: 0.1
-  moveSpeed: 13
-  acceleration: 10
+  moveSpeed: 18
+  acceleration: 15
   movingDrag: 0.4
   idleDrag: 0.4
   onGroundGravityMultiplyer: 0
@@ -192,14 +192,14 @@ MonoBehaviour:
   waitingBeforeNextState: 0
   isPhase1: 0
   bossState: 0
-  Health1Bar_Value_Max: 10
-  Health2Bar_Value_Max: 30
+  Health1Bar_Value_Max: 175
+  Health2Bar_Value_Max: 200
   Health1Bar_CurrentValue: 0
   Health2Bar_CurrentValue: 0
-  PunchAttack_DamageInflicted: 20
-  PunchAttack_Anticipation: 0.5
+  PunchAttack_DamageInflicted: 25
+  PunchAttack_Anticipation: 0.3
   PunchAttack_AttackingTime: 0.3
-  PunchAttack_RecoverTime: 1.5
+  PunchAttack_RecoverTime: 0.9
   PunchAttack_Attacking: 0
   PunchAttack_attackHitBoxPrefab: {fileID: 3204598243110983843, guid: facf7526f52079b42874162a658b89cf,
     type: 3}
@@ -227,7 +227,7 @@ MonoBehaviour:
   maxRotationSpeed: 50
   BossShield: {fileID: 6664741642409396383}
   ShieldIsActivated: 0
-  ShieldInvocation_Rate: 90
+  ShieldInvocation_Rate: 93
   ShieldInvaction_MinHeath: 0.8
   ShieldInvaction_TimeInvocation: 0.75
   ShieldInvocation_ShieldTimeLasting: 7
@@ -283,7 +283,7 @@ MonoBehaviour:
   GroundAttack_AnticipationTime: 1.5
   GroundAttack_AttackTime: 1
   HammerAttack_Attacking: 0
-  NumberHammerAttackMax: 6
+  NumberHammerAttackMax: 12
   NumberHammerLeft: 0
   HammerAttack_Anticipation: 2
   HammerAttack_AttackingTime: 0.7
@@ -296,7 +296,7 @@ MonoBehaviour:
   SequenceLaserAttack: 0
   LaserAttack_Anticipation: 1
   LaserAttack_AttackingTime: 5
-  laserAttackInvocation_Rate: 20
+  laserAttackInvocation_Rate: 15
   laserSpeed: 50
   LaserAttack_LaserObject: {fileID: 96350251}
   LaserAttack_ArenaCenter: {x: -0.5001448, y: 1.85, z: -2.05}
@@ -1250,7 +1250,7 @@ Transform:
   m_LocalScale: {x: 1.6000006, y: 4, z: 7.1400137}
   m_Children: []
   m_Father: {fileID: 871285590}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 140.24501, z: 0}
 --- !u!208 &235862130
 NavMeshObstacle:
@@ -1418,7 +1418,7 @@ Transform:
   m_LocalScale: {x: 1.6000007, y: 4, z: 7.140003}
   m_Children: []
   m_Father: {fileID: 871285590}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 140.24501, z: 0}
 --- !u!208 &259781764
 NavMeshObstacle:
@@ -1807,16 +1807,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6181108247297046206}
     m_Modifications:
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_Name
-      value: AimingCube P1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1870,6 +1860,16 @@ PrefabInstance:
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_Name
+      value: AimingCube P1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2813,115 +2813,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00e9982b5c38f04381ff2d2dcead819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &587501152
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 587501157}
-  - component: {fileID: 587501156}
-  - component: {fileID: 587501155}
-  - component: {fileID: 587501154}
-  - component: {fileID: 587501153}
-  m_Layer: 12
-  m_Name: Cube (13)
-  m_TagString: Boss_Destructible
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!208 &587501153
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587501152}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 0
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
---- !u!65 &587501154
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587501152}
-  m_Material: {fileID: 13400000, guid: e2d0a85999d9c204a8fabe7a454160dd, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &587501155
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587501152}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!33 &587501156
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587501152}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &587501157
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587501152}
-  m_LocalRotation: {x: -0, y: 0.3370266, z: -0, w: 0.9414952}
-  m_LocalPosition: {x: -185.92136, y: -249.43398, z: -61.161854}
-  m_LocalScale: {x: 1.6, y: 4, z: 6}
-  m_Children: []
-  m_Father: {fileID: 871285590}
-  m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: 39.392002, z: 0}
 --- !u!1001 &606528543
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4128,16 +4019,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6181108247297046206}
     m_Modifications:
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_Name
-      value: AimingCube P2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4191,6 +4072,16 @@ PrefabInstance:
     - target: {fileID: 7504459082202225208, guid: 3ad48c9b7403cbc44b7d20742ca22767,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_Name
+      value: AimingCube P2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072125978742632973, guid: 3ad48c9b7403cbc44b7d20742ca22767,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4287,7 +4178,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834014838}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -173.29, y: -246.97397, z: -65.49}
+  m_LocalPosition: {x: -181.2, y: -246.97397, z: -65.5}
   m_LocalScale: {x: 67.51, y: 10, z: 5}
   m_Children: []
   m_Father: {fileID: 1315567733}
@@ -4360,7 +4251,6 @@ Transform:
   - {fileID: 1716347392}
   - {fileID: 766458941}
   - {fileID: 1632750135}
-  - {fileID: 587501157}
   - {fileID: 259781763}
   - {fileID: 235862129}
   - {fileID: 2087894868}
@@ -10124,7 +10014,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1945647089}
   m_LocalRotation: {x: -0, y: 0.14608298, z: -0, w: 0.98927236}
-  m_LocalPosition: {x: -242.20135, y: -249.43398, z: -59.56185}
+  m_LocalPosition: {x: -240.2, y: -249.43398, z: -61.7}
   m_LocalScale: {x: 1.5999998, y: 4, z: 6}
   m_Children: []
   m_Father: {fileID: 871285590}
@@ -10674,7 +10564,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2077478083}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -254, y: -246.97397, z: -67.2}
+  m_LocalPosition: {x: -252.2, y: -246.97397, z: -67.2}
   m_LocalScale: {x: 67.51, y: 10, z: 5}
   m_Children: []
   m_Father: {fileID: 1315567733}
@@ -10767,11 +10657,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2087894867}
   m_LocalRotation: {x: -0, y: 0.94042104, z: -0, w: 0.34001225}
-  m_LocalPosition: {x: -188.04, y: -249.43398, z: -48.57}
+  m_LocalPosition: {x: -191.4, y: -249.43398, z: -44.2}
   m_LocalScale: {x: 1.6000006, y: 4, z: 7.1400137}
   m_Children: []
   m_Father: {fileID: 871285590}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 140.24501, z: 0}
 --- !u!208 &2087894869
 NavMeshObstacle:
@@ -11689,7 +11579,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 1.15
-  m_Speed: 5.5
+  m_Speed: 10
   m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 360
