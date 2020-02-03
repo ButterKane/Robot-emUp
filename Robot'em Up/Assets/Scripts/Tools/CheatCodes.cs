@@ -83,9 +83,9 @@ public class CheatCodes : MonoBehaviour
 
     public void TPBallOnPlayer()
     {
-        if (GameManager.i.ball != null)
+        if (GameManager.ball != null)
         {
-            Destroy(GameManager.i.ball);
+            Destroy(GameManager.ball);
         }
 
         Instantiate(ballPrefab, playerOne.transform.position, Quaternion.identity);

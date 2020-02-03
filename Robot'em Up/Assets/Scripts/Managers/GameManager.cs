@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public GameObject mainCameraGO;
     [NonSerialized] public static PlayerController playerOne;
     [NonSerialized] public static PlayerController playerTwo;
-    [NonSerialized] public BallBehaviour ball;
+    [NonSerialized] public static BallBehaviour ball;
 
     private void Awake()
     {
@@ -299,8 +299,9 @@ public class GameManager : MonoBehaviour
 			Destroy(ball.gameObject);
 		}
 		GameObject i_newBall = Instantiate(i.ballPrefab, null);
+		DontDestroyOnLoad(i_newBall);
 		BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
-        i.ball = i_newBall.GetComponent<BallBehaviour>();
+        ball = i_newBall.GetComponent<BallBehaviour>();
 		i_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 
