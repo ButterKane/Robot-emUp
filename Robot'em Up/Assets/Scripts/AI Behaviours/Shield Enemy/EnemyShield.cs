@@ -9,7 +9,6 @@ public class EnemyShield : EnemyBehaviour
     [Separator("Shield Variables")]
     public GameObject shield;       // It's only cosmetic now
     public bool deactivateShieldWhenAttacking = true;
-    public float angleToBounceBackToPlayer = 20;
 
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
     [Range(0,90)]
@@ -175,5 +174,11 @@ public class EnemyShield : EnemyBehaviour
         yield return new WaitForSeconds(timeToDeactivate);
         isShieldActivated_accesss = true;
     }
+
+	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default )
+	{
+		StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
+		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+	}
 
 }

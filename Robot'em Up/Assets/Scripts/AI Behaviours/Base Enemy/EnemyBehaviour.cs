@@ -383,8 +383,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (anticipationTime <= 0)
         {
-            if(GetComponent<EnemyShield>() == null)
-                attackPreviewPlaneRenderer.enabled = true;
+			if (attackPreviewPlaneRenderer != null) { attackPreviewPlaneRenderer.enabled = true; }
             //if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
@@ -469,14 +468,8 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        if (enemyType == EnemyTypes.Shield)
-        {
-            EnemyShield i_selfRef = GetComponent<EnemyShield>();
-            StartCoroutine(i_selfRef.DeactivateShieldForGivenTime(i_selfRef.timeShieldDisappearAfterHit));
-        }
-
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
         float i_BumpDistanceMod = 0.5f;
@@ -491,7 +484,6 @@ public class EnemyBehaviour : PawnController, IHitable
                     if (enemyType == EnemyTypes.RedBarrel)
                     {
                         EnemyRedBarrel i_selfRef = GetComponent<EnemyRedBarrel>();
-                        Debug.Log("Touched with dunk avec " + i_selfRef);
                         i_selfRef.willExplode = false;
                     }
 
@@ -665,7 +657,7 @@ public class EnemyBehaviour : PawnController, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
-        AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
+        AddSpeedCoef(new SpeedCoef(0.5f, 0.2f, SpeedMultiplierReason.ChangingFocus, false));
     }
 
     public void Staggered(WhatBumps? cause = default)

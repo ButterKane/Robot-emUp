@@ -82,7 +82,7 @@ MonoBehaviour:
   damage: 15
   powerLevel: 4
   lockable: 1
-  lockHitboxSize: 2
+  lockHitboxSize: 0.8
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
@@ -115,7 +115,6 @@ MonoBehaviour:
   minMaxCoreHealthValue: {x: 10, y: 10}
   shield: {fileID: 907304710442746487}
   deactivateShieldWhenAttacking: 1
-  angleToBounceBackToPlayer: 20
   angleRangeForRebound: 45
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
@@ -261,11 +260,6 @@ PrefabInstance:
       propertyPath: enemyType
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
-      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -339,7 +333,7 @@ PrefabInstance:
     - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Radius
-      value: 1
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -355,6 +349,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1.2147
+      objectReference: {fileID: 0}
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}

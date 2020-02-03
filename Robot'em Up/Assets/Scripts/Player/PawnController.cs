@@ -27,6 +27,7 @@ public enum SpeedMultiplierReason
 	Pass,
 	Environment,
 	Dunk,
+	ChangingFocus,
 	Unknown
 }
 

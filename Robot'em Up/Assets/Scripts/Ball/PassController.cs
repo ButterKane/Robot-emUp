@@ -227,7 +227,7 @@ public class PassController : MonoBehaviour
 						return i_coordinates;
 					}
 					EnemyShield potentialEnemyShield = hito.collider.gameObject.GetComponentInParent<EnemyShield>();
-					if (potentialEnemyShield != null && potentialEnemyShield.shield != null && hito.collider.gameObject.tag != "")
+					if (potentialEnemyShield != null && potentialEnemyShield.shield != null && hito.collider.gameObject.tag != "Enemy")
 					{
 						Vector3 impactVector = (i_coordinates[i] - i_coordinates[i - 1]);
 						if (potentialEnemyShield.shield.transform.InverseTransformPoint(i_coordinates[i]).z < 0.0)

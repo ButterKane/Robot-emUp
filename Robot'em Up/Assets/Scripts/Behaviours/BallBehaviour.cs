@@ -432,6 +432,7 @@ public class BallBehaviour : MonoBehaviour
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
+						if (raycast.collider.tag == "Enemy") { continue; }
                         EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
                         if (i_selfRef != null)
                         {
@@ -462,7 +463,7 @@ public class BallBehaviour : MonoBehaviour
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
-							i_newDirection.y = -currentDirection.y;
+							i_newDirection.y = -currentDirection.y;              
 							Bounce(i_newDirection, currentBallDatas.speedMultiplierOnBounce);
 							return;
 						}
