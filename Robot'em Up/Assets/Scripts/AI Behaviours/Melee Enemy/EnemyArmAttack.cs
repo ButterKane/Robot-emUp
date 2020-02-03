@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyArmAttack : MonoBehaviour
 {
-    public EnemyBehaviour spawnParent;
+    public EnemyMelee spawnParent;
     Collider meleeCollider;
     public int attackDamage;
     public GameObject mainPlane;

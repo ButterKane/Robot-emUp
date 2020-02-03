@@ -16,11 +16,13 @@ public class LinkBehaviourToAnimator : MonoBehaviour
 
     public void ActivateMeleeHitBox()
     {
-        enemyScriptRef.ActivateAttackHitBox();
+        if (enemyScriptRef.GetType() == typeof(EnemyMelee))
+            enemyScriptRef.GetComponent<EnemyMelee>().ActivateAttackHitBox();
     }
     public void DestroyMeleeHitBox()
     {
-        enemyScriptRef.DestroyAttackHitBox();
+        if (enemyScriptRef.GetType() == typeof(EnemyMelee))
+            enemyScriptRef.GetComponent<EnemyMelee>().DestroySpawnedAttackUtilities();
     }
 
 

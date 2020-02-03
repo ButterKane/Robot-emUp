@@ -88,32 +88,18 @@ public class EnemyBehaviour : PawnController, IHitable
     public float maxAnticipationTime = 0.5f;
     public float maxTimePauseAfterAttack = 1;
     public Vector3 hitBoxOffset;
+    [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
+    public float distanceToAttack = 5;
+    [Range(0, 1)] public float portionOfAnticipationWithRotation = 0.3f;
 
-    [Header("Melee Variables")]
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public float distanceToAttack = 5;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float whenToTriggerEndOfAttackAnim;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public GameObject attackHitBoxPrefab;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public Transform attackHitBoxCenterPoint;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] public float attackRaycastDistance = 2;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float portionOfAnticipationWithRotation = 0.3f;
-    [ConditionalField(nameof(enemyType), false, EnemyTypes.Melee)] [Range(0, 1)] public float portionOfAnticipationWithFlickering = 0.2f;
 
-    private MeshRenderer attackPreviewPlaneRenderer;
     protected float anticipationTime;
     protected float attackDuration;
     protected bool endOfAttackTriggerLaunched;
-    private GameObject attackHitBoxInstance;
-    private GameObject attackPreviewPlane;
-    GameObject myAttackHitBox;
+    
 
     float timePauseAfterAttack;
     protected bool mustCancelAttack;
-    private EnemyArmAttack armScript;
-
-    //[ConditionalField(nameof(enemyType), false, EnemyTypes.Turret)]
-    //[ConditionalField(nameof(enemyType), false, EnemyTypes.Sniper)]
-
 
     [Space(3)]
     [Header("Surrounding")]
@@ -135,7 +121,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
     private HealthBar healthBar;
 
-    protected void Start()
+    protected virtual void Start()
     {
         timeBetweenCheck = maxTimeBetweenCheck;
         playerOneTransform = GameManager.playerOne.transform;
@@ -144,7 +130,6 @@ public class EnemyBehaviour : PawnController, IHitable
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
         GameManager.i.enemyManager.enemies.Add(this);
         if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
-        armScript = GetComponentInChildren<EnemyArmAttack>();
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
 
@@ -304,6 +289,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 timeBetweenCheck = 0;
                 break;
             case EnemyState.Bumped:
+                DestroySpawnedAttackUtilities();
                 EnterBumpedState();
                 break;
             case EnemyState.ChangingFocus:
@@ -336,7 +322,6 @@ public class EnemyBehaviour : PawnController, IHitable
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
-        attackPreviewPlane = null;
     }
 
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
@@ -349,30 +334,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void PreparingAttackState()
     {
-        if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
-        {
-            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, new Vector3(attackHitBoxCenterPoint.position.x, attackHitBoxCenterPoint.position.y + attackHitBoxCenterPoint.localScale.y / 2, attackHitBoxCenterPoint.position.z), Quaternion.identity, transform);
-            attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
-            attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
-            attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
-            attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
-        }
-
-        if (attackPreviewPlane != null)
-        {
-            // Make attack zone appear progressively
-            if (anticipationTime > portionOfAnticipationWithFlickering * maxAnticipationTime)
-            {
-                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
-            }
-            // If max size is reached, flicker the color
-            else
-            {
-                attackPreviewPlane.transform.localScale = Vector3.one;
-                attackPreviewPlaneRenderer.enabled = !attackPreviewPlaneRenderer.enabled;
-            }
-        }
-
         if (anticipationTime > portionOfAnticipationWithRotation * maxAnticipationTime)
         {
             Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.position - transform.position);
@@ -383,7 +344,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
         if (anticipationTime <= 0)
         {
-			if (attackPreviewPlaneRenderer != null) { attackPreviewPlaneRenderer.enabled = true; }
             //if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
@@ -392,22 +352,6 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void AttackingState()
     {
         //ChangeState(EnemyState.PauseAfterAttack);
-    }
-
-    public void ActivateAttackHitBox()
-    {
-        if (attackHitBoxInstance != null)
-        {
-            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
-        }
-    }
-    public void DestroyAttackHitBox()
-    {
-        if (attackHitBoxInstance != null)
-        {
-            Destroy(attackHitBoxInstance);
-            attackHitBoxInstance = null;
-        }
     }
 
     void ExitState()
@@ -424,17 +368,21 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                Destroy(attackHitBoxInstance);
                 break;
             case EnemyState.Attacking:
                 navMeshAgent.enabled = true;
-                Destroy(attackHitBoxInstance);
+                DestroySpawnedAttackUtilities();
                 break;
             case EnemyState.PauseAfterAttack:
                 break;
             case EnemyState.Dying:
                 break;
         }
+    }
+
+    public virtual void DestroySpawnedAttackUtilities()
+    {
+        // Usually filled within the inherited scripts
     }
 
     public virtual void ExitBumpedState()

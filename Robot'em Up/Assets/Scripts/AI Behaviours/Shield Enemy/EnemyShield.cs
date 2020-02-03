@@ -9,17 +9,9 @@ public class EnemyShield : EnemyBehaviour
     [Separator("Shield Variables")]
     public GameObject shield;       // It's only cosmetic now
     public bool deactivateShieldWhenAttacking = true;
-
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
-    [Range(0,90)]
-    public float angleRangeForRebound= 45;
-
-    public Renderer[] renderers;
-    public Color normalColor = Color.blue;
-    public Color attackingColor = Color.red;
-
+    [Range(0, 90)] public float angleRangeForRebound = 45;
     public float timeShieldDisappearAfterHit;
-
     public bool isShieldActivated_accesss
     {
         get { return isShieldActivated; }
@@ -32,7 +24,15 @@ public class EnemyShield : EnemyBehaviour
     bool isShieldActivated;
 
     [Space(2)]
+    [Header("Aspect Variables")]
+    public Renderer[] renderers;
+    public Color normalColor = Color.blue;
+    public Color attackingColor = Color.red;
+
+    [Space(2)]
     [Header("Attack")]
+    [Range(0, 1)] public float whenToTriggerEndOfAttackAnim = 0.9f;    // At what % of the attack duration do we want to stop animation to trigger?
+    public float attackRaycastDistance = 2;
     public Vector2 minMaxAttackSpeed = new Vector2(7,15);
     public AnimationCurve attackSpeedVariation;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
