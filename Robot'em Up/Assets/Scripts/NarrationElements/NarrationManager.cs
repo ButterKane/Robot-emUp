@@ -5,8 +5,7 @@ using UnityEngine;
 public class NarrationManager : MonoBehaviour
 {
     public static NarrationManager narrationManager;
-
-    public AudioClip testAudio;
+    
     public AudioSource myAudioSource;
 
     [Header("Read-Only")]
@@ -21,10 +20,6 @@ public class NarrationManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            LaunchDialogue(testAudio);
-        }
     }
 
     public void LaunchDialogue(AudioClip _clip)
