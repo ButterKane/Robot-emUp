@@ -3,15 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class ArenaDoor : MonoBehaviour
 {
 	public bool closeOnArenaStart;
 	public Counter currentCounter;
 	public float delayBeforeOpening = 1f;
+	private List<PlayerController> playerGoneThroughDoor;
+	private Collider collider;
 
 	private Animator animator;
 	private void Awake ()
 	{
+		collider = GetComponent<Collider>();
+		playerGoneThroughDoor = new List<PlayerController>();
 		animator = GetComponent<Animator>();
 		if (!closeOnArenaStart)
 		{
@@ -53,9 +58,15 @@ public class ArenaDoor : MonoBehaviour
 
 	IEnumerator OpenAfterDelay_C()
 	{
-		Debug.Log("Opening after delay");
 		yield return new WaitForSeconds(delayBeforeOpening);
 		animator.SetBool("Opened", true);
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
+	}
+
+	public void CloseDoor()
+	{
+		collider.isTrigger = false;
+		animator.SetBool("Opened", false);
+		FeedbackManager.SendFeedback("event.ArenaDoorClosing", this);
 	}
 }

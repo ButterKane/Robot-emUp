@@ -355,10 +355,6 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 			BumpMe(10, 1, 1, normalizedImpactVector.normalized);
 		}
         Health -= _damages;
-		if (_ball != null)
-		{
-			_ball.Explode(true);
-		}
         if (Health <= 0)
         {
             Die();

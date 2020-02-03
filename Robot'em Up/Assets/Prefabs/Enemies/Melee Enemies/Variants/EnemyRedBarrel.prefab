@@ -171,7 +171,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 2.25
-  invincibilityTime: 1
+  invincibilityTime: 0.1
+  ignoreEletricPlates: 0
   canMove: 0
   jumpForce: 0
   accelerationCurve:
@@ -227,16 +228,18 @@ MonoBehaviour:
   eventOnBeingGrounded: event.EnemyRedBarrelGrounded
   eventOnDeath: 
   eventOnHealing: 
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 8328487176404494424}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  energyGainedOnHit: 1
-  damage: 10
+  enemyType: 2
+  energyGainedOnHit: 0.08
+  damage: 40
   powerLevel: 2.5
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
@@ -248,52 +251,32 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 1
-  distanceToAttack: 5
   maxAnticipationTime: 0.75
+  maxTimePauseAfterAttack: 0
+  hitBoxOffset: {x: 0, y: 0, z: 0}
+  distanceToAttack: 5
   rotationSpeedPreparingAttack: 0
-  attackMaxDistance: 0
-  maxAttackDuration: 0
-  attackSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   whenToTriggerEndOfAttackAnim: 0
   attackHitBoxPrefab: {fileID: 0}
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  maxTimePauseAfterAttack: 0
+  attackHitBoxCenterPoint: {fileID: 0}
   attackRaycastDistance: 0
+  portionOfAnticipationWithRotation: 0.3
+  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
-  coreDropChances: 0.15
+  spawnImpactRadius: 1
+  spawnImpactDamages: 20
+  coreDropChances: 0.35
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
   buildUpExplosionFX: event.EnemyRedBarrelDeathPart1
   explosionFX: event.EnemyRedBarrelDeathPart2
   explosionRadius: 10
   explosionDamage: 20
-  buildUpBeforeExplosion: 1.17
+  buildUpBeforeExplosion: 0.8
   explosionFXScale: 3
+  willExplode: 1
   bumpDistanceMod: 1.5
   bumpDurationMod: 0.7
   bumpRestDurationMod: 0.2
@@ -311,6 +294,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
@@ -375,11 +363,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Speed
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}

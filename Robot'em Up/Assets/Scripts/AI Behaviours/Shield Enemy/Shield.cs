@@ -10,7 +10,7 @@ public class Shield : MonoBehaviour, IHitable
 
     private void Update()
     {
-        transform.position = enemy.transform.position + enemy.transform.forward * enemy.spawningShieldFrontDistance + Vector3.up;
+        transform.position = enemy.transform.position + enemy.transform.forward  + Vector3.up;
         transform.LookAt(transform.position + enemy.transform.forward);
     }
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))

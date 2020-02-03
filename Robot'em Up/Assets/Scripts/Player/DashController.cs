@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
-using UnityEngine.Analytics;
 
 public enum DashState
 {
@@ -14,14 +13,21 @@ public class DashController : MonoBehaviour
 	[Separator("General Settings")]
 	public float minDistance = 2f;
 	public float maxDistance = 3f;
-	public float speed = 10.1f;
+	public float duration = 0.2f;
+	public AnimationCurve dashDistanceCurve;
 	public int maxStackAmount = 3;
 
 	public bool unstoppableDash;
 	public bool invincibleDuringDash;
+	public float pushForce = 80f;
+	public float pushHeight = 0.2f;
+	public float dashHitboxSize = 0.7f;
 
 	public float useCooldown = 0.2f;
-	public float stackCooldown = 8f;
+	public float defaultStackRecoveryDuration = 8f;
+	public float minStackRecoverySpeedMultiplier = 1f;
+	public float maxStackRecoverySpeedMultiplier = 2f;
+	public AnimationCurve dashRecoverySpeedCurve;
 
 	public AnimationCurve dashFadeCurve;
 	public float dashFadeDuration = 0.2f;
@@ -39,6 +45,7 @@ public class DashController : MonoBehaviour
 	private float currentUseCooldown;
 	private float currentStackCooldown;
 	private int currentStackAmount;
+	private GameObject currentDashFX;
 
 	[ReadOnly] public DashState state;
 	private void Awake ()
@@ -57,38 +64,45 @@ public class DashController : MonoBehaviour
 	{
 		if (currentStackAmount < maxStackAmount)
 		{
-			currentStackCooldown += Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.dashRecoverSpeedMultiplier);
-			if (currentStackCooldown >= stackCooldown)
+			float fillQuantity = (float)currentStackAmount / (float)maxStackAmount;
+			float dashRecoverySpeedMultiplier = Mathf.Lerp(minStackRecoverySpeedMultiplier, maxStackRecoverySpeedMultiplier, dashRecoverySpeedCurve.Evaluate(fillQuantity));
+			currentStackCooldown += Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.dashRecoverSpeedMultiplier) * dashRecoverySpeedMultiplier;
+			if (currentStackCooldown >= defaultStackRecoveryDuration)
 			{
 				currentStackCooldown = 0;
 				currentStackAmount += 1;
+				FeedbackManager.SendFeedback("event.DashStackIncreased", linkedPawn);
 			}
 		}
 	}
-	public void Dash()
+	public void Dash(Vector3 _direction)
 	{
 		if (GetComponent<PlayerUI>() != null)
 		{
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
+
+		AnalyticsManager.IncrementData("PlayerDash");
+		_direction = _direction.normalized;
 		Vector3 i_startPosition = transform.position;
-		Vector3 i_endPosition = transform.position + transform.forward * maxDistance; 
+		Vector3 i_endPosition = transform.position + _direction * maxDistance; 
 		//Check for min distance & maxDistance
 		RaycastHit hit;
-		if (Physics.Raycast(linkedPawn.GetCenterPosition(), transform.forward, out hit, maxDistance))
+		if (Physics.Raycast(linkedPawn.GetCenterPosition(), _direction, out hit, maxDistance))
 		{
 			if (Vector3.Distance(linkedPawn.GetCenterPosition(), hit.point) <= minDistance)
 			{
 				return; //Cancel dash
-			} else
+			} else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 			{
-				i_endPosition = hit.point - (transform.forward * 0.5f);
+				i_endPosition = hit.point - (_direction * 0.5f);
 			}
 		}
 		i_endPosition.y = i_startPosition.y;
 
 		currentStackAmount--;
+		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
 		StartCoroutine(Dash_C(i_startPosition, i_endPosition));
 		currentUseCooldown = useCooldown;
 	}
@@ -99,6 +113,7 @@ public class DashController : MonoBehaviour
 			case DashState.Dashing:
 				break;
 			case DashState.None:
+				if (currentDashFX) { Destroy(currentDashFX); }
 				break;
 		}
 		state = _newState;
@@ -166,10 +181,11 @@ public class DashController : MonoBehaviour
 
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )
 	{
+		Vector3 i_dashDirection = _endPosition - _startPosition;
 		ChangeState(DashState.Dashing);
 		if (invincibleDuringDash) { linkedPawn.SetInvincible(true); }
 		float i_cloneCounter = 0;
-		for (float i = 0; i < Vector3.Distance(_startPosition, _endPosition); i += Time.deltaTime * speed)
+		for (float i = 0; i <= duration; i += Time.deltaTime)
 		{
 			i_cloneCounter += Time.deltaTime;
 			if (i_cloneCounter >= 1f/clonePerSec)
@@ -177,15 +193,36 @@ public class DashController : MonoBehaviour
 				GenerateClone();
 				i_cloneCounter = 0;
 			}
-			RaycastHit hit;
-			if (Physics.Raycast(transform.position, transform.forward, out hit, 0.1f))
+			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition(), dashHitboxSize, i_dashDirection.normalized, 0.4f) ;
+			foreach (RaycastHit hit in hits)
 			{
+				PlayerController hitPawn = hit.collider.transform.gameObject.GetComponent<PlayerController>();
+				if (hitPawn)
+				{
+					if (hitPawn != linkedPawn)
+					{
+						DashController dashController = hitPawn.GetComponent<DashController>();
+						if (dashController != null)
+						{
+							dashController.StopAllCoroutines();
+							dashController.ChangeState(DashState.None);
+							linkedPawn.Push(-i_dashDirection, pushForce / 2f, pushHeight);
+						}
+						hitPawn.Push(i_dashDirection, pushForce, pushHeight);
+						if (!unstoppableDash)
+						{
+							ChangeState(DashState.None);
+							StopAllCoroutines();
+						}
+					}
+				}
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{
+					ChangeState(DashState.None);
 					StopAllCoroutines();
 				}
 			}
-			transform.position = Vector3.Lerp(_startPosition, _endPosition, i / Vector3.Distance(_startPosition, _endPosition));
+			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashDistanceCurve.Evaluate(i/duration));
 			yield return new WaitForEndOfFrame();
 		}
 		transform.position = _endPosition;
@@ -199,7 +236,7 @@ public class DashController : MonoBehaviour
 	{
 		for (float i = 0; i < dashFadeDuration; i+=Time.deltaTime)
 		{
-			linkedPawn.AddSpeedCoef(new SpeedCoef(1 + dashFadeCurve.Evaluate(i / dashFadeDuration) * (speed * 0.015f), Time.deltaTime, SpeedMultiplierReason.Dash, false));
+			linkedPawn.AddSpeedCoef(new SpeedCoef(1 + dashFadeCurve.Evaluate(i / dashFadeDuration), Time.deltaTime, SpeedMultiplierReason.Dash, false));
 			yield return null;
 		}
 	}

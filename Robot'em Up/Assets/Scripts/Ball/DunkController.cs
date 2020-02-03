@@ -21,6 +21,7 @@ public class DunkController : MonoBehaviour
 	public float dunkJumpLength = 1f;
 	public float dunkJumpDuration = 2f;
 	public float dunkJumpFreezeDuration = 1f;
+	[Range(0f, 1f)] public float energyPercentLostOnFail = 0.2f;
 
     [Space(15)]
 	public float dunkDashSpeed = 5f;
@@ -55,6 +56,7 @@ public class DunkController : MonoBehaviour
 
 	private float currentCD;
 	private GameObject dunkWaitingFX;
+	private GameObject dunkDashFX;
 
 	private void Awake ()
 	{
@@ -80,6 +82,7 @@ public class DunkController : MonoBehaviour
 
 	public void Explode ()
 	{
+		AnalyticsManager.IncrementData("SuccessfulDunk");
 		BallBehaviour i_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
 		EnergyManager.DecreaseEnergy(1f);
@@ -178,6 +181,7 @@ public class DunkController : MonoBehaviour
 	{
 		ChangeState(DunkState.Canceling);
 		currentCD = dunkCooldown;
+		EnergyManager.DecreaseEnergy(energyPercentLostOnFail);
 		yield return FallOnGround_C(dunkCancelledFallSpeed);
 	}
 
@@ -243,6 +247,7 @@ public class DunkController : MonoBehaviour
 				i_playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
+				dunkDashFX = FeedbackManager.SendFeedback("event.DunkDashing", i_handTransform).GetVFX();
 				break;
 			case DunkState.Waiting:
 				dunkWaitingFX = FeedbackManager.SendFeedback("event.DunkWaiting", i_handTransform).GetVFX();
@@ -257,6 +262,7 @@ public class DunkController : MonoBehaviour
 				FeedbackManager.SendFeedback("event.DunkCatchingBall", i_handTransform);
 				break;
 			case DunkState.Explosing:
+				if (dunkDashFX) { Destroy(dunkDashFX); }
 				FeedbackManager.SendFeedback("event.DunkSmashingOnGround", playerController);
 				break;
 		}

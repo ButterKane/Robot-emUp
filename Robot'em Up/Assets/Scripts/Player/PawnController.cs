@@ -27,6 +27,7 @@ public enum SpeedMultiplierReason
 	Pass,
 	Environment,
 	Dunk,
+	ChangingFocus,
 	Unknown
 }
 
@@ -61,6 +62,7 @@ public class PawnController : MonoBehaviour
 
 	private bool isInvincible;
     public float invincibilityTime = 1;
+    public bool ignoreEletricPlates = false;
     private IEnumerator invincibilityCoroutine;
 
     [Space(2)]
@@ -119,7 +121,7 @@ public class PawnController : MonoBehaviour
     [System.NonSerialized] public Rigidbody rb;
     [System.NonSerialized] public MoveState moveState;
 	private float accelerationTimer;
-    protected Vector3 moveInput;
+    public Vector3 moveInput;
 	protected Vector3 lookInput;
     private Quaternion turnRotation;
 	private float customDrag;
@@ -200,7 +202,7 @@ public class PawnController : MonoBehaviour
     void Rotate()
     {
 		//Rotation while moving
-        if (moveInput.magnitude >= 0.1f)
+        if (moveInput.magnitude >= 0.5f)
             turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
 
 		//Rotation while aiming or shooting
@@ -395,12 +397,6 @@ public class PawnController : MonoBehaviour
 		Destroy(this.gameObject);
     }
 
-    public void Push(Vector3 _direction, float _magnitude, Vector3 explosionPoint)
-    {
-        _direction = _direction.normalized * _magnitude;
-        rb.AddExplosionForce(_magnitude, explosionPoint, 0);
-    }
-
 	public virtual void Heal(int _amount)
 	{
 		int i_newHealth = currentHealth + _amount;
@@ -414,7 +410,7 @@ public class PawnController : MonoBehaviour
         {
             invincibilityCoroutine = InvicibleFrame_C();
             StartCoroutine(invincibilityCoroutine);
-			FeedbackManager.SendFeedback(eventOnBeingHit, this);
+			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 			currentHealth -= _amount;
             if (currentHealth <= 0)
             {
@@ -538,6 +534,14 @@ public class PawnController : MonoBehaviour
 
         StartCoroutine(Bump_C());
     }
+
+	public virtual void Push(Vector3 _pushDirection, float _pushForce, float _pushHeight)
+	{
+		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
+		_pushDirection.y = _pushHeight;
+		//_pushDirection.y = Mathf.Clamp((_pushForce/10f),0.1f, 0.75f);
+		rb.AddForce(_pushDirection.normalized * _pushForce, ForceMode.Impulse);
+	}
     #endregion
 
     #region Private functions
@@ -547,7 +551,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (!CanClimb()) { return null; }
 		RaycastHit hit;
-		if (Physics.Raycast(GetHeadPosition(), transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
+		if (Physics.SphereCast(GetCenterPosition(), 1f, transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
 		{
 			if (hit.transform.tag == "Ledge")
 			{
@@ -592,6 +596,9 @@ public class PawnController : MonoBehaviour
 
     private IEnumerator Bump_C()
     {
+        EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
+        if (enemy != null) { enemy.ChangeState(EnemyState.Bumped); }
+
         float i_bumpTimeProgression = 0;
         bool i_mustCancelBump = false;
 
@@ -643,9 +650,7 @@ public class PawnController : MonoBehaviour
 			gettingUpDuration -= Time.deltaTime;
             if (gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
 			{
-				EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
 				enemy.ChangeState(EnemyState.Following);
-				enemy.ExitBumpedState();
 			}
 			yield return null;
 		}

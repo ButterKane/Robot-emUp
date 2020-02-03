@@ -25,10 +25,6 @@ public class Dummy : MonoBehaviour, IHitable
 	{
 		transform.DOShakeScale(1f, 1f).OnComplete(ResetScale);
 		hitCount_access++;
-		if (_ball != null)
-		{
-			_ball.Explode(true);
-		}
 
         if (_source != DamageSource.Dunk)
         {

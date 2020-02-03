@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 2.25
-  invincibilityTime: 1
-  canMove: 0
+  invincibilityTime: 0.1
+  ignoreEletricPlates: 0
+  canMove: 1
   jumpForce: 0
   accelerationCurve:
     serializedVersion: 2
@@ -24,7 +25,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minWalkSpeed: 0.1
-  moveSpeed: 15
+  moveSpeed: 7
   acceleration: 200
   movingDrag: 0.4
   idleDrag: 0.4
@@ -70,76 +71,55 @@ MonoBehaviour:
   eventOnBeingGrounded: event.EnemyShieldGrounded
   eventOnDeath: event.EnemyShieldDeath
   eventOnHealing: 
+  moveInput: {x: 0, y: 0, z: 0}
   healthBarRef: {fileID: 4697345455816352529}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
-  energyGainedOnHit: 1
+  enemyType: 1
+  energyGainedOnHit: 0.08
   damage: 15
   powerLevel: 4
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 0.8
   arenaRobot: 0
-  focusDistance: 40
-  unfocusDistance: 50
+  focusDistance: 50
+  unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 6
   maxTimeBetweenCheck: 0.25
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
+  timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  distanceToAttack: 10
   maxAnticipationTime: 1.5
-  rotationSpeedPreparingAttack: 0.2
-  attackMaxDistance: 4
-  maxAttackDuration: 1.2
-  attackSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  whenToTriggerEndOfAttackAnim: 0.9
-  attackHitBoxPrefab: {fileID: 1561288176734524478, guid: 5a96c9071a92ed1449640b4ee659fc33,
-    type: 3}
-  hitBoxOffset: {x: 0.5, y: 1, z: 0}
   maxTimePauseAfterAttack: 1
+  hitBoxOffset: {x: 0.5, y: 1, z: 0}
+  distanceToAttack: 7
+  rotationSpeedPreparingAttack: 0.2
+  whenToTriggerEndOfAttackAnim: 0.9
+  attackHitBoxPrefab: {fileID: 0}
+  attackHitBoxCenterPoint: {fileID: 0}
   attackRaycastDistance: 2
+  portionOfAnticipationWithRotation: 0.3
+  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
+  spawnImpactRadius: 3
+  spawnImpactDamages: 20
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 15, y: 15}
-  shieldPrefab: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
-    type: 3}
-  deactivateShieldWhenAttacking: 0
-  angleRangeForRebound: 0
-  spawningShieldFrontDistance: 0
+  minMaxCoreHealthValue: {x: 10, y: 10}
+  shield: {fileID: 907304710442746487}
+  deactivateShieldWhenAttacking: 1
+  angleRangeForRebound: 45
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
+  timeShieldDisappearAfterHit: 0
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
@@ -169,6 +149,106 @@ MonoBehaviour:
   BumpOtherDistanceMod: 0.5
   BumpOtherDurationMod: 0.2
   BumpOtherRestDurationMod: 0.3
+--- !u!1001 &5830630883478141552
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 6181108247738804001}
+    m_Modifications:
+    - target: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Name
+      value: Shield
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5760692066787637055, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8553073857769885308, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7624369565430697710, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1847733795171493226, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3d2843c1071640d41aaadbea7e32a699, type: 3}
+--- !u!1 &907304710442746487 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630883478141552}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5830630885209383182
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -176,20 +256,19 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: enemyType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
       value: EnemyShield
       objectReference: {fileID: 0}
-    - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -48.87
+      value: -58.68
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -199,7 +278,7 @@ PrefabInstance:
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.88
+      value: -7.79
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -251,30 +330,10 @@ PrefabInstance:
       propertyPath: m_Speed
       value: 5.5
       objectReference: {fileID: 0}
-    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: eventOnBeingHit
-      value: event.EnemyShieldHit
-      objectReference: {fileID: 0}
-    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: eventOnBeingBumpedAway
-      value: event.EnemyShieldBeingBumpedAway
-      objectReference: {fileID: 0}
-    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: eventOnBeingGrounded
-      value: event.EnemyShieldGrounded
-      objectReference: {fileID: 0}
-    - target: {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: eventOnDeath
-      value: event.EnemyShieldDeath
-      objectReference: {fileID: 0}
     - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Radius
-      value: 1
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -322,6 +381,12 @@ PrefabInstance:
 --- !u!1 &6181108247738804025 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6181108247738804001 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}

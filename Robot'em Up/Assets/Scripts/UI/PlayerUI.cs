@@ -129,7 +129,7 @@ public class PlayerUI : MonoBehaviour
 
 	void UpdateDashBars()
 	{
-		float i_totalFillAmount = dashController.GetCurrentStackAmount() + (dashController.GetCurrentStackCooldown() / dashController.stackCooldown);
+		float i_totalFillAmount = dashController.GetCurrentStackAmount() + (dashController.GetCurrentStackCooldown() / dashController.defaultStackRecoveryDuration);
 		for (int i = 0; i < dashStacks.Count; i++)
 		{
 			float fillAmount = Mathf.Clamp(i_totalFillAmount, 0f, 1f);

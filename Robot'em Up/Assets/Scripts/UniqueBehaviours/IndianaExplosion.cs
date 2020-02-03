@@ -10,8 +10,7 @@ public class IndianaExplosion : MonoBehaviour
     public bool isBarrage;
     [ReadOnly] public float waitingForExplosion;
     [ReadOnly]  public bool Explosed;
-
-    public GameObject fXExplosion;
+    
     private SpriteRenderer spriteRenderer;
     private SphereCollider sphereCollider;
     [ReadOnly] public IndianaManager indianaManager;
@@ -44,13 +43,21 @@ public class IndianaExplosion : MonoBehaviour
         if (waitingForExplosion < 0 && !Explosed)
         {
             Explosed = true;
-            if (!isBarrage)
+            GameObject FX;
+            if (isBarrage)
             {
-                indianaManager.indianaCamera.shakeAmount += 0.025f * myScale;
+                FX = FeedbackManager.SendFeedback("event.IndianaBarrageExposion", this).GetVFX();
             }
-            SoundManager.PlaySound("ExplosionIndianaJones", transform.position, transform);
+            else
+            {
+                FX = FeedbackManager.SendFeedback("event.IndianaRegularExposion", this).GetVFX();
+            }
+            
+            FX.transform.localScale = new Vector3(myScale, myScale, myScale);
+
+
             spriteRenderer.color = new Color(1, 1, 1, 0.05f);
-            fXExplosion.SetActive(true);
+           // fXExplosion.SetActive(true);
             foreach (var item in listPawnsHere)
             {
                 item.Damage(indianaManager.damageToPawn);
