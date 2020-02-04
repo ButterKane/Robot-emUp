@@ -9,7 +9,6 @@ public class DialogueTrigger : MonoBehaviour
 {
     public DialogueData dialogueData;
     public GameObject dialogueBoxPrefab;
-    [Range(0, 1)] public float boxOpacity = 0.3f;
     public float typingSpeed = 5;
     private GameObject dialogueBoxInstance;
     private TextMeshProUGUI textField;
@@ -27,7 +26,6 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (textWritingCoroutine == null)
         {
-            PlaySound(dialogueData.dialogueClip, transform.position);
             textWritingCoroutine = WriteText_C();
             StartCoroutine(textWritingCoroutine);
         }
@@ -40,6 +38,7 @@ public class DialogueTrigger : MonoBehaviour
             for (int i = 0; i < dialogueData.texts[j].text.Length + 1; i++)
             {
                 textField.text = dialogueData.texts[j].text.Substring(0, i);
+                CheckIfWordHasEnoughSpace();
                 yield return new WaitForSeconds(1 / typingSpeed);
             }
 
@@ -55,7 +54,6 @@ public class DialogueTrigger : MonoBehaviour
         if (other.tag == "Player" && dialogueBoxInstance == null)
         {
             dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
-            dialogueBoxInstance.GetComponent<Image>().color = new Color(0, 0, 0, boxOpacity);
             textField = dialogueBoxInstance.transform.GetComponentInChildren<TextMeshProUGUI>();
             subImage = dialogueBoxInstance.transform.GetChild(0).GetComponent<Image>();
             StartCoroutine(BlinkSubImage());
@@ -72,6 +70,8 @@ public class DialogueTrigger : MonoBehaviour
         }
     }
 
+
+    //Not called, just in case
     public void PlaySound(AudioClip _dialogueClip, Vector3 _position)
     {
         GameObject i_newSoundPlayer = new GameObject();
@@ -85,5 +85,18 @@ public class DialogueTrigger : MonoBehaviour
         i_newAudioSource.transform.position = _position;
         i_newAudioSource.clip = _dialogueClip;
         i_newAudioSource.Play();
+    }
+
+    public bool CheckIfWordHasEnoughSpace()
+    {
+        //space count = nombre d'espaces (entre les mots)
+        // word count = nombre de mots, commençant à 0
+        // character count = nombre de caractères
+        //characterInfo.Length = taille du mot!!!
+
+        float i_totalSpace = textField.bounds.size.y;
+        Debug.Log("wordCount = " + textField.textInfo.characterInfo.Length);
+        //float i_actualCurrentSpace = i_totalSpace - textField.textInfo.
+            return true;
     }
 }
