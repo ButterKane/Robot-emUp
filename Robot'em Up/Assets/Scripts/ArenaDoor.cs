@@ -63,6 +63,12 @@ public class ArenaDoor : MonoBehaviour
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
 	}
 
+	public void OpenDoor()
+	{
+		collider.isTrigger = true;
+		animator.SetBool("Opened", true);
+		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
+	}
 	public void CloseDoor()
 	{
 		collider.isTrigger = false;
