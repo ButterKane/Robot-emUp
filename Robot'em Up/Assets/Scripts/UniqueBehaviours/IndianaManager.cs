@@ -34,6 +34,8 @@ public class IndianaManager : MonoBehaviour
     public GameObject invisibleColliderForward;
     public GameObject invisibleColliderBackward;
     private BoxCollider boxCollider;
+    private Vector3 ColliderForwardWantedPosition;
+    private Vector3 ColliderBackwardWantedPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +51,10 @@ public class IndianaManager : MonoBehaviour
             currentTimer -= Time.deltaTime;
             currentTimerExplosion -= Time.deltaTime;
             currentTimerExplosionBarrage -= Time.deltaTime;
+            invisibleColliderForward.transform.position = Vector3.Lerp(invisibleColliderForward.transform.position, ColliderForwardWantedPosition, 0.1f);
+            invisibleColliderBackward.transform.position = Vector3.Lerp(invisibleColliderBackward.transform.position, ColliderBackwardWantedPosition, 0.1f);
+
+
 
             if (currentTimer < 0)
             {
@@ -91,8 +97,8 @@ public class IndianaManager : MonoBehaviour
                 currentTimerExplosionBarrage = timeBarrage;
 
                 currentPositionMultiplier++;
-                invisibleColliderBackward.transform.position = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
-                invisibleColliderForward.transform.position = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
+                ColliderBackwardWantedPosition = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
+                ColliderForwardWantedPosition = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
                 indianaCamera.railPositionWanted = transform.position + (currentPositionMultiplier + 1 ) * directionIndiania;
                 for (int j = 0; j < nbBarrage; j++)
                 {
@@ -133,6 +139,12 @@ public class IndianaManager : MonoBehaviour
         indianaCamera.onRail = true;
         invisibleColliderForward.SetActive(true);
         indianaCamera.railPositionWanted = transform.position + (currentPositionMultiplier) * directionIndiania; ;
+
+
+        ColliderBackwardWantedPosition = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
+        ColliderForwardWantedPosition = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
+        invisibleColliderForward.transform.position = ColliderForwardWantedPosition;
+        invisibleColliderBackward.transform.position = ColliderBackwardWantedPosition;
     }
 
 
