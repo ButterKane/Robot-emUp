@@ -55,6 +55,7 @@ public class PlayerController : PawnController, IHitable
 	public void Start ()
 	{
 		base.Awake();
+		GameManager.alivePlayers.Add(this);
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
@@ -333,6 +334,7 @@ public class PlayerController : PawnController, IHitable
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
 		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 		GameManager.deadPlayers.Add(this);
+		GameManager.alivePlayers.Remove(this);
 	}
 
 	public void Revive(PlayerController _player)
@@ -362,6 +364,7 @@ public class PlayerController : PawnController, IHitable
 		}
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
+		GameManager.alivePlayers.Add(_player);
 	}
 
 	void GenerateReviveParts()
