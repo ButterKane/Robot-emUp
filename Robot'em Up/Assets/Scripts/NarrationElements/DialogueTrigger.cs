@@ -9,6 +9,7 @@ public class DialogueTrigger : MonoBehaviour
 {
     public DialogueData dialogueData;
     public GameObject dialogueBoxPrefab;
+    [Range(0, 1)] public float boxOpacity = 0.3f;
     public float typingSpeed = 5;
     private GameObject dialogueBoxInstance;
     private TextMeshProUGUI textField;
@@ -18,6 +19,7 @@ public class DialogueTrigger : MonoBehaviour
     private void Start()
     {
         textWritingCoroutine = null;
+        dialogueBoxInstance = null;
     }
 
 
@@ -44,14 +46,16 @@ public class DialogueTrigger : MonoBehaviour
             yield return new WaitForSeconds(dialogueData.texts[j].pauseAfterText);
             textWritingCoroutine = null;
         }
+        Destroy(dialogueBoxInstance, dialogueData.timeBeforeDestruction);
         Destroy(gameObject, dialogueData.timeBeforeDestruction);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && dialogueBoxInstance == null)
         {
             dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
+            dialogueBoxInstance.GetComponent<Image>().color = new Color(0, 0, 0, boxOpacity);
             textField = dialogueBoxInstance.transform.GetComponentInChildren<TextMeshProUGUI>();
             subImage = dialogueBoxInstance.transform.GetChild(0).GetComponent<Image>();
             StartCoroutine(BlinkSubImage());
