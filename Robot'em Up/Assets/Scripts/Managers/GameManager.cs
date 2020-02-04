@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public GameObject surrounderPlayerTwo;
     public static Canvas mainCanvas;
     public static List<PlayerController> deadPlayers;
+	public static List<PlayerController> alivePlayers;
 
     private static MainMenu menu;
     private static bool menuCalledOne = false;
@@ -80,6 +81,7 @@ public class GameManager : MonoBehaviour
 		Time.timeScale = 1f;
 		i = this;
 		deadPlayers = new List<PlayerController>();
+		alivePlayers = new List<PlayerController>();
 		//Auto assign players
 		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
 		{
@@ -157,6 +159,7 @@ public class GameManager : MonoBehaviour
 
 	private static void DestroyDDOL()
 	{
+		if (DDOL == null) { return; }
 		foreach (GameObject obj in DDOL)
 		{
 			Destroy(obj.gameObject);
@@ -187,6 +190,24 @@ public class GameManager : MonoBehaviour
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 		Time.timeScale = 1f;
+	}
+	public static string GetSceneNameFromIndex ( int _buildIndex )
+	{
+		string path = SceneUtility.GetScenePathByBuildIndex(_buildIndex);
+		int slash = path.LastIndexOf('/');
+		string name = path.Substring(slash + 1);
+		int dot = name.LastIndexOf('.');
+		return name.Substring(0, dot);
+	}
+	public static int GetSceneIndexFromName ( string _sceneName )
+	{
+		for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+		{
+			string testedScreen = GetSceneNameFromIndex(i);
+			if (testedScreen == _sceneName)
+				return i;
+		}
+		return -1;
 	}
 
 	public static void OpenLevelMenu()

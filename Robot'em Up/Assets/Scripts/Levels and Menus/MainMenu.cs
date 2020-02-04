@@ -188,6 +188,11 @@ public class MainMenu : MonoBehaviour
 		SelectButton(buttons[selectedButtonIndex]);
 	}
 
+	public void LoadScene(string _name)
+	{
+		GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName(_name));
+	}
+
 	public void CenterScrollOnItem ( ScrollRect _scroll, RectTransform _target )
 	{
 		// Item is here
