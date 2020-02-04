@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     private static bool menuCalledOne = false;
     private static bool menuCalledTwo = false;
     private static bool deathPanelCalled = false;
+	public static List<GameObject> DDOL;
 
     [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
@@ -74,6 +75,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+		DDOL = new List<GameObject>();
 		AnalyticsManager.LoadDatas();
 		Time.timeScale = 1f;
 		i = this;
@@ -153,6 +155,15 @@ public class GameManager : MonoBehaviour
 		UpdateSceneLoader();
 	}
 
+	private static void DestroyDDOL()
+	{
+		foreach (GameObject obj in DDOL)
+		{
+			Destroy(obj.gameObject);
+		}
+		GameManager.i = null;
+	}
+
 	private void OnApplicationQuit ()
 	{
 		AnalyticsManager.SaveDatas();
@@ -163,6 +174,7 @@ public class GameManager : MonoBehaviour
 
 	public static void LoadSceneByIndex(int index)
 	{
+		DestroyDDOL();
 		SceneManager.LoadScene(index);
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
@@ -170,6 +182,7 @@ public class GameManager : MonoBehaviour
 	}
 	public static void LoadNextScene ()
 	{
+		DestroyDDOL();
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
@@ -289,6 +302,7 @@ public class GameManager : MonoBehaviour
 	}
 	public static void ResetScene()
 	{
+		DestroyDDOL();
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 

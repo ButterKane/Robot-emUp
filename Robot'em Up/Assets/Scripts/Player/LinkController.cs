@@ -29,7 +29,6 @@ public class LinkController : MonoBehaviour
 	public AnimationCurve slowCoefCurve;
 
 	[Separator("Visuals")]
-	public Gradient linkColor;
 	public Material linkMaterial;
 	public float linkWidth;
 	public AnimationCurve opacityFadeCurve;
@@ -109,16 +108,14 @@ public class LinkController : MonoBehaviour
 			float i_linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
 			if (!linkIsBroke)
 			{
+				linkMaterial.SetFloat("_CurrentEnergyAmout", EnergyManager.GetEnergy());
 				if (i_linkLength < maxDistanceBeforeBreaking)
 				{
 					//Hide link
 					lineRenderer.positionCount = 2;
 					lineRenderer.SetPosition(0, firstPawn.GetCenterPosition());
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
-					Color transparentColor = linkColor.Evaluate(0);
-					transparentColor.a = 0.1f;
-					lineRenderer.startColor = transparentColor;
-					lineRenderer.endColor = transparentColor;
+					linkMaterial.SetFloat("_BreakingLinkProgression", 0);
 					ChangeLinkState(LinkState.Hidden);
 				}
 				if (i_linkLength >= maxDistanceBeforeShowing && i_linkLength < maxDistanceBeforeSlowing)
@@ -129,10 +126,7 @@ public class LinkController : MonoBehaviour
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
 					float lerpValue = (maxDistanceBeforeSlowing - i_linkLength) / (maxDistanceBeforeSlowing - maxDistanceBeforeShowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
-					Color transparentColor = linkColor.Evaluate(0);
-					transparentColor.a = 0.1f;
-					lineRenderer.startColor = Color.Lerp(transparentColor, linkColor.Evaluate(0), lerpValue);
-					lineRenderer.endColor = Color.Lerp(transparentColor, linkColor.Evaluate(0), lerpValue);
+					linkMaterial.SetFloat("_BreakingLinkProgression", 0);
 					ChangeLinkState(LinkState.Showing);
 				}
 				if (i_linkLength >= maxDistanceBeforeSlowing && i_linkLength < maxDistanceBeforeBreaking)
@@ -142,8 +136,7 @@ public class LinkController : MonoBehaviour
 					lineRenderer.SetPosition(1, secondPawn.GetCenterPosition());
 					float lerpValue = (maxDistanceBeforeBreaking - i_linkLength) / (maxDistanceBeforeBreaking - maxDistanceBeforeSlowing);
 					lerpValue = 1f-slowCoefCurve.Evaluate(lerpValue);
-					lineRenderer.startColor = linkColor.Evaluate(lerpValue);
-					lineRenderer.endColor = linkColor.Evaluate(lerpValue);
+					linkMaterial.SetFloat("_BreakingLinkProgression", lerpValue);
 
 					float slowValue = Mathf.Lerp(1f, maxSlowCoef, lerpValue);
 

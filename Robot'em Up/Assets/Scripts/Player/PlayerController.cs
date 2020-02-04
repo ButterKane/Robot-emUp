@@ -435,17 +435,18 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
-		if (_source == DamageSource.Ball) { return; }
+        Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+        if (_source == DamageSource.Ball) { return; }
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
-                Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(5, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
+                BumpMe(10, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
 				Damage(_damages);
 				break;
 
             case DamageSource.EnemyContact:
                 Damage(_damages);
+                //Push(_impactVector, 30, 2f);
                 break;
 
             case DamageSource.Laser:
@@ -454,7 +455,7 @@ public class PlayerController : PawnController, IHitable
 
 			case DamageSource.SpawnImpact:
 				Damage(_damages);
-				Push(-_impactVector, _damages * 10f, 1f);
+				//Push(-_impactVector, _damages * 10f, 1f);
 				break;
 		}
 	}
