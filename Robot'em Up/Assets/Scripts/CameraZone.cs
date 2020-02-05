@@ -221,7 +221,6 @@ public class CameraZone : MonoBehaviour
 		if (i_playerFound != null && !playersInside.Contains(i_playerFound))
 		{
 			playersInside.Add(i_playerFound);
-			Debug.Log("Player enters zone");
 		}
 	}
 
