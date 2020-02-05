@@ -51,6 +51,9 @@ public class WaveEditor : Editor
 			GUI.color = Color.white;
 			SerializedProperty m_startOnTriggerEnter = serializedObject.FindProperty("startOnTriggerEnter");
 			EditorGUILayout.PropertyField(m_startOnTriggerEnter, new GUIContent("Start automatically when players enters zone ?"));
+
+			SerializedProperty m_skipArena = serializedObject.FindProperty("skipArena");
+			EditorGUILayout.PropertyField(m_skipArena, new GUIContent("Skip arena ?"));
 			this.serializedObject.ApplyModifiedProperties();
 
 			EditorGUI.BeginChangeCheck();

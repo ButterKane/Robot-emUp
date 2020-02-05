@@ -19,6 +19,7 @@ public class WaveController : MonoBehaviour
 	public List<WaveData> waveList = new List<WaveData>(); 
 	public List<SpawnInformation> spawnList = new List<SpawnInformation>();
 	public ArenaDoor exitDoor;
+	public bool skipArena = false;
 
 	private bool waveStarted = false;
 	private int currentWaveIndex = -1;
@@ -75,6 +76,7 @@ public class WaveController : MonoBehaviour
 
 	public void StartArena()
 	{
+		if (skipArena) { EndArena(); return; }
 		if (currentWaveIndex >= 0) { return; } else
 		{
 			StartNextWave();

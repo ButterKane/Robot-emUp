@@ -17,14 +17,14 @@ public class WireEditor : Editor
 
 	private void OnSceneGUI ()
 	{
-		for (int i = 0; i < lr.positionCount; i++)
+		for (int i = 1; i < lr.positionCount; i++)
 		{
 			EditorGUI.BeginChangeCheck();
-			Vector3 newTargetPosition = Handles.PositionHandle(lr.GetPosition(i), Quaternion.identity);
+			Vector3 newTargetPosition = Handles.PositionHandle(lr.transform.position + lr.GetPosition(i), Quaternion.identity);
 			if (EditorGUI.EndChangeCheck())
 			{
 				Undo.RecordObject(lr, "Change Position");
-				lr.SetPosition(i, newTargetPosition);
+				lr.SetPosition(i, newTargetPosition - lr.transform.position);
 			}
 		}
 	}
