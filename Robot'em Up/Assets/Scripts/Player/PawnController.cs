@@ -169,7 +169,7 @@ public class PawnController : MonoBehaviour
         moveState = MoveState.Idle;
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
 		if (frozen) { return; }
         CheckMoveState();
