@@ -33,6 +33,11 @@ public class Dummy : MonoBehaviour, IHitable
         {
             EnergyManager.IncreaseEnergy(0.2f);
         }
+        maxHealth--;
+        if (maxHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
 
 		//Fonctions utile
 		//_ball.Bounce();
