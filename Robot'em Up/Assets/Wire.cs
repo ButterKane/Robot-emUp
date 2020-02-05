@@ -10,9 +10,10 @@ public class Wire : MonoBehaviour
 	private void Awake ()
 	{
 		lr = GetComponent<LineRenderer>();
+		//lr.material = 
 	}
 	public void ActivateWire()
 	{
-		Debug.Log("")
+		//lr.materi
 	}
 }
