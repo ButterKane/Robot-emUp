@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 10342791886182164}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -51.55, y: 1.94, z: 2.58}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -91,12 +91,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ba18d5c79ae4f4fa86128ebcb8b6d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lockable: 0
-  lockHitboxSize: 0
+  lockable: 1
+  lockHitboxSize: 1.5
   hitEvent: event.DestrObjectHit
   deathEvent: event.DestrObjectDeath
   deathFX: {fileID: 0}
-  maxHealth: 2
+  maxHealth: 1
+  chosenMesh: {fileID: 0}
   meshes:
   - {fileID: 100000, guid: c855e12241a49d045b86c9c5230c4f03, type: 3}
   - {fileID: 100000, guid: 39c6ce44c89129e40a5cd37321c7e437, type: 3}
