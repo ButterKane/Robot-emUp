@@ -96,11 +96,9 @@ public class CustomTrigger : MonoBehaviour
 			if (direction == 1)
 			{
 				onTriggerEnterAction.Invoke();
-				Debug.Log("Trigger enter");
 			} else
 			{
 				onTriggerComebackAction.Invoke();
-				Debug.Log("Trigger comeback");
 			}
 			direction = -direction;
 		}

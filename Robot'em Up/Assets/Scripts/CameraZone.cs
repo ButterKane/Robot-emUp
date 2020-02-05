@@ -16,6 +16,7 @@ public class CameraZone : MonoBehaviour
 
 
 	public int minPlayersRequired = 2;
+	public bool desactivateCameraOnZoneExit = false;
 	public CameraType type;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
@@ -122,7 +123,7 @@ public class CameraZone : MonoBehaviour
 				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) < minPlayersRequired)
 				{
 					DesactivateZone();
-					linkedCameraBehaviour.DesactivateCamera();
+					if (desactivateCameraOnZoneExit) { linkedCameraBehaviour.DesactivateCamera(); }
 				}
 			}
 			else
@@ -220,6 +221,7 @@ public class CameraZone : MonoBehaviour
 		if (i_playerFound != null && !playersInside.Contains(i_playerFound))
 		{
 			playersInside.Add(i_playerFound);
+			Debug.Log("Player enters zone");
 		}
 	}
 
