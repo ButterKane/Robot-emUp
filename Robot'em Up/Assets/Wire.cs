@@ -12,6 +12,7 @@ public class Wire : MonoBehaviour
 	public float activationSpeed = 3;
 	public float desactivationSpeed = 50;
 	private float activationPercent;
+	[HideInInspector] public Transform target;
 
 	private void Awake ()
 	{
@@ -22,8 +23,18 @@ public class Wire : MonoBehaviour
 		lr = gameObject.AddComponent<LineRenderer>();
 		lr.sharedMaterial = Resources.Load<Material>("PuzzleResource/M_WireMaterial");
 		lr.useWorldSpace = false;
-		//lr.alignment = LineAlignment.TransformZ;
 		lr.SetPosition(1, transform.position + Vector3.forward * 15 + Vector3.up * 0.01f);
+	}
+
+	public void AutoTrace()
+	{
+		if (target != null)
+		{
+			lr.positionCount = 2;
+			lr.SetPosition(0, transform.localPosition);
+			lr.SetPosition(1, transform.InverseTransformPoint(target.position));
+			target = null;
+		}
 	}
 
 	public void ApplySettings()
@@ -41,7 +52,6 @@ public class Wire : MonoBehaviour
 	{
 		StopAllCoroutines();
 		StartCoroutine(ActivateWire_C(_callBack));
-
 	}
 
 	public void DesactivateWire ( UnityAction _callBack )
