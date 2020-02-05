@@ -121,7 +121,13 @@ public class CameraBehaviour : MonoBehaviour
 		Vector3 i_middlePosition = Vector3.zero;
 		if (GameManager.deadPlayers.Count > 0)
 		{
-			i_middlePosition = zone.GetPlayersInside()[0].transform.position;
+			if (GameManager.alivePlayers.Count > 0)
+			{
+				i_middlePosition = GameManager.alivePlayers[0].transform.position;
+			} else
+			{
+				i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			}
 		}
 		else
 		{
@@ -132,7 +138,6 @@ public class CameraBehaviour : MonoBehaviour
 			i_middlePosition = Vector3.Lerp(i_middlePosition, focusPoint.position, focusImportance);
 		}
 		followPoint.transform.position = i_middlePosition;
-		//transform.position = i_middlePosition;
 	}
 	void UpdateCombatCamera()
 	{

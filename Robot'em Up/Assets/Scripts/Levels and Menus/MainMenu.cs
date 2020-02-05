@@ -45,7 +45,7 @@ public class MainMenu : MonoBehaviour
 
 	public void OpenMenu()
 	{
-		SceneManager.LoadScene(0);
+		GameManager.LoadSceneByIndex(0);
 	}
 	public void OpenLevelSelector()
 	{
@@ -186,6 +186,11 @@ public class MainMenu : MonoBehaviour
 		selectedButtonIndex--;
 		selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count-1);
 		SelectButton(buttons[selectedButtonIndex]);
+	}
+
+	public void LoadScene(string _name)
+	{
+		GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName(_name));
 	}
 
 	public void CenterScrollOnItem ( ScrollRect _scroll, RectTransform _target )

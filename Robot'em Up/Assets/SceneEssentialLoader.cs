@@ -41,6 +41,12 @@ public class SceneEssentialLoader : MonoBehaviour
 		DontDestroyOnLoad(ball);
 		DontDestroyOnLoad(Camera.main);
 
+		GameManager.DDOL.Add(player1.gameObject);
+		GameManager.DDOL.Add(player2.gameObject);
+		GameManager.DDOL.Add(ball.gameObject);
+		GameManager.DDOL.Add(Camera.main.gameObject);
+		GameManager.DDOL.Add(GameManager.i.gameObject);
+
 		if (player1Position != null)
 		{
 			player1.transform.position = player1Position.position;
