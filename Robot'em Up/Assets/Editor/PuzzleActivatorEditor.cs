@@ -72,6 +72,21 @@ public class PuzzleActivatorEditor : Editor
 			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
+
+			SerializedObject i_serializedWire = new SerializedObject(serializedObject.FindProperty("wire").objectReferenceValue);
+			i_serializedWire.Update();
+
+			EditorGUI.BeginChangeCheck();
+			SerializedProperty m_target = i_serializedWire.FindProperty("target");
+			EditorGUILayout.PropertyField(m_target);
+			if (GUI.changed)
+			{
+				i_serializedWire.ApplyModifiedProperties();
+				activator.wire.AutoTrace();
+			}
+
+
+			i_serializedWire.ApplyModifiedProperties();
 		}
 		serializedObject.ApplyModifiedProperties();
 	}

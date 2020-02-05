@@ -13,6 +13,7 @@ public class CursorManager : MonoBehaviour
     void Start()
     {
 		ballPointer = Instantiate(ballPointerPrefab);
+		DontDestroyOnLoad(ballPointer);
 		ballPointer.SetActive(false);
     }
 

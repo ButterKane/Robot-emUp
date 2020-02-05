@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+		deathPanelCalled = false;
 		DDOL = new List<GameObject>();
 		AnalyticsManager.LoadDatas();
 		Time.timeScale = 1f;
@@ -318,6 +319,7 @@ public class GameManager : MonoBehaviour
 			if (canvas.renderMode != RenderMode.WorldSpace)
 			{
 				mainCanvas = canvas;
+				DontDestroyOnLoad(mainCanvas.gameObject);
 			}
 		}
 	}
