@@ -736,6 +736,7 @@ MonoBehaviour:
     transform: {fileID: 105286273}
     color: {r: 0, g: 0.13646817, b: 1, a: 1}
   exitDoor: {fileID: 4316795705567837212}
+  skipArena: 1
   currentEnemies: []
 --- !u!4 &160486414
 Transform:
@@ -5445,6 +5446,7 @@ MonoBehaviour:
   m_cornerA: {x: -25.327894, y: 0.5, z: 146.91238}
   m_cornerB: {x: 24.35387, y: 0.5, z: 192.56879}
   minPlayersRequired: 2
+  desactivateCameraOnZoneExit: 0
   type: 0
   linkedCameraBehaviour: {fileID: 965833235}
   onZoneActivation:
@@ -5822,35 +5824,39 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2039032021, guid: c41603ab4f7f63848b8d92f7e57eca2e, type: 3}
+      propertyPath: alsoLoadNextScene
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 352126982178166004, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: field of view
-      value: 50
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 108.57002
+      value: 2.840622
       objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.32971397
+      value: 0.38268322
       objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9440809
+      value: 0.9238797
       objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 33.85
+      value: 25.23
       objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10
+      value: -0.48701286
       objectReference: {fileID: 0}
     - target: {fileID: 795772360531808961, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
