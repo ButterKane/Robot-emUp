@@ -31,24 +31,6 @@ public class DialogueTrigger : MonoBehaviour
         }
     }
 
-    public IEnumerator WriteText_C()
-    {
-        for (int j = 0; j < dialogueData.texts.Length; j++)
-        {
-            for (int i = 0; i < dialogueData.texts[j].text.Length + 1; i++)
-            {
-                textField.text = dialogueData.texts[j].text.Substring(0, i);
-                CheckIfWordHasEnoughSpace();
-                yield return new WaitForSeconds(1 / typingSpeed);
-            }
-
-            yield return new WaitForSeconds(dialogueData.texts[j].pauseAfterText);
-            textWritingCoroutine = null;
-        }
-        Destroy(dialogueBoxInstance, dialogueData.timeBeforeDestruction);
-        Destroy(gameObject, dialogueData.timeBeforeDestruction);
-    }
-
     public IEnumerator NewWriteText_C()
     {
         Color i_appearingColor = new Color(textField.color.r, textField.color.g, textField.color.b, 1);
@@ -130,20 +112,20 @@ public class DialogueTrigger : MonoBehaviour
         i_newAudioSource.Play();
     }
 
-    public bool CheckIfWordHasEnoughSpace()
+    public IEnumerator WriteText_C()
     {
-        // space count = nombre d'espaces (entre les mots)
-        // word count = nombre de mots, commençant à 0
-        // character count = nombre de caractères
-        // characterInfo.Length = taille du mot!!!
-        // textInfo.LineInfo[x].length = Taille du texte écrit en pixels => Comparable à la taille de la box!
+        for (int j = 0; j < dialogueData.texts.Length; j++)
+        {
+            for (int i = 0; i < dialogueData.texts[j].text.Length + 1; i++)
+            {
+                textField.text = dialogueData.texts[j].text.Substring(0, i);
+                yield return new WaitForSeconds(1 / typingSpeed);
+            }
 
-        float i_totalSpace = textField.bounds.size.y;
-        i_totalSpace = textField.textInfo.lineInfo[0].characterCount;
-        //Debug.Log("line length = " + textField.textInfo.lineInfo[0].length);
-        //float i_actualCurrentSpace = i_totalSpace - textField.textInfo.
-            return true;
+            yield return new WaitForSeconds(dialogueData.texts[j].pauseAfterText);
+            textWritingCoroutine = null;
+        }
+        Destroy(dialogueBoxInstance, dialogueData.timeBeforeDestruction);
+        Destroy(gameObject, dialogueData.timeBeforeDestruction);
     }
-
-    // idée: écrit les mots directment, mais en noir, et ne passe qu'une lettre à la fois en blanc. Comme ça, l'overflow se fait tout seul et y a pas à se faire chier!
 }
