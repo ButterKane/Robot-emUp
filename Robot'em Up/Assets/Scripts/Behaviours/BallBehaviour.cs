@@ -180,7 +180,7 @@ public class BallBehaviour : MonoBehaviour
 		{
 			outOfScreenTime = 0;
 		}
-		if (outOfScreenTime > currentBallDatas.maxTimeOutOfScreen)
+		if (currentBallDatas != null && outOfScreenTime > currentBallDatas.maxTimeOutOfScreen)
 		{
 			StartCoroutine(GoToNearestPlayer_C());
 		}

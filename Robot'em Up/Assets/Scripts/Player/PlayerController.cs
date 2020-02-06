@@ -96,7 +96,9 @@ public class PlayerController : PawnController, IHitable
     }
 	private void LateUpdate ()
 	{
+	#if !UNITY_EDITOR
 		CheckIfOutOfCamera();
+	#endif
 	}
 
 	void GetInput ()
