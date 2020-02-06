@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyBoss : PawnController, IHitable
 {
+    public bool BossActivated = false;
     [Space(2)]
     [Separator("References")]
     public HealthBar healthBar1;
@@ -133,15 +134,15 @@ public class EnemyBoss : PawnController, IHitable
     public Vector3 LaserAttack_ArenaCenter;
 
 
-    public void Start()
+    public void StartBoss()
     {
         Health1Bar_CurrentValue = Health1Bar_Value_Max;
         Health2Bar_CurrentValue = Health2Bar_Value_Max;
-        healthBar1 = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar1 = Instantiate(healthBarPrefab, GameManager.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar1.customHealthBar = true;
         healthBar1.target = this;
 
-        healthBar2 = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar2 = Instantiate(healthBarPrefab, GameManager.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar2.customHealthBar = true;
         healthBar2.customDeltaPosition = -1;
         healthBar2.target = this;
@@ -156,192 +157,197 @@ public class EnemyBoss : PawnController, IHitable
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
 
         NumberHammerLeft = NumberHammerAttackMax;
+        BossActivated = true;
     }
 
 
     public void Update()
     {
-        healthBar1.customValueToCheck = (float)Health1Bar_CurrentValue / Health1Bar_Value_Max;
-        healthBar2.customValueToCheck = (float)Health2Bar_CurrentValue / Health2Bar_Value_Max;
-        UpdateDistancesToPlayers();
-        UpdateAnimatorBlendTree();
-        waitingBeforeNextState -= Time.deltaTime;
-        ShieldInvocation_CurrentTimeLasting -= Time.deltaTime;
-
-        if (ShieldInvocation_CurrentTimeLasting < 0 && ShieldIsActivated)
+        if (BossActivated)
         {
-            BossShield.SetActive(false);
-            ShieldIsActivated = false;
-        }
+            healthBar1.customValueToCheck = (float)Health1Bar_CurrentValue / Health1Bar_Value_Max;
+            healthBar2.customValueToCheck = (float)Health2Bar_CurrentValue / Health2Bar_Value_Max;
+            UpdateDistancesToPlayers();
+            UpdateAnimatorBlendTree();
+            waitingBeforeNextState -= Time.deltaTime;
+            ShieldInvocation_CurrentTimeLasting -= Time.deltaTime;
 
-        if (waitingBeforeNextState > 0)
-        {
-            switch (bossState)
+            if (ShieldInvocation_CurrentTimeLasting < 0 && ShieldIsActivated)
             {
-                case BossState.Idle:
-                    break;
-                case BossState.Moving:
-                    break;
-                case BossState.Stagger:
-                    break;
-                case BossState.PunchAttack:
-                    if (waitingBeforeNextState <  PunchAttack_AttackingTime + PunchAttack_RecoverTime && PunchAttack_Attacking == false)
-                    {
-                        animator.SetTrigger("PunchAttackTrigger");
-                        PunchAttack_Attacking = true;
+                BossShield.SetActive(false);
+                ShieldIsActivated = false;
+            }
 
-                    }
-                    if (waitingBeforeNextState < PunchAttack_RecoverTime && PunchAttack_Attacking == true)
-                    {
-                        foreach (var renderer in renderers)
+            if (waitingBeforeNextState > 0)
+            {
+                switch (bossState)
+                {
+                    case BossState.Idle:
+                        break;
+                    case BossState.Moving:
+                        break;
+                    case BossState.Stagger:
+                        break;
+                    case BossState.PunchAttack:
+                        if (waitingBeforeNextState <  PunchAttack_AttackingTime + PunchAttack_RecoverTime && PunchAttack_Attacking == false)
                         {
-                            renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, PunchAttack_RecoverTime));
+                            animator.SetTrigger("PunchAttackTrigger");
+                            PunchAttack_Attacking = true;
+
                         }
-                        animator.SetTrigger("EndOfPunchAttackTrigger");
-                        PunchAttack_Attacking = false;
-                    }
-
-                    if (waitingBeforeNextState < PunchAttack_RecoverTime / 3)
-                    {
-                        navMeshAgent.enabled = true;
-                        navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
-
-                    }
-
-                    break;
-                case BossState.RangeAttack:
-
-                    RotateTowardsPlayerAndHisForward(playerOneTransform, aimingCube1_Transform);
-                    RotateTowardsPlayerAndHisForward(playerTwoTransform, aimingCube2_Transform);
-                    if (waitingBeforeNextState > RangeAttack_AttackDuration + RangeAttack_RecoverTime)
-                    {
-                        ChangeAimingCubeState(AimingRedDotState.Following);
-                    }
-                    if (waitingBeforeNextState < RangeAttack_AttackDuration + RangeAttack_RecoverTime && RangeAttack_Attacking == false)
-                    {
-                        animator.SetTrigger("RangeAttackTrigger");
-                        RangeAttack_Attacking = true;
-                    }
-
-                    if (waitingBeforeNextState < RangeAttack_RecoverTime / 3)
-                    {
-                        RangeAttack_Attacking = false;
-                        navMeshAgent.enabled = true;
-                        navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
-
-                    }
-                    break;
-                case BossState.Shield:
-                    break;
-                case BossState.HammerPunchAttack:
-
-                    if (waitingBeforeNextState < HammerAttack_AttackingTime + HammerAttack_RecoverTime && HammerAttack_Attacking == false)
-                    {
-                        animator.SetTrigger("HammerAttackTrigger");
-                        HammerAttack_Attacking = true;
-
-                    }
-                    if (waitingBeforeNextState < HammerAttack_AttackingTime && HammerAttack_Attacking == true)
-                    {
-                        foreach (var renderer in renderers)
+                        if (waitingBeforeNextState < PunchAttack_RecoverTime && PunchAttack_Attacking == true)
                         {
-                            renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, HammerAttack_RecoverTime));
+                            foreach (var renderer in renderers)
+                            {
+                                renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, PunchAttack_RecoverTime));
+                            }
+                            animator.SetTrigger("EndOfPunchAttackTrigger");
+                            PunchAttack_Attacking = false;
                         }
-                        animator.SetTrigger("HammerEndOfAttackTrigger");
-                        HammerAttack_Attacking = false;
-                    }
 
-                    if (waitingBeforeNextState < PunchAttack_RecoverTime / 3)
-                    {
-                        navMeshAgent.enabled = true;
-                        navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
+                        if (waitingBeforeNextState < PunchAttack_RecoverTime / 3)
+                        {
+                            navMeshAgent.enabled = true;
+                            navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
 
-                    }
+                        }
+
+                        break;
+                    case BossState.RangeAttack:
+
+                        RotateTowardsPlayerAndHisForward(playerOneTransform, aimingCube1_Transform);
+                        RotateTowardsPlayerAndHisForward(playerTwoTransform, aimingCube2_Transform);
+                        if (waitingBeforeNextState > RangeAttack_AttackDuration + RangeAttack_RecoverTime)
+                        {
+                            ChangeAimingCubeState(AimingRedDotState.Following);
+                        }
+                        if (waitingBeforeNextState < RangeAttack_AttackDuration + RangeAttack_RecoverTime && RangeAttack_Attacking == false)
+                        {
+                            animator.SetTrigger("RangeAttackTrigger");
+                            RangeAttack_Attacking = true;
+                        }
+
+                        if (waitingBeforeNextState < RangeAttack_RecoverTime / 3)
+                        {
+                            RangeAttack_Attacking = false;
+                            navMeshAgent.enabled = true;
+                            navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
+
+                        }
+                        break;
+                    case BossState.Shield:
+                        break;
+                    case BossState.HammerPunchAttack:
+
+                        if (waitingBeforeNextState < HammerAttack_AttackingTime + HammerAttack_RecoverTime && HammerAttack_Attacking == false)
+                        {
+                            animator.SetTrigger("HammerAttackTrigger");
+                            HammerAttack_Attacking = true;
+
+                        }
+                        if (waitingBeforeNextState < HammerAttack_AttackingTime && HammerAttack_Attacking == true)
+                        {
+                            foreach (var renderer in renderers)
+                            {
+                                renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, HammerAttack_RecoverTime));
+                            }
+                            animator.SetTrigger("HammerEndOfAttackTrigger");
+                            HammerAttack_Attacking = false;
+                        }
+
+                        if (waitingBeforeNextState < PunchAttack_RecoverTime / 3)
+                        {
+                            navMeshAgent.enabled = true;
+                            navMeshAgent.SetDestination(GetClosestAndAvailablePlayer().position);
+
+                        }
 
 
-                    break;
-                case BossState.GroundAttack:
+                        break;
+                    case BossState.GroundAttack:
 
-                    if (waitingBeforeNextState < GroundAttack_AttackTime && GroundAttack_Attacking == false)
-                    {
-                        animator.SetTrigger("GroundAttackAnticipationTrigger");
-                        GroundAttack_Attacking = true;
-                        ActivateEletricPlate();
+                        if (waitingBeforeNextState < GroundAttack_AttackTime && GroundAttack_Attacking == false)
+                        {
+                            animator.SetTrigger("GroundAttackAnticipationTrigger");
+                            GroundAttack_Attacking = true;
+                            ActivateEletricPlate();
 
-                    }
-                    if (waitingBeforeNextState < GroundAttack_AttackTime / 7 && GroundAttack_Attacking == true)
-                    {
-                        animator.SetTrigger("GroundAttackEndTrigger");
+                        }
+                        if (waitingBeforeNextState < GroundAttack_AttackTime / 7 && GroundAttack_Attacking == true)
+                        {
+                            animator.SetTrigger("GroundAttackEndTrigger");
 
-                    }
+                        }
                     
 
-                    break;
-                case BossState.Laser:
-                    if (SequenceLaserAttack == 0)
-                    {
-                        navMeshAgent.enabled = true;
-                        navMeshAgent.SetDestination(LaserAttack_ArenaCenter);
-                        if (Vector3.Distance(transform.position, LaserAttack_ArenaCenter) < 5)
+                        break;
+                    case BossState.Laser:
+                        if (SequenceLaserAttack == 0)
                         {
-                            SequenceLaserAttack = 1;
+                            navMeshAgent.enabled = true;
+                            navMeshAgent.SetDestination(LaserAttack_ArenaCenter);
+                            if (Vector3.Distance(transform.position, LaserAttack_ArenaCenter) < 5)
+                            {
+                                SequenceLaserAttack = 1;
+                            }
                         }
-                    }
-                    if (SequenceLaserAttack == 1)
-                    {
-                        waitingBeforeNextState = LaserAttack_Anticipation + LaserAttack_AttackingTime;
-                        navMeshAgent.enabled = false;
-                        SequenceLaserAttack = 2;
-                        animator.SetTrigger("LaserAnticipation");
-                    }
-                    if (waitingBeforeNextState < LaserAttack_AttackingTime && SequenceLaserAttack == 2)
-                    {
-                        animator.SetTrigger("LaserAttackAttacking");
-                        LaserAttack_LaserObject.SetActive(true);
-                        LaserAttack_LaserObject.GetComponent<ParticleSystem>().Play();
-                        SequenceLaserAttack = 3;
+                        if (SequenceLaserAttack == 1)
+                        {
+                            waitingBeforeNextState = LaserAttack_Anticipation + LaserAttack_AttackingTime;
+                            navMeshAgent.enabled = false;
+                            SequenceLaserAttack = 2;
+                            animator.SetTrigger("LaserAnticipation");
+                        }
+                        if (waitingBeforeNextState < LaserAttack_AttackingTime && SequenceLaserAttack == 2)
+                        {
+                            animator.SetTrigger("LaserAttackAttacking");
+                            LaserAttack_LaserObject.SetActive(true);
+                            LaserAttack_LaserObject.GetComponent<ParticleSystem>().Play();
+                            SequenceLaserAttack = 3;
 
-                    }
-                    if (SequenceLaserAttack == 3)
-                    {
-                        LaserAttack_LaserObject.transform.rotation = Quaternion.Euler(LaserAttack_LaserObject.transform.rotation.eulerAngles.x, LaserAttack_LaserObject.transform.rotation.eulerAngles.y + laserSpeed * Time.deltaTime, LaserAttack_LaserObject.transform.rotation.eulerAngles.z);
-                    }
-                    if (waitingBeforeNextState < LaserAttack_AttackingTime / 8 && SequenceLaserAttack == 3)
-                    {
-                        animator.SetTrigger("LaserAttackEndAttacking");
-                        SequenceLaserAttack = 4;
-                        LaserAttack_LaserObject.SetActive(false);
+                        }
+                        if (SequenceLaserAttack == 3)
+                        {
+                            LaserAttack_LaserObject.transform.rotation = Quaternion.Euler(LaserAttack_LaserObject.transform.rotation.eulerAngles.x, LaserAttack_LaserObject.transform.rotation.eulerAngles.y + laserSpeed * Time.deltaTime, LaserAttack_LaserObject.transform.rotation.eulerAngles.z);
+                        }
+                        if (waitingBeforeNextState < LaserAttack_AttackingTime / 8 && SequenceLaserAttack == 3)
+                        {
+                            animator.SetTrigger("LaserAttackEndAttacking");
+                            SequenceLaserAttack = 4;
+                            LaserAttack_LaserObject.SetActive(false);
 
-                    }
-                    break;
-                case BossState.ChangingPhase:
-                    if (waitingBeforeNextState < Stagger_TimeLasting / 4 && isPhase1)
-                    {
-                        animator.SetTrigger("EndingChangingPhaseTrigger");
-                        isPhase1 = false;
-                        Instantiate(Turret_Prefab, transform.position + transform.forward * 2, Quaternion.identity);
-                        Instantiate(Turret_Prefab, transform.position + transform.forward * -2, Quaternion.identity);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-
-        if (waitingBeforeNextState < 0)
-        {
-
-            if (bossState == BossState.GroundAttack)
-            {
-                DesactivateEletricPlate();
-                foreach (var item in ListEletricPlates)
-                {
-                    item.gameObject.SetActive(false);
+                        }
+                        break;
+                    case BossState.ChangingPhase:
+                        if (waitingBeforeNextState < Stagger_TimeLasting / 4 && isPhase1)
+                        {
+                            animator.SetTrigger("EndingChangingPhaseTrigger");
+                            isPhase1 = false;
+                            Instantiate(Turret_Prefab, transform.position + transform.forward * 2, Quaternion.identity);
+                            Instantiate(Turret_Prefab, transform.position + transform.forward * -2, Quaternion.identity);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
 
-            ChangeState();
+
+            if (waitingBeforeNextState < 0)
+            {
+
+                if (bossState == BossState.GroundAttack)
+                {
+                    DesactivateEletricPlate();
+                    foreach (var item in ListEletricPlates)
+                    {
+                        item.gameObject.SetActive(false);
+                    }
+                }
+
+                ChangeState();
+            }
+
         }
     }
 
@@ -564,7 +570,6 @@ public class EnemyBoss : PawnController, IHitable
         PunchAttack_attackHitBoxInstance = Instantiate(PunchAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, transform.rotation, transform);
     }
 
-
     public void ActivateHammerAttackHitBox()
     {
         if (bossState == BossState.HammerPunchAttack)
@@ -574,7 +579,6 @@ public class EnemyBoss : PawnController, IHitable
         }
         HammerAttack_attackHitBoxInstance = Instantiate(HammerAttack_attackHitBoxPrefab, transform.position + PunchAttack_hitBoxOffset.x * transform.right + PunchAttack_hitBoxOffset.y * transform.up + PunchAttack_hitBoxOffset.z * transform.forward, transform.rotation, transform);
     }
-
 
     public void InvokeShield()
     {
@@ -678,8 +682,6 @@ public class EnemyBoss : PawnController, IHitable
         }
     }
 
-
-
     public void InflictDamage(float _damages, float modifier=1)
     {
         if (Health1Bar_CurrentValue > 0)
@@ -712,14 +714,12 @@ public class EnemyBoss : PawnController, IHitable
         
     }
 
-
     protected virtual void RotateTowardsPlayerAndHisForward(Transform focusedPlayer, Transform Turret)
     {
         Quaternion wantedRotation = Quaternion.identity;
         wantedRotation = Quaternion.LookRotation(focusedPlayer.position);
         Turret.rotation = Quaternion.Lerp(transform.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
-
 
     public virtual void ChangeAimingCubeState(AimingRedDotState _newState)
     {
@@ -748,8 +748,6 @@ public class EnemyBoss : PawnController, IHitable
         }
         aimingCubeState = _newState;
     }
-
-
 
 }
     
