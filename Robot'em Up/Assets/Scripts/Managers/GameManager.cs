@@ -322,6 +322,7 @@ public class GameManager : MonoBehaviour
 			{
 				mainCanvas = canvas;
 				DontDestroyOnLoad(mainCanvas.gameObject);
+				DDOL.Add(mainCanvas.gameObject);
 			}
 		}
 	}

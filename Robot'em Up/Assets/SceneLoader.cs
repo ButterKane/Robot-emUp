@@ -9,7 +9,6 @@ public class SceneLoader : MonoBehaviour
 
 	private void Awake ()
 	{
-
 		int countLoaded = SceneManager.sceneCount;
 		Scene[] loadedScenes = new Scene[countLoaded];
 

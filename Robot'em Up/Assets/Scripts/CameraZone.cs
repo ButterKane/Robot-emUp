@@ -116,7 +116,7 @@ public class CameraZone : MonoBehaviour
 
 	public virtual void Update ()
 	{
-		if (Application.isPlaying)
+		if (Application.isPlaying && GameManager.deadPlayers != null)
 		{
 			if (IsZoneActivated())
 			{
