@@ -15,12 +15,15 @@ public class TurretBasicBullet : MonoBehaviour
     public float damageModificator;
 
     // Update is called once per frame
+
+        
     void Update()
     {
         rb.position = transform.position + transform.forward * speed * Time.deltaTime;
         maxLifeTime -= Time.deltaTime;
         if (maxLifeTime <= 0)
         {
+            Debug.Log("maxlifetime turret");
             Destroy(gameObject);
         }
     }

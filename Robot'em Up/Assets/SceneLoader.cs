@@ -36,6 +36,8 @@ public class SceneLoader : MonoBehaviour
 		{
 			SceneManager.UnloadSceneAsync(buildIndex-1, UnloadSceneOptions.None);
 		}
+		Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
+		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex + 1));
 	}
 
 	public void LoadPreviousLevel()
