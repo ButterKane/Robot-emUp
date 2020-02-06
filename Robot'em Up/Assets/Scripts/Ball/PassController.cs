@@ -65,6 +65,7 @@ public class PassController : MonoBehaviour
 	private PassState previousState;
 	private float perfectReceptionBuffer;
 	private bool keepPerfectReceptionModifiers;
+	private bool perfectReceptionShoot;
 	[ReadOnly] public PassState passState;
 
     private void Awake ()
@@ -273,6 +274,7 @@ public class PassController : MonoBehaviour
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
 		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
+		perfectReceptionShoot = true;
 		Shoot();
 	}
 	public void Shoot()
@@ -322,6 +324,7 @@ public class PassController : MonoBehaviour
 				i_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
 			}
 		}
+		perfectReceptionShoot = false;
 		ChangePassState(PassState.None);
 	}
 
@@ -467,19 +470,29 @@ public class PassController : MonoBehaviour
 
 	public void ChangePassState ( PassState _newState )
 	{
-		//if (_newState == passState) { return; }
+		if (_newState == passState) { return; }
 		previousState = passState;
-		passState = _newState;
 		switch (_newState)
 		{
 			case PassState.Aiming:
 				if (!CanShoot()) { return; }
 				EnablePassPreview();
+				animator.ResetTrigger("ShootingMissedTrigger");
 				animator.SetTrigger("PrepareShootingTrigger");
 				break;
 			case PassState.Shooting:
 				if (!CanShoot()) { return; }
-				animator.SetTrigger("ShootingTrigger");
+				if (perfectReceptionShoot)
+				{
+					animator.ResetTrigger("ShootingMissedTrigger");
+					animator.SetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("ShootingTrigger");
+				} else
+				{
+					animator.ResetTrigger("ShootingMissedTrigger");
+					animator.ResetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("HandoffTrigger");
+				}
 				return;
 			case PassState.None:
 				DisablePassPreview();
@@ -487,5 +500,6 @@ public class PassController : MonoBehaviour
 				animator.SetTrigger("ShootingMissedTrigger");
 				break;
 		}
+		passState = _newState;
 	}
 }

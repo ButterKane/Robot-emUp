@@ -471,6 +471,7 @@ public class BallBehaviour : MonoBehaviour
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							SlowTimeScale();
 						}
 
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
@@ -500,6 +501,10 @@ public class BallBehaviour : MonoBehaviour
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							if (i_potentialHitableObjectFound.GetType() != typeof(PlayerController))
+							{
+								SlowTimeScale();
+							}
 						}
 					}
 				}
@@ -622,5 +627,16 @@ public class BallBehaviour : MonoBehaviour
 		nearestPlayer.passController.Receive(this);
 		//GoToHands(nearestPlayer.passController.GetHandTransform(), 0.1f, currentBallDatas);
 		//ChangeState(BallState.Grounded);
+	}
+
+	void SlowTimeScale()
+	{
+		StartCoroutine(SlowTimeScale_C());
+	}
+	IEnumerator SlowTimeScale_C()
+	{
+		Time.timeScale = currentBallDatas.timescaleOnHit;
+		yield return new WaitForSeconds(currentBallDatas.timescaleDurationOnHit);
+		Time.timeScale = 1f;
 	}
 }

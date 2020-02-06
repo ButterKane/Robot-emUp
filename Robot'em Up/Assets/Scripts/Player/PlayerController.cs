@@ -90,15 +90,13 @@ public class PlayerController : PawnController, IHitable
 		{
 			GetInput();
 		}
-#if !UNITY_EDITOR
-			if (!inputDisabled) { GetInput(); }
-#endif
     }
 	private void LateUpdate ()
 	{
-	#if !UNITY_EDITOR
-		CheckIfOutOfCamera();
-	#endif
+		if (Application.isPlaying)
+		{
+			CheckIfOutOfCamera();
+		}
 	}
 
 	void GetInput ()
@@ -119,17 +117,11 @@ public class PlayerController : PawnController, IHitable
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (viewPortPosition.x > 1 + extents || viewPortPosition.x < -extents || viewPortPosition.y > 1 + extents || viewPortPosition.y < -extents) {
 			rb.velocity = Vector3.zero;
-			Vector3 otherPlayerPosition;
-			if (playerIndex == PlayerIndex.One)
-			{
-				otherPlayerPosition = GameManager.playerTwo.transform.position;
-			} else
-			{
-				otherPlayerPosition = GameManager.playerOne.transform.position;
-			}
-			Vector3 direction =  otherPlayerPosition - transform.position;
+			Vector3 centerPos = GameManager.mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,Vector3.Distance(transform.position, GameManager.mainCamera.transform.position)));
+			centerPos.y = transform.position.y;
+			Vector3 direction = centerPos - transform.position;
 			direction = direction.normalized;
-			float intensity = Vector3.Distance(otherPlayerPosition, transform.position);
+			float intensity = Vector3.Distance(centerPos, transform.position);
 			rb.AddForce(direction * intensity, ForceMode.Impulse);
 		}
 	}
@@ -337,6 +329,7 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
+			animator.SetTrigger("HitTrigger");
 			AnalyticsManager.IncrementData("DamageTaken", _amount);
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
