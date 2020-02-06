@@ -17,6 +17,10 @@ public class SceneLoader : MonoBehaviour
 			loadedScenes[i] = SceneManager.GetSceneAt(i);
 		}
 		buildIndex = loadedScenes[countLoaded-1].buildIndex;
+		if (GameManager.GetSceneNameFromIndex(buildIndex) == "MainSceneTemplate")
+		{
+			buildIndex = loadedScenes[countLoaded - 2].buildIndex;
+		}
 	}
 
 	public void LoadNextLevel()
@@ -32,6 +36,8 @@ public class SceneLoader : MonoBehaviour
 		{
 			SceneManager.UnloadSceneAsync(buildIndex-1, UnloadSceneOptions.None);
 		}
+		Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
+		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex + 1));
 	}
 
 	public void LoadPreviousLevel()

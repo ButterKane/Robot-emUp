@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 using XInputDotNetPure;
 
 public enum DunkState
@@ -82,7 +83,7 @@ public class DunkController : MonoBehaviour
 
 	public void Explode ()
 	{
-		AnalyticsManager.IncrementData("SuccessfulDunk");
+		Analytics.CustomEvent("SuccessfulDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		BallBehaviour i_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
 		EnergyManager.DecreaseEnergy(1f);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Analytics;
 
 public enum BallState {
 	Grounded, //The ball is on the ground
@@ -365,9 +366,9 @@ public class BallBehaviour : MonoBehaviour
 		switch (_newState)
 		{
 			case BallState.Grounded:
+				Analytics.CustomEvent("BallGrounded", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 				if (destroyTrailFX != null) { StopCoroutine(destroyTrailFX); Destroy(ballTrail); }
 				if (ballTrail) { destroyTrailFX = StartCoroutine(DisableEmitterThenDestroyAfterDelay(ballTrail.GetComponent<ParticleSystem>(), 0.5f)); }
-				AnalyticsManager.IncrementData("GroundedBallAmount");
 				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
@@ -471,13 +472,14 @@ public class BallBehaviour : MonoBehaviour
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							SlowTimeScale();
 						}
 
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
-							AnalyticsManager.IncrementData("BallBounceOnWallCount");
+							Analytics.CustomEvent("BallBounce", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
@@ -500,6 +502,10 @@ public class BallBehaviour : MonoBehaviour
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							if (i_potentialHitableObjectFound.GetType() != typeof(PlayerController))
+							{
+								SlowTimeScale();
+							}
 						}
 					}
 				}
@@ -622,5 +628,16 @@ public class BallBehaviour : MonoBehaviour
 		nearestPlayer.passController.Receive(this);
 		//GoToHands(nearestPlayer.passController.GetHandTransform(), 0.1f, currentBallDatas);
 		//ChangeState(BallState.Grounded);
+	}
+
+	void SlowTimeScale()
+	{
+		StartCoroutine(SlowTimeScale_C());
+	}
+	IEnumerator SlowTimeScale_C()
+	{
+		Time.timeScale = currentBallDatas.timescaleOnHit;
+		yield return new WaitForSeconds(currentBallDatas.timescaleDurationOnHit);
+		Time.timeScale = 1f;
 	}
 }

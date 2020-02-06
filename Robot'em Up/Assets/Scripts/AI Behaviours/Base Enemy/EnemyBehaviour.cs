@@ -5,6 +5,7 @@ using MyBox;
 using UnityEngine.Events;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 public enum EnemyState
 {
@@ -435,8 +436,8 @@ public class EnemyBehaviour : PawnController, IHitable
                         i_selfRef.willExplode = false;
                     }
 
-                    damageAfterBump = _damages;
-                    AnalyticsManager.IncrementData("DamageWithDunk", _damages);
+					Analytics.CustomEvent("DamageWithDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+					damageAfterBump = _damages;
                     damageAfterBump = _damages;
 
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
@@ -477,8 +478,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
-                AnalyticsManager.IncrementData("DamageWithPass", _damages);
-                animator.SetTrigger("HitTrigger");
+				Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+				animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 damageAfterBump = 0;
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);

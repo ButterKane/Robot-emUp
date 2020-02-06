@@ -14,9 +14,11 @@ public class SceneEssentialLoader : MonoBehaviour
 	public Light previewLight;
 	public Camera previewCamera;
 	public SceneLoader sceneLoader;
-	private void Start ()
+	private void Awake ()
 	{
-		if (GameManager.i != null) { 
+		if (GameManager.i != null) {
+			Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
+			GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 			if (sceneLoader != null)
 			{
 				sceneLoader.transform.SetParent(null);

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Analytics;
 
 public class DestructibleObject : Dummy
 {
     public GameObject chosenMesh;
     public GameObject[] meshes;
     private GameObject child;
-    private MeshCollider meshCollider;
+    private BoxCollider boxCollider;
     // Start is called before the first frame update
     void Awake()
     {
@@ -20,9 +21,12 @@ public class DestructibleObject : Dummy
         {
             child = Instantiate(meshes[Random.Range(0, meshes.Length - 1)], transform);
         }
-        meshCollider = gameObject.AddComponent<MeshCollider>();
-        meshCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
-		meshCollider.convex = true;
+        boxCollider = gameObject.AddComponent<BoxCollider>();
+        boxCollider.isTrigger = true;
+        Vector3 meshSize = child.GetComponent<MeshRenderer>().bounds.size;
+        boxCollider.size = new Vector3 (meshSize.x / transform.localScale.x, meshSize.y / transform.localScale.y, meshSize.z / transform.localScale.z);
+        boxCollider.center += new Vector3(0, boxCollider.size.y/2, 0);
+
         hitCount_access = 0;
     }
 
@@ -42,7 +46,9 @@ public class DestructibleObject : Dummy
 
     public void DestroyTheObject()
     {
-        FeedbackManager.SendFeedback(deathEvent, this, transform.position, transform.up, transform.up);
+		Analytics.CustomEvent("ObjectDestroyed", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		FeedbackManager.SendFeedback(deathEvent, this, transform.position, transform.up, transform.up);
         Destroy(gameObject);
     }
+
 }

@@ -162,6 +162,10 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
             //aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
         }
+        else
+        {
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, transform.position + transform.forward * 50));
+        }
 
         switch (attackState)
         {
@@ -174,8 +178,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
                 if (redDotLoadingCoroutine == null)
                 {
-                    redDotLoadingCoroutine = UpdateAnticipationRedDot_C(); 
-                    StartCoroutine(redDotLoadingCoroutine);
+                    //redDotLoadingCoroutine = UpdateAnticipationRedDot_C(); 
+                    //StartCoroutine(redDotLoadingCoroutine);
                 }
                 
 
