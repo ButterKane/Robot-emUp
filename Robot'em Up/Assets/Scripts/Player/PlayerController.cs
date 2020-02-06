@@ -127,8 +127,8 @@ public class PlayerController : PawnController, IHitable
 			}
 			Vector3 direction =  otherPlayerPosition - transform.position;
 			direction = direction.normalized;
-			//transform.position = previousPosition;
-			rb.AddForce(direction * 5, ForceMode.Impulse);
+			float intensity = Vector3.Distance(otherPlayerPosition, transform.position);
+			rb.AddForce(direction * intensity, ForceMode.Impulse);
 		}
 	}
 	void GamepadInput ()

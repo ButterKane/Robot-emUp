@@ -40,6 +40,7 @@ public class BallBehaviour : MonoBehaviour
 	public static BallBehaviour instance;
 	private GameObject ballTrail;
 	private Coroutine destroyTrailFX;
+	private float outOfScreenTime;
 
 	private Vector3 currentPosition;
 	private Vector3 startPosition;
@@ -69,6 +70,7 @@ public class BallBehaviour : MonoBehaviour
 		}
 		UpdateBallPosition();
 		UpdateModifiers();
+		CheckIfOutOfScreen();
 	}
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
@@ -166,6 +168,22 @@ public class BallBehaviour : MonoBehaviour
     public void MultiplySpeed(float _coef)
 	{
 		currentSpeed *= _coef;
+	}
+
+	void CheckIfOutOfScreen ()
+	{
+		Vector3 viewportPos = GameManager.mainCamera.WorldToViewportPoint(transform.position);
+		if ((viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0 ) && transform.parent == null)
+		{
+			outOfScreenTime += Time.deltaTime;
+		} else
+		{
+			outOfScreenTime = 0;
+		}
+		if (outOfScreenTime > currentBallDatas.maxTimeOutOfScreen)
+		{
+			StartCoroutine(GoToNearestPlayer_C());
+		}
 	}
 
 	void UpdateModifiers ()
@@ -578,5 +596,31 @@ public class BallBehaviour : MonoBehaviour
 		{
 			Destroy(_ps.gameObject);
 		}
+	}
+
+	IEnumerator GoToNearestPlayer_C()
+	{
+		ChangeState(BallState.Aimed);
+		float minDist = Vector3.Distance(transform.position, GameManager.alivePlayers[0].transform.position);
+		PlayerController nearestPlayer = GameManager.alivePlayers[0];
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float dist = Vector3.Distance(transform.position, p.transform.position);
+			if (dist < minDist)
+			{
+				minDist = dist;
+				nearestPlayer = p;
+			}
+		}
+		Vector3 startPosition = transform.position;
+		for (float i = 0; i < minDist; i+= Time.deltaTime * currentBallDatas.comingBackToScreenSpeed)
+		{
+			transform.position = Vector3.Lerp(startPosition, nearestPlayer.transform.position, i / minDist);
+			yield return null;
+		}
+		//ChangeState(BallState.Held);
+		nearestPlayer.passController.Receive(this);
+		//GoToHands(nearestPlayer.passController.GetHandTransform(), 0.1f, currentBallDatas);
+		//ChangeState(BallState.Grounded);
 	}
 }
