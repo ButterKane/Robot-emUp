@@ -22,7 +22,8 @@ public class EnemyBoss : PawnController, IHitable
     public float missileRange = 40;
     protected float distanceWithPlayerOne;
     protected float distanceWithPlayerTwo;
-    
+    public ArenaDoor endDoor;
+
     public Renderer[] renderers;
     public Color normalColor = Color.blue;
     public Color attackingColor = Color.red;
@@ -591,10 +592,10 @@ public class EnemyBoss : PawnController, IHitable
         Vector3 i_spawnPosition;
         i_spawnPosition = RangeAttack_SpawnPosition + transform.position;
         RangeAttack_spawnedBullet1 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.identity);
-        RangeAttack_spawnedBullet1.transform.LookAt(GameManager.playerOne.GetCenterPosition());
+        RangeAttack_spawnedBullet1.transform.LookAt(GameManager.playerOne.GetHeadPosition()); //+ new Vector3(0,2,0));
         RangeAttack_spawnedBullet1.GetComponent<TurretBasicBullet>().canHitEnemies = false;
         RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition + new Vector3(0,0,0.5f), Quaternion.identity);
-        RangeAttack_spawnedBullet2.transform.LookAt(GameManager.playerTwo.GetCenterPosition());
+        RangeAttack_spawnedBullet2.transform.LookAt(GameManager.playerTwo.GetHeadPosition());// + new Vector3(0, 2, 0));
         RangeAttack_spawnedBullet2.GetComponent<TurretBasicBullet>().canHitEnemies = false;
         ChangeAimingCubeState(AimingRedDotState.NotVisible);
     }
@@ -705,6 +706,7 @@ public class EnemyBoss : PawnController, IHitable
                 waitingBeforeNextState = 99999;
                 animator.SetTrigger("DeathTrigger");
                 Health2Bar_CurrentValue = 0;
+                endDoor.OpenDoor();
             }
         }
         else
