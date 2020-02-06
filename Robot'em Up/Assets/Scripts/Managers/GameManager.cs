@@ -69,10 +69,12 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public InputManager inputManager;
     [NonSerialized] public EnemyManager enemyManager;
 
-    [NonSerialized] public GameObject mainCameraGO;
     [NonSerialized] public static PlayerController playerOne;
     [NonSerialized] public static PlayerController playerTwo;
     [NonSerialized] public static BallBehaviour ball;
+	[NonSerialized] public static Camera mainCamera;
+
+	[NonSerialized] public static CameraGlobalSettings cameraGlobalSettings;
 
     private void Awake()
     {
@@ -96,7 +98,6 @@ public class GameManager : MonoBehaviour
 		}
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
-		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
@@ -113,9 +114,10 @@ public class GameManager : MonoBehaviour
         surrounderPlayerTwo.GetComponent<Surrounder>().playerTransform = playerTwo.transform;
 
 		CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
-
-        //if (playerOne && playerTwo) { AssignPlayers(); }
-    }
+		cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
+		mainCamera = Camera.main;
+		//if (playerOne && playerTwo) { AssignPlayers(); }
+	}
 
 	private void OnDisable ()
 	{
