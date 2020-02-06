@@ -65,6 +65,8 @@ public class LinkController : MonoBehaviour
 		lineRenderer.material = linkMaterial;
 		lineRenderer.startWidth = linkWidth;
 		lineRenderer.endWidth = linkWidth;
+		DontDestroyOnLoad(i_newLinkHolder.gameObject);
+		GameManager.DDOL.Add(i_newLinkHolder.gameObject);
 		return i_newLinkHolder;
 	}
 

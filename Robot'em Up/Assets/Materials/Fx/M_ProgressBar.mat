@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BrokenScreenMat
-  m_Shader: {fileID: 4800000, guid: 418edf5828a29b745b8ff5f494e9d541, type: 3}
+  m_Name: M_ProgressBar
+  m_Shader: {fileID: 4800000, guid: e30512f8ff64b404e9f75be372ace04a, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
@@ -19,17 +19,15 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 2cf6188f55228bd4bac05226dfbcf698, type: 3}
-        m_Scale: {x: 0.43, y: 0.4}
-        m_Offset: {x: 0.4, y: 0}
     - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _EmissiveIntensity: 1
-    - _MinEmissiveMultiplier: 0.8
-    - _TimeScale: 5
+    - _Progression: 1
     - __dirty: 0
-    m_Colors: []
+    m_Colors:
+    - _LinkChargedColor: {r: 1, g: 0.9190924, b: 0, a: 1}
+    - _LinkColor: {r: 1, g: 0.9190924, b: 0, a: 1}
+    - _LinkUnchargedColor: {r: 0, g: 0, b: 0, a: 1}

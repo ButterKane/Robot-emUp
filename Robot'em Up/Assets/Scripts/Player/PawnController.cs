@@ -63,7 +63,7 @@ public class PawnController : MonoBehaviour
 	private bool isInvincible;
     public float invincibilityTime = 1;
     public bool ignoreEletricPlates = false;
-    private IEnumerator invincibilityCoroutine;
+    private Coroutine invincibilityCoroutine;
 
     [Space(2)]
     [Separator("Movement settings")]
@@ -169,7 +169,7 @@ public class PawnController : MonoBehaviour
         moveState = MoveState.Idle;
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
 		if (frozen) { return; }
         CheckMoveState();
@@ -408,8 +408,7 @@ public class PawnController : MonoBehaviour
 	{
         if (!isInvincible_access && invincibilityCoroutine == null)
         {
-            invincibilityCoroutine = InvicibleFrame_C();
-            StartCoroutine(invincibilityCoroutine);
+            invincibilityCoroutine = StartCoroutine(InvicibleFrame_C());
 			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 			currentHealth -= _amount;
             if (currentHealth <= 0)

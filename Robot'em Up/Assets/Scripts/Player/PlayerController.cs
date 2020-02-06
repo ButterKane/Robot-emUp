@@ -51,6 +51,7 @@ public class PlayerController : PawnController, IHitable
 	private bool rightTriggerWaitForRelease;
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
+	private Vector3 previousPosition;
 
 	public void Start ()
 	{
@@ -73,6 +74,12 @@ public class PlayerController : PawnController, IHitable
 			}
 		}
 	}
+
+	protected override void FixedUpdate ()
+	{
+		previousPosition = transform.position;
+		base.FixedUpdate();
+	}
 	private void Update ()
 	{
 		if (middlePoint != null && playerIndex == PlayerIndex.One)
@@ -86,10 +93,12 @@ public class PlayerController : PawnController, IHitable
 #if !UNITY_EDITOR
 			if (!inputDisabled) { GetInput(); }
 #endif
-
-
-
     }
+	private void LateUpdate ()
+	{
+		CheckIfOutOfCamera();
+	}
+
 	void GetInput ()
 	{
 		if (HasGamepad())
@@ -102,6 +111,26 @@ public class PlayerController : PawnController, IHitable
 		}
 	}
 
+	void CheckIfOutOfCamera ()
+	{
+		Vector3 viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
+		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
+		if (viewPortPosition.x > 1 + extents || viewPortPosition.x < -extents || viewPortPosition.y > 1 + extents || viewPortPosition.y < -extents) {
+			rb.velocity = Vector3.zero;
+			Vector3 otherPlayerPosition;
+			if (playerIndex == PlayerIndex.One)
+			{
+				otherPlayerPosition = GameManager.playerTwo.transform.position;
+			} else
+			{
+				otherPlayerPosition = GameManager.playerOne.transform.position;
+			}
+			Vector3 direction =  otherPlayerPosition - transform.position;
+			direction = direction.normalized;
+			//transform.position = previousPosition;
+			rb.AddForce(direction * 5, ForceMode.Impulse);
+		}
+	}
 	void GamepadInput ()
 	{
 		state = GamePad.GetState(playerIndex);

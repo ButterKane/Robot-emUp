@@ -30,7 +30,7 @@ public class InputManager : MonoBehaviour
 
     public void InitializeRefs()
     {
-        mainCamTransform = GameManager.i.mainCameraGO.transform;
+        mainCamTransform = GameManager.mainCamera.transform;
     }
 
     public Vector3 GetMoveAbsoluteDirection(float _xMove, float _zMove)
