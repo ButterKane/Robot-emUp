@@ -39,6 +39,8 @@ public class NarrationManager : MonoBehaviour
 
     public void LaunchDialogue(DialogueData _dialogueData)
     {
+        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
+        textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
         myAudioSource.clip = _dialogueData.dialogueClip;
         myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
 
@@ -103,7 +105,6 @@ public class NarrationManager : MonoBehaviour
             textWritingCoroutine = null;
         }
         Destroy(dialogueBoxInstance, _dialogueData.timeBeforeDestruction);
-        Destroy(gameObject, _dialogueData.timeBeforeDestruction);
     }
 
     public IEnumerator WriteText_C(DialogueData _dialogueData, float _typingSpeed)
@@ -127,7 +128,6 @@ public class NarrationManager : MonoBehaviour
             textWritingCoroutine = null;
         }
         Destroy(dialogueBoxInstance);
-        Destroy(gameObject);
     }
 
     public IEnumerator BlinkSubImage()
