@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Analytics;
 
 public class DestructibleObject : Dummy
 {
@@ -45,7 +46,8 @@ public class DestructibleObject : Dummy
 
     public void DestroyTheObject()
     {
-        FeedbackManager.SendFeedback(deathEvent, this, transform.position, transform.up, transform.up);
+		Analytics.CustomEvent("ObjectDestroyed", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		FeedbackManager.SendFeedback(deathEvent, this, transform.position, transform.up, transform.up);
         Destroy(gameObject);
     }
 

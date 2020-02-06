@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
-
+using UnityEngine.Analytics;
 
 public enum PassMode
 {
@@ -133,7 +133,6 @@ public class PassController : MonoBehaviour
 
 	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
-		AnalyticsManager.IncrementData("PerfectReception");
 		Receive(_ball);
 		keepPerfectReceptionModifiers = true;
 		ChangePassState(PassState.Aiming);
@@ -273,6 +272,7 @@ public class PassController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
+		Analytics.CustomEvent("PerfectReception", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
 		perfectReceptionShoot = true;
 		Shoot();
@@ -282,7 +282,7 @@ public class PassController : MonoBehaviour
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
-		AnalyticsManager.IncrementData("PlayerPass");
+		Analytics.CustomEvent("PlayerPass", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
 		if (!keepPerfectReceptionModifiers)
 		{

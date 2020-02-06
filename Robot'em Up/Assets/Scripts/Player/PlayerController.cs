@@ -330,7 +330,6 @@ public class PlayerController : PawnController, IHitable
         if (!isInvincible_access)
         {
 			animator.SetTrigger("HitTrigger");
-			AnalyticsManager.IncrementData("DamageTaken", _amount);
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
@@ -343,11 +342,7 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
-		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
-		if (GameManager.deadPlayers.Count > 0)
-		{
-			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
-		}
+		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -358,13 +353,17 @@ public class PlayerController : PawnController, IHitable
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
 		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 		GameManager.deadPlayers.Add(this);
+		if (GameManager.deadPlayers.Count > 1)
+		{
+			Analytics.CustomEvent("PlayerSimultaneousDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		}
 		GameManager.alivePlayers.Remove(this);
 	}
 
 	public void Revive(PlayerController _player)
 	{
+		Analytics.CustomEvent("PlayerRevive", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
-		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
@@ -462,7 +461,8 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
-        Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, { "Source", _source } } ) ;
+		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
         if (_source == DamageSource.Ball) { return; }
 		switch (_source)
 		{

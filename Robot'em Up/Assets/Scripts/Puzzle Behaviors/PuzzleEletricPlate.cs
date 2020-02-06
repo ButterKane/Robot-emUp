@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Analytics;
 
 public class PuzzleEletricPlate : PuzzleActivable
 {
@@ -48,7 +49,8 @@ public class PuzzleEletricPlate : PuzzleActivable
             foreach (PawnController item in PawnTrapped)
             {
                 item.Damage(puzzleData.DamageEletricPlate);
-                item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+				Analytics.CustomEvent("ElectricalPlateDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+				item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
 
 				FeedbackManager.SendFeedback("event.PuzzleElectricPlateDamage", item);
             }

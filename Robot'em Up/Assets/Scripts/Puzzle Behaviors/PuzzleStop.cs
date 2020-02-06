@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class PuzzleStop : MonoBehaviour, IHitable
 {
@@ -15,7 +16,8 @@ public class PuzzleStop : MonoBehaviour, IHitable
         //Stop the ball
         if (_ball != null)
         {
-            _ball.ChangeSpeed(0);
+			Analytics.CustomEvent("BallStopped", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+			_ball.ChangeSpeed(0);
             fX_StopBall = FeedbackManager.SendFeedback("event.PuzzleBlockBall", this, _ball.transform.position, -_impactVector, _impactVector).GetVFX();
         }
 
