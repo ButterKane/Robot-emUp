@@ -140,7 +140,7 @@ public class PawnController : MonoBehaviour
 	protected int damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
 
-	protected PassController passController;
+	[HideInInspector] public PassController passController;
 
 	//Events
 	private static System.Action onShootEnd;
