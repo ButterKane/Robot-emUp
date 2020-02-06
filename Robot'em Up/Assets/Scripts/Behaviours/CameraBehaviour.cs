@@ -202,8 +202,7 @@ public class CameraBehaviour : MonoBehaviour
 		Vector3 i_wantedPosition = i_middlePosition;
 		i_directionToCenter.y = 0;
 		Quaternion i_wantedRotation = Quaternion.LookRotation(-i_directionToCenter);
-
-		pivot.transform.localPosition = Vector3.Lerp(pivot.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
-		pivot.transform.localRotation = Quaternion.Lerp(pivot.transform.localRotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
+		pivot.transform.position = Vector3.Lerp(pivot.transform.position, i_wantedPosition, Time.deltaTime * translationSpeed);
+		pivot.transform.rotation = Quaternion.Lerp(pivot.transform.rotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
 	}
 }
