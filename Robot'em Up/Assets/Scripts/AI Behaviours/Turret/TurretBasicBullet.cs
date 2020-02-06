@@ -29,7 +29,7 @@ public class TurretBasicBullet : MonoBehaviour
     {
         if (_other.transform != launcher)
         {
-            if (_other.transform.root.tag == "Enemy" && canHitEnemies)
+            if (_other.transform.root.tag == "Enemy" && canHitEnemies && _other.transform != launcher)
             {
                 _other.GetComponent<PawnController>().Damage(Mathf.RoundToInt(damageDealt * damageModificator));
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
