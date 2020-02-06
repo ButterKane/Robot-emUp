@@ -591,10 +591,10 @@ public class EnemyBoss : PawnController, IHitable
         Vector3 i_spawnPosition;
         i_spawnPosition = RangeAttack_SpawnPosition + transform.position;
         RangeAttack_spawnedBullet1 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition, Quaternion.identity);
-        RangeAttack_spawnedBullet1.transform.LookAt(playerOneTransform.position);
+        RangeAttack_spawnedBullet1.transform.LookAt(GameManager.playerOne.GetCenterPosition());
         RangeAttack_spawnedBullet1.GetComponent<TurretBasicBullet>().canHitEnemies = false;
         RangeAttack_spawnedBullet2 = Instantiate(RangeAttack_BulletPrefab, i_spawnPosition + new Vector3(0,0,0.5f), Quaternion.identity);
-        RangeAttack_spawnedBullet2.transform.LookAt(playerTwoTransform.position);
+        RangeAttack_spawnedBullet2.transform.LookAt(GameManager.playerTwo.GetCenterPosition());
         RangeAttack_spawnedBullet2.GetComponent<TurretBasicBullet>().canHitEnemies = false;
         ChangeAimingCubeState(AimingRedDotState.NotVisible);
     }
