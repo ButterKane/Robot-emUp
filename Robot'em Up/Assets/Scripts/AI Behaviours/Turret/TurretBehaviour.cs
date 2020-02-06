@@ -37,7 +37,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     public TurretState turretState;
     [NonSerialized] public TurretAttackState attackState;
     [NonSerialized] public AimingRedDotState aimingRedDotState;
-    public Transform mainBody;
+    public Transform modelPivot;
 
     //[Space(2)]
     //[Header("Global")]
@@ -133,16 +133,17 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - mainBody.position);
+        
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-        mainBody.rotation = Quaternion.Lerp(mainBody.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
+        modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
     protected virtual void RotateTowardsPlayerPosition()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position - mainBody.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-        mainBody.rotation = Quaternion.Lerp(mainBody.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
+        modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
     public virtual void UpdateState()
@@ -268,10 +269,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(transform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(mainBody.position, hit.point));
-            aimingRedDotTransform.position = mainBody.position + (aimingRedDotTransform.localScale.z / 2 * mainBody.forward);
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
+            aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
         }
     }
 
@@ -284,7 +285,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(mainBody.forward));
+        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));
         spawnedBullet.GetComponent<TurretBasicBullet>().launcher = transform;
         spawnedBullet.GetComponent<TurretBasicBullet>().canHitEnemies = canBulletTouchEnemies;
         spawnedBullet.GetComponent<TurretBasicBullet>().damageModificator = bulletDamageRatioToEnemies;
