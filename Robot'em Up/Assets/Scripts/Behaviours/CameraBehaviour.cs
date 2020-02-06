@@ -139,6 +139,7 @@ public class CameraBehaviour : MonoBehaviour
 		}
 		followPoint.transform.position = i_middlePosition;
 	}
+
 	void UpdateCombatCamera()
 	{
 		Vector3 i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
@@ -176,7 +177,7 @@ public class CameraBehaviour : MonoBehaviour
 		{
 			float i_wantedTranslation = Mathf.Lerp(-maxForwardTranslation, maxForwardTranslation, (i_yDistance + 1) / 2f);
 			Vector3 i_wantedPosition = new Vector3(defaultTranslation.x, defaultTranslation.y, defaultTranslation.z + i_wantedTranslation);
-			virtualCamera.transform.localPosition = Vector3.Lerp(virtualCamera.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
+            virtualCamera.transform.localPosition = Vector3.Lerp(virtualCamera.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
 		}
 	}
 
