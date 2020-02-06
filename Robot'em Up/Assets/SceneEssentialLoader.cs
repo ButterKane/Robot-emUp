@@ -14,7 +14,7 @@ public class SceneEssentialLoader : MonoBehaviour
 	public Light previewLight;
 	public Camera previewCamera;
 	public SceneLoader sceneLoader;
-	private void Awake ()
+	private void Start ()
 	{
 		if (GameManager.i != null) { 
 			if (sceneLoader != null)

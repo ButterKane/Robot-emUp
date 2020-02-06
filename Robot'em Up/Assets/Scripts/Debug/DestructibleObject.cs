@@ -10,7 +10,7 @@ public class DestructibleObject : Dummy
     private GameObject child;
     private MeshCollider meshCollider;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (chosenMesh != null)
         {
@@ -22,13 +22,8 @@ public class DestructibleObject : Dummy
         }
         meshCollider = gameObject.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = child.GetComponent<MeshFilter>().sharedMesh;
+		meshCollider.convex = true;
         hitCount_access = 0;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
