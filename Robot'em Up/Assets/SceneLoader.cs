@@ -17,6 +17,10 @@ public class SceneLoader : MonoBehaviour
 			loadedScenes[i] = SceneManager.GetSceneAt(i);
 		}
 		buildIndex = loadedScenes[countLoaded-1].buildIndex;
+		if (GameManager.GetSceneNameFromIndex(buildIndex) == "MainSceneTemplate")
+		{
+			buildIndex = loadedScenes[countLoaded - 2].buildIndex;
+		}
 	}
 
 	public void LoadNextLevel()
