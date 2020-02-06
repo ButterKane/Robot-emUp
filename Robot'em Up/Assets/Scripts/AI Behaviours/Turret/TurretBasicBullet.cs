@@ -40,7 +40,7 @@ public class TurretBasicBullet : MonoBehaviour
             }
             else if (_other.tag == "Player")
             {
-                _other.GetComponent<PawnController>().Damage(damageDealt);
+                _other.GetComponent<PlayerController>().Damage(damageDealt);
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
                 Destroy(gameObject);
             }
