@@ -96,7 +96,9 @@ public class PlayerController : PawnController, IHitable
     }
 	private void LateUpdate ()
 	{
+	#if !UNITY_EDITOR
 		CheckIfOutOfCamera();
+	#endif
 	}
 
 	void GetInput ()
@@ -127,8 +129,8 @@ public class PlayerController : PawnController, IHitable
 			}
 			Vector3 direction =  otherPlayerPosition - transform.position;
 			direction = direction.normalized;
-			//transform.position = previousPosition;
-			rb.AddForce(direction * 5, ForceMode.Impulse);
+			float intensity = Vector3.Distance(otherPlayerPosition, transform.position);
+			rb.AddForce(direction * intensity, ForceMode.Impulse);
 		}
 	}
 	void GamepadInput ()
