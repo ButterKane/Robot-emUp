@@ -92,7 +92,7 @@ Transform:
   m_Father: {fileID: 3668126503491773334}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8113985003682907263
+--- !u!114 &6673639294426274580
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,9 +101,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3857925501093457392}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 361bfe6b1de8dfe45ac2841c5d519eaa, type: 3}
+  m_Script: {fileID: 11500000, guid: a06114c3c4d746248960ee19ba8470ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myScript: {fileID: 4966143793828746274}
 --- !u!1 &6086072691216837907
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,10 +248,11 @@ MonoBehaviour:
   coreDropChances: 0.15
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
+  baseAnimator: {fileID: 8233652188375059075}
   turretState: 0
   modelPivot: {fileID: 6442596981544871290}
   arenaTurret: 0
-  defaultForwardPredictionRatio: 0.85
+  defaultForwardPredictionRatio: 0.95
   minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
   maxRotationSpeed: 5
   maxRestTime: 2
@@ -528,6 +530,12 @@ PrefabInstance:
 --- !u!4 &2074414275801262073 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 445c6196a61067e4daacf9a16ac54bc1,
+    type: 3}
+  m_PrefabInstance: {fileID: 6463641855421287651}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8233652188375059075 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: -6057140222963153312, guid: 445c6196a61067e4daacf9a16ac54bc1,
     type: 3}
   m_PrefabInstance: {fileID: 6463641855421287651}
   m_PrefabAsset: {fileID: 0}
