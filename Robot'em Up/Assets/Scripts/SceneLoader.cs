@@ -32,7 +32,8 @@ public class SceneLoader : MonoBehaviour
 				SceneManager.LoadSceneAsync(i, LoadSceneMode.Additive);
 			}
 		}
-		if (SceneManager.GetSceneByBuildIndex(buildIndex-1).isLoaded)
+
+		if (buildIndex-1 >= 0 && SceneManager.GetSceneByBuildIndex(buildIndex-1).isLoaded)
 		{
 			SceneManager.UnloadSceneAsync(buildIndex-1, UnloadSceneOptions.None);
 		}

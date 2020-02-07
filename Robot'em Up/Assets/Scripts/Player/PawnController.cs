@@ -139,6 +139,7 @@ public class PawnController : MonoBehaviour
 	protected bool targetable;
 	protected int damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
+	private float invincibilityCooldown;
 
 	[HideInInspector] public PassController passController;
 
@@ -149,7 +150,6 @@ public class PawnController : MonoBehaviour
     {
 		initialScale = transform.localScale;
         isInvincible_access = false;
-        invincibilityCoroutine = null;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
 		rb = GetComponent<Rigidbody>();
@@ -181,6 +181,7 @@ public class PawnController : MonoBehaviour
         UpdateAnimatorBlendTree();
 		UpdateSpeedCoef();
 		CheckIfGrounded();
+		UpdateInvincibilityCooldown();
 	}
 
     #region Movement
@@ -408,7 +409,7 @@ public class PawnController : MonoBehaviour
 	{
         if (!isInvincible_access && invincibilityCoroutine == null)
         {
-            invincibilityCoroutine = StartCoroutine(InvicibleFrame_C());
+			SetInvincible();
 			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 			currentHealth -= _amount;
             if (currentHealth <= 0)
@@ -420,11 +421,6 @@ public class PawnController : MonoBehaviour
                 MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
             }
         }
-	}
-
-	private void ResetScale()
-	{
-		transform.DOScale(initialScale, 0.1f);
 	}
 	public Animator GetAnimator ()
 	{
@@ -557,15 +553,23 @@ public class PawnController : MonoBehaviour
 		return null;
 	}
 
-	
-    private IEnumerator InvicibleFrame_C()
+
+	private void UpdateInvincibilityCooldown()
+	{
+		if (invincibilityCooldown > 0)
+		{
+			invincibilityCooldown -= Time.deltaTime;
+		} else
+		{
+			isInvincible_access = false;
+			gameObject.layer = 8; // 8 = Player Layer
+		}
+	}
+	private void SetInvincible()
     {
         isInvincible_access = true;
         gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
-        yield return new WaitForSeconds(invincibilityTime);
-        isInvincible_access = false;
-        invincibilityCoroutine = null;
-        gameObject.layer = 8; // 8 = Player Layer
+		invincibilityCooldown = invincibilityTime;
     }
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)

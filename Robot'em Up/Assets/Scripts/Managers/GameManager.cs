@@ -145,14 +145,14 @@ public class GameManager : MonoBehaviour
 		{
 			if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
 			{
-				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+				GameManager.LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) + 1);
 			}
 		}
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
 			if (SceneManager.GetActiveScene().buildIndex > 0)
 			{
-				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+				GameManager.LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) - 1);
 			}
 		}
 		UpdateSceneLoader();
@@ -341,7 +341,7 @@ public class GameManager : MonoBehaviour
 	public static void ResetScene()
 	{
 		DestroyDDOL();
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		SceneManager.LoadScene(GetCurrentZoneName());
 	}
 
 	public static void ResetBall()

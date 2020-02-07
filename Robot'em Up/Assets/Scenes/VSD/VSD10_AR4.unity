@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.24705882, g: 0.3529412, b: 0.5647059, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -4298,6 +4298,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 352126982178166004, guid: c41603ab4f7f63848b8d92f7e57eca2e,
+        type: 3}
+      propertyPath: field of view
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -4342,15 +4347,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2039032021, guid: c41603ab4f7f63848b8d92f7e57eca2e, type: 3}
-      propertyPath: alsoLoadNextScene
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 352126982178166004, guid: c41603ab4f7f63848b8d92f7e57eca2e,
-        type: 3}
-      propertyPath: field of view
-      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5918877704717508934, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
@@ -6114,6 +6110,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: RB
       objectReference: {fileID: 0}
+    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: speedChange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: startSpeed
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8898391501262450084, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6169,26 +6180,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3384318069634552629, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: speedChange
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: startSpeed
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 406774413304874454, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -6208,6 +6199,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384318069634552629, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7675eab0145b2d448a61707733b50899, type: 3}
