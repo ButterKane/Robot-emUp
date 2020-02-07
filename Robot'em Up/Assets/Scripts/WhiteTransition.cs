@@ -18,7 +18,6 @@ public class WhiteTransition : MonoBehaviour
 
 	IEnumerator WhiteTransition_C()
 	{
-		Time.timeScale = 0f;
 		Color whiteTransitionColor = whiteTransition.color;
 		for (float i = 0; i < 1; i+= Time.deltaTime * transitionSpeed)
 		{
@@ -29,7 +28,6 @@ public class WhiteTransition : MonoBehaviour
 		whiteTransitionColor.a = 1f;
 		whiteTransition.color = whiteTransitionColor;
 		yield return new WaitForSeconds(1f);
-		Time.timeScale = 1f;
 		GameManager.LoadSceneByIndex(0);
 		yield return null;
 	}
