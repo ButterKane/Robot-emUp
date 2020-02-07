@@ -34,6 +34,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 {
     [Space(2)]
     [Separator("Turret Variables")]
+    public Animator baseAnimator;
     public TurretState turretState;
     [NonSerialized] public TurretAttackState attackState;
     [NonSerialized] public AimingRedDotState aimingRedDotState;
@@ -213,9 +214,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         {
             case TurretState.Hiding:
                 animator.SetTrigger("HidingTrigger");
+                baseAnimator.SetTrigger("HidingTrigger");
                 break;
             case TurretState.GettingOutOfGround:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
+                baseAnimator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
                 break;
