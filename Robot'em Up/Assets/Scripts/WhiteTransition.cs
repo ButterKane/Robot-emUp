@@ -9,7 +9,7 @@ public class WhiteTransition : MonoBehaviour
 	public float transitionSpeed = 0.5f;
 	private void OnTriggerEnter ( Collider other )
 	{
-		if (!inited)
+		if (!inited && other.GetComponent<PlayerController>() != null)
 		{
 			inited = true;
 			StartCoroutine(WhiteTransition_C());
