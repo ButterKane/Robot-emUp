@@ -17,8 +17,6 @@ public class SceneEssentialLoader : MonoBehaviour
 	private void Awake ()
 	{
 		if (GameManager.i != null) {
-			Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
-			GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 			if (sceneLoader != null)
 			{
 				sceneLoader.transform.SetParent(null);
@@ -26,12 +24,15 @@ public class SceneEssentialLoader : MonoBehaviour
 			Destroy(this.gameObject);
 			return; 
 		}
+		Debug.Log("Spawning in zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
+		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 		StartCoroutine(ReplaceScene_C());
 	}
 
 	IEnumerator ReplaceScene_C()
 	{
 		SceneManager.LoadScene("MainSceneTemplate", LoadSceneMode.Additive);
+		//SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainSceneTemplate"));
 		yield return null;
 		PlayerController player1 = GameManager.playerOne;
 		PlayerController player2 = GameManager.playerTwo;
@@ -48,6 +49,14 @@ public class SceneEssentialLoader : MonoBehaviour
 		GameManager.DDOL.Add(ball.gameObject);
 		GameManager.DDOL.Add(Camera.main.gameObject);
 		GameManager.DDOL.Add(GameManager.i.gameObject);
+		foreach (Light light in FindObjectsOfType<Light>())
+		{
+			if (light.type == LightType.Directional)
+			{
+				GameManager.DDOL.Add(light.gameObject);
+				DontDestroyOnLoad(light.gameObject);
+			}
+		}
 
 		if (player1Position != null)
 		{

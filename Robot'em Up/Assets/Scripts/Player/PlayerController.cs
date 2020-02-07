@@ -69,6 +69,8 @@ public class PlayerController : PawnController, IHitable
 				middlePoint.name = "MiddlePoint";
 				middlePoint.tag = "MiddlePoint";
 				middlePoint.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+				DontDestroyOnLoad(middlePoint.gameObject);
+				GameManager.DDOL.Add(middlePoint.gameObject);
 				SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
 				col.isTrigger = true;
 			}

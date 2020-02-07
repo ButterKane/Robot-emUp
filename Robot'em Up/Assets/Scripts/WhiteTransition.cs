@@ -4,11 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 public class WhiteTransition : MonoBehaviour
 {
+	private bool inited;
 	public Image whiteTransition;
 	public float transitionSpeed = 0.5f;
 	private void OnTriggerEnter ( Collider other )
 	{
-		StartCoroutine(WhiteTransition_C());
+		if (!inited)
+		{
+			inited = true;
+			StartCoroutine(WhiteTransition_C());
+		}
 	}
 
 	IEnumerator WhiteTransition_C()

@@ -22,7 +22,6 @@ public class DestructibleObject : Dummy
             child = Instantiate(meshes[Random.Range(0, meshes.Length - 1)], transform);
         }
         boxCollider = gameObject.AddComponent<BoxCollider>();
-        boxCollider.isTrigger = true;
         Vector3 meshSize = child.GetComponent<MeshRenderer>().bounds.size;
         boxCollider.size = new Vector3 (meshSize.x / transform.localScale.x, meshSize.y / transform.localScale.y, meshSize.z / transform.localScale.z);
         boxCollider.center += new Vector3(0, boxCollider.size.y/2, 0);

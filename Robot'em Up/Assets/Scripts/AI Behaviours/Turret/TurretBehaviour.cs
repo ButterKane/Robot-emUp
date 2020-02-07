@@ -241,6 +241,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         switch (attackState)
         {
             case TurretAttackState.Anticipation:
+                ChangeAimingRedDotState(AimingRedDotState.Following);
+
                 if (focusedPlayer != null)
                 {
                     RotateTowardsPlayerAndHisForward();
@@ -275,6 +277,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         if (Physics.Raycast(transform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
+            aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
+        }
+        else
+        {
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, 50);
             aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
         }
     }
