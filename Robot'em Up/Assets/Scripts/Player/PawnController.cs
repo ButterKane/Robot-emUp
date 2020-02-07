@@ -415,9 +415,6 @@ public class PawnController : MonoBehaviour
             {
                 Kill();
             }
-            float i_scaleForce = ((float)_amount / (float)maxHealth) * 3f;
-            i_scaleForce = Mathf.Clamp(i_scaleForce, 0.3f, 1f);
-			transform.DOShakeScale(1f, i_scaleForce).OnComplete(ResetScale);
 			if (GetComponent<PlayerController>() != null)
             {
                 MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
