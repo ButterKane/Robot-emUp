@@ -115,6 +115,7 @@ public class PlayerController : PawnController, IHitable
 
 	void CheckIfOutOfCamera ()
 	{
+		if (GameManager.timeInZone < 1f) { return; }
 		Vector3 viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (viewPortPosition.x > 1 + extents || viewPortPosition.x < -extents || viewPortPosition.y > 1 + extents || viewPortPosition.y < -extents) {
