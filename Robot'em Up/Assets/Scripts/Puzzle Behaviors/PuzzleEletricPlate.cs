@@ -48,7 +48,15 @@ public class PuzzleEletricPlate : PuzzleActivable
             waitTimeBeforeNextDamage = puzzleData.timeCheckingDamageEletricPlate;
             foreach (PawnController item in PawnTrapped)
             {
-                item.Damage(puzzleData.DamageEletricPlate);
+                if (item.GetComponent<EnemyBehaviour>())
+                {
+                    item.Damage(puzzleData.DamageEletricPlateEnnemies);
+
+                }
+                else
+                {
+                    item.Damage(puzzleData.DamageEletricPlate);
+                }
 				Analytics.CustomEvent("ElectricalPlateDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 				item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
 
