@@ -15,9 +15,12 @@ public class PuzzleCharger : MonoBehaviour, IHitable
         {
             MomentumManager.IncreaseMomentum(puzzleData.nbMomentumChargedByCharger);
         }
+
+        EnergyManager.IncreaseEnergy(0.5);
+
         // if momentum < 1
         // Will charge  puuzzledata.nbMomentumChargedByCharger Momentum
-      
+
     }
     
 }

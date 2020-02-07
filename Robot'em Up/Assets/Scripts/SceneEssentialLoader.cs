@@ -32,7 +32,6 @@ public class SceneEssentialLoader : MonoBehaviour
 	IEnumerator ReplaceScene_C()
 	{
 		SceneManager.LoadScene("MainSceneTemplate", LoadSceneMode.Additive);
-		//SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainSceneTemplate"));
 		yield return null;
 		PlayerController player1 = GameManager.playerOne;
 		PlayerController player2 = GameManager.playerTwo;

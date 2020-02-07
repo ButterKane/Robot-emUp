@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
 
 	[NonSerialized] public static CameraGlobalSettings cameraGlobalSettings;
 
-	private static float timeInZone;
+	public static float timeInZone;
 
     private void Awake()
     {
