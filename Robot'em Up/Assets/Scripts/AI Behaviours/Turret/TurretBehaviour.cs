@@ -214,11 +214,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         {
             case TurretState.Hiding:
                 animator.SetTrigger("HidingTrigger");
-                baseAnimator.SetTrigger("HidingTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("HidingTrigger"); }
                 break;
             case TurretState.GettingOutOfGround:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
-                baseAnimator.SetTrigger("GettingOutOfGroundTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger"); }
                 break;
             case TurretState.Hidden:
                 break;
@@ -256,18 +256,19 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 break;
 
             case TurretAttackState.Attack:
+                
                 break;
 
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
+                if (aimingRedDotState != AimingRedDotState.NotVisible)
+                {
+                    ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+                }
                 if (restTime <= 0)
                 {
                     animator.SetTrigger("FromRestToIdleTrigger");
                     ChangingState(TurretState.Idle);
-                }
-                if(aimingRedDotState != AimingRedDotState.NotVisible)
-                {
-                    ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
                 break;
         }
