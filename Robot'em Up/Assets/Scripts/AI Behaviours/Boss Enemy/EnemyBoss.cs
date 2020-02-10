@@ -38,6 +38,7 @@ public class EnemyBoss : PawnController, IHitable
         Stagger,
         PunchAttack,
         RangeAttack,
+        RangeSniperAttack,
         Shield,
         HammerPunchAttack,
         GroundAttack,
@@ -89,6 +90,14 @@ public class EnemyBoss : PawnController, IHitable
     public float followingAimingColorIntensity;
     public float maxRotationSpeed = 1;
 
+
+    [Header("Range Sniper Attack")]
+    public bool PreferSniperAttackOverRangeAttack = true;
+    public BossTurretSniperBehaviour SniperTurret_1;
+    public BossTurretSniperBehaviour SniperTurret_2;
+    public float SniperAttack_Anticipation = 0.5f;
+    public float SniperAttack_AttackDuration = 1.2f;
+    public float SniperAttack_RecoverTime = 0.8f;
 
     [Header("Shield Invocation")]
     public GameObject BossShield;
@@ -324,8 +333,18 @@ public class EnemyBoss : PawnController, IHitable
                         {
                             animator.SetTrigger("EndingChangingPhaseTrigger");
                             isPhase1 = false;
-                            Instantiate(Turret_Prefab, transform.position + transform.forward * 2, Quaternion.identity);
-                            Instantiate(Turret_Prefab, transform.position + transform.forward * -2, Quaternion.identity);
+
+
+                            if (PreferSniperAttackOverRangeAttack)
+                            {
+                                SniperTurret_1.BossDropTurret();
+                                SniperTurret_2.BossDropTurret();
+                            }
+                            else
+                            {
+                                Instantiate(Turret_Prefab, transform.position + transform.forward * 2, Quaternion.identity);
+                                Instantiate(Turret_Prefab, transform.position + transform.forward * -2, Quaternion.identity);
+                            }
                         }
                         break;
                     default:
@@ -389,9 +408,20 @@ public class EnemyBoss : PawnController, IHitable
                     }
                     else
                     {
-                        bossState = BossState.RangeAttack;
-                        waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
-                        ChangeAimingCubeState(AimingRedDotState.Following);
+                        if (PreferSniperAttackOverRangeAttack)
+                        {
+                            bossState = BossState.RangeSniperAttack;
+                            waitingBeforeNextState = SniperAttack_Anticipation + SniperAttack_AttackDuration + SniperAttack_RecoverTime;
+                            SniperTurret_1.Activated = true;
+                            SniperTurret_2.Activated = true;
+                        }
+                        else
+                        {
+                            bossState = BossState.RangeAttack;
+                            waitingBeforeNextState = RangeAttack_Anticipation + RangeAttack_AttackDuration + RangeAttack_RecoverTime;
+                            ChangeAimingCubeState(AimingRedDotState.Following);
+
+                        }
 
                     }
 

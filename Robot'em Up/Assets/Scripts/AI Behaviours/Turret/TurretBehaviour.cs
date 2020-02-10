@@ -71,7 +71,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     public LayerMask layersToCheckToScale;
     //MISC
     Vector3 wantedAimingPosition;
-    Quaternion wantedRotation;
+    protected Quaternion wantedRotation;
 
     [Space(2)]
     [Header("Bullet")]
