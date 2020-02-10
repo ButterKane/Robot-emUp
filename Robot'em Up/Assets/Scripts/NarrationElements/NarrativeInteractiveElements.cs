@@ -16,11 +16,12 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     
     //Possession variables
     public float possessionAnimationMaxTime;
+    public Color possessionColor;
     public AnimationCurve possessionAnimationCurve;
     [HideInInspector] public float possessionAnimationTimer;
-    public Light[] possessionLights;
-    public float maxLightIntensity;
-    public float normalLightIntensity;
+    public Renderer[] possessionEmissives;
+    public float maxEmissiveIntensity;
+    public float normalEmissiveIntensity;
 
     public AudioMixerGroup myAudioMixer;
 
@@ -41,6 +42,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public virtual void Break()
     {
         broken = true;
+        lockable = false;
         if(possessed)
             SetAIPossession(false);
         FeedbackManager.SendFeedback(breakEventName, this);
@@ -52,7 +54,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
 
     public virtual void SetAIPossession(bool _isPossessed)
     {
-        if (_isPossessed)
+        if (_isPossessed && !broken)
         {
             possessed = true;
             possessionAnimationTimer = 0;
@@ -61,8 +63,14 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         else
         {
             possessed = false;
-            possessionAnimationTimer = 0;
-            StartCoroutine(PossessionCoroutine(false));
+            if (!broken) {
+                possessionAnimationTimer = 0;
+                StartCoroutine(PossessionCoroutine(false));
+            }
+            else //sauter l'étape du sinus d'emissive
+            {
+                EndPossessionAnimationEvents();
+            }
         }
     }
 
@@ -71,9 +79,10 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         if (_isPossessed) //IS POSSESSED
         {
             possessionAnimationTimer += Time.deltaTime;
-            for (int i = 0; i < possessionLights.Length; i++)
+            for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionLights[i].intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(0, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                print("peut-être");
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -88,9 +97,10 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         else // NOT POSSESSED
         {
             possessionAnimationTimer += Time.deltaTime;
-            for (int i = 0; i < possessionLights.Length; i++)
+            for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionLights[i].intensity = Mathf.Lerp(0, maxLightIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime));
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(normalEmissiveIntensity, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                print("non");
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -106,19 +116,20 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
 
     public virtual void EndPossessionAnimationEvents()
     {
-        if (possessed)
+        if (possessed && !broken)
         {
-            for (int i = 0; i < possessionLights.Length; i++)
+            for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionLights[i].intensity = normalLightIntensity;
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * normalEmissiveIntensity);
+                print("oui");
             }
             NarrationManager.narrationManager.ChangeActivatedNarrationElement(this);
         }
         else
         {
-            for (int i = 0; i < possessionLights.Length; i++)
+            for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionLights[i].intensity = 0;
+                possessionEmissives[i].material.SetColor("_EmissionColor", Color.black);
             }
 
             if (NarrationManager.narrationManager.currentNarrationElementActivated == this)

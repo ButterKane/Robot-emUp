@@ -51,10 +51,12 @@ public class PlayerController : PawnController, IHitable
 	private bool rightTriggerWaitForRelease;
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
+	private Vector3 previousPosition;
 
 	public void Start ()
 	{
 		base.Awake();
+		GameManager.alivePlayers.Add(this);
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
@@ -67,10 +69,18 @@ public class PlayerController : PawnController, IHitable
 				middlePoint.name = "MiddlePoint";
 				middlePoint.tag = "MiddlePoint";
 				middlePoint.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+				DontDestroyOnLoad(middlePoint.gameObject);
+				GameManager.DDOL.Add(middlePoint.gameObject);
 				SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
 				col.isTrigger = true;
 			}
 		}
+	}
+
+	protected override void FixedUpdate ()
+	{
+		previousPosition = transform.position;
+		base.FixedUpdate();
 	}
 	private void Update ()
 	{
@@ -82,13 +92,15 @@ public class PlayerController : PawnController, IHitable
 		{
 			GetInput();
 		}
-#if !UNITY_EDITOR
-			if (!inputDisabled) { GetInput(); }
-#endif
-
-
-
     }
+	private void LateUpdate ()
+	{
+		if (Application.isPlaying)
+		{
+			CheckIfOutOfCamera();
+		}
+	}
+
 	void GetInput ()
 	{
 		if (HasGamepad())
@@ -101,6 +113,21 @@ public class PlayerController : PawnController, IHitable
 		}
 	}
 
+	void CheckIfOutOfCamera ()
+	{
+		if (GameManager.timeInZone < 1f) { return; }
+		Vector3 viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
+		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
+		if (viewPortPosition.x > 1 + extents || viewPortPosition.x < -extents || viewPortPosition.y > 1 + extents || viewPortPosition.y < -extents) {
+			rb.velocity = Vector3.zero;
+			Vector3 centerPos = GameManager.mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,Vector3.Distance(transform.position, GameManager.mainCamera.transform.position)));
+			centerPos.y = transform.position.y;
+			Vector3 direction = centerPos - transform.position;
+			direction = direction.normalized;
+			float intensity = Vector3.Distance(centerPos, transform.position);
+			rb.AddForce(direction * intensity, ForceMode.Impulse);
+		}
+	}
 	void GamepadInput ()
 	{
 		state = GamePad.GetState(playerIndex);
@@ -305,7 +332,7 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
-			AnalyticsManager.IncrementData("DamageTaken", _amount);
+			animator.SetTrigger("HitTrigger");
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
@@ -318,11 +345,7 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
-		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
-		if (GameManager.deadPlayers.Count > 0)
-		{
-			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
-		}
+		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -333,12 +356,17 @@ public class PlayerController : PawnController, IHitable
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
 		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 		GameManager.deadPlayers.Add(this);
+		if (GameManager.deadPlayers.Count > 1)
+		{
+			Analytics.CustomEvent("PlayerSimultaneousDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		}
+		GameManager.alivePlayers.Remove(this);
 	}
 
 	public void Revive(PlayerController _player)
 	{
+		Analytics.CustomEvent("PlayerRevive", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
-		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
@@ -362,6 +390,7 @@ public class PlayerController : PawnController, IHitable
 		}
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
+		GameManager.alivePlayers.Add(_player);
 	}
 
 	void GenerateReviveParts()
@@ -435,17 +464,19 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
-		if (_source == DamageSource.Ball) { return; }
+		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, { "Source", _source } } ) ;
+		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+        if (_source == DamageSource.Ball) { return; }
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
-                Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                BumpMe(5, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
+                BumpMe(10, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
 				Damage(_damages);
 				break;
 
             case DamageSource.EnemyContact:
                 Damage(_damages);
+                //Push(_impactVector, 30, 2f);
                 break;
 
             case DamageSource.Laser:
@@ -454,7 +485,7 @@ public class PlayerController : PawnController, IHitable
 
 			case DamageSource.SpawnImpact:
 				Damage(_damages);
-				Push(-_impactVector, _damages * 10f, 1f);
+				//Push(-_impactVector, _damages * 10f, 1f);
 				break;
 		}
 	}

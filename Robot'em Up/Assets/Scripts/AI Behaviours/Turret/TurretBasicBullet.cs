@@ -15,12 +15,15 @@ public class TurretBasicBullet : MonoBehaviour
     public float damageModificator;
 
     // Update is called once per frame
+
+        
     void Update()
     {
         rb.position = transform.position + transform.forward * speed * Time.deltaTime;
         maxLifeTime -= Time.deltaTime;
         if (maxLifeTime <= 0)
         {
+            Debug.Log("maxlifetime turret");
             Destroy(gameObject);
         }
     }
@@ -29,7 +32,7 @@ public class TurretBasicBullet : MonoBehaviour
     {
         if (_other.transform != launcher)
         {
-            if (_other.transform.root.tag == "Enemy" && canHitEnemies)
+            if (_other.transform.root.tag == "Enemy" && canHitEnemies && _other.transform != launcher)
             {
                 _other.GetComponent<PawnController>().Damage(Mathf.RoundToInt(damageDealt * damageModificator));
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
@@ -37,7 +40,7 @@ public class TurretBasicBullet : MonoBehaviour
             }
             else if (_other.tag == "Player")
             {
-                _other.GetComponent<PawnController>().Damage(damageDealt);
+                _other.GetComponent<PlayerController>().Damage(damageDealt);
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
                 Destroy(gameObject);
             }

@@ -10,8 +10,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
     public Transform topEyeTransform;
     public float maxEyeOffset;
     Vector3 eyesWantedPosition;
-    public enum WhereToLook { Left, Middle, Right };
-    WhereToLook whereToLook = WhereToLook.Middle;
 
     public Renderer myRend;
     public Material possessedMat;
@@ -38,14 +36,14 @@ public class ScreenBehavior : NarrativeInteractiveElements
     public override void EndPossessionAnimationEvents()
     {
         base.EndPossessionAnimationEvents();
-        if (possessed)
+        if (possessed && !broken)
         {
             myRend.material = possessedMat;
             topEyeTransform.gameObject.SetActive(true);
             leftEyeTransform.gameObject.SetActive(true);
             rightEyeTransform.gameObject.SetActive(true);
         }
-        else
+        else if (!broken)
         {
             myRend.material = notPossessedMat;
             topEyeTransform.gameObject.SetActive(false);

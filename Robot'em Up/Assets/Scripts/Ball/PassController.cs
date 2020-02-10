@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
-
+using UnityEngine.Analytics;
 
 public enum PassMode
 {
@@ -65,6 +65,7 @@ public class PassController : MonoBehaviour
 	private PassState previousState;
 	private float perfectReceptionBuffer;
 	private bool keepPerfectReceptionModifiers;
+	private bool perfectReceptionShoot;
 	[ReadOnly] public PassState passState;
 
     private void Awake ()
@@ -132,7 +133,6 @@ public class PassController : MonoBehaviour
 
 	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
-		AnalyticsManager.IncrementData("PerfectReception");
 		Receive(_ball);
 		keepPerfectReceptionModifiers = true;
 		ChangePassState(PassState.Aiming);
@@ -227,7 +227,7 @@ public class PassController : MonoBehaviour
 						return i_coordinates;
 					}
 					EnemyShield potentialEnemyShield = hito.collider.gameObject.GetComponentInParent<EnemyShield>();
-					if (potentialEnemyShield != null && potentialEnemyShield.shield != null && hito.collider.gameObject.tag != "")
+					if (potentialEnemyShield != null && potentialEnemyShield.shield != null && hito.collider.gameObject.tag != "Enemy")
 					{
 						Vector3 impactVector = (i_coordinates[i] - i_coordinates[i - 1]);
 						if (potentialEnemyShield.shield.transform.InverseTransformPoint(i_coordinates[i]).z < 0.0)
@@ -272,7 +272,9 @@ public class PassController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
+		Analytics.CustomEvent("PerfectReception", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
+		perfectReceptionShoot = true;
 		Shoot();
 	}
 	public void Shoot()
@@ -280,7 +282,7 @@ public class PassController : MonoBehaviour
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
-		AnalyticsManager.IncrementData("PlayerPass");
+		Analytics.CustomEvent("PlayerPass", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
 		if (!keepPerfectReceptionModifiers)
 		{
@@ -322,6 +324,7 @@ public class PassController : MonoBehaviour
 				i_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
 			}
 		}
+		perfectReceptionShoot = false;
 		ChangePassState(PassState.None);
 	}
 
@@ -467,19 +470,29 @@ public class PassController : MonoBehaviour
 
 	public void ChangePassState ( PassState _newState )
 	{
-		//if (_newState == passState) { return; }
+		if (_newState == passState) { return; }
 		previousState = passState;
-		passState = _newState;
 		switch (_newState)
 		{
 			case PassState.Aiming:
 				if (!CanShoot()) { return; }
 				EnablePassPreview();
+				animator.ResetTrigger("ShootingMissedTrigger");
 				animator.SetTrigger("PrepareShootingTrigger");
 				break;
 			case PassState.Shooting:
 				if (!CanShoot()) { return; }
-				animator.SetTrigger("ShootingTrigger");
+				if (perfectReceptionShoot)
+				{
+					animator.ResetTrigger("ShootingMissedTrigger");
+					animator.SetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("ShootingTrigger");
+				} else
+				{
+					animator.ResetTrigger("ShootingMissedTrigger");
+					animator.ResetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("HandoffTrigger");
+				}
 				return;
 			case PassState.None:
 				DisablePassPreview();
@@ -487,5 +500,6 @@ public class PassController : MonoBehaviour
 				animator.SetTrigger("ShootingMissedTrigger");
 				break;
 		}
+		passState = _newState;
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Analytics;
 
 public enum BallState {
 	Grounded, //The ball is on the ground
@@ -40,6 +41,7 @@ public class BallBehaviour : MonoBehaviour
 	public static BallBehaviour instance;
 	private GameObject ballTrail;
 	private Coroutine destroyTrailFX;
+	private float outOfScreenTime;
 
 	private Vector3 currentPosition;
 	private Vector3 startPosition;
@@ -69,6 +71,7 @@ public class BallBehaviour : MonoBehaviour
 		}
 		UpdateBallPosition();
 		UpdateModifiers();
+		CheckIfOutOfScreen();
 	}
 
     public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
@@ -166,6 +169,22 @@ public class BallBehaviour : MonoBehaviour
     public void MultiplySpeed(float _coef)
 	{
 		currentSpeed *= _coef;
+	}
+
+	void CheckIfOutOfScreen ()
+	{
+		Vector3 viewportPos = GameManager.mainCamera.WorldToViewportPoint(transform.position);
+		if ((viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0 ) && transform.parent == null)
+		{
+			outOfScreenTime += Time.deltaTime;
+		} else
+		{
+			outOfScreenTime = 0;
+		}
+		if (currentBallDatas != null && outOfScreenTime > currentBallDatas.maxTimeOutOfScreen)
+		{
+			StartCoroutine(GoToNearestPlayer_C());
+		}
 	}
 
 	void UpdateModifiers ()
@@ -347,9 +366,9 @@ public class BallBehaviour : MonoBehaviour
 		switch (_newState)
 		{
 			case BallState.Grounded:
+				Analytics.CustomEvent("BallGrounded", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 				if (destroyTrailFX != null) { StopCoroutine(destroyTrailFX); Destroy(ballTrail); }
 				if (ballTrail) { destroyTrailFX = StartCoroutine(DisableEmitterThenDestroyAfterDelay(ballTrail.GetComponent<ParticleSystem>(), 0.5f)); }
-				AnalyticsManager.IncrementData("GroundedBallAmount");
 				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
@@ -432,6 +451,7 @@ public class BallBehaviour : MonoBehaviour
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
+						if (raycast.collider.tag == "Enemy") { continue; }
                         EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
                         if (i_selfRef != null)
                         {
@@ -452,17 +472,18 @@ public class BallBehaviour : MonoBehaviour
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							SlowTimeScale();
 						}
 
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
 						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
 						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
 						{
-							AnalyticsManager.IncrementData("BallBounceOnWallCount");
+							Analytics.CustomEvent("BallBounce", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
 							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
-							i_newDirection.y = -currentDirection.y;
+							i_newDirection.y = -currentDirection.y;              
 							Bounce(i_newDirection, currentBallDatas.speedMultiplierOnBounce);
 							return;
 						}
@@ -481,6 +502,10 @@ public class BallBehaviour : MonoBehaviour
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							if (i_potentialHitableObjectFound.GetType() != typeof(PlayerController))
+							{
+								SlowTimeScale();
+							}
 						}
 					}
 				}
@@ -577,5 +602,42 @@ public class BallBehaviour : MonoBehaviour
 		{
 			Destroy(_ps.gameObject);
 		}
+	}
+
+	IEnumerator GoToNearestPlayer_C()
+	{
+		ChangeState(BallState.Aimed);
+		float minDist = Vector3.Distance(transform.position, GameManager.alivePlayers[0].transform.position);
+		PlayerController nearestPlayer = GameManager.alivePlayers[0];
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float dist = Vector3.Distance(transform.position, p.transform.position);
+			if (dist < minDist)
+			{
+				minDist = dist;
+				nearestPlayer = p;
+			}
+		}
+		Vector3 startPosition = transform.position;
+		for (float i = 0; i < minDist; i+= Time.deltaTime * currentBallDatas.comingBackToScreenSpeed)
+		{
+			transform.position = Vector3.Lerp(startPosition, nearestPlayer.transform.position, i / minDist);
+			yield return null;
+		}
+		//ChangeState(BallState.Held);
+		nearestPlayer.passController.Receive(this);
+		//GoToHands(nearestPlayer.passController.GetHandTransform(), 0.1f, currentBallDatas);
+		//ChangeState(BallState.Grounded);
+	}
+
+	void SlowTimeScale()
+	{
+		StartCoroutine(SlowTimeScale_C());
+	}
+	IEnumerator SlowTimeScale_C()
+	{
+		Time.timeScale = currentBallDatas.timescaleOnHit;
+		yield return new WaitForSeconds(currentBallDatas.timescaleDurationOnHit);
+		Time.timeScale = 1f;
 	}
 }

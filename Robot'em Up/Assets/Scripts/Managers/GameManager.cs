@@ -57,27 +57,36 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public GameObject surrounderPlayerTwo;
     public static Canvas mainCanvas;
     public static List<PlayerController> deadPlayers;
+	public static List<PlayerController> alivePlayers;
 
     private static MainMenu menu;
     private static bool menuCalledOne = false;
     private static bool menuCalledTwo = false;
     private static bool deathPanelCalled = false;
+	public static List<GameObject> DDOL;
+	public static string currentZoneName;
 
     [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
     [NonSerialized] public EnemyManager enemyManager;
 
-    [NonSerialized] public GameObject mainCameraGO;
     [NonSerialized] public static PlayerController playerOne;
     [NonSerialized] public static PlayerController playerTwo;
-    [NonSerialized] public BallBehaviour ball;
+    [NonSerialized] public static BallBehaviour ball;
+	[NonSerialized] public static Camera mainCamera;
+
+	[NonSerialized] public static CameraGlobalSettings cameraGlobalSettings;
+
+	public static float timeInZone;
 
     private void Awake()
     {
-		AnalyticsManager.LoadDatas();
+		deathPanelCalled = false;
+		DDOL = new List<GameObject>();
 		Time.timeScale = 1f;
 		i = this;
 		deadPlayers = new List<PlayerController>();
+		alivePlayers = new List<PlayerController>();
 		//Auto assign players
 		foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
 		{
@@ -91,7 +100,6 @@ public class GameManager : MonoBehaviour
 		}
         if (levelManager == null){ levelManager = FindObjectOfType<LevelManager>();}
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
-		if (mainCameraGO == null) { mainCameraGO = Camera.main.gameObject; }
         if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
 		if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
@@ -108,17 +116,14 @@ public class GameManager : MonoBehaviour
         surrounderPlayerTwo.GetComponent<Surrounder>().playerTransform = playerTwo.transform;
 
 		CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
-
-        //if (playerOne && playerTwo) { AssignPlayers(); }
-    }
-
-	private void OnDisable ()
-	{
-		AnalyticsManager.SaveDatas();
+		cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
+		mainCamera = Camera.main;
+		//if (playerOne && playerTwo) { AssignPlayers(); }
 	}
 
 	private void Update ()
 	{
+		timeInZone += Time.deltaTime;
 		if (deadPlayers.Count >= 2 && !deathPanelCalled)
 		{
 			deathPanelCalled = true;
@@ -140,29 +145,54 @@ public class GameManager : MonoBehaviour
 		{
 			if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
 			{
-				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+				GameManager.LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) + 1);
 			}
 		}
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
 			if (SceneManager.GetActiveScene().buildIndex > 0)
 			{
-				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+				GameManager.LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) - 1);
 			}
 		}
 		UpdateSceneLoader();
 	}
 
+	private static void DestroyDDOL()
+	{
+		if (DDOL == null) { return; }
+		foreach (GameObject obj in DDOL)
+		{
+			Destroy(obj.gameObject);
+		}
+		GameManager.i = null;
+	}
+
+	public static string GetCurrentZoneName()
+	{
+		return currentZoneName;
+	}
+
+	public static void ChangeCurrentZone(string _newZoneName)
+	{
+		currentZoneName = _newZoneName;
+		timeInZone = 0;
+	}
+
+	public static float GetTimeInZone()
+	{
+		return timeInZone;
+	}
+
 	private void OnApplicationQuit ()
 	{
-		AnalyticsManager.SaveDatas();
-		AnalyticsManager.SendDatas();
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 	}
 
 	public static void LoadSceneByIndex(int index)
 	{
+		DestroyDDOL();
 		SceneManager.LoadScene(index);
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
@@ -170,10 +200,29 @@ public class GameManager : MonoBehaviour
 	}
 	public static void LoadNextScene ()
 	{
+		DestroyDDOL();
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 		Time.timeScale = 1f;
+	}
+	public static string GetSceneNameFromIndex ( int _buildIndex )
+	{
+		string path = SceneUtility.GetScenePathByBuildIndex(_buildIndex);
+		int slash = path.LastIndexOf('/');
+		string name = path.Substring(slash + 1);
+		int dot = name.LastIndexOf('.');
+		return name.Substring(0, dot);
+	}
+	public static int GetSceneIndexFromName ( string _sceneName )
+	{
+		for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+		{
+			string testedScreen = GetSceneNameFromIndex(i);
+			if (testedScreen == _sceneName)
+				return i;
+		}
+		return -1;
 	}
 
 	public static void OpenLevelMenu()
@@ -284,12 +333,15 @@ public class GameManager : MonoBehaviour
 			if (canvas.renderMode != RenderMode.WorldSpace)
 			{
 				mainCanvas = canvas;
+				DontDestroyOnLoad(mainCanvas.gameObject);
+				DDOL.Add(mainCanvas.gameObject);
 			}
 		}
 	}
 	public static void ResetScene()
 	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		DestroyDDOL();
+		SceneManager.LoadScene(GetCurrentZoneName());
 	}
 
 	public static void ResetBall()
@@ -299,8 +351,9 @@ public class GameManager : MonoBehaviour
 			Destroy(ball.gameObject);
 		}
 		GameObject i_newBall = Instantiate(i.ballPrefab, null);
+		DontDestroyOnLoad(i_newBall);
 		BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
-        i.ball = i_newBall.GetComponent<BallBehaviour>();
+        ball = i_newBall.GetComponent<BallBehaviour>();
 		i_newBall.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
 	}
 

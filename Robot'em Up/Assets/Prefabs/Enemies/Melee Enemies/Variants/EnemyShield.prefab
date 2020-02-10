@@ -82,7 +82,7 @@ MonoBehaviour:
   damage: 15
   powerLevel: 4
   lockable: 1
-  lockHitboxSize: 2
+  lockHitboxSize: 1.7
   arenaRobot: 0
   focusDistance: 50
   unfocusDistance: 55
@@ -94,17 +94,12 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  maxAnticipationTime: 1.5
+  maxAnticipationTime: 0.5
   maxTimePauseAfterAttack: 1
   hitBoxOffset: {x: 0.5, y: 1, z: 0}
-  distanceToAttack: 7
   rotationSpeedPreparingAttack: 0.2
-  whenToTriggerEndOfAttackAnim: 0.9
-  attackHitBoxPrefab: {fileID: 0}
-  attackHitBoxCenterPoint: {fileID: 0}
-  attackRaycastDistance: 2
+  distanceToAttack: 12
   portionOfAnticipationWithRotation: 0.3
-  portionOfAnticipationWithFlickering: 0.2
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
@@ -114,13 +109,12 @@ MonoBehaviour:
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
   shield: {fileID: 907304710442746487}
-  deactivateShieldWhenAttacking: 1
-  angleToBounceBackToPlayer: 20
-  angleRangeForRebound: 45
+  deactivateShieldWhenAttacking: 0
+  angleRangeForRebound: 75
+  timeShieldDisappearAfterHit: 0.6
   renderers: []
   normalColor: {r: 0, g: 0, b: 1, a: 1}
   attackingColor: {r: 1, g: 0, b: 0, a: 1}
-  timeShieldDisappearAfterHit: 0
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
     serializedVersion: 2
@@ -146,6 +140,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  attackChargeDuration: 1.2
+  whenToTriggerEndOfAttackAnim: 0.9
+  attackRaycastDistance: 2
   maxRotationSpeed: 360
   BumpOtherDistanceMod: 0.5
   BumpOtherDurationMod: 0.2
@@ -161,11 +158,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Shield
-      objectReference: {fileID: 0}
-    - target: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
-        type: 3}
-      propertyPath: m_Layer
-      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
@@ -225,22 +217,22 @@ PrefabInstance:
     - target: {fileID: 5760692066787637055, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
       propertyPath: m_Layer
-      value: 12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8553073857769885308, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
       propertyPath: m_Layer
-      value: 12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7624369565430697710, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
       propertyPath: m_Layer
-      value: 12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1847733795171493226, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
       propertyPath: m_Layer
-      value: 12
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d2843c1071640d41aaadbea7e32a699, type: 3}
@@ -260,11 +252,6 @@ PrefabInstance:
     - target: {fileID: 0}
       propertyPath: enemyType
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -339,7 +326,7 @@ PrefabInstance:
     - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Radius
-      value: 1
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -355,6 +342,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1.2147
+      objectReference: {fileID: 0}
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -378,6 +370,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     m_RemovedComponents:
     - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
+    - {fileID: 4726416416103560745, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
 --- !u!1 &6181108247738804025 stripped
 GameObject:

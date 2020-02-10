@@ -36,7 +36,7 @@ public class PuzzlePressurePlate : PuzzleActivator
             listPawnsHere.Add(pawn);
 			if (!isActivated)
 			{
-				FeedbackManager.SendFeedback("event.PuzzlePresurePlateActivation", this);
+				FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
 			}
             isActivated = true;
             ActivateLinkedObjects();

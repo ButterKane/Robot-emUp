@@ -16,6 +16,7 @@ public class CameraZone : MonoBehaviour
 
 
 	public int minPlayersRequired = 2;
+	public bool desactivateCameraOnZoneExit = false;
 	public CameraType type;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
@@ -115,19 +116,19 @@ public class CameraZone : MonoBehaviour
 
 	public virtual void Update ()
 	{
-		if (Application.isPlaying)
+		if (Application.isPlaying && GameManager.deadPlayers != null)
 		{
 			if (IsZoneActivated())
 			{
 				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) < minPlayersRequired)
 				{
 					DesactivateZone();
-					linkedCameraBehaviour.DesactivateCamera();
+					if (desactivateCameraOnZoneExit) { linkedCameraBehaviour.DesactivateCamera(); }
 				}
 			}
 			else
 			{
-				if (GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
+				if (GetPlayersInside() != null && GetPlayersInside().Count * (1 + GameManager.deadPlayers.Count) >= minPlayersRequired)
 				{
 					ActivateZone();
 					linkedCameraBehaviour.ActivateCamera();

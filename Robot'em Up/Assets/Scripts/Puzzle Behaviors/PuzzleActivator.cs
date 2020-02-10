@@ -7,7 +7,8 @@ public class PuzzleActivator : MonoBehaviour
     public bool isActivated;
     public PuzzleDatas puzzleData;
     public Light indictatorLight;
-    // Update is called once per frame
+	// Update is called once per frame
+	[HideInInspector]public Wire wire;
 
 
     public virtual void Start()
@@ -35,9 +36,19 @@ public class PuzzleActivator : MonoBehaviour
        
     }
 
-    public virtual void ActivateLinkedObjects()
-    {
-        PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
+	public virtual void ActivateLinkedObjects ()
+	{
+		if (wire != null)
+		{
+			wire.ActivateWire(ActivateLinkedObjectsCallback);
+		} else
+		{
+			ActivateLinkedObjectsCallback();
+		}
+	}
+
+	public void ActivateLinkedObjectsCallback() {
+		PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
         //Debug.Log("Find call ");
 
         foreach (var item in i_activables)
@@ -73,9 +84,20 @@ public class PuzzleActivator : MonoBehaviour
 
 
 
-    public virtual void DesactiveLinkedObjects()
-    {
-        PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
+	public virtual void DesactiveLinkedObjects ()
+	{
+		if (wire != null)
+		{
+			wire.DesactivateWire(DesactiveLinkedObjectsCallback);
+		} else
+		{
+			DesactiveLinkedObjectsCallback();
+		}
+	}
+
+	public void DesactiveLinkedObjectsCallback()
+	{
+		PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
 
         foreach (var item in i_activables)
         {

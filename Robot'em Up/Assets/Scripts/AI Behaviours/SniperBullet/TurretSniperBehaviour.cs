@@ -16,7 +16,7 @@ public class TurretSniperBehaviour : TurretBehaviour
     {
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward));
+        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
     }
@@ -94,7 +94,7 @@ public class TurretSniperBehaviour : TurretBehaviour
     {
         bool i_aimAtPlayer;
         
-        if(Physics.Raycast(transform.position, transform.forward, Vector3.Distance(transform.position, focusedPlayer.position), layersToCheckToScale))
+        if(Physics.Raycast(modelPivot.position, modelPivot.forward, Vector3.Distance(modelPivot.position, focusedPlayer.position), layersToCheckToScale))
         {
             i_aimAtPlayer = false;
         }
@@ -104,10 +104,10 @@ public class TurretSniperBehaviour : TurretBehaviour
         }
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
-            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
-            aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
+            aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
         }
 
         //Adapt PlayerFXRenderer
@@ -134,6 +134,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 if (focusedPlayer != null)
                 {
                     RotateTowardsPlayerAndHisForward();
+                    // rotating an object here works, so the method must be malfunctionning or the mainbody rotation is touched somewhere else
                 }
 
                 //TRANSITION TO OTHER STATE

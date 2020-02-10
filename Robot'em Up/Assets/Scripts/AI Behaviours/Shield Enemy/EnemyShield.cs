@@ -9,18 +9,9 @@ public class EnemyShield : EnemyBehaviour
     [Separator("Shield Variables")]
     public GameObject shield;       // It's only cosmetic now
     public bool deactivateShieldWhenAttacking = true;
-    public float angleToBounceBackToPlayer = 20;
-
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
-    [Range(0,90)]
-    public float angleRangeForRebound= 45;
-
-    public Renderer[] renderers;
-    public Color normalColor = Color.blue;
-    public Color attackingColor = Color.red;
-
+    [Range(0, 90)] public float angleRangeForRebound = 45;
     public float timeShieldDisappearAfterHit;
-
     public bool isShieldActivated_accesss
     {
         get { return isShieldActivated; }
@@ -33,14 +24,24 @@ public class EnemyShield : EnemyBehaviour
     bool isShieldActivated;
 
     [Space(2)]
+    [Header("Aspect Variables")]
+    public Renderer[] renderers;
+    public Color normalColor = Color.blue;
+    public Color attackingColor = Color.red;
+
+    [Space(2)]
     [Header("Attack")]
-    public Vector2 minMaxAttackSpeed = new Vector2(7,15);
+    public Vector2 minMaxAttackSpeed = new Vector2(7, 15);
     public AnimationCurve attackSpeedVariation;
+    public float attackChargeDuration = 5f;
+    [Range(0, 1)] public float whenToTriggerEndOfAttackAnim = 0.9f;    // At what % of the attack duration do we want to stop animation to trigger?
+    public float attackRaycastDistance = 2;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
     public float BumpOtherDistanceMod = 0.5f;
     public float BumpOtherDurationMod = 0.2f;
     public float BumpOtherRestDurationMod = 0.3f;
     private float attackTimeProgression;
+    private float initialSpeed;
 
     private new void Start()
     {
@@ -51,7 +52,8 @@ public class EnemyShield : EnemyBehaviour
     // ATTACK
     public override void EnterPreparingAttackState()
     {
-        currentSpeed = navMeshAgent.speed;
+        initialSpeed = navMeshAgent.speed;
+        Debug.Log("initial speed " + initialSpeed + "and speed coef is " + GetSpeedCoef());
         acceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AttackTrigger");
@@ -100,19 +102,18 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            navMeshAgent.speed = Mathf.Lerp(minMaxAttackSpeed.y, minMaxAttackSpeed.x, attackSpeedVariation.Evaluate(attackTimeProgression));
+            moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
-
             Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPlayer.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
 
             Debug.DrawRay(transform.position + i_direction * 5, Vector3.up, Color.green, 2f);
             navMeshAgent.SetDestination(transform.position + i_direction * 5);
         }
 
-        if (attackTimeProgression >= 1)
+        if (attackTimeProgression >= attackChargeDuration)
         {
-            navMeshAgent.speed = currentSpeed;
+            moveSpeed = initialSpeed;
             navMeshAgent.acceleration = acceleration;
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
@@ -120,11 +121,6 @@ public class EnemyShield : EnemyBehaviour
 
             navMeshAgent.enabled = false;
         }
-        /*else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim && !endOfAttackTriggerLaunched)
-        {
-            endOfAttackTriggerLaunched = true;
-            Animator.SetTrigger("EndOfAttackTrigger");
-        }*/
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
         {
             float i_rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
@@ -176,4 +172,18 @@ public class EnemyShield : EnemyBehaviour
         isShieldActivated_accesss = true;
     }
 
+	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default )
+	{
+		StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
+		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+	}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.tag == "Player")
+        {
+            other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, damage, DamageSource.EnemyContact);
+            StopAttack();
+        }
+    }
 }

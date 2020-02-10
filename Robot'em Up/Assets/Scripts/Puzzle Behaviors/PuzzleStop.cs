@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class PuzzleStop : MonoBehaviour, IHitable
 {
@@ -13,14 +14,18 @@ public class PuzzleStop : MonoBehaviour, IHitable
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         //Stop the ball
-        _ball.ChangeSpeed(0);
+        if (_ball != null)
+        {
+			Analytics.CustomEvent("BallStopped", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+			_ball.ChangeSpeed(0);
+            fX_StopBall = FeedbackManager.SendFeedback("event.PuzzleBlockBall", this, _ball.transform.position, -_impactVector, _impactVector).GetVFX();
+        }
 
         //Show an FX
         if (fX_StopBall != null)
         {
             Destroy(fX_StopBall);
         }
-		fX_StopBall = FeedbackManager.SendFeedback("event.PuzzleBlockBall", this, _ball.transform.position, -_impactVector, _impactVector).GetVFX();
 
         //Will desactivate all puzzle links
         PuzzleLink[] i_links = FindObjectsOfType<PuzzleLink>();

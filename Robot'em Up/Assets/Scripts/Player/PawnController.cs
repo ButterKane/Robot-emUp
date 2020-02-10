@@ -27,6 +27,7 @@ public enum SpeedMultiplierReason
 	Pass,
 	Environment,
 	Dunk,
+	ChangingFocus,
 	Unknown
 }
 
@@ -62,7 +63,7 @@ public class PawnController : MonoBehaviour
 	private bool isInvincible;
     public float invincibilityTime = 1;
     public bool ignoreEletricPlates = false;
-    private IEnumerator invincibilityCoroutine;
+    private Coroutine invincibilityCoroutine;
 
     [Space(2)]
     [Separator("Movement settings")]
@@ -138,8 +139,9 @@ public class PawnController : MonoBehaviour
 	protected bool targetable;
 	protected int damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
+	private float invincibilityCooldown;
 
-	protected PassController passController;
+	[HideInInspector] public PassController passController;
 
 	//Events
 	private static System.Action onShootEnd;
@@ -148,7 +150,6 @@ public class PawnController : MonoBehaviour
     {
 		initialScale = transform.localScale;
         isInvincible_access = false;
-        invincibilityCoroutine = null;
         customGravity = onGroundGravityMultiplyer;
         customDrag = idleDrag;
 		rb = GetComponent<Rigidbody>();
@@ -168,7 +169,7 @@ public class PawnController : MonoBehaviour
         moveState = MoveState.Idle;
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
 		if (frozen) { return; }
         CheckMoveState();
@@ -180,6 +181,7 @@ public class PawnController : MonoBehaviour
         UpdateAnimatorBlendTree();
 		UpdateSpeedCoef();
 		CheckIfGrounded();
+		UpdateInvincibilityCooldown();
 	}
 
     #region Movement
@@ -407,27 +409,18 @@ public class PawnController : MonoBehaviour
 	{
         if (!isInvincible_access && invincibilityCoroutine == null)
         {
-            invincibilityCoroutine = InvicibleFrame_C();
-            StartCoroutine(invincibilityCoroutine);
+			SetInvincible();
 			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 			currentHealth -= _amount;
             if (currentHealth <= 0)
             {
                 Kill();
             }
-            float i_scaleForce = ((float)_amount / (float)maxHealth) * 3f;
-            i_scaleForce = Mathf.Clamp(i_scaleForce, 0.3f, 1f);
-			transform.DOShakeScale(1f, i_scaleForce).OnComplete(ResetScale);
 			if (GetComponent<PlayerController>() != null)
             {
                 MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
             }
         }
-	}
-
-	private void ResetScale()
-	{
-		transform.DOScale(initialScale, 0.1f);
 	}
 	public Animator GetAnimator ()
 	{
@@ -560,15 +553,23 @@ public class PawnController : MonoBehaviour
 		return null;
 	}
 
-	
-    private IEnumerator InvicibleFrame_C()
+
+	private void UpdateInvincibilityCooldown()
+	{
+		if (invincibilityCooldown > 0)
+		{
+			invincibilityCooldown -= Time.deltaTime;
+		} else
+		{
+			isInvincible_access = false;
+			gameObject.layer = 8; // 8 = Player Layer
+		}
+	}
+	private void SetInvincible()
     {
         isInvincible_access = true;
         gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
-        yield return new WaitForSeconds(invincibilityTime);
-        isInvincible_access = false;
-        invincibilityCoroutine = null;
-        gameObject.layer = 8; // 8 = Player Layer
+		invincibilityCooldown = invincibilityTime;
     }
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)

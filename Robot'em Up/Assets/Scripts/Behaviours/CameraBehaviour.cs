@@ -121,7 +121,13 @@ public class CameraBehaviour : MonoBehaviour
 		Vector3 i_middlePosition = Vector3.zero;
 		if (GameManager.deadPlayers.Count > 0)
 		{
-			i_middlePosition = zone.GetPlayersInside()[0].transform.position;
+			if (GameManager.alivePlayers.Count > 0)
+			{
+				i_middlePosition = GameManager.alivePlayers[0].transform.position;
+			} else
+			{
+				i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			}
 		}
 		else
 		{
@@ -132,8 +138,8 @@ public class CameraBehaviour : MonoBehaviour
 			i_middlePosition = Vector3.Lerp(i_middlePosition, focusPoint.position, focusImportance);
 		}
 		followPoint.transform.position = i_middlePosition;
-		//transform.position = i_middlePosition;
 	}
+
 	void UpdateCombatCamera()
 	{
 		Vector3 i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
@@ -171,7 +177,7 @@ public class CameraBehaviour : MonoBehaviour
 		{
 			float i_wantedTranslation = Mathf.Lerp(-maxForwardTranslation, maxForwardTranslation, (i_yDistance + 1) / 2f);
 			Vector3 i_wantedPosition = new Vector3(defaultTranslation.x, defaultTranslation.y, defaultTranslation.z + i_wantedTranslation);
-			virtualCamera.transform.localPosition = Vector3.Lerp(virtualCamera.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
+            virtualCamera.transform.localPosition = Vector3.Lerp(virtualCamera.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
 		}
 	}
 
@@ -180,8 +186,16 @@ public class CameraBehaviour : MonoBehaviour
 		Vector3 i_middlePosition = Vector3.zero;
 		if (GameManager.deadPlayers.Count > 0)
 		{
-			i_middlePosition = zone.GetPlayersInside()[0].transform.position;
-		} else
+			if (GameManager.alivePlayers.Count > 0)
+			{
+				i_middlePosition = GameManager.alivePlayers[0].transform.position;
+			}
+			else
+			{
+				i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			}
+		}
+		else
 		{
 			i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
 		}
@@ -189,8 +203,7 @@ public class CameraBehaviour : MonoBehaviour
 		Vector3 i_wantedPosition = i_middlePosition;
 		i_directionToCenter.y = 0;
 		Quaternion i_wantedRotation = Quaternion.LookRotation(-i_directionToCenter);
-
-		pivot.transform.localPosition = Vector3.Lerp(pivot.transform.localPosition, i_wantedPosition, Time.deltaTime * translationSpeed);
-		pivot.transform.localRotation = Quaternion.Lerp(pivot.transform.localRotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
+		pivot.transform.position = Vector3.Lerp(pivot.transform.position, i_wantedPosition, Time.deltaTime * translationSpeed);
+		pivot.transform.rotation = Quaternion.Lerp(pivot.transform.rotation, i_wantedRotation, Time.deltaTime * rotationSpeed);
 	}
 }
