@@ -16,6 +16,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     
     //Possession variables
     public float possessionAnimationMaxTime;
+    public Color possessionColor;
     public AnimationCurve possessionAnimationCurve;
     [HideInInspector] public float possessionAnimationTimer;
     public Renderer[] possessionEmissives;
@@ -80,7 +81,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             possessionAnimationTimer += Time.deltaTime;
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionEmissives[i].material.SetColor("_EmissionColor", new Color(12, 0, 191) * Mathf.Lerp(0, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(0, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                print("peut-être");
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -97,7 +99,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             possessionAnimationTimer += Time.deltaTime;
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionEmissives[i].material.SetColor("_EmissionColor", new Color(12, 0, 191) * Mathf.Lerp(normalEmissiveIntensity, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(normalEmissiveIntensity, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                print("non");
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -117,7 +120,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         {
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionEmissives[i].material.SetColor("_EmissionColor", new Color(12, 0, 191)* normalEmissiveIntensity);
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * normalEmissiveIntensity);
+                print("oui");
             }
             NarrationManager.narrationManager.ChangeActivatedNarrationElement(this);
         }

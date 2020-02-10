@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
     private static bool menuCalledTwo = false;
     private static bool deathPanelCalled = false;
 	public static List<GameObject> DDOL;
+	public static string currentZoneName;
 
     [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
@@ -76,11 +77,12 @@ public class GameManager : MonoBehaviour
 
 	[NonSerialized] public static CameraGlobalSettings cameraGlobalSettings;
 
+	public static float timeInZone;
+
     private void Awake()
     {
 		deathPanelCalled = false;
 		DDOL = new List<GameObject>();
-		AnalyticsManager.LoadDatas();
 		Time.timeScale = 1f;
 		i = this;
 		deadPlayers = new List<PlayerController>();
@@ -119,13 +121,9 @@ public class GameManager : MonoBehaviour
 		//if (playerOne && playerTwo) { AssignPlayers(); }
 	}
 
-	private void OnDisable ()
-	{
-		AnalyticsManager.SaveDatas();
-	}
-
 	private void Update ()
 	{
+		timeInZone += Time.deltaTime;
 		if (deadPlayers.Count >= 2 && !deathPanelCalled)
 		{
 			deathPanelCalled = true;
@@ -147,14 +145,14 @@ public class GameManager : MonoBehaviour
 		{
 			if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
 			{
-				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+				GameManager.LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) + 1);
 			}
 		}
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
 			if (SceneManager.GetActiveScene().buildIndex > 0)
 			{
-				GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+				GameManager.LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) - 1);
 			}
 		}
 		UpdateSceneLoader();
@@ -170,10 +168,24 @@ public class GameManager : MonoBehaviour
 		GameManager.i = null;
 	}
 
+	public static string GetCurrentZoneName()
+	{
+		return currentZoneName;
+	}
+
+	public static void ChangeCurrentZone(string _newZoneName)
+	{
+		currentZoneName = _newZoneName;
+		timeInZone = 0;
+	}
+
+	public static float GetTimeInZone()
+	{
+		return timeInZone;
+	}
+
 	private void OnApplicationQuit ()
 	{
-		AnalyticsManager.SaveDatas();
-		AnalyticsManager.SendDatas();
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0, 0);
 	}
@@ -322,13 +334,14 @@ public class GameManager : MonoBehaviour
 			{
 				mainCanvas = canvas;
 				DontDestroyOnLoad(mainCanvas.gameObject);
+				DDOL.Add(mainCanvas.gameObject);
 			}
 		}
 	}
 	public static void ResetScene()
 	{
 		DestroyDDOL();
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		SceneManager.LoadScene(GetCurrentZoneName());
 	}
 
 	public static void ResetBall()

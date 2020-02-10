@@ -90,7 +90,7 @@ public class AnalyticsDatasEditor : Editor
 
 		if (GUILayout.Button("Reset datas"))
 		{
-			AnalyticsManager.CleanDatas();
+			//AnalyticsManager.CleanDatas();
 		}
 	}
 

@@ -69,6 +69,8 @@ public class PlayerController : PawnController, IHitable
 				middlePoint.name = "MiddlePoint";
 				middlePoint.tag = "MiddlePoint";
 				middlePoint.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+				DontDestroyOnLoad(middlePoint.gameObject);
+				GameManager.DDOL.Add(middlePoint.gameObject);
 				SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
 				col.isTrigger = true;
 			}
@@ -90,13 +92,13 @@ public class PlayerController : PawnController, IHitable
 		{
 			GetInput();
 		}
-#if !UNITY_EDITOR
-			if (!inputDisabled) { GetInput(); }
-#endif
     }
 	private void LateUpdate ()
 	{
-		CheckIfOutOfCamera();
+		if (Application.isPlaying)
+		{
+			CheckIfOutOfCamera();
+		}
 	}
 
 	void GetInput ()
@@ -113,22 +115,17 @@ public class PlayerController : PawnController, IHitable
 
 	void CheckIfOutOfCamera ()
 	{
+		if (GameManager.timeInZone < 1f) { return; }
 		Vector3 viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (viewPortPosition.x > 1 + extents || viewPortPosition.x < -extents || viewPortPosition.y > 1 + extents || viewPortPosition.y < -extents) {
 			rb.velocity = Vector3.zero;
-			Vector3 otherPlayerPosition;
-			if (playerIndex == PlayerIndex.One)
-			{
-				otherPlayerPosition = GameManager.playerTwo.transform.position;
-			} else
-			{
-				otherPlayerPosition = GameManager.playerOne.transform.position;
-			}
-			Vector3 direction =  otherPlayerPosition - transform.position;
+			Vector3 centerPos = GameManager.mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,Vector3.Distance(transform.position, GameManager.mainCamera.transform.position)));
+			centerPos.y = transform.position.y;
+			Vector3 direction = centerPos - transform.position;
 			direction = direction.normalized;
-			//transform.position = previousPosition;
-			rb.AddForce(direction * 5, ForceMode.Impulse);
+			float intensity = Vector3.Distance(centerPos, transform.position);
+			rb.AddForce(direction * intensity, ForceMode.Impulse);
 		}
 	}
 	void GamepadInput ()
@@ -335,7 +332,7 @@ public class PlayerController : PawnController, IHitable
 	{
         if (!isInvincible_access)
         {
-			AnalyticsManager.IncrementData("DamageTaken", _amount);
+			animator.SetTrigger("HitTrigger");
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
@@ -348,11 +345,7 @@ public class PlayerController : PawnController, IHitable
 	public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
-		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
-		if (GameManager.deadPlayers.Count > 0)
-		{
-			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
-		}
+		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -363,13 +356,17 @@ public class PlayerController : PawnController, IHitable
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
 		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 		GameManager.deadPlayers.Add(this);
+		if (GameManager.deadPlayers.Count > 1)
+		{
+			Analytics.CustomEvent("PlayerSimultaneousDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		}
 		GameManager.alivePlayers.Remove(this);
 	}
 
 	public void Revive(PlayerController _player)
 	{
+		Analytics.CustomEvent("PlayerRevive", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
-		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
@@ -467,7 +464,8 @@ public class PlayerController : PawnController, IHitable
 
 	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
-        Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, { "Source", _source } } ) ;
+		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
         if (_source == DamageSource.Ball) { return; }
 		switch (_source)
 		{

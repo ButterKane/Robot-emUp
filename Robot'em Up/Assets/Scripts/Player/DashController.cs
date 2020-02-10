@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Analytics;
 
 public enum DashState
 {
@@ -82,8 +83,7 @@ public class DashController : MonoBehaviour
 			GetComponent<PlayerUI>().DisplayDashes();
 		}
 		if (!CanDash()) { return; }
-
-		AnalyticsManager.IncrementData("PlayerDash");
+		Analytics.CustomEvent("PlayerDash", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		_direction = _direction.normalized;
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = transform.position + _direction * maxDistance; 
