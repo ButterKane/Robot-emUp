@@ -680,6 +680,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
+        type: 3}
+      propertyPath: focusDistance
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
+        type: 3}
+      propertyPath: unfocusDistance
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
+        type: 3}
+      propertyPath: test
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
+        type: 3}
+      propertyPath: modelPivot
+      value: 
+      objectReference: {fileID: 1727914469}
     - target: {fileID: 2227829331840288604, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -740,26 +760,6 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 9ea9fe196fda238498fc6e467135d7a6, type: 2}
-    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
-        type: 3}
-      propertyPath: focusDistance
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
-        type: 3}
-      propertyPath: unfocusDistance
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
-        type: 3}
-      propertyPath: test
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8226037312027061361, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
-        type: 3}
-      propertyPath: modelPivot
-      value: 
-      objectReference: {fileID: 1727914469}
     - target: {fileID: 6477917284943605263, guid: 9fc15aabcec4e5349935363d4a2ab8f4,
         type: 3}
       propertyPath: myScript
@@ -767,12 +767,6 @@ PrefabInstance:
       objectReference: {fileID: 56862924}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9fc15aabcec4e5349935363d4a2ab8f4, type: 3}
---- !u!23 &418172705 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 7897330048882015340, guid: 60dff2fafe754694e8eb44c3b62bc836,
-    type: 3}
-  m_PrefabInstance: {fileID: 4233777251595655595}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &500299029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1805,6 +1799,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: P_EnemyTurret
       objectReference: {fileID: 0}
+    - target: {fileID: 6086072691216837907, guid: 920f5953dff5ed041977f995546341eb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8233652188375059075, guid: 920f5953dff5ed041977f995546341eb,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: aa821e661d1716c46be4a3e3b9b2821b, type: 2}
+    - target: {fileID: 3857925501093457392, guid: 920f5953dff5ed041977f995546341eb,
+        type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 3857925501093457392, guid: 920f5953dff5ed041977f995546341eb,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3668126503491773334, guid: 920f5953dff5ed041977f995546341eb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1866,16 +1880,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 136956843}
     - target: {fileID: 3466422516429152772, guid: 920f5953dff5ed041977f995546341eb,
-        type: 3}
-      propertyPath: m_Layer
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857925501093457392, guid: 920f5953dff5ed041977f995546341eb,
-        type: 3}
-      propertyPath: m_TagString
-      value: Enemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857925501093457392, guid: 920f5953dff5ed041977f995546341eb,
         type: 3}
       propertyPath: m_Layer
       value: 10
@@ -2055,11 +2059,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 8233652188375059075, guid: 920f5953dff5ed041977f995546341eb,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: aa821e661d1716c46be4a3e3b9b2821b, type: 2}
     - target: {fileID: 4123354587465655344, guid: 920f5953dff5ed041977f995546341eb,
         type: 3}
       propertyPath: m_Layer
@@ -3619,11 +3618,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: P_LaserTurret
       objectReference: {fileID: 0}
-    - target: {fileID: 4808274588740219700, guid: 60dff2fafe754694e8eb44c3b62bc836,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2606373637356797361, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3679,25 +3673,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
+    - target: {fileID: 2950884111546952476, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-      propertyPath: redDotLoadersSpread
-      value: 10
+      propertyPath: m_LocalScale.x
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4233777253254011454, guid: 60dff2fafe754694e8eb44c3b62bc836,
+    - target: {fileID: 2950884111546952476, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-      propertyPath: aimingRedDotRenderer
-      value: 
-      objectReference: {fileID: 418172705}
-    - target: {fileID: 7381191969145207244, guid: 60dff2fafe754694e8eb44c3b62bc836,
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950884111546952476, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
       propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950884111546952476, guid: 60dff2fafe754694e8eb44c3b62bc836,
+        type: 3}
+      propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9154002914033431360, guid: 60dff2fafe754694e8eb44c3b62bc836,
+    - target: {fileID: 2950884111546952476, guid: 60dff2fafe754694e8eb44c3b62bc836,
         type: 3}
-      propertyPath: m_Name
-      value: RedDotRenderer
+      propertyPath: m_LocalPosition.z
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245796127046995684, guid: 60dff2fafe754694e8eb44c3b62bc836,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245796127046995684, guid: 60dff2fafe754694e8eb44c3b62bc836,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4245796127046995684, guid: 60dff2fafe754694e8eb44c3b62bc836,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60dff2fafe754694e8eb44c3b62bc836, type: 3}

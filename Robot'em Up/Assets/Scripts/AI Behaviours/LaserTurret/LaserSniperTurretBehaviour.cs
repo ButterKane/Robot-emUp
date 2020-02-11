@@ -20,9 +20,10 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     public float finalRepulseCircleStrength;
 
     [Header("Laser Variables")]
+    public GameObject FXChargingParticlesPrefab;
+    public GameObject FXChargingMainLaserPrefab;
     public int damagePerSecond = 50;
     public float laserMaxLength = 10f;
-    [HideInInspector] public float laserActualLength;
     public float shootingLaserMaxTime = 3;
     private float shootingLaserTimeProgression;
     [Range(0, 1)] public float whenToTriggerLaserReduction = 0.8f;
@@ -31,7 +32,9 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     private IEnumerator laserShootingCoroutine;
     private IEnumerator redDotLoadingCoroutine;
-    
+    private GameObject FXChargingParticlesInstance;
+    private GameObject FXChargingMainLaserInstance;
+
     public GameObject redDotPrefab;
 
 
@@ -53,7 +56,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         {
             Vector3 i_spawnPosition;
             i_spawnPosition = bulletSpawn.position;
-            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(transform.forward), transform);
+            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward), modelPivot);
             i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
             i_instance.target = focusedPlayer;
@@ -127,6 +130,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         switch (turretState)
         {
             case TurretState.Hiding:
+                AbortAttack();
                 animator.SetTrigger("HidingTrigger");
                 break;
             case TurretState.GettingOutOfGround:
@@ -137,12 +141,15 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
+                ChangeAimingRedDotState(AimingRedDotState.Following);
                 //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
                 animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 //VARIABLES FXs--------------------------------------
+                FXChargingParticlesInstance = Instantiate(FXChargingParticlesPrefab, bulletSpawn.position, Quaternion.identity, modelPivot);
+                FXChargingMainLaserInstance = Instantiate(FXChargingMainLaserPrefab, bulletSpawn.position, Quaternion.identity, modelPivot);   // has a 0.1sec start delay to make it look like the charging particles created it
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
                 redDotLoadingCoroutine = null;
                 laserShootingCoroutine = null;
@@ -157,7 +164,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     {
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
             //aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
@@ -176,12 +183,14 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
                 aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
 
+                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(maxAnticipationTime / anticipationTime + 0.01f, 1, 6);
+
                 if (redDotLoadingCoroutine == null)
                 {
                     //redDotLoadingCoroutine = UpdateAnticipationRedDot_C(); 
                     //StartCoroutine(redDotLoadingCoroutine);
                 }
-                
+
 
                 //ROTATE TOWARDS PLAYER
                 if (focusedPlayer != null)
@@ -192,6 +201,15 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //TRANSITION TO OTHER STATE
                 anticipationTime -= Time.deltaTime;
                 //aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+
+                if (anticipationTime < maxAnticipationTime * 0.2)
+                {
+                    ParticleSystem[] i_systems = FXChargingParticlesInstance.GetComponentsInChildren<ParticleSystem>();
+                    foreach (var system in i_systems)
+                    {
+                        system.Stop();
+                    }
+                } 
 
                 if (anticipationTime <= 0)
                 {
@@ -204,10 +222,10 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Attack:
                 //ADAPT FXs----------------------------------
-                
-                aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
-                aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
-                aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
+                Destroy(FXChargingParticlesInstance);
+                Destroy(FXChargingMainLaserInstance);
+
+                ChangeAimingRedDotState(AimingRedDotState.NotVisible);
 
                 //ROTATE TOWARDS PLAYER-------------------------------------
                 if (focusedPlayer != null)
@@ -242,12 +260,23 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
 
-                if (focusedPlayer != null)
-                {
-                    RotateTowardsPlayerPosition();
-                }
+                //if (focusedPlayer != null)
+                //{
+                //    RotateTowardsPlayerPosition();
+                //}
                 break;
         }
+    }
+
+    void AbortAttack()
+    {
+        Destroy(FXChargingParticlesInstance);
+        Destroy(FXChargingMainLaserInstance);
+        if (aimingRedDotState != AimingRedDotState.NotVisible)
+        {
+            ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        }
+
     }
 
     IEnumerator UpdateAnticipationRedDot_C() // WIP, NOT FINISHED, MUST BE FINISHED

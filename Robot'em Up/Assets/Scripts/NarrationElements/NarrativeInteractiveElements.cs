@@ -82,7 +82,6 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
                 possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(0, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
-                print("peut-être");
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -100,7 +99,6 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
                 possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(normalEmissiveIntensity, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
-                print("non");
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -121,7 +119,6 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
                 possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * normalEmissiveIntensity);
-                print("oui");
             }
             NarrationManager.narrationManager.ChangeActivatedNarrationElement(this);
         }
