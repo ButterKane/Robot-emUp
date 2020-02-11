@@ -118,6 +118,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
                 aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
+                AbortAttack();
                 break;
             case TurretState.Idle:
                 break;
@@ -164,7 +165,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     {
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, laserMaxLength, layersToCheckToScale))
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
             //aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
@@ -178,7 +179,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         {
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
-
+                aimingAtPlayerFXTransform.gameObject.SetActive(true) ;
                 aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
                 aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
                 aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
@@ -222,6 +223,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Attack:
                 //ADAPT FXs----------------------------------
+                aimingAtPlayerFXTransform.gameObject.SetActive(false);
+
                 Destroy(FXChargingParticlesInstance);
                 Destroy(FXChargingMainLaserInstance);
 
@@ -270,8 +273,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     void AbortAttack()
     {
-        Destroy(FXChargingParticlesInstance);
-        Destroy(FXChargingMainLaserInstance);
+        if (FXChargingParticlesInstance) { Destroy(FXChargingParticlesInstance); }
+        if (FXChargingMainLaserInstance) { Destroy(FXChargingMainLaserInstance); }
         if (aimingRedDotState != AimingRedDotState.NotVisible)
         {
             ChangeAimingRedDotState(AimingRedDotState.NotVisible);
@@ -284,7 +287,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         List<GameObject> i_redDotsLoaders = new List<GameObject>();
         List<int> i_indexesToRemove = new List<int>();
         float i_anticipationProgression = maxAnticipationTime;
-        Debug.Log("on update des red dots!");
         float i_finalRedDotLength = aimingRedDotTransform.localScale.z;
         Vector3 loadingRedDotGrowth = new Vector3(0.01f, 0.01f, 0);
         float i_timeBetweenLoaderSpawnings = 0.3f;

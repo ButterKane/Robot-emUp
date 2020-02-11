@@ -134,7 +134,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward()
     {
-        
         wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
@@ -167,6 +166,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 if (timeBetweenCheck <= 0)
                 {
                     CheckDistanceAndAdaptFocus();
+                    timeBetweenCheck = maxTimeBetweenCheck;
                 }
                 break;
 
