@@ -40,10 +40,11 @@ AudioSource:
   m_GameObject: {fileID: 1561187621329536670}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 654a271875ceeea4f89763777fc3ebb1,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 3a00d7a32fc77b240a8e63b928deca59, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -144,6 +145,7 @@ GameObject:
   - component: {fileID: 5253247825595659276}
   - component: {fileID: 8126601537515546756}
   - component: {fileID: 3897057396212220960}
+  - component: {fileID: 4637012694845503552}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -287,7 +289,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAudioSource: {fileID: 7925347176870826485}
+  defaultAudioMixer: {fileID: 24300002, guid: 654a271875ceeea4f89763777fc3ebb1, type: 2}
   currentNarrationElementActivated: {fileID: 0}
   dialogueBoxPrefab: {fileID: 4198591106925812, guid: 49e92541cd71c004c8293e57d6bde58a,
     type: 3}
   typingSpeed: 20
+--- !u!114 &4637012694845503552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa4b35791e66ab44aa68f35dfbc8d322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -31,7 +31,6 @@ public class LaserSniper : MonoBehaviour
     void Update()
     {
         transform.localScale = new Vector3(laserWidth, laserWidth, transform.localScale.z);
-        enemyScript.laserActualLength = (laserLength == null? 0 : (float) laserLength);
         RaycastToHitWithLaser();
         UpdateLaserLength(laserLength);
     }
@@ -48,6 +47,7 @@ public class LaserSniper : MonoBehaviour
             i_laserLength = (float)givenLength;
         }
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, i_laserLength);
+
     }
 
     public void RaycastToHitWithLaser()
