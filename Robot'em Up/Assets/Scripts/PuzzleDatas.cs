@@ -13,8 +13,6 @@ public class PuzzleDatas : ScriptableObject
     public float nbMomentumNeededToLink;
     [Range(0, 1)]
     public float nbMomentumLooseWhenLink;
-    [Range(0, 20)]
-    public float nbSecondsLinkMaintained;
     [Range(0, 100)]
     public int DamageEletricPlate;
     [Range(0, 100)]

@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class PuzzleLink : PuzzleActivator, IHitable
 {
+
+
+    [Header("Puzzle Link")]
+    [Range(0.3f, 20)] public float nbSecondsLinkMaintained = 8f;
+
     private GameObject fX_Activation;
     private GameObject fX_Linked;
     private GameObject fX_LinkEnd;
@@ -38,7 +43,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
                     fX_Activation = FeedbackManager.SendFeedback("event.PuzzleLinkActivation", this, transform.position, _impactVector, _impactVector).GetVFX();
 				}
 			    MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
-                chargingTime = puzzleData.nbSecondsLinkMaintained;
+                chargingTime = nbSecondsLinkMaintained;
                 isActivated = true;
 
                 ActivateLinkedObjects();
