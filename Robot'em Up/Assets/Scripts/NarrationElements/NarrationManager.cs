@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class NarrationManager : MonoBehaviour
 {
     public static NarrationManager narrationManager;
 
     public AudioSource myAudioSource;
+    public AudioMixerGroup defaultAudioMixer;
 
     [Header("Read-Only")]
     public NarrativeInteractiveElements currentNarrationElementActivated;
@@ -56,12 +58,11 @@ public class NarrationManager : MonoBehaviour
         currentNarrationElementActivated = _newNarrativeElement;
         if(currentNarrationElementActivated != null)
         {
-            myAudioSource.volume = 1f;
             myAudioSource.outputAudioMixerGroup = currentNarrationElementActivated.myAudioMixer;
         }
         else
         {
-            myAudioSource.volume = 0f;
+            myAudioSource.outputAudioMixerGroup = defaultAudioMixer;
         }
     }
 
