@@ -8,6 +8,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     [Header("Puzzle Link")]
     [Range(0.3f, 20)] public float nbSecondsLinkMaintained = 8f;
+    public MeshRenderer CompletionShader;
 
     private GameObject fX_Activation;
     private GameObject fX_Linked;
@@ -61,6 +62,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
     {
         if (chargingTime > 0 && isActivated)
         {
+            CompletionShader.material.SetFloat("_AddToCompleteCircle", chargingTime / nbSecondsLinkMaintained);
             chargingTime -= Time.deltaTime;
         }
 
