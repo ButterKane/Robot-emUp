@@ -10,21 +10,21 @@ public class IndianaExplosion : MonoBehaviour
     public bool isBarrage;
     [ReadOnly] public float waitingForExplosion;
     [ReadOnly]  public bool Explosed;
-    
-    private SpriteRenderer spriteRenderer;
     private SphereCollider sphereCollider;
     [ReadOnly] public IndianaManager indianaManager;
 
 
     private List<PawnController> listPawnsHere;
 
+    public Transform innerCircleTransform;
+    public float targetScale;
+
     // Start is called before the first frame update
     public void Initiate()
     {
-        transform.localScale = new Vector3(myScale, myScale, myScale);
+        transform.localScale = Vector3.one * myScale;
         waitingForExplosion = waitTimeForExplosion;
         listPawnsHere = new List<PawnController>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         sphereCollider = GetComponent<SphereCollider>();
     }
 
@@ -36,8 +36,7 @@ public class IndianaExplosion : MonoBehaviour
 
         if (!Explosed)
         {
-            transform.Rotate(new Vector3(0, 0, 1), Time.deltaTime * 20f);
-            spriteRenderer.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, 1 - waitingForExplosion / waitTimeForExplosion + 0.05f));
+            innerCircleTransform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * targetScale, (waitTimeForExplosion - waitingForExplosion) / waitTimeForExplosion);
         }
 
         if (waitingForExplosion < 0 && !Explosed)
@@ -54,9 +53,6 @@ public class IndianaExplosion : MonoBehaviour
             }
             
             FX.transform.localScale = new Vector3(myScale, myScale, myScale);
-
-
-            spriteRenderer.color = new Color(1, 1, 1, 0.05f);
            // fXExplosion.SetActive(true);
             foreach (var item in listPawnsHere)
             {
