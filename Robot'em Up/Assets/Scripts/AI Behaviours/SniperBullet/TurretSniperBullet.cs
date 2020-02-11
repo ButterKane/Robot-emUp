@@ -26,7 +26,7 @@ public class TurretSniperBullet : MonoBehaviour
     
     void Update()
     {
-        rb.velocity = (target.position - transform.position).normalized * speed;
+        rb.velocity = (target.position - transform.position).normalized * speed / 2;
         maxLifeTime -= Time.deltaTime;
         if (maxLifeTime <= 0 || !target.GetComponent<PawnController>().IsTargetable())
         {

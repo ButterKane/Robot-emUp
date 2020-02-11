@@ -232,8 +232,8 @@ MonoBehaviour:
   PreferSniperAttackOverRangeAttack: 1
   SniperTurret_1: {fileID: 63624066}
   SniperTurret_2: {fileID: 1749622561}
-  SniperAttack_Anticipation: 0.5
-  SniperAttack_AttackDuration: 0.8
+  SniperAttack_Anticipation: 1
+  SniperAttack_AttackDuration: 1
   SniperAttack_RecoverTime: 0.2
   BossShield: {fileID: 6664741642409396383}
   ShieldIsActivated: 0
@@ -4352,6 +4352,16 @@ PrefabInstance:
       propertyPath: newParentWhenDropped
       value: 
       objectReference: {fileID: 202045889}
+    - target: {fileID: 1242713878405735906, guid: 9514f0016cd1e1b44b4f610aa53b5bbd,
+        type: 3}
+      propertyPath: maxRestTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1242713878405735906, guid: 9514f0016cd1e1b44b4f610aa53b5bbd,
+        type: 3}
+      propertyPath: maxAnticipationTime
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2227829331840288604, guid: 9514f0016cd1e1b44b4f610aa53b5bbd,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7935,6 +7945,16 @@ PrefabInstance:
       propertyPath: newParentWhenDropped
       value: 
       objectReference: {fileID: 202045889}
+    - target: {fileID: 1242713878405735906, guid: 9514f0016cd1e1b44b4f610aa53b5bbd,
+        type: 3}
+      propertyPath: maxRestTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1242713878405735906, guid: 9514f0016cd1e1b44b4f610aa53b5bbd,
+        type: 3}
+      propertyPath: maxAnticipationTime
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2227829331840288604, guid: 9514f0016cd1e1b44b4f610aa53b5bbd,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -418,7 +418,7 @@ public class EnemyBoss : PawnController, IHitable
                 }
 
                 // If players are too far -> range attack
-                if (distanceWithPlayerTwo > missileRange && distanceWithPlayerOne > missileRange)
+                if (distanceWithPlayerTwo > missileRange && distanceWithPlayerOne > missileRange && bossState != BossState.RangeSniperAttack)
                 {
                     navMeshAgent.enabled = false;
                     if (WantToInvokeShield)

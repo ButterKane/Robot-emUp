@@ -25,11 +25,16 @@ public class BossTurretSniperBehaviour : TurretBehaviour
 
     public override void Shoot()
     {
-        Vector3 i_spawnPosition;
-        i_spawnPosition = bulletSpawn.position;
-        spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));
-        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
-        spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
+        if (Activated)
+        {
+            Vector3 i_spawnPosition;
+            i_spawnPosition = bulletSpawn.position;
+            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(focusedPlayer.position + Vector3.up));
+            spawnedBullet.transform.LookAt(focusedPlayer.position + Vector3.up * 3);
+            spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
+            spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
+
+        }
     }
 
     public override void Die()
@@ -65,6 +70,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         OnBoss = false;
     }
 
+
     protected override void Update()
     {
         base.Update();
@@ -77,25 +83,29 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         {
             UpdateAimingCubeState();
             aimingAtPlayerFXTransform.gameObject.SetActive(true);
+            aimingRedDotTransform.gameObject.SetActive(true);
         }
         else
         {
             aimingAtPlayerFXTransform.gameObject.SetActive(false);
+            aimingRedDotTransform.gameObject.SetActive(false);
         }
     }
 
 
     protected override void RotateTowardsPlayerAndHisForward()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward * focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * 0.1f - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + Vector3.up * 1 + focusedPlayer.forward * focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * 0.1f - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(wantedRotation.eulerAngles.x, wantedRotation.eulerAngles.y, wantedRotation.eulerAngles.x);
 
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
+
+    //unused
     protected override void RotateTowardsPlayerPosition()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position * 1 - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(wantedRotation.eulerAngles.x, wantedRotation.eulerAngles.y, wantedRotation.eulerAngles.x);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
