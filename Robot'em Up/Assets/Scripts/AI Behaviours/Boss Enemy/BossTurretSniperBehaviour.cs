@@ -10,6 +10,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
     public float HeightDropped;
 
     public GameObject newParentWhenDropped;
+    public Transform PlayerTargeted;
 
     public Vector2 minMaxFollowingAimingCubeScale;
     public Transform aimingAtPlayerFXTransform;
@@ -18,6 +19,9 @@ public class BossTurretSniperBehaviour : TurretBehaviour
     public Vector3 aimingAtPlayerFXScaleOnPlayer;
     public float endAimingFXScaleMultiplier;
     public float startAimingFXCircleThickness;
+    public MeshRenderer meshRenderer;
+    public Material TurretActivated;
+    public Material TurretDesactivated;
 
     public override void Shoot()
     {
@@ -38,6 +42,19 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         Destroy(gameObject);
     }
 
+    public void ActivateTurret()
+    {
+        Activated = true;
+        meshRenderer.material = TurretActivated;
+        focusedPlayer = PlayerTargeted;
+    }
+
+    public void DesactivateTurret()
+    {
+        Activated = false;
+        meshRenderer.material = TurretDesactivated;
+    }
+
 
     public void BossDropTurret()
     {
@@ -53,23 +70,24 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         base.Update();
         if (OnBoss)
         {
+            focusedPlayer = PlayerTargeted;
             invincibilityTime = 0.1f;
         }
         if (Activated)
         {
+            UpdateAimingCubeState();
             aimingAtPlayerFXTransform.gameObject.SetActive(true);
         }
         else
         {
             aimingAtPlayerFXTransform.gameObject.SetActive(false);
         }
-        UpdateAimingCubeState();
     }
 
 
     protected override void RotateTowardsPlayerAndHisForward()
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward * focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * 0.4f - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward * focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * 0.1f - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(wantedRotation.eulerAngles.x, wantedRotation.eulerAngles.y, wantedRotation.eulerAngles.x);
 
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));

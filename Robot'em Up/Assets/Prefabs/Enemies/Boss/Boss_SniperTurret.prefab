@@ -640,7 +640,7 @@ Transform:
   m_GameObject: {fileID: 8681543399049038297}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -69.12, y: 52.78, z: -41.8}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
   m_Children:
   - {fileID: 8459352972653461936}
   - {fileID: 7429455705988075639}
@@ -794,6 +794,10 @@ MonoBehaviour:
   bulletSpawn: {fileID: 1311322156898505201}
   canBulletTouchEnemies: 0
   bulletDamageRatioToEnemies: 0.5
+  OnBoss: 1
+  Activated: 0
+  HeightDropped: -0.4
+  newParentWhenDropped: {fileID: 0}
   minMaxFollowingAimingCubeScale: {x: 0.04, y: 0.15}
   aimingAtPlayerFXTransform: {fileID: 7429455705988075639}
   aimingAtPlayerFXRenderer: {fileID: 7429455705988075637}
@@ -801,6 +805,9 @@ MonoBehaviour:
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
   endAimingFXScaleMultiplier: 0.44
   startAimingFXCircleThickness: 0.15
+  meshRenderer: {fileID: 411926122989885425}
+  TurretActivated: {fileID: 2100000, guid: 984e26c1bac365c47b78120f0b2c5100, type: 2}
+  TurretDesactivated: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
 --- !u!1001 &4870783270699171655
 PrefabInstance:
   m_ObjectHideFlags: 0

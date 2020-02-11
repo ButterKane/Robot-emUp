@@ -1,12 +1,14 @@
 ﻿using MyBox;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class EnemyBoss : PawnController, IHitable
 {
     public bool BossActivated = false;
     [Space(2)]
     [Separator("References")]
+    public TextMeshPro textMesh;
     public HealthBar healthBar1;
     public HealthBar healthBar2;
     public GameObject healthBarPrefab;
@@ -168,11 +170,18 @@ public class EnemyBoss : PawnController, IHitable
 
         NumberHammerLeft = NumberHammerAttackMax;
         BossActivated = true;
+
+
+        SniperTurret_1.DesactivateTurret();
+        SniperTurret_1.PlayerTargeted = playerOneTransform;
+        SniperTurret_2.DesactivateTurret();
+        SniperTurret_2.PlayerTargeted = playerTwoTransform;
     }
 
 
     public void Update()
     {
+        textMesh.text = bossState.ToString();
         if (BossActivated)
         {
             healthBar1.customValueToCheck = (float)Health1Bar_CurrentValue / Health1Bar_Value_Max;
@@ -199,7 +208,7 @@ public class EnemyBoss : PawnController, IHitable
                     case BossState.Stagger:
                         break;
                     case BossState.PunchAttack:
-                        if (waitingBeforeNextState <  PunchAttack_AttackingTime + PunchAttack_RecoverTime && PunchAttack_Attacking == false)
+                        if (waitingBeforeNextState < PunchAttack_AttackingTime + PunchAttack_RecoverTime && PunchAttack_Attacking == false)
                         {
                             animator.SetTrigger("PunchAttackTrigger");
                             PunchAttack_Attacking = true;
@@ -288,7 +297,7 @@ public class EnemyBoss : PawnController, IHitable
                             animator.SetTrigger("GroundAttackEndTrigger");
 
                         }
-                    
+
 
                         break;
                     case BossState.Laser:
@@ -347,6 +356,16 @@ public class EnemyBoss : PawnController, IHitable
                             }
                         }
                         break;
+                    case BossState.RangeSniperAttack:
+                        if (waitingBeforeNextState < SniperAttack_RecoverTime)
+                        {
+                            SniperTurret_1.DesactivateTurret();
+                            SniperTurret_2.DesactivateTurret();
+                        }
+
+
+
+                            break;
                     default:
                         break;
                 }
@@ -412,8 +431,9 @@ public class EnemyBoss : PawnController, IHitable
                         {
                             bossState = BossState.RangeSniperAttack;
                             waitingBeforeNextState = SniperAttack_Anticipation + SniperAttack_AttackDuration + SniperAttack_RecoverTime;
-                            SniperTurret_1.Activated = true;
-                            SniperTurret_2.Activated = true;
+                            SniperTurret_1.ActivateTurret();
+                            SniperTurret_2.ActivateTurret();
+                            navMeshAgent.enabled = false;
                         }
                         else
                         {
