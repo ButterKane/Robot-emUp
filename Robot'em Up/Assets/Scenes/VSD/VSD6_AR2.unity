@@ -1558,7 +1558,7 @@ GameObject:
   - component: {fileID: 473063059}
   m_Layer: 12
   m_Name: Cube (15)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -2148,7 +2148,7 @@ GameObject:
   - component: {fileID: 637210827}
   - component: {fileID: 637210829}
   - component: {fileID: 637210828}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Counter_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3009,7 +3009,7 @@ GameObject:
   - component: {fileID: 824749916}
   m_Layer: 12
   m_Name: Cube (12)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -3526,7 +3526,7 @@ GameObject:
   - component: {fileID: 944901503}
   m_Layer: 12
   m_Name: Cube (14)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -4895,7 +4895,7 @@ GameObject:
   - component: {fileID: 1185790510}
   - component: {fileID: 1185790512}
   - component: {fileID: 1185790511}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Counter_Main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5344,7 +5344,7 @@ GameObject:
   - component: {fileID: 1390859149}
   m_Layer: 12
   m_Name: Cube (9)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -5981,7 +5981,7 @@ GameObject:
   - component: {fileID: 1638182559}
   m_Layer: 12
   m_Name: Cube (31)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -7196,7 +7196,7 @@ GameObject:
   - component: {fileID: 1827547379}
   m_Layer: 12
   m_Name: Cube (30)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -7285,7 +7285,7 @@ GameObject:
   - component: {fileID: 1838452709}
   - component: {fileID: 1838452708}
   - component: {fileID: 1838452707}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Counter_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7363,7 +7363,7 @@ GameObject:
   - component: {fileID: 1845102098}
   - component: {fileID: 1845102100}
   - component: {fileID: 1845102099}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Counter_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13139,7 +13139,7 @@ GameObject:
   - component: {fileID: 3568627609627581071}
   - component: {fileID: 3568627609613373689}
   - component: {fileID: 3568627609614329479}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: SmokeWhite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13231,7 +13231,7 @@ GameObject:
   - component: {fileID: 3927799243656871701}
   - component: {fileID: 3927799243656871702}
   - component: {fileID: 3927799243656871703}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13323,7 +13323,7 @@ GameObject:
   - component: {fileID: 3927799243670775291}
   - component: {fileID: 3927799243670775292}
   - component: {fileID: 3927799243670775293}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13402,13 +13402,30 @@ GameObject:
   - component: {fileID: 3927799244438778952}
   - component: {fileID: 966600776368174196}
   - component: {fileID: 966600776368174197}
-  m_Layer: 0
+  - component: {fileID: 3927799244438778956}
+  m_Layer: 12
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!208 &3927799244438778956
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3927799244438778955}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 8.205, y: 5.57, z: 5.135}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.53, y: 5.44, z: 5.21}
+  m_TimeToStationary: 0.5
 --- !u!33 &3927799244827291336
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -13494,7 +13511,7 @@ GameObject:
   - component: {fileID: 3927799244827291336}
   - component: {fileID: 3927799244827291337}
   - component: {fileID: 3927799244827291338}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13586,7 +13603,7 @@ GameObject:
   - component: {fileID: 3927799244933727435}
   - component: {fileID: 3927799244933727436}
   - component: {fileID: 3927799244933727437}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13605,7 +13622,7 @@ GameObject:
   - component: {fileID: 3927799244987855732}
   - component: {fileID: 3927799244987855733}
   - component: {fileID: 3927799244987855734}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13774,7 +13791,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3927799245004072657}
   - component: {fileID: 3927799245004072656}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: ArenaExitIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13804,7 +13821,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3927799245148725252}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13896,7 +13913,7 @@ GameObject:
   - component: {fileID: 3927799245157486679}
   - component: {fileID: 3927799245157490600}
   - component: {fileID: 3927799245157490601}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13988,7 +14005,7 @@ GameObject:
   - component: {fileID: 3927799245395928934}
   - component: {fileID: 3927799245395928935}
   - component: {fileID: 3927799245395928952}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Wall (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14020,7 +14037,7 @@ GameObject:
   - component: {fileID: 3927799245586914480}
   - component: {fileID: 3927799245586914494}
   - component: {fileID: 3927799245586914495}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: SmokeWhite (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
