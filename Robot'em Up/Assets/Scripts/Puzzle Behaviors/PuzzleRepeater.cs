@@ -7,12 +7,15 @@ using TMPro;
 
 public class PuzzleRepeater : PuzzleActivator
 {
+    [Header("Puzzle Repeater")]
     [Range(0, 10)]
     public float speedChange;
     [ReadOnly]
     public float timeSpeedChange;
     public float startSpeed = 0;
+    public MeshRenderer CompletionShader;
     public TextMeshPro textMesh;
+    public bool Test1;
 
 
     void Awake()
@@ -24,7 +27,8 @@ public class PuzzleRepeater : PuzzleActivator
     void Update()
     {
         timeSpeedChange -= Time.deltaTime;
-
+        CompletionShader.material.SetFloat("_AddToCompleteCircle", timeSpeedChange / speedChange);
+       
         textMesh.text = System.Math.Round(timeSpeedChange, 1).ToString();
         if (timeSpeedChange < 0 )
         {
@@ -46,7 +50,7 @@ public class PuzzleRepeater : PuzzleActivator
         isActivated = false;
         UpdateLight();
 
-		FeedbackManager.SendFeedback("event.PuzzleRepeaterActivation", this);
+        FeedbackManager.SendFeedback("event.PuzzleRepeaterActivation", this);
     }
 
     public virtual void DeactivatedAction()
