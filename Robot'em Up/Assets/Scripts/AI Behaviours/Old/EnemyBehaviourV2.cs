@@ -405,7 +405,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
 		Vector3 i_normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
