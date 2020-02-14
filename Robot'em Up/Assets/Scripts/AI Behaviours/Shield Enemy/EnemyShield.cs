@@ -172,7 +172,7 @@ public class EnemyShield : EnemyBehaviour
         isShieldActivated_accesss = true;
     }
 
-	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default )
+	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
 		StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
 		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
