@@ -491,6 +491,7 @@ public class EnemyBehaviour : PawnController, IHitable
                     ChangeState(EnemyState.Dying);
                 }
                 break;
+
             case DamageSource.PerfectReceptionExplosion:
                 Damage(_damages);
                 if (currentHealth <= 0)
@@ -500,6 +501,14 @@ public class EnemyBehaviour : PawnController, IHitable
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 break;
 
+            case DamageSource.Laser:
+                Damage(_damages);
+                if (currentHealth <= 0)
+                {
+                    ChangeState(EnemyState.Dying);
+                }
+
+                break;
         }
 
 
