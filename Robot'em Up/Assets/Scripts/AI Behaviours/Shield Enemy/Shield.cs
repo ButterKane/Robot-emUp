@@ -13,7 +13,7 @@ public class Shield : MonoBehaviour, IHitable
         transform.position = enemy.transform.position + enemy.transform.forward  + Vector3.up;
         transform.LookAt(transform.position + enemy.transform.forward);
     }
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         if (_ball != null) // Check if it's the ball that touched
         {
