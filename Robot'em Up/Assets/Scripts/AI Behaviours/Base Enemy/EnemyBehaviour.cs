@@ -417,7 +417,7 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
@@ -491,6 +491,7 @@ public class EnemyBehaviour : PawnController, IHitable
                     ChangeState(EnemyState.Dying);
                 }
                 break;
+
             case DamageSource.PerfectReceptionExplosion:
                 Damage(_damages);
                 if (currentHealth <= 0)
@@ -500,6 +501,14 @@ public class EnemyBehaviour : PawnController, IHitable
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 break;
 
+            case DamageSource.Laser:
+                Damage(_damages);
+                if (currentHealth <= 0)
+                {
+                    ChangeState(EnemyState.Dying);
+                }
+
+                break;
         }
 
 

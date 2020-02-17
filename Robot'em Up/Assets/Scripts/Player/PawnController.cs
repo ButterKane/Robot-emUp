@@ -68,7 +68,6 @@ public class PawnController : MonoBehaviour
     [Space(2)]
     [Separator("Movement settings")]
     public bool canMove;
-	[ConditionalField(nameof(canMove))] public float maxSlopeHeight = 0.75f;
     [ConditionalField(nameof(canMove))] public float jumpForce;
     [ConditionalField(nameof(canMove))] public AnimationCurve accelerationCurve;
 
@@ -138,12 +137,13 @@ public class PawnController : MonoBehaviour
 	private bool frozen;
 	private bool isPlayer;
 	protected bool targetable;
-	protected int damageAfterBump;
+	protected float damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
 	private float invincibilityCooldown;
-	private Vector3 rbVelocity;
+    private float accumulatedDamage;    // Stores the damage that is not an integer. Useful for things like continuous damage
 
-	[HideInInspector] public PassController passController;
+
+    [HideInInspector] public PassController passController;
 
 	//Events
 	private static System.Action onShootEnd;
@@ -169,6 +169,7 @@ public class PawnController : MonoBehaviour
 			isPlayer = true;
 		}
         moveState = MoveState.Idle;
+        accumulatedDamage = 0;
     }
 
     protected virtual void FixedUpdate()
@@ -186,27 +187,8 @@ public class PawnController : MonoBehaviour
 		UpdateInvincibilityCooldown();
 	}
 
-	private void OnCollisionEnter ( Collision collision )
-	{
-		float highestPoint = collision.GetContact(0).point.y;
-		for (int i = 0; i < collision.contactCount; i++)
-		{
-			if (collision.GetContact(i).point.y > highestPoint)
-			{
-				highestPoint = collision.GetContact(i).point.y;
-			}
-		}
-		highestPoint = highestPoint - transform.position.y;
-
-		if (highestPoint < maxSlopeHeight)
-		{
-			transform.position += (Vector3.up * 1.15f) * highestPoint;
-			rb.velocity = rbVelocity;
-		}
-	}
-
-	#region Movement
-	void CheckMoveState()
+    #region Movement
+    void CheckMoveState()
     {
         if (moveState == MoveState.Blocked) { return; }
 
@@ -239,7 +221,6 @@ public class PawnController : MonoBehaviour
 
     void UpdateAcceleration()
     {
-		rbVelocity = rb.velocity;
 		if (moveInput.magnitude != 0)
 		{
 			accelerationTimer += Time.fixedDeltaTime;
@@ -427,13 +408,24 @@ public class PawnController : MonoBehaviour
 		FeedbackManager.SendFeedback(eventOnHealing, this);
 	}
 
-	public virtual void Damage(int _amount)
+	public virtual void Damage(float _amount)
 	{
         if (!isInvincible_access && invincibilityCoroutine == null)
         {
 			SetInvincible();
 			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
-			currentHealth -= _amount;
+
+            int i_actualDamages = (int)_amount;
+            accumulatedDamage += _amount - i_actualDamages;
+
+            if (accumulatedDamage >= 1)
+            {
+                i_actualDamages += (int)accumulatedDamage;
+                accumulatedDamage -= (int)accumulatedDamage;
+            }
+
+            currentHealth -= i_actualDamages;
+
             if (currentHealth <= 0)
             {
                 Kill();
@@ -649,7 +641,7 @@ public class PawnController : MonoBehaviour
                 animator.SetTrigger("FallingTrigger");
 				if (damageAfterBump > 0)
 				{
-					currentHealth -= damageAfterBump;
+                    Damage(damageAfterBump);
 				}
 			}
             yield return null;
