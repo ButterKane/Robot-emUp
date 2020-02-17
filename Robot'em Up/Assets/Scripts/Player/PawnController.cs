@@ -68,6 +68,7 @@ public class PawnController : MonoBehaviour
     [Space(2)]
     [Separator("Movement settings")]
     public bool canMove;
+	[ConditionalField(nameof(canMove))] public float maxSlopeHeight = 0.75f;
     [ConditionalField(nameof(canMove))] public float jumpForce;
     [ConditionalField(nameof(canMove))] public AnimationCurve accelerationCurve;
 
@@ -140,6 +141,7 @@ public class PawnController : MonoBehaviour
 	protected int damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
 	private float invincibilityCooldown;
+	private Vector3 rbVelocity;
 
 	[HideInInspector] public PassController passController;
 
@@ -184,8 +186,27 @@ public class PawnController : MonoBehaviour
 		UpdateInvincibilityCooldown();
 	}
 
-    #region Movement
-    void CheckMoveState()
+	private void OnCollisionEnter ( Collision collision )
+	{
+		float highestPoint = collision.GetContact(0).point.y;
+		for (int i = 0; i < collision.contactCount; i++)
+		{
+			if (collision.GetContact(i).point.y > highestPoint)
+			{
+				highestPoint = collision.GetContact(i).point.y;
+			}
+		}
+		highestPoint = highestPoint - transform.position.y;
+
+		if (highestPoint < maxSlopeHeight)
+		{
+			transform.position += (Vector3.up * 1.15f) * highestPoint;
+			rb.velocity = rbVelocity;
+		}
+	}
+
+	#region Movement
+	void CheckMoveState()
     {
         if (moveState == MoveState.Blocked) { return; }
 
@@ -218,6 +239,7 @@ public class PawnController : MonoBehaviour
 
     void UpdateAcceleration()
     {
+		rbVelocity = rb.velocity;
 		if (moveInput.magnitude != 0)
 		{
 			accelerationTimer += Time.fixedDeltaTime;
