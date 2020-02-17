@@ -540,7 +540,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         //print(focusedPlayer);
         //Checking who is in range
-        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable())
+        float Y_Tolerance = 3f;
+        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - Y_Tolerance && transform.position.y < playerOneTransform.position.y + Y_Tolerance)
         {
             playerOneInRange = true;
         }
@@ -549,7 +550,7 @@ public class EnemyBehaviour : PawnController, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable())
+        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable() && transform.position.y > playerTwoTransform.position.y - Y_Tolerance && transform.position.y < playerTwoTransform.position.y + Y_Tolerance)
         {
             playerTwoInRange = true;
         }
@@ -561,6 +562,16 @@ public class EnemyBehaviour : PawnController, IHitable
         //Unfocus player because of distance
         if (focusedPlayer != null)
         {
+            if (transform.position.y > focusedPlayer.position.y - Y_Tolerance && transform.position.y < focusedPlayer.position.y + Y_Tolerance)
+            {
+                Debug.Log("Changing to null due to height");
+                ChangingFocus(null);
+                playerOneInRange = false;
+                playerTwoInRange = false;
+                ExitState();
+                EnterState(EnemyState.Idle);
+
+            }
             if ((focusedPlayer == playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !playerOnePawnController.IsTargetable()))
                 || ((focusedPlayer == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
