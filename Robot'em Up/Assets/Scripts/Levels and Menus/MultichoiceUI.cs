@@ -13,6 +13,7 @@ public class Choice
 
 public class MultichoiceUI : UIBehaviour
 {
+    public int defaultValue = 0;
     public Choice[] choices;
     [ReadOnly] public int selectedChoiceIndex;
     public Color selectedChoiceColor = new Color(0.5f, 0.5f, 1f, 1);
@@ -21,7 +22,7 @@ public class MultichoiceUI : UIBehaviour
 
     void Start()
     {
-        ChangeChoice(0, 0); // Set choice[0] as selected choice
+        ChangeChoice(0, defaultValue);
     }
 
 

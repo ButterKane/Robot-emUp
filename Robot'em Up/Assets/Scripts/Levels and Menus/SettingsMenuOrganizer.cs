@@ -1,0 +1,41 @@
+﻿using MyBox;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[ExecuteInEditMode]
+public class SettingsMenuOrganizer : MonoBehaviour
+{
+    public float leftMargin = 10;
+    public float spaceBetweenBoxes = 20;
+    public float boxesHeight = 40;
+    public float boxesWidth = 470;
+    [ReadOnly] public RectTransform[] settingsToOrganize;
+
+
+    private void Update()
+    {
+        GetChildren();
+        OrganizeSettingsDisplay();
+    }
+
+    public void OrganizeSettingsDisplay()
+    {
+        for (int i = 0; i < settingsToOrganize.Length; i++)
+        {
+            float i_YPosition = -(i * boxesHeight + i * spaceBetweenBoxes);
+            settingsToOrganize[i].localPosition = new Vector2(leftMargin, i_YPosition);
+
+            settingsToOrganize[i].sizeDelta = new Vector2(boxesWidth, boxesHeight);
+        }
+    }
+
+    public void GetChildren()
+    {
+        settingsToOrganize = new RectTransform[transform.childCount];
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            settingsToOrganize[i] = transform.GetChild(i).GetComponent<RectTransform>();
+        }
+    }
+}
