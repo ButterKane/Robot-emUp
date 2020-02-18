@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055c45c6e504fc7498f0ca676f7d5ac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 10
   totalHeight: 2
   invincibilityTime: 0.15
   ignoreEletricPlates: 0
@@ -207,6 +207,7 @@ MonoBehaviour:
   dunkJumpDuration: 0.17
   dunkJumpFreezeDuration: 1
   energyPercentLostOnFail: 0.08
+  dunkHitlagForce: 0.117
   dunkDashSpeed: 40
   dunkExplosionRadius: 10
   dunkDamages: 25
@@ -216,6 +217,10 @@ MonoBehaviour:
   dunkSnapTreshold: 30
   dunkCooldown: 1
   dunkCancelFreezeDuration: 0.4
+  explosionDecal: {fileID: 1979490122409296644, guid: f65c285f997402c41bcb2b4c1278a8d0,
+    type: 3}
+  decalDuration: 5
+  decalFadeDuration: 1
   bumpDistanceMod: 1
   bumpDurationMod: 0.5
   bumpRestDurationMod: 0.7

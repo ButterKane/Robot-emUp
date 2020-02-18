@@ -1,4 +1,5 @@
-﻿using MyBox;
+﻿using Knife.DeferredDecals;
+using MyBox;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,9 @@ public class DunkController : MonoBehaviour
 	public float dunkJumpFreezeDuration = 1f;
 	[Range(0f, 1f)] public float energyPercentLostOnFail = 0.2f;
 
-    [Space(15)]
+	[Space(15)]
+	[Range(0f,1f)] public float dunkHitlagForce = 0.5f;
+	public float dunkHitlagDuration = 0.1f;
 	public float dunkDashSpeed = 5f;
 	public float dunkExplosionRadius = 10f;
 	public int dunkDamages = 30;
@@ -38,6 +41,11 @@ public class DunkController : MonoBehaviour
     public float dunkSnapTreshold = 30f;
 	public float dunkCooldown = 3f;
 	public float dunkCancelFreezeDuration = 0.4f;
+
+	[Space(15)]
+	public Decal explosionDecal;
+	public float decalDuration = 5f;
+	public float decalFadeDuration = 1f;
 
 	private DunkState dunkState;
 
@@ -85,6 +93,12 @@ public class DunkController : MonoBehaviour
 	{
 		Analytics.CustomEvent("SuccessfulDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		BallBehaviour i_ball = passController.GetBall();
+		Decal decalInstance = Object.Instantiate(explosionDecal);
+		decalInstance.transform.position = transform.position + Vector3.up * 0.1f;
+		decalInstance.transform.rotation = Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0));
+		decalInstance.DecalMaterial = new Material(decalInstance.DecalMaterial);
+		StartCoroutine(FadeDecalAfterDelay_C(decalInstance.DecalMaterial, decalFadeDuration, decalDuration));
+		Destroy(decalInstance, decalDuration + decalFadeDuration);
 		ChangeState(DunkState.Explosing);
 		EnergyManager.DecreaseEnergy(1f);
 		Collider[] i_hitColliders = Physics.OverlapSphere(i_ball.transform.position, dunkExplosionRadius);
@@ -99,6 +113,7 @@ public class DunkController : MonoBehaviour
 			i++;
 		}
 		ChangeState(DunkState.None);
+
 	}
 
 	public void OnBallReceive ()
@@ -178,6 +193,11 @@ public class DunkController : MonoBehaviour
 		}
 	}
 
+	public void StopDunk()
+	{
+		StopAllCoroutines();
+		ChangeState(DunkState.None);
+	}
 	IEnumerator DunkCancel_C ()
 	{
 		ChangeState(DunkState.Canceling);
@@ -222,6 +242,9 @@ public class DunkController : MonoBehaviour
 		}
 		rb.isKinematic = false;
 		rb.useGravity = true;
+		//Time.timeScale = 1f - dunkHitlagForce;
+		//yield return new WaitForSeconds(dunkHitlagDuration);
+		//Time.timeScale = 1f;
 	}
 
 	public bool isDunking()
@@ -268,5 +291,17 @@ public class DunkController : MonoBehaviour
 				break;
 		}
 		dunkState = _newState;
+	}
+
+	IEnumerator FadeDecalAfterDelay_C (Material _m, float _fadeDuration, float _delay)
+	{
+		yield return new WaitForSeconds(_delay);
+		for (float i = 0; i < _fadeDuration; i+= Time.deltaTime)
+		{
+			Color color = _m.color;
+			color.a = 1 - (i / _fadeDuration);
+			_m.color = color;
+			yield return null;
+		}
 	}
 }
