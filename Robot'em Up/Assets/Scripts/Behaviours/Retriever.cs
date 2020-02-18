@@ -98,6 +98,7 @@ public class Retriever : MonoBehaviour
 					i_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
 					i_newPart.linkedPanel.revivedPlayer = i_newPart.linkedPlayer;
 					i_newPart.linkedPanel.revivingPlayer = playerController;
+					i_newPart.linkedPanel.Init();
 					i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + i_corePart.totalPartCount;
 					retrievedParts.Add(i_newPart);
 				}
