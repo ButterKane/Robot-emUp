@@ -61,5 +61,10 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateNewTemplateShader( "7f168dab9088a6842a89d1cb6141f4e8" );
 		}
+		[MenuItem( "Assets/Create/Amplify Shader/Templates/Decal", false, 85 )]
+		public static void ApplyTemplate11()
+		{
+			AmplifyShaderEditorWindow.CreateNewTemplateShader( "99f74bfe1fdf4764b936db37f1d97333" );
+		}
 	}
 }

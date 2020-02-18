@@ -15,7 +15,7 @@ public class CameraBehaviourEditor : Editor
 	{
 		this.serializedObject.Update();
 		GUILayout.Space(20);
-		if (behaviour.type == CameraType.Circle || behaviour.type == CameraType.Combat)
+		if (behaviour.type == CameraCustomType.Circle || behaviour.type == CameraCustomType.Combat)
 		{
 			EditorGUILayout.BeginHorizontal();
 			SerializedProperty m_maxRotation = serializedObject.FindProperty("maxRotation");
@@ -42,7 +42,7 @@ public class CameraBehaviourEditor : Editor
 			EditorGUILayout.EndHorizontal();
 		}
 
-		if (behaviour.type == CameraType.Adventure)
+		if (behaviour.type == CameraCustomType.Adventure)
 		{
 			EditorGUILayout.BeginHorizontal();
 			SerializedProperty m_focusPoint = serializedObject.FindProperty("focusPoint");
