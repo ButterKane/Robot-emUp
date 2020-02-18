@@ -8,6 +8,7 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 	public Transform wantedTransform;
 	public FastIKFabric IK;
 	public float height = 0.5f;
+	public float maxDistanceToTarget = 0.8f;
 	public AnimationCurve heightCurve;
 	public float legSpeed;
 	[HideInInspector] public bool canMove;
@@ -36,7 +37,7 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 		IKFlatted.y = 0;
 		Vector3 wantedTransformFlatted = wantedTransform.position;
 		wantedTransformFlatted.y = 0;
-		if (Vector3.Distance(IKFlatted, wantedTransformFlatted) > 0.8f && isGrounded)
+		if (Vector3.Distance(IKFlatted, wantedTransformFlatted) > maxDistanceToTarget && isGrounded)
 		{
 			return true;
 		}

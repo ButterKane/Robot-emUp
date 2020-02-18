@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BossShield : MonoBehaviour, IHitable
+public class OldBossShield : MonoBehaviour, IHitable
 {
-    public EnemyBoss enemy;
+    public OldEnemyBoss enemy;
     [SerializeField] private bool lockable = false; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
