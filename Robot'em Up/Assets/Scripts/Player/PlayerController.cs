@@ -491,6 +491,22 @@ public class PlayerController : PawnController, IHitable
 		}
 	}
 
+	public static PlayerController GetNearestPlayer(Vector3 _point)
+	{
+		PlayerController nearestPlayer = GameManager.alivePlayers[0];
+		float closestDistance = Vector3.Distance(nearestPlayer.transform.position, _point);
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float distance = Vector3.Distance(p.transform.position, _point);
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				nearestPlayer = p;
+			}
+		}
+		return nearestPlayer;
+	}
+
 	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
 	{
 		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);

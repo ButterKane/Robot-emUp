@@ -17,6 +17,7 @@ public class Spawner : MonoBehaviour
 	public AnimationCurve rotationLerpCurve;
 	public AnimationCurve verticalLerpCurve;
 	public float delayBeforeActivation = 1;
+	public bool attachSpawnedObject = false;
 
 	public Vector3 endPosition;
 	public SpriteRenderer endPositionVisualizer;
@@ -97,6 +98,10 @@ public class Spawner : MonoBehaviour
 		spawning = true;
 		GameObject i_newEnemy = Instantiate(_enemy.prefab).gameObject;
 		EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
+		if (attachSpawnedObject)
+		{
+			i_enemyBehaviour.transform.SetParent(transform);
+		}
 		if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Spawner can't instantiate enemy: invalid prefab"); return null; }
 		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
 		lastSpawnedEnemy = i_enemyBehaviour;
@@ -107,8 +112,31 @@ public class Spawner : MonoBehaviour
 		return i_enemyBehaviour;
 	}
 
+	public void RetractEnemy(EnemyBehaviour _enemy)
+	{
+		if (type != SpawnerType.Underground) { return; }
+		StartCoroutine(RetractEnemy_C(_enemy));
+	}
+
+	IEnumerator RetractEnemy_C(EnemyBehaviour _enemy)
+	{
+		opened = true;
+		if (animator) { animator.SetTrigger("Close"); }
+		_enemy.ChangeState(EnemyState.Spawning);
+		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
+		PawnController enemyPawn = (PawnController)_enemy;
+		for (float i = 0; i < spawnDuration; i += Time.deltaTime)
+		{
+			RecalculateEndspawnLocation();
+			_enemy.ChangeState(EnemyState.Spawning);
+			enemyPawn.transform.position = Vector3.Lerp(endPosition, startPosition.position, verticalLerpCurve.Evaluate(i / spawnDuration));
+			yield return null;
+		}
+		Destroy(_enemy.gameObject);
+	}
 	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy, bool _addSmallRandomDelay)
 	{
+		//_enemy.transform.localScale = Vector3.one;
 		_enemy.gameObject.SetActive(false);
 		_enemy.transform.position = startPosition.position;
 		if (_addSmallRandomDelay) { yield return new WaitForSeconds(Random.Range(1.5f, 3f)); }
@@ -145,6 +173,7 @@ public class Spawner : MonoBehaviour
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		for (float i = 0; i < spawnDuration; i += Time.deltaTime)
 		{
+			RecalculateEndspawnLocation();
 			_enemy.ChangeState(EnemyState.Spawning);
 			if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 			switch (type)
