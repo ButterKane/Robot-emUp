@@ -81,10 +81,12 @@ public class SpawnerEditor : Editor
 		EditorGUILayout.PropertyField(m_verticalLerpCurve);
 		SerializedProperty m_delayBeforeActivation = serializedObject.FindProperty("delayBeforeActivation");
 		EditorGUILayout.PropertyField(m_delayBeforeActivation);
+		SerializedProperty m_enemyToSpawn = serializedObject.FindProperty("enemyToSpawn");
+		EditorGUILayout.PropertyField(m_enemyToSpawn);
 		serializedObject.ApplyModifiedProperties();
 	}
 
-	public void OnSceneGUI ()
+	void OnSceneGUI ()
 	{
 		if (spawner.transform.hasChanged)
 		{
