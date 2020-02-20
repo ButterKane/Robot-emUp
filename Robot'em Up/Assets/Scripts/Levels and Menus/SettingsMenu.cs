@@ -8,7 +8,7 @@ using XInputDotNetPure;
 public class SettingsMenu : MonoBehaviour
 {
     //private List<GameObject> categories = new List<GameObject>();
-
+    public SettingsDescriptionManaging descriptionManaging;
     public List<GameObject> menuCategories = new List<GameObject>();
     [ReadOnly] public string currentCategory; 
     private GameObject selectedCategory;
@@ -55,6 +55,7 @@ public class SettingsMenu : MonoBehaviour
 
             selectedSettingIndex = 0;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);    // Always reset to the first setting of the new category
+            SetDescriptionTexts(selectedSetting);
 
         }
         else
@@ -230,6 +231,8 @@ public class SettingsMenu : MonoBehaviour
         {
             selectedSettingIndex++;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
+            SetDescriptionTexts(selectedSetting);
+            
         }
     }
 
@@ -239,6 +242,13 @@ public class SettingsMenu : MonoBehaviour
         {
             selectedSettingIndex--;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
+            SetDescriptionTexts(selectedSetting);
         }
+    }
+
+    void SetDescriptionTexts(UIBehaviour _selectedSetting)
+    {
+        descriptionManaging.UpdateTitle(_selectedSetting.settingsTitle);
+        descriptionManaging.UpdateDescription(_selectedSetting.settingsDescription);
     }
 }
