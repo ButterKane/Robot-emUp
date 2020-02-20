@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ToggleUI : UIBehaviour
 {
-    public bool isYes;
+    public bool buttonIsYes;
     private bool selectionIsYes;
     public Image yesButton;
     public Image noButton;
@@ -32,7 +32,7 @@ public class ToggleUI : UIBehaviour
 
     public void ColorizeButton()
     {
-        switch(isYes)
+        switch(buttonIsYes)
         {
             case true:
                 yesButton.color = selectedButtonColor;
@@ -48,20 +48,37 @@ public class ToggleUI : UIBehaviour
 
     public void UpdateSelectionVisual()
     {
+        currentSelectionHighlight.enabled = true;
+
         switch (selectionIsYes)
         {
             case true:
-                currentSelectionHighlight.transform.position = yesButton.transform.position;
+                currentSelectionHighlight.transform.localPosition = yesButton.transform.localPosition;
                 break;
             case false:
-                currentSelectionHighlight.transform.position = noButton.transform.position;
+                currentSelectionHighlight.transform.localPosition = noButton.transform.localPosition;
                 break;
         }
     }
 
     public void ConfirmSelection()
     {
-        isYes = selectionIsYes;
+        buttonIsYes = selectionIsYes;
         ColorizeButton();
+    }
+
+    public override void IncreaseValue()
+    {
+        selectionIsYes = !selectionIsYes;
+    }
+
+    public override void DecreaseValue()
+    {
+        selectionIsYes = !selectionIsYes;
+    }
+
+    public override void PressingA()
+    {
+        ConfirmSelection();
     }
 }

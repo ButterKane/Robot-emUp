@@ -13,6 +13,13 @@ public class SettingsMenuOrganizer : MonoBehaviour
     [ReadOnly] public RectTransform[] settingsToOrganize;
     [ReadOnly] public GameObject[] childrenObjects;
 
+    private void Awake()
+    {
+        gameObject.SetActive(true);
+        GetChildren();
+        OrganizeSettingsDisplay();
+
+    }
 
     private void Update()
     {
@@ -40,5 +47,23 @@ public class SettingsMenuOrganizer : MonoBehaviour
             childrenObjects[i] = transform.GetChild(i).gameObject;
             settingsToOrganize[i] = transform.GetChild(i).GetComponent<RectTransform>();
         }
+    }
+
+    public UIBehaviour SelectSetting(int _index)
+    {
+        UIBehaviour settingScriptToReturn = null;
+
+        for (int i = 0; i < childrenObjects.Length; i++)
+        {
+            if (i == _index)
+            {
+                settingScriptToReturn = childrenObjects[i].GetComponent<UIBehaviour>().SelectThisSetting();
+            }
+            else
+            {
+                childrenObjects[i].GetComponent<UIBehaviour>().UnselectThisSetting();
+            }
+        }
+        return settingScriptToReturn;
     }
 }

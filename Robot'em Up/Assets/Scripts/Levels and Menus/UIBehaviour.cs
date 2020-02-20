@@ -26,8 +26,32 @@ public class UIBehaviour : MonoBehaviour
             boxTitle.text = settingsTitle;
     }
 
-    public void SelectSettingsArea()
+    public UIBehaviour SelectThisSetting()
     {
         isSelected = true;
+        background.color = selectedColor;
+        return this;
+    }
+
+    public UIBehaviour UnselectThisSetting()
+    {
+        isSelected = false;
+        background.color = normalColor;
+        return this;
+    }
+
+    public virtual void IncreaseValue()
+    {
+
+    }
+
+    public virtual void DecreaseValue()
+    {
+
+    }
+
+    public virtual void PressingA()
+    {
+
     }
 }

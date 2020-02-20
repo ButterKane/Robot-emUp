@@ -22,7 +22,7 @@ public class SliderUI : UIBehaviour
 
     public void UpdateSliderText()
     {
-        valueText.text = slider.value.ToString() ;
+        valueText.text = Mathf.RoundToInt(slider.value *100).ToString() ;
     }
 
     public void UpdateSliderValue(int _valueToAdd)
@@ -36,5 +36,15 @@ public class SliderUI : UIBehaviour
 
         currentTimeProgressionBeforeValueChange -= Time.deltaTime;
 
+    }
+
+    public override void IncreaseValue()
+    {
+        UpdateSliderValue(1);
+    }
+
+    public override void DecreaseValue()
+    {
+        UpdateSliderValue(-1);
     }
 }

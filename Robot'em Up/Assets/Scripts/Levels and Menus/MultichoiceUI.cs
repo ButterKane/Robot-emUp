@@ -45,4 +45,14 @@ public class MultichoiceUI : UIBehaviour
         choices[selectedChoiceIndex].choiceIcon.color = selectedChoiceColor;
         displayText.text = choices[selectedChoiceIndex].choiceText;
     }
+
+    public override void IncreaseValue()
+    {
+        ChangeChoice(1, null);
+    }
+
+    public override void DecreaseValue()
+    {
+        ChangeChoice(-1, null);
+    }
 }

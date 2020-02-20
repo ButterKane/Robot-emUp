@@ -13,28 +13,49 @@ public class SettingsMenu : MonoBehaviour
     [ReadOnly] public string currentCategory; 
     private GameObject selectedCategory;
     private int selectedCategoryIndex;
-    private bool waitForJoystickReset;
-    private bool waitForButtonReset;
+    private SettingsMenuOrganizer settingsParentScript;
+    //private GameObject[] currentCategorySettings;
+    private UIBehaviour selectedSetting;
+    [ReadOnly] public int selectedSettingIndex;
+    [ReadOnly] public string selectedSettingName;
 
-    private bool waitForAResetOne;
-
+    private bool waitForJoystickYReset;
+    private bool waitForJoystickXReset;
+    public float normalRestTimeOfJoystick = 0.5f;
+    private float restTimeOfJoystickX;
+    private float currentRestTimeOfJoystickX;
+    private bool waitForRightShoulderReset;
+    private bool waitForLeftShoulderReset;
+    private bool waitForAReset;
     private int categoryNumber;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        restTimeOfJoystickX = normalRestTimeOfJoystick;
         selectedCategoryIndex = 0;
-        DisplayCategorySettings();
+        ChangeCategory(0);
     }
 
     void ChangeCategory(int _plusOrMinus)
     {
-        int i_addition = (int)Mathf.Sign(_plusOrMinus);
+        int i_addition = 0;
+        if (_plusOrMinus != 0)
+        {
+            i_addition = (int)Mathf.Sign(_plusOrMinus);
+        }
+
         if (selectedCategoryIndex + i_addition < menuCategories.Count && selectedCategoryIndex + i_addition >= 0)
         {
             selectedCategoryIndex += i_addition;
+            settingsParentScript = menuCategories[selectedCategoryIndex].GetComponent<SettingsMenuOrganizer>();
+
             DisplayCategorySettings();
+
+            selectedSettingIndex = 0;
+            selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);    // Always reset to the first setting of the new category
+
         }
         else
         {
@@ -70,63 +91,78 @@ public class SettingsMenu : MonoBehaviour
     void Update()
     {
         currentCategory = selectedCategory.name;
+        selectedSettingName = selectedSetting.gameObject.name;
 
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
 
         // Managing Up and Down
         if (i_state.ThumbSticks.Left.Y > 0 || i_state.DPad.Up == ButtonState.Pressed)
         {
-            if (!waitForJoystickReset)
+            if (!waitForJoystickYReset)
             {
                 SelectPreviousSettings();
-                waitForJoystickReset = true;
+                waitForJoystickYReset = true;
             }
         }
         else if (i_state.ThumbSticks.Left.Y < 0 || i_state.DPad.Down == ButtonState.Pressed)
         {
-            if (!waitForJoystickReset)
+            if (!waitForJoystickYReset)
             {
                 SelectNextSettings();
-                waitForJoystickReset = true;
+                waitForJoystickYReset = true;
             }
 
         }
         else
         {
-            waitForJoystickReset = false;
+            waitForJoystickYReset = false;
         }
 
         // Managing Left and Right
+
+
         if (i_state.ThumbSticks.Left.X > 0 || i_state.DPad.Right == ButtonState.Pressed)
         {
-            if (!waitForJoystickReset)
+            if (!waitForJoystickXReset)
             {
                 IncreaseValue();
-                waitForJoystickReset = true;
+                waitForJoystickXReset = true;
+                currentRestTimeOfJoystickX = restTimeOfJoystickX;
             }
         }
         else if (i_state.ThumbSticks.Left.X < 0 || i_state.DPad.Left == ButtonState.Pressed)
         {
-            if (!waitForJoystickReset)
+            if (!waitForJoystickXReset)
             {
                 DecreaseValue();
-                waitForJoystickReset = true;
+                waitForJoystickXReset = true;
+                currentRestTimeOfJoystickX = restTimeOfJoystickX;
             }
-
         }
         else
         {
-            waitForJoystickReset = false;
+            waitForJoystickXReset = false;
+            restTimeOfJoystickX = normalRestTimeOfJoystick;
         }
+        currentRestTimeOfJoystickX -= Time.deltaTime;
+        if (currentRestTimeOfJoystickX <= 0)
+        {
+            waitForJoystickXReset = false;
+            if (selectedSetting is SliderUI)
+            {
+                restTimeOfJoystickX -= 0.05f;
+            }
+        }
+
 
         // Managing Buttons
         if (i_state.Buttons.A == ButtonState.Pressed)
         {
-            //if (waitForAResetOne) { return; } else { selectedButton.onClick.Invoke(); waitForAResetOne = true; } 
+            if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; } 
         }
         else
         {
-            waitForAResetOne = false;
+            waitForAReset = false;
         }
 
         if (i_state.Buttons.B == ButtonState.Pressed)
@@ -136,20 +172,20 @@ public class SettingsMenu : MonoBehaviour
 
         if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
         {
-            if (waitForButtonReset) { return; } else { waitForButtonReset = true; ChangeCategory(1); }
+            if (waitForRightShoulderReset) { return; } else { waitForRightShoulderReset = true; ChangeCategory(1); }
         }
-        else
+        else if (i_state.Buttons.RightShoulder == ButtonState.Released)
         {
-            waitForButtonReset = false;
+            waitForRightShoulderReset = false;
         }
 
         if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
         {
-            if (waitForButtonReset) { return; } else { waitForButtonReset = true; ChangeCategory(-1);}
+            if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1);}
         }
-        else
+        else if (i_state.Buttons.LeftShoulder == ButtonState.Released)
         {
-            waitForButtonReset = false;
+            waitForLeftShoulderReset = false;
         }
 
 
@@ -175,21 +211,34 @@ public class SettingsMenu : MonoBehaviour
 
     void IncreaseValue()
     {
-
+        selectedSetting.IncreaseValue();
     }
 
     void DecreaseValue()
     {
+        selectedSetting.DecreaseValue();
+    }
 
+    void PressingA()
+    {
+        selectedSetting.PressingA();
     }
 
     void SelectNextSettings()
     {
-
+        if (selectedSettingIndex + 1 < settingsParentScript.childrenObjects.Length)
+        {
+            selectedSettingIndex++;
+            selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
+        }
     }
 
     void SelectPreviousSettings()
     {
-
+        if (selectedSettingIndex - 1 >= 0)
+        {
+            selectedSettingIndex--;
+            selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
+        }
     }
 }
