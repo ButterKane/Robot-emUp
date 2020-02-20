@@ -63,20 +63,30 @@ public class SpawnerEditor : Editor
 			EditorGUILayout.PropertyField(m_horizontalLerpCurve);
 			SerializedProperty m_rotationLerpCurve = serializedObject.FindProperty("rotationLerpCurve");
 			EditorGUILayout.PropertyField(m_rotationLerpCurve);
+			SerializedProperty m_attachToObject = serializedObject.FindProperty("attachSpawnedObject");
+			EditorGUILayout.PropertyField(m_attachToObject);
 			if (EditorGUI.EndChangeCheck())
 			{
 				spawner.RecalculateEndspawnLocation();
 			}
 		}
 
+		if (spawner.type == SpawnerType.Underground)
+		{
+			SerializedProperty m_attachToObject = serializedObject.FindProperty("attachSpawnedObject");
+			EditorGUILayout.PropertyField(m_attachToObject);
+		}
+
 		SerializedProperty m_verticalLerpCurve = serializedObject.FindProperty("verticalLerpCurve");
 		EditorGUILayout.PropertyField(m_verticalLerpCurve);
 		SerializedProperty m_delayBeforeActivation = serializedObject.FindProperty("delayBeforeActivation");
 		EditorGUILayout.PropertyField(m_delayBeforeActivation);
+		SerializedProperty m_enemyToSpawn = serializedObject.FindProperty("enemyToSpawn");
+		EditorGUILayout.PropertyField(m_enemyToSpawn);
 		serializedObject.ApplyModifiedProperties();
 	}
 
-	public void OnSceneGUI ()
+	void OnSceneGUI ()
 	{
 		if (spawner.transform.hasChanged)
 		{
