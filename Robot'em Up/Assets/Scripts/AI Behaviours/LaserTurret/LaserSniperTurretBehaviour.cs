@@ -58,7 +58,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward), modelPivot);
             i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
-            i_instance.target = focusedPlayer;
+            i_instance.target = focusedPlayer.transform;
             i_instance.spawnParent = transform;
             shootingLaserTimeProgression = shootingLaserMaxTime;
             timeToTriggerLaserReduction = shootingLaserMaxTime - (whenToTriggerLaserReduction * shootingLaserMaxTime);
