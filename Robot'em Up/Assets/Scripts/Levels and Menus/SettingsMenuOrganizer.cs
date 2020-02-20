@@ -11,6 +11,7 @@ public class SettingsMenuOrganizer : MonoBehaviour
     public float boxesHeight = 40;
     public float boxesWidth = 470;
     [ReadOnly] public RectTransform[] settingsToOrganize;
+    [ReadOnly] public GameObject[] childrenObjects;
 
 
     private void Update()
@@ -33,8 +34,10 @@ public class SettingsMenuOrganizer : MonoBehaviour
     public void GetChildren()
     {
         settingsToOrganize = new RectTransform[transform.childCount];
+        childrenObjects = new GameObject[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
         {
+            childrenObjects[i] = transform.GetChild(i).gameObject;
             settingsToOrganize[i] = transform.GetChild(i).GetComponent<RectTransform>();
         }
     }
