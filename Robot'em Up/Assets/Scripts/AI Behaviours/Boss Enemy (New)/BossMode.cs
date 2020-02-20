@@ -22,7 +22,7 @@ public enum BossMovementType
 
 public enum BossRotationType
 {
-	LookNearestPlayer, LookCenter
+	LookNearestPlayer, LookCenter, None
 }
 
 public enum ModeTransitionConditionType

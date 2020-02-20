@@ -12,13 +12,21 @@ public class BossBehaviour : MonoBehaviour
 
 	[Header("Global Settings")]
 	public float topPartRotationSpeed;
-	public float shoulderRotationSpeed;
 	public float firstPhaseHP;
 	public float secondPhaseHP;
 	public float healthBarHeight;
 	public float minAttackRange = 15f;
 	public Transform zoneCenter;
 	public BossMode startingMode;
+
+	[Header("BulletHell settings")]
+	public float bulletHellRotationSpeed;
+	public List<Transform> bulletSpawner;
+	public float minDelayBetweenBullets;
+	public float maxDelayBetweenBullets;
+
+	[Header("Range mode settings")]
+	public float shoulderRotationSpeed;
 
 	[Header("References")]
 	public Transform topPart;
@@ -50,6 +58,8 @@ public class BossBehaviour : MonoBehaviour
 	private NavMeshAgent navMesh;
 	private List<Quaternion> shoulderInitialRotation;
 	private bool shoulderRotationEnabled;
+	private bool bulletStormEnabled;
+	private List<float> bulletStormCooldowns;
 
 	private void Start ()
 	{
@@ -65,6 +75,7 @@ public class BossBehaviour : MonoBehaviour
 		UpdateHealthBars();
 		UpdateCooldowns();
 		UpdateShoulderRotation();
+		UpdateBulletStormMode();
 	}
 
 
@@ -149,9 +160,15 @@ public class BossBehaviour : MonoBehaviour
 
 	}
 	
-	public void BulletStorm ()
+	public void StartBulletStorm ()
 	{
+		bulletStormEnabled = true;
 		Debug.Log("Bullet storm");
+	}
+
+	public void StopBulletStorm ()
+	{
+		bulletStormEnabled = false;
 	}
 
 	public void DetachMinions()
@@ -185,7 +202,28 @@ public class BossBehaviour : MonoBehaviour
 		shoulderInitialRotation = new List<Quaternion>();
 		shoulderInitialRotation.Add(shoulderLeft.transform.localRotation);
 		shoulderInitialRotation.Add(shoulderRight.transform.localRotation);
+		bulletStormCooldowns = new List<float>();
+		foreach (Transform t in bulletSpawner)
+		{
+			bulletStormCooldowns.Add(0);
+		}
 	}
+
+	private void UpdateBulletStormMode ()
+	{
+		topPart.localRotation = Quaternion.Euler(new Vector3(topPart.localRotation.eulerAngles.x, topPart.localRotation.eulerAngles.y + Time.deltaTime * bulletHellRotationSpeed, topPart.localRotation.eulerAngles.z));
+		for (int i = 0; i < bulletSpawner.Count; i++)
+		{
+			if (bulletStormCooldowns[i] <= 0)
+			{
+				//Spawn bullet
+				GameObject bullet = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BulletStormPrefab"));
+				bulletStormCooldowns[i] = Random.Range(minDelayBetweenBullets, maxDelayBetweenBullets);
+			}
+
+		}
+	}
+
 	private void GetReferences()
 	{
 		navMesh = GetComponent<NavMeshAgent>();
@@ -235,6 +273,7 @@ public class BossBehaviour : MonoBehaviour
 				}
 			}
 		}
+		bool enableRotation = true;
 		Vector3 lookPosition = transform.position + transform.forward;
 		switch (currentMode.rotationType)
 		{
@@ -244,10 +283,16 @@ public class BossBehaviour : MonoBehaviour
 			case BossRotationType.LookNearestPlayer:
 				lookPosition = PlayerController.GetNearestPlayer(transform.position).transform.position;
 				break;
+			case BossRotationType.None:
+				enableRotation = false;
+				break;
 		}
-		lookPosition.y = topPart.transform.position.y;
-		Quaternion wantedRotation = Quaternion.LookRotation(lookPosition - topPart.transform.position);
-		topPart.transform.rotation = Quaternion.Lerp(topPart.transform.rotation, wantedRotation, Time.deltaTime * topPartRotationSpeed);
+		if (enableRotation)
+		{
+			lookPosition.y = topPart.transform.position.y;
+			Quaternion wantedRotation = Quaternion.LookRotation(lookPosition - topPart.transform.position);
+			topPart.transform.rotation = Quaternion.Lerp(topPart.transform.rotation, wantedRotation, Time.deltaTime * topPartRotationSpeed);
+		}
 	}
 	private void UpdateHealthBars()
 	{
@@ -262,6 +307,12 @@ public class BossBehaviour : MonoBehaviour
 	private void UpdateCooldowns()
 	{
 		timeSinceLastModeChange += Time.deltaTime;
+		List<float> newBulletStormCD = new List<float>();
+		foreach (float f in bulletStormCooldowns)
+		{
+			newBulletStormCD.Add(f - Time.deltaTime);
+		}
+		bulletStormCooldowns = newBulletStormCD;
 	}
 	private void CheckForModeTransition()
 	{
@@ -301,11 +352,9 @@ public class BossBehaviour : MonoBehaviour
 	{
 		if (shoulderRotationEnabled)
 		{
-			PlayerController nearestPlayerLeftShoulder = PlayerController.GetNearestPlayer(shoulderLeft.transform.position);
-			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - nearestPlayerLeftShoulder.transform.position;
+			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPlayer.transform.position;
 			shoulderLeft.transform.rotation = Quaternion.Lerp(shoulderLeft.transform.rotation, Quaternion.LookRotation(leftShoulderLookDirection), shoulderRotationSpeed);
-			PlayerController nearestPlayerRightShoulder = PlayerController.GetNearestPlayer(shoulderRight.transform.position);
-			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - nearestPlayerRightShoulder.transform.position;
+			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - minions[1].focusedPlayer.transform.position;
 			shoulderRight.transform.rotation = Quaternion.Lerp(shoulderRight.transform.rotation, Quaternion.LookRotation(rightShoulderLookDirection), shoulderRotationSpeed);
 		} else
 		{
