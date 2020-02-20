@@ -5,7 +5,7 @@ using Cinemachine;
 using MyBox;
 using PathCreation;
 
-public enum CameraType { Combat, Adventure, Circle}
+public enum CameraCustomType { Combat, Adventure, Circle}
 public class CameraBehaviour : MonoBehaviour
 {
 	[Separator("General settings")]
@@ -26,7 +26,7 @@ public class CameraBehaviour : MonoBehaviour
 	[ReadOnly] public float currentDistanceX;
 	[ReadOnly] public float currentDistanceY;
 
-	public CameraType type;
+	public CameraCustomType type;
 	[ReadOnly] public CameraZone zone;
 	private CinemachineVirtualCamera virtualCamera;
 	private Quaternion defaultRotation;
@@ -40,7 +40,7 @@ public class CameraBehaviour : MonoBehaviour
 
 	public static CameraBehaviour[] allCameras;
 
-	public void InitCamera ( CameraType _type, CameraZone _zone)
+	public void InitCamera ( CameraCustomType _type, CameraZone _zone)
 	{
 		type = _type;
 		zone = _zone;
@@ -98,13 +98,13 @@ public class CameraBehaviour : MonoBehaviour
 			virtualCamera.m_Priority = enabledPriority;
 			switch (type)
 			{
-				case CameraType.Combat:
+				case CameraCustomType.Combat:
 					UpdateCombatCamera();
 					break;
-				case CameraType.Circle:
+				case CameraCustomType.Circle:
 					UpdateCircleCamera();
 					break;
-				case CameraType.Adventure:
+				case CameraCustomType.Adventure:
 					UpdateAdventureCamera();
 					break;
 			}

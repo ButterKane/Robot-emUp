@@ -29,7 +29,7 @@ public class DestructibleObject : Dummy
         hitCount_access = 0;
     }
 
-    public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
+    public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
         transform.DOShakeScale(0.2f, 0.1f, 200).OnComplete(ResetScale);
         hitCount_access++;

@@ -347,14 +347,14 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
 		if (_source == DamageSource.Dunk || _source == DamageSource.DeathExplosion)
 		{
 			Vector3 normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
 			BumpMe(10, 1, 1, normalizedImpactVector.normalized);
 		}
-        Health -= _damages;
+        Health -= (int)_damages;
         if (Health <= 0)
         {
             Die();

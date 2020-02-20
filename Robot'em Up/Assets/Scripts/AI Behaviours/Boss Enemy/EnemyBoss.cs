@@ -652,7 +652,7 @@ public class EnemyBoss : PawnController, IHitable
     }
 
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
         if (_ball != null)
         {
