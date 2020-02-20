@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ToxicAreaCollider : MonoBehaviour
+public class ToxicAreaCollider : MonoBehaviour, IHitable
 {
     public ToxicAreaManager manager;
     public float multiplicator = 1f;
+
+    public bool lockable_access { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public float lockHitboxSize_access { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,4 +37,13 @@ public class ToxicAreaCollider : MonoBehaviour
             }
         }
   }
+
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
+    {
+        if (_source == DamageSource.Dunk)
+        {
+            Destroy(gameObject);
+        }
+      
+    }
 }
