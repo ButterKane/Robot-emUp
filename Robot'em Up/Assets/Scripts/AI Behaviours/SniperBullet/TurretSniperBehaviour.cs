@@ -17,7 +17,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));
-        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
+        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer.transform;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
     }
 
@@ -92,22 +92,34 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void AttackingUpdateState()
     {
-        bool i_aimAtPlayer;
+		bool i_aimAtPlayer = false;
         
-        if(Physics.Raycast(modelPivot.position, modelPivot.forward, Vector3.Distance(modelPivot.position, focusedPlayer.position), layersToCheckToScale))
-        {
-            i_aimAtPlayer = false;
-        }
-        else
-        {
-            i_aimAtPlayer = true;
-        }
-        //Adapt aimCube Scale and Position
-        RaycastHit hit;
-        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
-        {
-            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
-            aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
+		//Adapt aimCube Scale and Position
+		RaycastHit hit = default;
+		RaycastHit[] hits = Physics.RaycastAll(aimingRedDotTransform.position, aimingRedDotTransform.forward, 500);
+		System.Array.Sort(hits, ( x, y ) => x.distance.CompareTo(y.distance));
+		for (int i = 0; i < hits.Length; i++)
+		{
+			if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Player")) {
+				if (hits[i].collider.tag != "Player")
+				{
+					continue;
+				} else
+				{
+					i_aimAtPlayer = true;
+					hit = hits[i];
+					aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
+					break;
+				}
+			}
+			if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
+			{
+				hit = hits[i];
+				aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
+				break;
+			}
+			hit = hits[i];
+			aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
         }
 
         //Adapt PlayerFXRenderer
@@ -119,15 +131,15 @@ public class TurretSniperBehaviour : TurretBehaviour
                 //ADAPT FXs
                 if (i_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayer.position;
-                    aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
-                    aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
+                    aimingAtPlayerFXTransform.position = focusedPlayer.transform.position + Vector3.up * 0.1f;
+					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
+					aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
                 else
                 {
-                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
-                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
-                    aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
+                    aimingAtPlayerFXTransform.position = hit.point + hit.normal * 0.2f;
+                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal);
+					aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
 
                 //ROTATE TOWARDS PLAYER
@@ -157,14 +169,14 @@ public class TurretSniperBehaviour : TurretBehaviour
                 //ADAPT FXs----------------------------------
                 if (i_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayer.position;
-                    aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
+                    aimingAtPlayerFXTransform.position = focusedPlayer.transform.position + Vector3.up * 0.1f;
+					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
                 else
                 {
-                    aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
-                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
+                    aimingAtPlayerFXTransform.position = hit.point + hit.normal * 0.2f;
+					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
                 //ROTATE TOWARDS PLAYER-------------------------------------

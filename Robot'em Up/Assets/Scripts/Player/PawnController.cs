@@ -496,22 +496,22 @@ public class PawnController : MonoBehaviour
 		targetable = true;
 	}
 
-	public Vector3 GetCenterPosition()
+	public Vector3 GetCenterPosition ()
 	{
 		return transform.position + Vector3.up * (totalHeight / 2f);
 	}
 
-	public Vector3 GetHeadPosition()
+	public Vector3 GetHeadPosition ()
 	{
 		return transform.position + Vector3.up * totalHeight;
 	}
 
-	public float GetHeight()
+	public float GetHeight ()
 	{
 		return totalHeight;
 	}
 
-    public void SetInvincible(bool _state)
+	public void SetInvincible(bool _state)
     {
         isInvincible_access = _state;
     }

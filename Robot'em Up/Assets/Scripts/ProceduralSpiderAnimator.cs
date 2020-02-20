@@ -4,13 +4,41 @@ using UnityEngine;
 
 public class ProceduralSpiderAnimator : MonoBehaviour
 {
+	public Transform forwardPart;
 	public List<ProceduralSpiderLegAnimator> forwardLegs;
 	public List<ProceduralSpiderLegAnimator> backwardLegs;
+	private List<Vector3> forwardLegsDefaultPosition;
+	private List<Vector3> backwardLegsDefaultPosition;
 	public float maxYOffset = 2f;
 	public float maxRoll = 5f;
 	public float moveSpeed = 4;
+	public float stepLength = 3f;
+
+	private void Awake ()
+	{
+		forwardLegsDefaultPosition = new List<Vector3>();
+		backwardLegsDefaultPosition = new List<Vector3>();
+		foreach (ProceduralSpiderLegAnimator leg in forwardLegs)
+		{
+			forwardLegsDefaultPosition.Add(leg.wantedTransform.localPosition);
+		}
+		foreach (ProceduralSpiderLegAnimator leg in backwardLegs)
+		{
+			backwardLegsDefaultPosition.Add(leg.wantedTransform.localPosition);
+		}
+	}
 	private void LateUpdate ()
 	{
+		for (int i = 0; i < forwardLegs.Count; i++)
+		{
+			forwardLegs[i].forwardOffset = forwardPart.transform.forward * stepLength;
+			//forwardLegs[i].wantedTransform.localPosition = forwardLegsDefaultPosition[i] + (forwardPart.transform.forward * stepLength);
+		}
+		for (int i = 0; i < backwardLegs.Count; i++)
+		{
+			backwardLegs[i].forwardOffset = forwardPart.transform.forward * stepLength;
+			//backwardLegs[i].wantedTransform.localPosition = backwardLegsDefaultPosition[i] + (forwardPart.transform.forward * stepLength);
+		}
 		int groundedLegsAmount = 0;
 		int rightGroundedLegs = 0;
 		int leftGroundedLegs = 0;

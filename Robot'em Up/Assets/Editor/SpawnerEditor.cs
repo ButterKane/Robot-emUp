@@ -63,10 +63,18 @@ public class SpawnerEditor : Editor
 			EditorGUILayout.PropertyField(m_horizontalLerpCurve);
 			SerializedProperty m_rotationLerpCurve = serializedObject.FindProperty("rotationLerpCurve");
 			EditorGUILayout.PropertyField(m_rotationLerpCurve);
+			SerializedProperty m_attachToObject = serializedObject.FindProperty("attachSpawnedObject");
+			EditorGUILayout.PropertyField(m_attachToObject);
 			if (EditorGUI.EndChangeCheck())
 			{
 				spawner.RecalculateEndspawnLocation();
 			}
+		}
+
+		if (spawner.type == SpawnerType.Underground)
+		{
+			SerializedProperty m_attachToObject = serializedObject.FindProperty("attachSpawnedObject");
+			EditorGUILayout.PropertyField(m_attachToObject);
 		}
 
 		SerializedProperty m_verticalLerpCurve = serializedObject.FindProperty("verticalLerpCurve");
