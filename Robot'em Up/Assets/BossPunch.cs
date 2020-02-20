@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class BossPunch : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	private Collider collider;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void Awake ()
+	{
+		collider = GetComponent<Collider>();
+		StartCoroutine(activateColliderAfterDelay());
+	}
+
+	IEnumerator activateColliderAfterDelay ()
+	{
+		yield return new WaitForSeconds(3f);
+		collider.enabled = true;
+		Debug.Log("Enabling collider");
+	}
+
+	private void OnTriggerEnter ( Collider other )
+	{
+		if (other.tag == "Player")
+		{
+			Debug.Log("Player entered zone");
+		}
+	}
 }

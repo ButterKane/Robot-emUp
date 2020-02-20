@@ -18,6 +18,7 @@ public class Spawner : MonoBehaviour
 	public AnimationCurve verticalLerpCurve;
 	public float delayBeforeActivation = 1;
 	public bool attachSpawnedObject = false;
+	public GameObject enemyToSpawn;
 
 	public Vector3 endPosition;
 	public SpriteRenderer endPositionVisualizer;
@@ -110,6 +111,13 @@ public class Spawner : MonoBehaviour
 		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
 		StartCoroutine(SpawnEnemy_C(i_enemyBehaviour, _addSmallRandomDelay));
 		return i_enemyBehaviour;
+	}
+
+	public void SpawnEnemy()
+	{
+		EnemyData newEnemyData = new EnemyData();
+		newEnemyData.prefab = enemyToSpawn;
+		SpawnEnemy(newEnemyData, false);
 	}
 
 	public void RetractEnemy(EnemyBehaviour _enemy)
