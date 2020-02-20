@@ -12,6 +12,7 @@ public class CustomTrigger : MonoBehaviour
 {
 	public bool onExit;
 	public bool singleUse;
+	public bool useDirection = true;
 	public TriggerCondition triggerCondition;
 	public UnityEvent onTriggerEnterAction;
 	public UnityEvent onTriggerComebackAction;
@@ -35,12 +36,12 @@ public class CustomTrigger : MonoBehaviour
 			TriggerEvent();
 			return;
 		}
-		if (other.transform.gameObject.tag == "Player")
+		if (other.gameObject.tag == "Player")
 		{
 			PlayerController potentialPlayer = other.transform.gameObject.GetComponent<PlayerController>();
 			if (potentialPlayer != null)
 			{
-				if (transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
+				if (useDirection == false || transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
 				{
 					if (!playerGoneThroughDoor.Contains(potentialPlayer))
 					{
