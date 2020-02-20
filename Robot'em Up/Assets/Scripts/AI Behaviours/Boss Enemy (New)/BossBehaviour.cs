@@ -211,17 +211,38 @@ public class BossBehaviour : MonoBehaviour
 
 	private void UpdateBulletStormMode ()
 	{
-		topPart.localRotation = Quaternion.Euler(new Vector3(topPart.localRotation.eulerAngles.x, topPart.localRotation.eulerAngles.y + Time.deltaTime * bulletHellRotationSpeed, topPart.localRotation.eulerAngles.z));
-		for (int i = 0; i < bulletSpawner.Count; i++)
+		if (bulletStormEnabled)
 		{
-			if (bulletStormCooldowns[i] <= 0)
+			topPart.localRotation = Quaternion.Euler(new Vector3(topPart.localRotation.eulerAngles.x, topPart.localRotation.eulerAngles.y + Time.deltaTime * bulletHellRotationSpeed, topPart.localRotation.eulerAngles.z));
+			for (int i = 0; i < bulletSpawner.Count; i++)
 			{
-				//Spawn bullet
-				GameObject bullet = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BulletStormPrefab"));
-				bulletStormCooldowns[i] = Random.Range(minDelayBetweenBullets, maxDelayBetweenBullets);
-			}
+				if (bulletStormCooldowns[i] <= 0)
+				{
+					//Spawn bullet
+					GameObject bullet = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BulletStormPrefab"));
+					bullet.transform.position = bulletSpawner[i].transform.position;
+					bullet.transform.rotation = Quaternion.LookRotation(bulletSpawner[i].forward + AddNoiseOnAngle(0, 30));
+					bulletStormCooldowns[i] = Random.Range(minDelayBetweenBullets, maxDelayBetweenBullets);
+				}
 
+			}
 		}
+	}
+
+	Vector3 AddNoiseOnAngle ( float min, float max )
+	{
+		// Find random angle between min & max inclusive
+		float xNoise = Random.Range(min, max);
+		float yNoise = 0f;
+		float zNoise = 0f;
+
+		// Convert Angle to Vector3
+		Vector3 noise = new Vector3(
+		  Mathf.Sin(2 * Mathf.PI * xNoise / 360),
+		  Mathf.Sin(2 * Mathf.PI * yNoise / 360),
+		  Mathf.Sin(2 * Mathf.PI * zNoise / 360)
+		);
+		return noise;
 	}
 
 	private void GetReferences()
