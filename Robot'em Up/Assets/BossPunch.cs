@@ -4,19 +4,29 @@ using UnityEngine;
 
 public class BossPunch : MonoBehaviour
 {
-	private Collider collider;
+	public Collider damageCollider;
+	public Collider pushCollider;
 
+	private bool damaging;
 	private void Awake ()
 	{
-		collider = GetComponent<Collider>();
-		StartCoroutine(activateColliderAfterDelay());
+		damageCollider = GetComponentInChildren<Collider>();
+		StartCoroutine(ActivateColliderAfterDelay());
 	}
 
-	IEnumerator activateColliderAfterDelay ()
+	IEnumerator ActivateColliderAfterDelay ()
 	{
 		yield return new WaitForSeconds(3f);
-		collider.enabled = true;
-		Debug.Log("Enabling collider");
+		damaging = true;
+		damageCollider.enabled = true;
+		FeedbackManager.SendFeedback("event.BossPunchHit", this, damageCollider.transform.position, Vector3.up, Vector3.up);
+		yield return new WaitForSeconds(0.1f);
+		damaging = false;
+		damageCollider.enabled = false;
+		pushCollider.enabled = true;
+		FeedbackManager.SendFeedback("event.BossPunchPush", this, pushCollider.transform.position, Vector3.up, Vector3.up);
+		yield return new WaitForSeconds(0.1f);
+		pushCollider.enabled = false;
 	}
 
 	private void OnTriggerEnter ( Collider other )
@@ -24,6 +34,17 @@ public class BossPunch : MonoBehaviour
 		if (other.tag == "Player")
 		{
 			Debug.Log("Player entered zone");
+			if (damaging)
+			{
+				other.GetComponent<PlayerController>().Damage(20);
+			} else
+			{
+				Vector3 pushDirection = other.transform.position - transform.position;
+				pushDirection.y = 3f;
+				pushDirection = pushDirection.normalized;
+				//other.GetComponent<PlayerController>().Push(pushDirection, 120, 1);
+				other.GetComponent<PlayerController>().BumpMe(10, 0.5f, 0.5f, pushDirection, 0, 0, 0);
+			}
 		}
 	}
 }
