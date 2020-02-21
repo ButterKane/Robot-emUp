@@ -605,7 +605,14 @@ public class EnemyBehaviour : PawnController, IHitable
 
     void ChangingFocus(Transform _newFocus)
     {
-        focusedPlayer = _newFocus.GetComponent<PawnController>();
+		if (_newFocus != null)
+		{
+			Debug.Log(_newFocus);
+			focusedPlayer = _newFocus.GetComponent<PawnController>();
+		} else
+		{
+			focusedPlayer = null;
+		}
         //AddSpeedCoef(new SpeedCoef(0.5f, 0.2f, SpeedMultiplierReason.ChangingFocus, false));
     }
 
