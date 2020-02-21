@@ -1,13 +1,14 @@
 ﻿using MyBox;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIBehaviour : MonoBehaviour
 {
     public GameObject settingsArea;
-    public Text boxTitle;
+    public TextMeshProUGUI boxTitle;
     private Image background;
     public Color selectedColor = new Color (0.5f, 0.5f, 0.5f, 0.7f);
     public Color normalColor = new Color(0.2f, 0.2f, 0.2f, 0.7f);
