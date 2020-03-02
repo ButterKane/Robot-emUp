@@ -10,7 +10,7 @@ public class SettingsMenu : MonoBehaviour
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
     public List<GameObject> menuCategories = new List<GameObject>();
-    [ReadOnly] public string currentCategory; 
+    [ReadOnly] public string currentCategory;
     private GameObject selectedCategory;
     private int selectedCategoryIndex;
     private SettingsMenuOrganizer settingsParentScript;
@@ -19,6 +19,7 @@ public class SettingsMenu : MonoBehaviour
     [ReadOnly] public int selectedSettingIndex;
     [ReadOnly] public string selectedSettingName;
 
+    private bool waitForResetReset;
     private bool waitForJoystickYReset;
     private bool waitForJoystickXReset;
     public float normalRestTimeOfJoystick = 0.5f;
@@ -120,8 +121,6 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // Managing Left and Right
-
-
         if (i_state.ThumbSticks.Left.X > 0 || i_state.DPad.Right == ButtonState.Pressed)
         {
             if (!waitForJoystickXReset)
@@ -159,7 +158,7 @@ public class SettingsMenu : MonoBehaviour
         // Managing Buttons
         if (i_state.Buttons.A == ButtonState.Pressed)
         {
-            if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; } 
+            if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; }
         }
         else
         {
@@ -182,12 +181,23 @@ public class SettingsMenu : MonoBehaviour
 
         if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
         {
-            if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1);}
+            if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1); }
         }
         else if (i_state.Buttons.LeftShoulder == ButtonState.Released)
         {
             waitForLeftShoulderReset = false;
         }
+
+
+        if (i_state.Buttons.Back == ButtonState.Pressed)
+        {
+            if (waitForResetReset) { return; } else { waitForResetReset = true; ResetToDefault(); }
+        }
+        else if (i_state.Buttons.Back == ButtonState.Released)
+        {
+            waitForResetReset = false;
+        }
+
 
 
         // Managing KeyBoard
@@ -232,7 +242,7 @@ public class SettingsMenu : MonoBehaviour
             selectedSettingIndex++;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
             SetDescriptionTexts(selectedSetting);
-            
+
         }
     }
 
@@ -250,5 +260,14 @@ public class SettingsMenu : MonoBehaviour
     {
         descriptionManaging.UpdateTitle(_selectedSetting.settingsTitle);
         descriptionManaging.UpdateDescription(_selectedSetting.settingsDescription);
+    }
+
+    void ResetToDefault()
+    {
+        SettingsMenuOrganizer i_categoryScript = selectedCategory.GetComponent<SettingsMenuOrganizer>();
+        foreach (var setting in i_categoryScript.childrenObjects)
+        {
+            setting.GetComponent<UIBehaviour>().ResetValueToDefault();
+        }
     }
 }

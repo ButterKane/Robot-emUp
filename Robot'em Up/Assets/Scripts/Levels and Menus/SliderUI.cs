@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SliderUI : UIBehaviour
 {
     public Slider slider;
-    public Text valueText;
+    [Range(0, 100)] public int defaultValue = 50;
+    public TextMeshProUGUI valueText;
     private float defaultTimeBetweenChangeValue;
     private float timeBetweenValueChange;
     private float currentTimeProgressionBeforeValueChange;
@@ -14,6 +16,7 @@ public class SliderUI : UIBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        slider.value = (float)defaultValue / 100;
         timeBetweenValueChange = defaultTimeBetweenChangeValue;
         currentTimeProgressionBeforeValueChange = 0;
         UpdateSliderText();
@@ -46,5 +49,14 @@ public class SliderUI : UIBehaviour
     public override void DecreaseValue()
     {
         UpdateSliderValue(-1);
+    }
+
+    public override void ResetValueToDefault()
+    {
+        Debug.Log("slider");
+        slider.value = (float)defaultValue / 100;
+        timeBetweenValueChange = defaultTimeBetweenChangeValue;
+        currentTimeProgressionBeforeValueChange = 0;
+        UpdateSliderText();
     }
 }
