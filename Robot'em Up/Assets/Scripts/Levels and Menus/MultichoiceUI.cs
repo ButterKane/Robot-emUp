@@ -1,6 +1,7 @@
 ﻿using MyBox;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +19,7 @@ public class MultichoiceUI : UIBehaviour
     [ReadOnly] public int selectedChoiceIndex;
     public Color selectedChoiceColor = new Color(0.5f, 0.5f, 1f, 1);
     public Color normalChoiceColor = new Color(0.1f, 0.1f, 0.1f, 1);
-    public Text displayText;
+    public TextMeshProUGUI displayText;
 
     void Start()
     {
@@ -54,5 +55,10 @@ public class MultichoiceUI : UIBehaviour
     public override void DecreaseValue()
     {
         ChangeChoice(-1, null);
+    }
+
+    public override void ResetValueToDefault()
+    {
+        ChangeChoice(0, defaultValue);
     }
 }

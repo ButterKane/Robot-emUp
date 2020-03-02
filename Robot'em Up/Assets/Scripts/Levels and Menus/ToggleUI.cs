@@ -84,4 +84,10 @@ public class ToggleUI : UIBehaviour
     {
         ConfirmSelection();
     }
+
+    public override void ResetValueToDefault()
+    {
+        buttonIsYes = defaultValueIsYes;
+        ColorizeButton();
+    }
 }

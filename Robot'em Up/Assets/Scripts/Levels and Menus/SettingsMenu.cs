@@ -19,6 +19,7 @@ public class SettingsMenu : MonoBehaviour
     [ReadOnly] public int selectedSettingIndex;
     [ReadOnly] public string selectedSettingName;
 
+    private bool waitForResetReset;
     private bool waitForJoystickYReset;
     private bool waitForJoystickXReset;
     public float normalRestTimeOfJoystick = 0.5f;
@@ -120,8 +121,6 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // Managing Left and Right
-
-
         if (i_state.ThumbSticks.Left.X > 0 || i_state.DPad.Right == ButtonState.Pressed)
         {
             if (!waitForJoystickXReset)
@@ -190,7 +189,18 @@ public class SettingsMenu : MonoBehaviour
         }
 
 
-        // Managing KeyBoard
+        if (i_state.Buttons.Back == ButtonState.Pressed)
+        {
+            if (waitForResetReset) { return; } else { waitForResetReset = true; ResetToDefault(); }
+        }
+        else if (i_state.Buttons.Back == ButtonState.Released)
+        {
+            waitForResetReset = false;
+        }
+    
+
+
+            // Managing KeyBoard
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             SelectNextSettings();
@@ -250,5 +260,17 @@ public class SettingsMenu : MonoBehaviour
     {
         descriptionManaging.UpdateTitle(_selectedSetting.settingsTitle);
         descriptionManaging.UpdateDescription(_selectedSetting.settingsDescription);
+    }
+
+    void ResetToDefault()
+    {
+        foreach(var category in menuCategories)
+        {
+            SettingsMenuOrganizer i_categoryScript = category.GetComponent<SettingsMenuOrganizer>();
+            foreach (var setting in i_categoryScript.childrenObjects)
+            {
+                setting.GetComponent<UIBehaviour>().ResetValueToDefault();
+            }
+        }
     }
 }

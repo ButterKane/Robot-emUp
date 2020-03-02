@@ -55,4 +55,8 @@ public class UIBehaviour : MonoBehaviour
     {
 
     }
+
+    public virtual void ResetValueToDefault()
+    {
+    }
 }
