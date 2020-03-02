@@ -7,11 +7,11 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     public ToxicAreaManager manager;
     public float multiplicator = 1f;
 
-    public bool lockable_access { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-    public float lockHitboxSize_access { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+	[SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
     {
         
     }
