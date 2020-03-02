@@ -16,14 +16,37 @@ public class BossBehaviour : MonoBehaviour
 	public float secondPhaseHP;
 	public float healthBarHeight;
 	public float minAttackRange = 15f;
+	public float maxAttackAngle = 5f;
+	public List<BossLeg> legs;
 	public Transform zoneCenter;
 	public BossMode startingMode;
 
 	[Header("BulletHell settings")]
-	public float bulletHellRotationSpeed;
-	public List<Transform> bulletSpawner;
+	public float bulletStormRotationSpeed;
 	public float minDelayBetweenBullets;
 	public float maxDelayBetweenBullets;
+	public float bulletStormCanonMaxAngle;
+	public float bulletStormCanonRotationSpeed;
+
+	[Header("Punch settings")]
+	public float punchDistance = 2f;
+	public float punchCooldown;
+	public float punchChargeDuration = 2f;
+	public AnimationCurve punchChargeSpeedCurve;
+	public float punchDamages = 5f;
+	public float punchPushForce = 10f;
+	public float punchPushHeight = 3f;
+	public float punchSize = 2f;
+
+	[Header("Tea bag settings")]
+	public float damageRadius;
+	public float triggerRadius;
+	public float bumpRadius;
+	public float teabagSize;
+	public float maxTimeBeforeTeaBag = 5f;
+	public float teaBagPreviewDuration = 2f;
+	public float teaBagDamages;
+	public float teaBagPushForce;
 
 	[Header("Range mode settings")]
 	public float shoulderRotationSpeed;
@@ -50,6 +73,9 @@ public class BossBehaviour : MonoBehaviour
 	private float firstPhaseCurrentHealth;
 	private float secondPhaseCurrentHealth;
 
+	//Cooldown values
+	private float punchCurrentCD;
+
 	//Other values
 	private float timeSinceLastModeChange;
 	private bool weakPointsActivated;
@@ -59,7 +85,9 @@ public class BossBehaviour : MonoBehaviour
 	private List<Quaternion> shoulderInitialRotation;
 	private bool shoulderRotationEnabled;
 	private bool bulletStormEnabled;
-	private List<float> bulletStormCooldowns;
+	private Transform currentTarget;
+	private bool frozen;
+	private float timeBeforeTeaBag;
 
 	private void Start ()
 	{
@@ -75,7 +103,8 @@ public class BossBehaviour : MonoBehaviour
 		UpdateHealthBars();
 		UpdateCooldowns();
 		UpdateShoulderRotation();
-		UpdateBulletStormMode();
+		UpdateStormBulletMode();
+		UpdateTeaBag();
 	}
 
 
@@ -122,6 +151,15 @@ public class BossBehaviour : MonoBehaviour
 		minions.Clear();
 	}
 
+	public Vector3 GetGroundPosition()
+	{
+		RaycastHit hit;
+		if (Physics.Raycast(transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+		{
+			return hit.point;
+		}
+		return transform.position;
+	}
 	public void ChangeMode(BossMode _newMode)
 	{
 		Debug.Log("Changing to mode: " + _newMode);
@@ -152,7 +190,30 @@ public class BossBehaviour : MonoBehaviour
 
 	public void Punch()
 	{
-		Debug.Log("Punch");
+		if (punchCurrentCD <= 0)
+		{
+			punchCurrentCD = punchCooldown;
+			GameObject punchObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossPunch"));
+			Vector3 newPunchPosition = transform.position + (topPart.forward * punchDistance);
+			RaycastHit hit;
+			if (Physics.Raycast(punchObj.transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+			{
+				newPunchPosition.y = hit.point.y;
+			}
+			punchObj.transform.position = newPunchPosition;
+			Vector3 punchForwardFlat = currentTarget.transform.position - transform.position;
+			punchForwardFlat.y = 0;
+			punchObj.transform.rotation = Quaternion.LookRotation(punchForwardFlat);
+			punchObj.transform.localScale = Vector3.one * punchSize;
+			BossPunch punchScript = punchObj.GetComponent<BossPunch>();
+			punchScript.punchChargeDuration = punchChargeDuration;
+			punchScript.punchChargeSpeedCurve = punchChargeSpeedCurve;
+			punchScript.punchDamages = punchDamages;
+			punchScript.punchPushForce = punchPushForce;
+			punchScript.punchPushHeight = punchPushHeight;
+			punchScript.StartPunch();
+			Freeze(punchChargeDuration);
+		}
 	}
 
 	public void SpawnMinions()
@@ -163,12 +224,23 @@ public class BossBehaviour : MonoBehaviour
 	public void StartBulletStorm ()
 	{
 		bulletStormEnabled = true;
-		Debug.Log("Bullet storm");
+		foreach (BossLeg leg in legs)
+		{
+			leg.canonMaxAngle = bulletStormCanonMaxAngle;
+			leg.canonRotationSpeed = bulletStormCanonRotationSpeed;
+			leg.maxDelayBetweenBullets = maxDelayBetweenBullets;
+			leg.minDelayBetweenBullets = minDelayBetweenBullets;
+			leg.EnableCanon();
+		}
 	}
 
 	public void StopBulletStorm ()
 	{
 		bulletStormEnabled = false;
+		foreach (BossLeg leg in legs)
+		{
+			leg.DisableCanon();
+		}
 	}
 
 	public void DetachMinions()
@@ -191,6 +263,19 @@ public class BossBehaviour : MonoBehaviour
 
 	}
 
+	public void Teabag()
+	{
+		GameObject teabagObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossTeabag"));
+		teabagObj.transform.position = transform.position;
+		RaycastHit hit;
+		if (Physics.Raycast(transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Environment")))
+		{
+			teabagObj.transform.position = hit.point + Vector3.up * 0.1f;
+		}
+		BossTeaBag teabagScript = teabagObj.GetComponent<BossTeaBag>();
+		teabagScript.Init(this, teaBagPreviewDuration, teaBagPushForce, teaBagDamages, bumpRadius, damageRadius);
+	}
+
 
 	//Private functions
 
@@ -202,47 +287,11 @@ public class BossBehaviour : MonoBehaviour
 		shoulderInitialRotation = new List<Quaternion>();
 		shoulderInitialRotation.Add(shoulderLeft.transform.localRotation);
 		shoulderInitialRotation.Add(shoulderRight.transform.localRotation);
-		bulletStormCooldowns = new List<float>();
-		foreach (Transform t in bulletSpawner)
-		{
-			bulletStormCooldowns.Add(0);
-		}
 	}
 
-	private void UpdateBulletStormMode ()
+	public void Freeze(float _duration)
 	{
-		if (bulletStormEnabled)
-		{
-			topPart.localRotation = Quaternion.Euler(new Vector3(topPart.localRotation.eulerAngles.x, topPart.localRotation.eulerAngles.y + Time.deltaTime * bulletHellRotationSpeed, topPart.localRotation.eulerAngles.z));
-			for (int i = 0; i < bulletSpawner.Count; i++)
-			{
-				if (bulletStormCooldowns[i] <= 0)
-				{
-					//Spawn bullet
-					GameObject bullet = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BulletStormPrefab"));
-					bullet.transform.position = bulletSpawner[i].transform.position;
-					bullet.transform.rotation = Quaternion.LookRotation(bulletSpawner[i].forward + AddNoiseOnAngle(0, 30));
-					bulletStormCooldowns[i] = Random.Range(minDelayBetweenBullets, maxDelayBetweenBullets);
-				}
-
-			}
-		}
-	}
-
-	Vector3 AddNoiseOnAngle ( float min, float max )
-	{
-		// Find random angle between min & max inclusive
-		float xNoise = Random.Range(min, max);
-		float yNoise = 0f;
-		float zNoise = 0f;
-
-		// Convert Angle to Vector3
-		Vector3 noise = new Vector3(
-		  Mathf.Sin(2 * Mathf.PI * xNoise / 360),
-		  Mathf.Sin(2 * Mathf.PI * yNoise / 360),
-		  Mathf.Sin(2 * Mathf.PI * zNoise / 360)
-		);
-		return noise;
+		StartCoroutine(Freeze_C(_duration));
 	}
 
 	private void GetReferences()
@@ -266,14 +315,22 @@ public class BossBehaviour : MonoBehaviour
 	}
 	private void UpdateMovement()
 	{
+		if (frozen)
+		{
+			navMesh.enabled = false;
+			return;
+		} else
+		{
+			navMesh.enabled = true;
+		}
 		Vector3 destination = Vector3.zero;
 		switch (currentMode.movementType)
 		{
 			case BossMovementType.DontMove:
 				break;
 			case BossMovementType.FollowNearestPlayer:
-				PlayerController target = PlayerController.GetNearestPlayer(transform.position);
-				destination = target.transform.position;
+				currentTarget = PlayerController.GetNearestPlayer(transform.position).transform;
+				destination = currentTarget.transform.position;
 				break;
 			case BossMovementType.GoToCenter:
 				destination = zoneCenter.position;
@@ -288,9 +345,23 @@ public class BossBehaviour : MonoBehaviour
 			positionFlatted.y = 0;
 			if (Vector3.Distance(destinationFlatted, positionFlatted) < minAttackRange)
 			{
-				foreach (string s in currentMode.actionsOnMovementEnd)
+				if (currentTarget != null)
 				{
-					InvokeMethod(s);
+					Vector3 targetPositionFlat = currentTarget.position;
+					targetPositionFlat.y = topPart.position.y;
+					if (Vector3.Angle(topPart.forward, targetPositionFlat - topPart.transform.position) < maxAttackAngle)
+					{
+						foreach (string s in currentMode.actionsOnMovementEnd)
+						{
+							InvokeMethod(s);
+						}
+					}
+				} else
+				{
+					foreach (string s in currentMode.actionsOnMovementEnd)
+					{
+						InvokeMethod(s);
+					}
 				}
 			}
 		}
@@ -322,18 +393,20 @@ public class BossBehaviour : MonoBehaviour
 		healthBar1FillLerped.fillAmount = Mathf.Lerp(healthBar1FillLerped.fillAmount, firstPhaseCurrentHealth / firstPhaseHP, Time.deltaTime);
 		healthBar2FillInstant.fillAmount = secondPhaseCurrentHealth / secondPhaseHP;
 		healthBar2FillLerped.fillAmount = Mathf.Lerp(healthBar2FillInstant.fillAmount, secondPhaseCurrentHealth / secondPhaseHP, Time.deltaTime) ;
-
 	}
 
 	private void UpdateCooldowns()
 	{
 		timeSinceLastModeChange += Time.deltaTime;
-		List<float> newBulletStormCD = new List<float>();
-		foreach (float f in bulletStormCooldowns)
+		punchCurrentCD -= Time.deltaTime;
+	}
+
+	private void UpdateStormBulletMode ()
+	{
+		if (bulletStormEnabled)
 		{
-			newBulletStormCD.Add(f - Time.deltaTime);
+			transform.Rotate(Vector3.up, Time.deltaTime * bulletStormRotationSpeed);
 		}
-		bulletStormCooldowns = newBulletStormCD;
 	}
 	private void CheckForModeTransition()
 	{
@@ -371,7 +444,7 @@ public class BossBehaviour : MonoBehaviour
 
 	private void UpdateShoulderRotation()
 	{
-		if (shoulderRotationEnabled)
+		if (shoulderRotationEnabled && minions != null && minions.Count > 1)
 		{
 			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPlayer.transform.position;
 			shoulderLeft.transform.rotation = Quaternion.Lerp(shoulderLeft.transform.rotation, Quaternion.LookRotation(leftShoulderLookDirection), shoulderRotationSpeed);
@@ -382,6 +455,32 @@ public class BossBehaviour : MonoBehaviour
 			shoulderLeft.transform.localRotation = Quaternion.Lerp(shoulderLeft.transform.localRotation, shoulderInitialRotation[0], shoulderRotationSpeed);
 			shoulderRight.transform.localRotation = Quaternion.Lerp(shoulderRight.transform.localRotation, shoulderInitialRotation[1], shoulderRotationSpeed);
 		}
+	}
+
+	private void UpdateTeaBag()
+	{
+		bool playerTooClose = false;
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float playerDistance = Vector3.Distance(GetGroundPosition(), p.transform.position);
+			if (playerDistance < triggerRadius)
+			{
+				playerTooClose = true;
+			}
+		}
+		if (playerTooClose)
+		{
+			timeBeforeTeaBag += Time.deltaTime;
+			if (timeBeforeTeaBag >= maxTimeBeforeTeaBag)
+			{
+				Teabag();
+				timeBeforeTeaBag = 0f;
+			}
+		} else
+		{
+			timeBeforeTeaBag -= Time.deltaTime;
+		}
+		timeBeforeTeaBag = Mathf.Clamp(timeBeforeTeaBag, 0, maxTimeBeforeTeaBag);
 	}
 
 	private bool IsTransitionConditionValid(ModeTransitionCondition _mtc)
@@ -418,4 +517,14 @@ public class BossBehaviour : MonoBehaviour
 		if (mi != null) { mi.Invoke(this, new object[0]); return mi;  } else { return null; }
 	}
 	//Coroutines
+
+	IEnumerator Freeze_C(float _duration)
+	{
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			frozen = true;
+			yield return null;
+		}
+		frozen = false;
+	}
 }

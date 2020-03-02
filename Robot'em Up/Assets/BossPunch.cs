@@ -8,7 +8,7 @@ public class BossPunch : MonoBehaviour
 	public Collider pushCollider;
 
 	public SpriteRenderer punchOutline;
-	public SpriteRenderer punchFill;
+	public MeshRenderer punchFill;
 
 	public Color fillColorCharging;
 	public Color fillColorHit;
@@ -22,10 +22,8 @@ public class BossPunch : MonoBehaviour
 	private bool damaging;
 	private void Awake ()
 	{
-		damageCollider = GetComponentInChildren<Collider>();
 		punchOutline.enabled = false;
 		punchFill.enabled = false;
-		StartPunch();
 	}
 
 	public void StartPunch ()
@@ -37,30 +35,29 @@ public class BossPunch : MonoBehaviour
 	{
 		punchOutline.enabled = true;
 		punchFill.enabled = true;
-		punchFill.color = fillColorCharging;
-		Vector3 fillStartPosition = punchFill.transform.localPosition;
-		Color newFillColor = punchFill.color;
+		punchFill.material.SetColor("_Tint",fillColorCharging);
+		Color newFillColor = punchFill.material.GetColor("_Tint");
 		for (float i = 0; i < punchChargeDuration; i+=Time.deltaTime)
 		{
-			punchFill.transform.localPosition = Vector3.Lerp(fillStartPosition, Vector3.zero, punchChargeSpeedCurve.Evaluate(i / punchChargeDuration));
+			//punchFill.transform.localPosition = Vector3.Lerp(fillStartPosition, Vector3.zero, punchChargeSpeedCurve.Evaluate(i / punchChargeDuration));
+			punchFill.material.SetFloat("_QuadCompletion", i / punchChargeDuration);
 			newFillColor.a = punchChargeSpeedCurve.Evaluate(i / punchChargeDuration);
-			punchFill.color = newFillColor;
+			punchFill.material.SetColor("_Tint", newFillColor);
 			yield return null;
 		}
-		punchFill.transform.localPosition = Vector3.zero;
 		newFillColor.a = 1f;
 		damaging = true;
 		damageCollider.enabled = true;
 		FeedbackManager.SendFeedback("event.BossPunchHit", this, damageCollider.transform.position, Vector3.up, Vector3.up);
 		for (float i = 0; i < 0.1f; i+=Time.deltaTime)
 		{
-			punchFill.color = Color.Lerp(newFillColor, fillColorHit, i/0.1f);
+			punchFill.material.SetColor("Tint", Color.Lerp(newFillColor, fillColorHit, i / 0.1f));
 			yield return null;
 		}
 		damaging = false;
 		damageCollider.enabled = false;
 		pushCollider.enabled = true;
-		FeedbackManager.SendFeedback("event.BossPunchPush", this, pushCollider.transform.position, Vector3.up, Vector3.up);
+		FeedbackManager.SendFeedback("event.BossPunchPush", this, pushCollider.transform.position, transform.forward, Vector3.up);
 		yield return new WaitForSeconds(0.1f);
 		pushCollider.enabled = false;
 		punchOutline.enabled = false;
@@ -75,6 +72,10 @@ public class BossPunch : MonoBehaviour
 			if (damaging)
 			{
 				other.GetComponent<PlayerController>().Damage(punchDamages);
+				Vector3 pushDirection = other.transform.position - transform.position;
+				pushDirection.y = punchPushHeight;
+				pushDirection = pushDirection.normalized;
+				other.GetComponent<PlayerController>().BumpMe(punchPushForce, 0.5f, 0.5f, pushDirection, 0, 0, 0);
 			} else
 			{
 				Vector3 pushDirection = other.transform.position - transform.position;
