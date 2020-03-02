@@ -40,7 +40,6 @@ public class MultiChoiceOrganizer : MonoBehaviour
             float i_XPosition = i * i_sectionSize + i_sectionSize/2;
 
             choicesToOrganize[i].anchoredPosition = new Vector2(i_XPosition, choicesToOrganize[i].anchoredPosition.y);
-            Debug.Log("supposed positionX of object is " + i_XPosition + " and actual position is " + choicesToOrganize[i].anchoredPosition);
 
             choicesToOrganize[i].sizeDelta = new Vector2(Mathf.Lerp(minChoicesSize.x, maxChoicesSize.x, i_sectionSize/ thisRect.rect.width), Mathf.Lerp(minChoicesSize.y, maxChoicesSize.y, i_sectionSize / thisRect.rect.width));
         }
