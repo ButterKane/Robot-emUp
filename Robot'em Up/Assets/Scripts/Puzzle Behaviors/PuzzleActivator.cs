@@ -9,6 +9,7 @@ public class PuzzleActivator : MonoBehaviour
     public Light indictatorLight;
 	// Update is called once per frame
 	[HideInInspector]public Wire wire;
+    public bool shutDown = false;
 
 
     public virtual void Start()
@@ -37,15 +38,18 @@ public class PuzzleActivator : MonoBehaviour
     }
 
 	public virtual void ActivateLinkedObjects ()
-	{
-		if (wire != null)
-		{
-			wire.ActivateWire(ActivateLinkedObjectsCallback);
-		} else
-		{
-			ActivateLinkedObjectsCallback();
-		}
-	}
+    {
+        if (!shutDown)
+        {
+            if (wire != null)
+		    {
+			    wire.ActivateWire(ActivateLinkedObjectsCallback);
+		    } else
+		    {
+			    ActivateLinkedObjectsCallback();
+		    }
+        }
+    }
 
 	public void ActivateLinkedObjectsCallback() {
 		PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
@@ -129,5 +133,20 @@ public class PuzzleActivator : MonoBehaviour
             item.UpdateLights();
         }
 
+    }
+
+
+    public virtual void shutDownPuzzleActivator()
+    {
+        if (!shutDown)
+        {
+            shutDown = true;
+            customShutDown();
+        }
+    }
+
+
+    public virtual void customShutDown()
+    {
     }
 }
