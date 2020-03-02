@@ -6,12 +6,18 @@ public class PuzzleDoor : PuzzleActivable
 {
     public bool open;
     public GameObject destroyWhenOpened;
+    public List<PuzzleActivator> activatorsToShutDown;
 
     override public void WhenActivate()
     {
+        Debug.Log("Activate a door");
         isActivated = true;
         UpdateLights();
-        //Debug.Log("Activate a door");
+        foreach (var item in activatorsToShutDown)
+        {
+            Debug.Log("Try to shut down");
+            item.shutDownPuzzleActivator();
+        }
         DestroyTheDoor();
     }
 
