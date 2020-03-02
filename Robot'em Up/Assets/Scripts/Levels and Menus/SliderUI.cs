@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class SliderUI : UIBehaviour
 {
     public Slider slider;
+    [Range(0, 100)] public int defaultValue = 50;
     public Text valueText;
     private float defaultTimeBetweenChangeValue;
     private float timeBetweenValueChange;
@@ -14,6 +15,7 @@ public class SliderUI : UIBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        slider.value = defaultValue / 100;
         timeBetweenValueChange = defaultTimeBetweenChangeValue;
         currentTimeProgressionBeforeValueChange = 0;
         UpdateSliderText();
