@@ -18,6 +18,7 @@ public class UIBehaviour : MonoBehaviour
     public int descriptionFontSize = 15;
     [TextArea(5,10)]
     public string settingsDescription;
+    public Image changeIcon;
     
 
     private void Awake()
@@ -58,5 +59,18 @@ public class UIBehaviour : MonoBehaviour
 
     public virtual void ResetValueToDefault()
     {
+
+    }
+
+    public void ToggleChangeIcon(bool _activate = true)
+    {
+        if (!_activate)
+        {
+            changeIcon.SetAlpha(0);
+        }
+        else
+        {
+            changeIcon.SetAlpha(1);
+        }
     }
 }

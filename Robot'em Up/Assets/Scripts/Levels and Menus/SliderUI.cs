@@ -22,6 +22,18 @@ public class SliderUI : UIBehaviour
         UpdateSliderText();
     }
 
+    private void Update()
+    {
+        if (System.Math.Round(slider.value, 2) != System.Math.Round((float)defaultValue / 100, 2))
+        {
+            ToggleChangeIcon(true);
+        }
+        else
+        {
+            ToggleChangeIcon(false);
+        }
+    }
+
 
     public void UpdateSliderText()
     {
@@ -53,7 +65,6 @@ public class SliderUI : UIBehaviour
 
     public override void ResetValueToDefault()
     {
-        Debug.Log("slider");
         slider.value = (float)defaultValue / 100;
         timeBetweenValueChange = defaultTimeBetweenChangeValue;
         currentTimeProgressionBeforeValueChange = 0;

@@ -26,6 +26,18 @@ public class MultichoiceUI : UIBehaviour
         ChangeChoice(0, defaultValue);
     }
 
+    private void Update()
+    {
+        if (selectedChoiceIndex != defaultValue)
+        {
+            ToggleChangeIcon(true);
+        }
+        else
+        {
+            ToggleChangeIcon(false);
+        }
+    }
+
 
     public void ChangeChoice(int _plusOrMinus, int? _overrideIndex)
     {

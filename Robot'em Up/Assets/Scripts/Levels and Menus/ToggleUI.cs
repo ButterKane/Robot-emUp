@@ -31,6 +31,15 @@ public class ToggleUI : UIBehaviour
         {
             currentSelectionHighlight.enabled = false;
         }
+
+        if (buttonIsYes != defaultValueIsYes)
+        {
+            ToggleChangeIcon(true);
+        }
+        else
+        {
+            ToggleChangeIcon(false);
+        }
     }
 
     public void ColorizeButton()
