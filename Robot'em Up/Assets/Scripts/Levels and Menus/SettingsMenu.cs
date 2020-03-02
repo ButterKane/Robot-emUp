@@ -10,7 +10,7 @@ public class SettingsMenu : MonoBehaviour
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
     public List<GameObject> menuCategories = new List<GameObject>();
-    [ReadOnly] public string currentCategory; 
+    [ReadOnly] public string currentCategory;
     private GameObject selectedCategory;
     private int selectedCategoryIndex;
     private SettingsMenuOrganizer settingsParentScript;
@@ -158,7 +158,7 @@ public class SettingsMenu : MonoBehaviour
         // Managing Buttons
         if (i_state.Buttons.A == ButtonState.Pressed)
         {
-            if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; } 
+            if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; }
         }
         else
         {
@@ -181,7 +181,7 @@ public class SettingsMenu : MonoBehaviour
 
         if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
         {
-            if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1);}
+            if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1); }
         }
         else if (i_state.Buttons.LeftShoulder == ButtonState.Released)
         {
@@ -197,10 +197,10 @@ public class SettingsMenu : MonoBehaviour
         {
             waitForResetReset = false;
         }
-    
 
 
-            // Managing KeyBoard
+
+        // Managing KeyBoard
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             SelectNextSettings();
@@ -242,7 +242,7 @@ public class SettingsMenu : MonoBehaviour
             selectedSettingIndex++;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
             SetDescriptionTexts(selectedSetting);
-            
+
         }
     }
 
@@ -264,13 +264,10 @@ public class SettingsMenu : MonoBehaviour
 
     void ResetToDefault()
     {
-        foreach(var category in menuCategories)
+        SettingsMenuOrganizer i_categoryScript = selectedCategory.GetComponent<SettingsMenuOrganizer>();
+        foreach (var setting in i_categoryScript.childrenObjects)
         {
-            SettingsMenuOrganizer i_categoryScript = category.GetComponent<SettingsMenuOrganizer>();
-            foreach (var setting in i_categoryScript.childrenObjects)
-            {
-                setting.GetComponent<UIBehaviour>().ResetValueToDefault();
-            }
+            setting.GetComponent<UIBehaviour>().ResetValueToDefault();
         }
     }
 }
