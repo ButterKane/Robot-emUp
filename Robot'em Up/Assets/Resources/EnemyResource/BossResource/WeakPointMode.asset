@@ -10,11 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1605df8fadd89bc4fbdba9219d47bd98, type: 3}
-  m_Name: BulletStormMode
+  m_Name: WeakPointMode
   m_EditorClassIdentifier: 
   movementType: 2
   rotationType: 2
-  modeTransitions: []
+  modeTransitions:
+  - transitionConditions:
+    - modeTransitionConditionType: 5
+      modeTransitionConditionValue: 0
+    modeToActivate: {fileID: 11400000, guid: 2ab438a82be1f914ca173ce71a1d04d6, type: 2}
   actionsOnStart:
   - StartBulletStorm
   actionsOnMovementEnd: []

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class BossBehaviour : MonoBehaviour
+public class BossBehaviour : MonoBehaviour, IHitable
 {
 	public enum BossPhase { PhaseOne, PhaseTwo }
 
@@ -27,6 +27,9 @@ public class BossBehaviour : MonoBehaviour
 	public float maxDelayBetweenBullets;
 	public float bulletStormCanonMaxAngle;
 	public float bulletStormCanonRotationSpeed;
+
+	[Header("WeakPoint settings")]
+	public float legMaxHP = 50;
 
 	[Header("Punch settings")]
 	public float punchDistance = 2f;
@@ -50,6 +53,7 @@ public class BossBehaviour : MonoBehaviour
 
 	[Header("Range mode settings")]
 	public float shoulderRotationSpeed;
+	public AnimationCurve turretDetachCurve;
 
 	[Header("References")]
 	public Transform topPart;
@@ -88,6 +92,14 @@ public class BossBehaviour : MonoBehaviour
 	private Transform currentTarget;
 	private bool frozen;
 	private float timeBeforeTeaBag;
+	private int weakPointsActivatedCount;
+	private bool hitByDunk;
+	private GameObject bossExplosionFX;
+	private bool destroyed;
+	[HideInInspector] public Animator animator;
+
+	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
 	private void Start ()
 	{
@@ -129,12 +141,30 @@ public class BossBehaviour : MonoBehaviour
 
 	}
 
-	public void EnableTurrets()
+	public void ActivateWeakPoint()
+	{
+		weakPointsActivatedCount++;
+		if (weakPointsActivatedCount >= 4)
+		{
+			weakPointsActivated = true;
+		}
+	}
+
+	public void Reconstruct ()
+	{
+		StartCoroutine(Reconstruct_C());
+	}
+
+	public void EnableTurrets ()
+	{
+		EnableTurrets(-1);
+	}
+	public void EnableTurrets(float _spawnSpeedOverride = -1)
 	{
 		shoulderRotationEnabled = true;
 		foreach (Spawner s in minionSpawners)
 		{
-			minions.Add(s.SpawnEnemy(enemyToSpawn, false));
+			minions.Add(s.SpawnEnemy(enemyToSpawn, false, _spawnSpeedOverride));
 		}
 	}
 
@@ -143,7 +173,7 @@ public class BossBehaviour : MonoBehaviour
 		shoulderRotationEnabled = false;
 		for (int i = 0; i < minionSpawners.Count; i++)
 		{
-			if (minions[i] != null)
+			if (minions != null && minions[i] != null && minions[i].transform.parent != null)
 			{
 				minionSpawners[i].RetractEnemy(minions[i]);
 			}
@@ -215,11 +245,6 @@ public class BossBehaviour : MonoBehaviour
 			Freeze(punchChargeDuration);
 		}
 	}
-
-	public void SpawnMinions()
-	{
-
-	}
 	
 	public void StartBulletStorm ()
 	{
@@ -231,6 +256,9 @@ public class BossBehaviour : MonoBehaviour
 			leg.maxDelayBetweenBullets = maxDelayBetweenBullets;
 			leg.minDelayBetweenBullets = minDelayBetweenBullets;
 			leg.EnableCanon();
+
+			leg.maxHP = legMaxHP;
+			leg.SetDestructible();
 		}
 	}
 
@@ -243,9 +271,9 @@ public class BossBehaviour : MonoBehaviour
 		}
 	}
 
-	public void DetachMinions()
+	public void DetachTurrets()
 	{
-
+		StartCoroutine(DetachTurrets_C());
 	}
 
 	public void HammerPunch()
@@ -263,8 +291,25 @@ public class BossBehaviour : MonoBehaviour
 
 	}
 
+	public void Kill()
+	{
+		animator.SetTrigger("Death");
+		FeedbackManager.SendFeedback("event.BossDeath", this);
+	}
+	public void FallOnGround ()
+	{
+		destroyed = true;
+		foreach (BossLeg leg in legs)
+		{
+			leg.RemoveExplosionFX();
+		}
+		bossExplosionFX = FeedbackManager.SendFeedback("event.BossFallOnGround", this).GetVFX();
+		EnergyManager.IncreaseEnergy(1f);
+		StartCoroutine(Stagger_C());
+	}
 	public void Teabag()
 	{
+		if (destroyed) { return; }
 		GameObject teabagObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossTeabag"));
 		teabagObj.transform.position = transform.position;
 		RaycastHit hit;
@@ -297,6 +342,7 @@ public class BossBehaviour : MonoBehaviour
 	private void GetReferences()
 	{
 		navMesh = GetComponent<NavMeshAgent>();
+		animator = GetComponent<Animator>();
 	}
 	private void GenerateHealthBars ()
 	{
@@ -489,7 +535,14 @@ public class BossBehaviour : MonoBehaviour
 		bool isValid = false;
 		switch (_mtc.modeTransitionConditionType)
 		{
+			case ModeTransitionConditionType.SecondPhaseEnabled:
+				if (currentPhase == BossPhase.PhaseTwo) { isValid = true; }
+				break;
+			case ModeTransitionConditionType.FirstPhaseEnabled:
+				if (currentPhase == BossPhase.PhaseOne) { isValid = true; }
+				break;
 			case ModeTransitionConditionType.HitByDunk: //Not implemented yet
+				if (hitByDunk) { isValid = true; }
 				break;
 			case ModeTransitionConditionType.HPInferiorInferiorOrEqualTo:
 				if (GetCurrentHP() <= value) { isValid = true; }
@@ -526,5 +579,82 @@ public class BossBehaviour : MonoBehaviour
 			yield return null;
 		}
 		frozen = false;
+	}
+
+	IEnumerator Stagger_C()
+	{
+		yield return new WaitForSeconds(2f);
+		transform.forward = -Vector3.forward;
+		animator.SetTrigger("Stagger");
+	}
+
+	IEnumerator Reconstruct_C ()
+	{
+		hitByDunk = false;
+		animator.SetTrigger("StaggerHit");
+		EnableTurrets(0.15f);
+		shoulderRotationEnabled = false;
+		yield return new WaitForSeconds(0.25f);
+		DetachTurrets();
+		animator.SetTrigger("Reconstruct");
+		ParticleSystem.EmissionModule em = bossExplosionFX.GetComponent<ParticleSystem>().emission;
+		em.enabled = false;
+		foreach (BossLeg leg in legs)
+		{
+			leg.Reconstruct();
+			leg.DisableCanon();
+		}
+		yield return new WaitForSeconds(1f);
+		Destroy(bossExplosionFX.gameObject);
+		destroyed = false;
+		weakPointsActivatedCount = 0;
+		weakPointsActivated = false;
+	}
+
+	IEnumerator DetachTurrets_C()
+	{
+		foreach (EnemyBehaviour e in minions)
+		{
+			e.enabled = false;
+			e.transform.rotation = Quaternion.LookRotation(Vector3.forward);
+			e.transform.SetParent(null);
+			Vector3 endPosition = transform.position;
+			RaycastHit hit;
+			Vector3 shoulderCenterPosition = transform.position;
+			shoulderCenterPosition.y = e.transform.position.y;
+			shoulderCenterPosition.z = e.transform.position.z;
+			if (Physics.Raycast(e.transform.position + ((e.transform.position - shoulderCenterPosition).normalized * 10) - (Vector3.forward * 10), Vector3.down, out hit, 50, LayerMask.GetMask("Environment")))
+			{
+				endPosition = hit.point;
+				StartCoroutine(MoveTurretToPosition_C(e, endPosition, 1f));
+				yield return null;
+			}
+
+		}
+	}
+
+	IEnumerator MoveTurretToPosition_C(EnemyBehaviour _turret, Vector3 _endPosition, float _duration)
+	{
+		Vector3 startPosition = _turret.transform.position;
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			Vector3 newPosition = Vector3.Lerp(startPosition, _endPosition, i / _duration);
+			newPosition.y = Mathf.Lerp(startPosition.y, _endPosition.y, turretDetachCurve.Evaluate(i / _duration));
+			_turret.transform.position = Vector3.Lerp(startPosition, _endPosition, i / _duration);
+			yield return null;
+		}
+		yield return null;
+		_turret.transform.position = _endPosition;
+		_turret.enabled = true;
+		DisableTurrets();
+	}
+
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
+	{
+		if (_source == DamageSource.Dunk)
+		{
+			hitByDunk = true;
+			Debug.Log("BossHitByDunk");
+		}
 	}
 }

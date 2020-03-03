@@ -10,15 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1605df8fadd89bc4fbdba9219d47bd98, type: 3}
-  m_Name: WaitingMode
+  m_Name: StaggerMode
   m_EditorClassIdentifier: 
   movementType: 2
-  rotationType: 1
+  rotationType: 2
   modeTransitions:
   - transitionConditions:
-    - modeTransitionConditionType: 2
-      modeTransitionConditionValue: 40
+    - modeTransitionConditionType: 6
+      modeTransitionConditionValue: 0
+    - modeTransitionConditionType: 8
+      modeTransitionConditionValue: 0
+    modeToActivate: {fileID: 11400000, guid: 554f61180b7218d42b6098e7e79d1e57, type: 2}
+  - transitionConditions:
+    - modeTransitionConditionType: 6
+      modeTransitionConditionValue: 0
+    - modeTransitionConditionType: 7
+      modeTransitionConditionValue: 0
     modeToActivate: {fileID: 11400000, guid: 6bb1f74c1ac400b499767a8c829bbb37, type: 2}
-  actionsOnStart: []
+  actionsOnStart:
+  - FallOnGround
   actionsOnMovementEnd: []
   actionsOnEnd: []

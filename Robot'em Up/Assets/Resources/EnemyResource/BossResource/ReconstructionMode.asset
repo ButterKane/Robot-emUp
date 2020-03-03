@@ -10,11 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1605df8fadd89bc4fbdba9219d47bd98, type: 3}
-  m_Name: WeakPointsMode
+  m_Name: ReconstructionMode
   m_EditorClassIdentifier: 
   movementType: 2
-  rotationType: 0
-  modeTransitions: []
-  actionsOnStart: []
+  rotationType: 2
+  modeTransitions:
+  - transitionConditions:
+    - modeTransitionConditionType: 0
+      modeTransitionConditionValue: 2.5
+    modeToActivate: {fileID: 11400000, guid: fc87683d8f322f341956cff796122704, type: 2}
+  actionsOnStart:
+  - Reconstruct
   actionsOnMovementEnd: []
-  actionsOnEnd: []
+  actionsOnEnd:
+  - EnablePhaseTwo

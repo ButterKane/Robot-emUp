@@ -28,9 +28,15 @@ public class BossTeaBag : MonoBehaviour
 
 	IEnumerator TeaBag_C()
 	{
+		bool animationTriggered = false;
 		for (float i = 0; i < previewDuration; i += Time.deltaTime)
 		{
 			innerCircle.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, i / previewDuration);
+			if (i >= previewDuration - 0.4f && !animationTriggered) //0.4f is the length of the animation before hiting the ground
+			{
+				animationTriggered = true;
+				linkedBoss.animator.SetTrigger("Teabag");
+			}
 			yield return null;
 		}
 		FeedbackManager.SendFeedback("event.BossTeabag", this.gameObject);
