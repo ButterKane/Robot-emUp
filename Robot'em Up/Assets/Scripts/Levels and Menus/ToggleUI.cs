@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ToggleUI : UIBehaviour
 {
-    public bool buttonIsYes;
+    public bool defaultValueIsYes = true;
+    [ReadOnly] public bool buttonIsYes;
     private bool selectionIsYes;
     public Image yesButton;
     public Image noButton;
@@ -15,6 +17,7 @@ public class ToggleUI : UIBehaviour
 
     private void Start()
     {
+        buttonIsYes = defaultValueIsYes;
         ColorizeButton();
     }
 
@@ -27,6 +30,15 @@ public class ToggleUI : UIBehaviour
         else if (isSelected == false && currentSelectionHighlight.enabled == true)
         {
             currentSelectionHighlight.enabled = false;
+        }
+
+        if (buttonIsYes != defaultValueIsYes)
+        {
+            ToggleChangeIcon(true);
+        }
+        else
+        {
+            ToggleChangeIcon(false);
         }
     }
 
@@ -80,5 +92,11 @@ public class ToggleUI : UIBehaviour
     public override void PressingA()
     {
         ConfirmSelection();
+    }
+
+    public override void ResetValueToDefault()
+    {
+        buttonIsYes = defaultValueIsYes;
+        ColorizeButton();
     }
 }
