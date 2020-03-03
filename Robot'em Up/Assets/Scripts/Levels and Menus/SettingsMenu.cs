@@ -18,6 +18,7 @@ public class SettingsMenu : MonoBehaviour
     private UIBehaviour selectedSetting;
     [ReadOnly] public int selectedSettingIndex;
     [ReadOnly] public string selectedSettingName;
+    public string storedPreviousScene;
 
     private bool waitForResetReset;
     private bool waitForJoystickYReset;
@@ -29,6 +30,7 @@ public class SettingsMenu : MonoBehaviour
     private bool waitForLeftShoulderReset;
     private bool waitForAReset;
     private int categoryNumber;
+    private bool isInputChangingOpen;
 
 
     // Start is called before the first frame update
@@ -167,7 +169,15 @@ public class SettingsMenu : MonoBehaviour
 
         if (i_state.Buttons.B == ButtonState.Pressed)
         {
-            //CloseLevelSelector();
+            if (isInputChangingOpen)
+            {
+                CloseInputChanging();
+            }
+            //else if (gameIsPlaying) // So if the settings were reached through the pause menu
+            else
+            { 
+                ReturnToMainMenu();
+            }
         }
 
         if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
@@ -269,5 +279,21 @@ public class SettingsMenu : MonoBehaviour
         {
             setting.GetComponent<UIBehaviour>().ResetValueToDefault();
         }
+    }
+
+    void ReturnToMainMenu()
+    {
+        GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
+    }
+
+    void OpenInputChaging()
+    {
+        Debug.Log("Opening input changing");
+        isInputChangingOpen = true;
+    }
+    void CloseInputChanging()
+    {
+        Debug.Log("Closing input changing");
+        isInputChangingOpen = false;
     }
 }

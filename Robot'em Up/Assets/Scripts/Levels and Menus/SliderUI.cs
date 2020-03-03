@@ -49,7 +49,7 @@ public class SliderUI : UIBehaviour
             UpdateSliderText();
         }
 
-        currentTimeProgressionBeforeValueChange -= Time.deltaTime;
+        currentTimeProgressionBeforeValueChange -= Time.unscaledDeltaTime;
 
     }
 
