@@ -5,12 +5,12 @@ using UnityEngine;
 public class LinkBehaviourToAnimator : MonoBehaviour
 {
     EnemyBehaviour enemyScriptRef;
-    EnemyBoss BossScriptRef;
+	OldEnemyBoss BossScriptRef;
     // Start is called before the first frame update
     void Start()
     {
         enemyScriptRef = GetComponentInParent<EnemyBehaviour>();
-        BossScriptRef = GetComponentInParent<EnemyBoss>();
+        BossScriptRef = GetComponentInParent<OldEnemyBoss>();
     }
 
 

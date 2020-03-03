@@ -137,11 +137,13 @@ public class PawnController : MonoBehaviour
 	private bool frozen;
 	private bool isPlayer;
 	protected bool targetable;
-	protected int damageAfterBump;
+	protected float damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
 	private float invincibilityCooldown;
+    private float accumulatedDamage;    // Stores the damage that is not an integer. Useful for things like continuous damage
 
-	[HideInInspector] public PassController passController;
+
+    [HideInInspector] public PassController passController;
 
 	//Events
 	private static System.Action onShootEnd;
@@ -167,6 +169,7 @@ public class PawnController : MonoBehaviour
 			isPlayer = true;
 		}
         moveState = MoveState.Idle;
+        accumulatedDamage = 0;
     }
 
     protected virtual void FixedUpdate()
@@ -405,13 +408,24 @@ public class PawnController : MonoBehaviour
 		FeedbackManager.SendFeedback(eventOnHealing, this);
 	}
 
-	public virtual void Damage(int _amount)
+	public virtual void Damage(float _amount)
 	{
         if (!isInvincible_access && invincibilityCoroutine == null)
         {
 			SetInvincible();
 			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
-			currentHealth -= _amount;
+
+            int i_actualDamages = (int)_amount;
+            accumulatedDamage += _amount - i_actualDamages;
+
+            if (accumulatedDamage >= 1)
+            {
+                i_actualDamages += (int)accumulatedDamage;
+                accumulatedDamage -= (int)accumulatedDamage;
+            }
+
+            currentHealth -= i_actualDamages;
+
             if (currentHealth <= 0)
             {
                 Kill();
@@ -482,22 +496,22 @@ public class PawnController : MonoBehaviour
 		targetable = true;
 	}
 
-	public Vector3 GetCenterPosition()
+	public Vector3 GetCenterPosition ()
 	{
 		return transform.position + Vector3.up * (totalHeight / 2f);
 	}
 
-	public Vector3 GetHeadPosition()
+	public Vector3 GetHeadPosition ()
 	{
 		return transform.position + Vector3.up * totalHeight;
 	}
 
-	public float GetHeight()
+	public float GetHeight ()
 	{
 		return totalHeight;
 	}
 
-    public void SetInvincible(bool _state)
+	public void SetInvincible(bool _state)
     {
         isInvincible_access = _state;
     }
@@ -627,7 +641,7 @@ public class PawnController : MonoBehaviour
                 animator.SetTrigger("FallingTrigger");
 				if (damageAfterBump > 0)
 				{
-					currentHealth -= damageAfterBump;
+                    Damage(damageAfterBump);
 				}
 			}
             yield return null;

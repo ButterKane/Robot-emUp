@@ -28,7 +28,7 @@ public class ZoneEditor
 		i_zoneSelector.name = "Camera zone";
 		i_zoneSelector.transform.SetParent(i_newZone.transform);
 		CameraZone camZone = i_zoneSelector.AddComponent<CameraZone>();
-		camZone.GenerateZone(CameraType.Combat);
+		camZone.GenerateZone(CameraCustomType.Combat);
 
 		//Generate the camera pivot
 		GameObject i_cameraPivot = new GameObject();
@@ -47,7 +47,7 @@ public class ZoneEditor
 
 		CameraBehaviour cam = i_virtualCamera.AddComponent<CameraBehaviour>();
 		cam.pivot = i_cameraPivot.transform;
-		cam.InitCamera(CameraType.Combat, camZone);
+		cam.InitCamera(CameraCustomType.Combat, camZone);
 		camZone.linkedCameraBehaviour = cam;
 
 		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
@@ -76,7 +76,7 @@ public class ZoneEditor
 		i_zoneSelector.name = "Camera zone";
 		i_zoneSelector.transform.SetParent(i_newZone.transform);
 		CameraZone camZone = i_zoneSelector.AddComponent<CameraZone>();
-		camZone.GenerateZone(CameraType.Circle);
+		camZone.GenerateZone(CameraCustomType.Circle);
 
 		//Generate the camera pivot
 		GameObject i_cameraPivot = new GameObject();
@@ -94,7 +94,7 @@ public class ZoneEditor
 		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
 		CameraBehaviour cam = i_virtualCamera.AddComponent<CameraBehaviour>();
 		cam.pivot = i_cameraPivot.transform;
-		cam.InitCamera(CameraType.Circle, camZone);
+		cam.InitCamera(CameraCustomType.Circle, camZone);
 		camZone.linkedCameraBehaviour = cam;
 
 		i_newZone.transform.position = new Vector3(0, 0.5f, 0);
@@ -123,7 +123,7 @@ public class ZoneEditor
 		i_virtualCamera.transform.localPosition = new Vector3(0, 20, -30);
 		i_virtualCamera.transform.localRotation = Quaternion.Euler(30, 0, 0);
 		CameraBehaviour cam = i_virtualCamera.AddComponent<CameraBehaviour>();
-		cam.InitCamera(CameraType.Adventure, null);
+		cam.InitCamera(CameraCustomType.Adventure, null);
 		ApplyDefaultSettings(virtualCameraScript);
 
 		//Generate the enter transition object
@@ -169,10 +169,10 @@ public class ZoneEditor
 
 			switch (i_zone.type)
 			{
-				case CameraType.Combat:
+				case CameraCustomType.Combat:
 					EditCombatZone(i_zone);
 					break;
-				case CameraType.Circle:
+				case CameraCustomType.Circle:
 					EditCircleZone(i_zone);
 					break;
 			}
