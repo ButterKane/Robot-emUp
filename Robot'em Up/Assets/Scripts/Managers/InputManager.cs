@@ -1,4 +1,5 @@
 ﻿using MyBox;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,13 +43,15 @@ public class InputManager : MonoBehaviour
     GamePadState state;
     private Camera cam;
     public PlayerIndex playerIndex;
-    [ReadOnly] public Vector3 moveInput;
+    [ReadOnly] public Vector3 leftJoystickInput;
     public float deadzone = 0.2f;
-    protected Vector3 lookInput;
+    protected Vector3 rightJoystickInput;
     public BothInputs[] mappedInputs;
 
     private bool rightTriggerWaitForRelease;
+    private bool leftTriggerWaitForRelease;
     private bool leftShouldWaitForRelease;
+    private bool rightShouldWaitForRelease;
 
     private void Awake()
     {
@@ -78,68 +81,147 @@ public class InputManager : MonoBehaviour
         Vector3 camRightNormalized = cam.transform.right;
         camRightNormalized.y = 0;
         camRightNormalized = camRightNormalized.normalized;
-        moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
-        moveInput.y = 0;
-        moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-        lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
-        if (lookInput.magnitude > 0.1f)
+        leftJoystickInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
+        leftJoystickInput.y = 0;
+        leftJoystickInput = leftJoystickInput.normalized * ((leftJoystickInput.magnitude - deadzone) / (1 - deadzone));
+
+        rightJoystickInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+
+        // JOYSTICKS
+        if (leftJoystickInput.magnitude > 0.1f)
         {
-            //passController.Aim();
+            LeftJoystickAction(leftJoystickInput);
         }
-        else
+        if (rightJoystickInput.magnitude > 0.1f)
         {
-            //passController.StopAim();
+            RightJoystickAction(rightJoystickInput);
         }
 
+        // TRIGGERS
         if (state.Triggers.Right > triggerTreshold)
         {
-            //if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
-            //rightTriggerWaitForRelease = true;
+            if (!rightTriggerWaitForRelease) { RTAction();}
+            rightTriggerWaitForRelease = true;
         }
-        if (state.Triggers.Right < triggerTreshold)
+        else if (state.Triggers.Right < triggerTreshold)
         {
-            //rightTriggerWaitForRelease = false;
-        }
-        if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
-        {
-            Highlighter.HighlightBall();
-            //Highlighter.HighlightObject(transform.Find("Model"), highlightedColor, highlightedSecondColor);
-            leftShouldWaitForRelease = true;
-        }
-        if (state.Buttons.LeftShoulder == ButtonState.Released)
-        {
-            leftShouldWaitForRelease = false;
-        }
-        if (state.Buttons.Y == ButtonState.Pressed)
-        {
-            //dunkController.Dunk();
+            rightTriggerWaitForRelease = false;
         }
         if (state.Triggers.Left > triggerTreshold)
         {
-
+            if (!rightTriggerWaitForRelease) { LTAction(); }
+            leftTriggerWaitForRelease = true;
         }
         else
         {
-            //dashPressed = false;
+            leftTriggerWaitForRelease = false;
         }
+
+        // BUMPERS
+        if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
+        {
+            LBAction();
+            leftShouldWaitForRelease = true;
+        }
+        else if (state.Buttons.LeftShoulder == ButtonState.Released)
+        {
+            leftShouldWaitForRelease = false;
+        }
+
+        if (state.Buttons.RightShoulder == ButtonState.Pressed && !rightShouldWaitForRelease)
+        {
+            RBAction();
+            rightShouldWaitForRelease = true;
+        }
+        else if (state.Buttons.RightShoulder == ButtonState.Released)
+        {
+            rightShouldWaitForRelease = false;
+        }
+
+        // BUTTONS
         if (state.Buttons.A == ButtonState.Pressed)
         {
-
+            AButtonAction();
         }
-        if (Mathf.Abs(state.ThumbSticks.Left.X) > 0.5f || Mathf.Abs(state.ThumbSticks.Left.Y) > 0.5f)
+        if (state.Buttons.B == ButtonState.Pressed)
         {
-
+            BButtonAction();
         }
-        if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
+        if (state.Buttons.Y == ButtonState.Pressed)
         {
-
+            YButtonAction();
         }
-        else
+        if (state.Buttons.X == ButtonState.Pressed)
         {
-
+            XButtonAction();
         }
+        if (state.Buttons.Back == ButtonState.Pressed)
+        {
+            BackButtonAction();
+        }
+        if (state.Buttons.Start == ButtonState.Pressed)
+        {
+            StartButtonAction();
+        }
+    }
 
+    private void StartButtonAction()
+    {
+        throw new NotImplementedException();
+    }
 
+    private void BackButtonAction()
+    {
+        throw new NotImplementedException();
+    }
 
+    private void XButtonAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void YButtonAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void BButtonAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void AButtonAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void RBAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void LBAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void LTAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void RTAction()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void RightJoystickAction(Vector3 rightJoystickInput)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void LeftJoystickAction(Vector3 leftJoystickInput)
+    {
+        throw new NotImplementedException();
     }
 }
