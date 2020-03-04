@@ -140,6 +140,7 @@ public class PuzzleActivator : MonoBehaviour
     {
         if (!shutDown)
         {
+            indictatorLight.intensity = 0;
             shutDown = true;
             customShutDown();
         }

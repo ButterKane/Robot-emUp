@@ -85,7 +85,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     override public void customShutDown()
     {
-        transform.position = transform.position + Vector3.up * -1;
+        transform.position = transform.position + Vector3.up * -0.5f;
         isActivated = false;
         fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
         if (fX_Activation != null)
