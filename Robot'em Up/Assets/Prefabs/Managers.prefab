@@ -202,30 +202,51 @@ MonoBehaviour:
   inputDisabled: 0
   triggerTreshold: 0.1
   playerIndex: 0
-  moveInput: {x: 0, y: 0, z: 0}
+  leftJoystickInput: {x: 0, y: 0, z: 0}
   deadzone: 0.2
   mappedInputs:
-  - InputName: Move
-    P1Input: 8
-    P2Input: 8
-  - InputName: Aim
-    P1Input: 9
-    P2Input: 9
-  - InputName: Throw
-    P1Input: 13
-    P2Input: 13
-  - InputName: Dash
-    P1Input: 12
-    P2Input: 12
-  - InputName: Dunk
-    P1Input: 3
-    P2Input: 3
-  - InputName: Interact
-    P1Input: 0
-    P2Input: 0
-  - InputName: Locate
-    P1Input: 10
-    P2Input: 10
+  - inputName: Move
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 8
+    p2Input: 8
+  - inputName: Aim
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 9
+    p2Input: 9
+  - inputName: Throw
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 13
+    p2Input: 13
+  - inputName: Dash
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 12
+    p2Input: 12
+  - inputName: Dunk
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 3
+    p2Input: 3
+  - inputName: Interact
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 0
+    p2Input: 0
+  - inputName: Locate
+    inputEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    p1Input: 10
+    p2Input: 10
 --- !u!114 &5253247827333039789
 MonoBehaviour:
   m_ObjectHideFlags: 0

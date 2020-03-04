@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using XInputDotNetPure;
 
 public enum Inputs
@@ -28,9 +29,10 @@ public enum Inputs
 [System.Serializable]
 public class BothInputs
 {
-    public string InputName;
-    public Inputs P1Input;
-    public Inputs P2Input;
+    public string inputName;
+    public UnityEvent inputEvent;
+    public Inputs p1Input;
+    public Inputs p2Input;
 }
 
 public class InputManager : MonoBehaviour
@@ -53,6 +55,19 @@ public class InputManager : MonoBehaviour
     private bool leftShouldWaitForRelease;
     private bool rightShouldWaitForRelease;
 
+    private UnityEvent startButtonEvent;
+    private UnityEvent backButtonEvent;
+    private UnityEvent LeftJoystickEvent;
+    private UnityEvent RightJoystickEvent;
+    private UnityEvent RTEvent;
+    private UnityEvent LTEvent;
+    private UnityEvent LBEvent;
+    private UnityEvent RBEvent;
+    private UnityEvent AButtonEvent;
+    private UnityEvent BButtonEvent;
+    private UnityEvent YButtonEvent;
+    private UnityEvent XButtonEvent;
+
     private void Awake()
     {
         if (i == null)
@@ -63,13 +78,23 @@ public class InputManager : MonoBehaviour
         {
             Debug.LogError("There is already an InputManager");
         }
-
+        //ApplyInputChanges();
     }
-
 
     public void ApplyInputChanges()
     {
-
+        startButtonEvent = GetActionFromInput(mappedInputs, Inputs.StartButton, playerIndex);
+        backButtonEvent = GetActionFromInput(mappedInputs, Inputs.BackButton, playerIndex);
+        LeftJoystickEvent = GetActionFromInput(mappedInputs, Inputs.LeftJoystick, playerIndex);
+        RightJoystickEvent = GetActionFromInput(mappedInputs, Inputs.RightJoystick, playerIndex);
+        RTEvent = GetActionFromInput(mappedInputs, Inputs.RT, playerIndex);
+        LTEvent = GetActionFromInput(mappedInputs, Inputs.LT, playerIndex);
+        LBEvent = GetActionFromInput(mappedInputs, Inputs.LB, playerIndex);
+        RBEvent = GetActionFromInput(mappedInputs, Inputs.RB, playerIndex);
+        AButtonEvent = GetActionFromInput(mappedInputs, Inputs.AButton, playerIndex);
+        BButtonEvent = GetActionFromInput(mappedInputs, Inputs.BButton, playerIndex);
+        YButtonEvent = GetActionFromInput(mappedInputs, Inputs.YButton, playerIndex);
+        XButtonEvent = GetActionFromInput(mappedInputs, Inputs.XButton, playerIndex);
     }
 
     void GamepadInput()
@@ -167,61 +192,87 @@ public class InputManager : MonoBehaviour
 
     private void StartButtonAction()
     {
-        throw new NotImplementedException();
+        startButtonEvent.Invoke();
     }
 
     private void BackButtonAction()
     {
-        throw new NotImplementedException();
+        backButtonEvent.Invoke();
     }
 
     private void XButtonAction()
     {
-        throw new NotImplementedException();
+        XButtonEvent.Invoke();
     }
 
     private void YButtonAction()
     {
-        throw new NotImplementedException();
+        YButtonEvent.Invoke();
     }
 
     private void BButtonAction()
     {
-        throw new NotImplementedException();
+        BButtonEvent.Invoke();
     }
 
     private void AButtonAction()
     {
-        throw new NotImplementedException();
+        AButtonEvent.Invoke();
     }
 
     private void RBAction()
     {
-        throw new NotImplementedException();
+        RBEvent.Invoke();
     }
 
     private void LBAction()
     {
-        throw new NotImplementedException();
+        LBEvent.Invoke();
     }
 
     private void LTAction()
     {
-        throw new NotImplementedException();
+        LTEvent.Invoke();
     }
 
     private void RTAction()
     {
-        throw new NotImplementedException();
+        RTEvent.Invoke();
     }
 
     private void RightJoystickAction(Vector3 rightJoystickInput)
     {
-        throw new NotImplementedException();
+        RightJoystickEvent.Invoke();
     }
 
     private void LeftJoystickAction(Vector3 leftJoystickInput)
     {
-        throw new NotImplementedException();
+        LeftJoystickEvent.Invoke();
+    }
+
+    public static UnityEvent GetActionFromInput(BothInputs[] _dict, Inputs _input, PlayerIndex _playerIndex)
+    {
+        if (_playerIndex == PlayerIndex.One)
+        {
+            foreach (var bothInput in _dict)
+            {
+
+                if (bothInput.p1Input == _input)
+                {
+                    return bothInput.inputEvent;
+                }
+            }
+        }
+        else if (_playerIndex == PlayerIndex.Two)
+        {
+            foreach (var bothInput in _dict)
+            {
+                if (bothInput.p2Input == _input)
+                {
+                    return bothInput.inputEvent;
+                }
+            }
+        }
+        return null;
     }
 }
