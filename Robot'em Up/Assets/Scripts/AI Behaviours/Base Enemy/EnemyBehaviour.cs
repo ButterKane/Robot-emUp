@@ -59,6 +59,8 @@ public class EnemyBehaviour : PawnController, IHitable
     protected float distanceWithPlayerOne;
     protected float distanceWithPlayerTwo;
     protected float distanceWithFocusedPlayer;
+    protected float heightDeltaWithPlayerOne;
+    protected float heightDeltaWithPlayerTwo;
     [System.NonSerialized] public PawnController focusedPlayer = null;
     public float energyGainedOnHit = 1;
     public int damage = 10;
@@ -70,6 +72,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [Space(3)]
     [Header("Focus")]
     public float focusDistance = 3;
+    public float maxHeightOfDetection = 3;
     public float unfocusDistance = 20;
     [HideInInspector] public float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;

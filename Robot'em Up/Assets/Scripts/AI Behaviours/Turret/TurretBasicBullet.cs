@@ -44,7 +44,7 @@ public class TurretBasicBullet : MonoBehaviour
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
                 Destroy(gameObject);
             }
-            else if (_other.tag == "Environment")
+            else if (_other.tag == "Environment" || _other.tag == "Ground")
             {
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
                 Destroy(gameObject);
