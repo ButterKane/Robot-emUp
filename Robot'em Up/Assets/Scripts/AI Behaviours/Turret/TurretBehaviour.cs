@@ -134,15 +134,15 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward(float _rotationSpeedModRatio = 0)
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + focusedPlayer.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - modelPivot.position);
-        wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.GetCenterPosition() + focusedPlayer.transform.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - modelPivot.position);
+      //  wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1-_rotationSpeedModRatio)));
     }
 
     protected virtual void RotateTowardsPlayerPosition(float _rotationSpeedModRatio = 0)
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position - modelPivot.position);
-        wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
+        wantedRotation = Quaternion.LookRotation(focusedPlayer.GetCenterPosition() - modelPivot.position);
+       // wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1-_rotationSpeedModRatio)));
     }
 
@@ -313,7 +313,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             ChangingState(TurretState.Hiding);
         }
 
-        focusedPlayer = _newFocus;
+        focusedPlayer = _newFocus.GetComponent<PawnController>();
         if(_newFocus != null)
         {
             focusedPlayerPawnController = _newFocus.gameObject.GetComponent<PlayerController>();

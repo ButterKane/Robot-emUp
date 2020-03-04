@@ -263,8 +263,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wantedTransform: {fileID: 4446576435249516727}
-  IK: {fileID: 4446576433489242846}
+  IK: {fileID: 5219123634650410241}
   height: 0.5
+  maxDistanceToTarget: 0.8
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -298,10 +299,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  bumpHeightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpDuration: 0.5
+  bumpHeight: 4
+  eventOnStep: 
   legSpeed: 0
-  canMove: 0
   isRight: 1
   isGrounded: 0
+  forwardOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &4446576433476494760
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +351,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4446576433489242833}
-  - component: {fileID: 4446576433489242846}
+  - component: {fileID: 5219123634650410241}
   m_Layer: 0
   m_Name: Bone
   m_TagString: Untagged
@@ -363,7 +373,7 @@ Transform:
   m_Father: {fileID: 4446576434005016214}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4446576433489242846
+--- !u!114 &5219123634650410241
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -372,7 +382,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4446576433489242832}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ChainLength: 3
@@ -475,8 +485,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wantedTransform: {fileID: 4446576433628374418}
-  IK: {fileID: 4446576434951854787}
+  IK: {fileID: 4213029295091884636}
   height: 0.5
+  maxDistanceToTarget: 0.8
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -510,10 +521,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  bumpHeightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpDuration: 0.5
+  bumpHeight: 4
+  eventOnStep: 
   legSpeed: 0
-  canMove: 0
   isRight: 0
   isGrounded: 0
+  forwardOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &4446576433573747669
 GameObject:
   m_ObjectHideFlags: 0
@@ -622,6 +642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb48acd8cde1ebc4da97cbea4802ec19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forwardPart: {fileID: 4446576435193773981}
   forwardLegs:
   - {fileID: 4446576433550362289}
   - {fileID: 4446576434322130166}
@@ -631,6 +652,7 @@ MonoBehaviour:
   maxYOffset: 7
   maxRoll: 15
   moveSpeed: 3
+  stepLength: 3
 --- !u!1 &4446576433610494481
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,8 +1042,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wantedTransform: {fileID: 4446576433720121564}
-  IK: {fileID: 4446576434137926338}
+  IK: {fileID: 3491568574558968206}
   height: 0.5
+  maxDistanceToTarget: 0.8
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -1055,10 +1078,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  bumpHeightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpDuration: 0.5
+  bumpHeight: 4
+  eventOnStep: 
   legSpeed: 0
-  canMove: 0
   isRight: 0
   isGrounded: 0
+  forwardOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &4446576434004671535
 GameObject:
   m_ObjectHideFlags: 0
@@ -1578,7 +1610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4446576434137926341}
-  - component: {fileID: 4446576434137926338}
+  - component: {fileID: 3491568574558968206}
   m_Layer: 0
   m_Name: Bone
   m_TagString: Untagged
@@ -1600,7 +1632,7 @@ Transform:
   m_Father: {fileID: 4446576434886605177}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4446576434137926338
+--- !u!114 &3491568574558968206
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1609,7 +1641,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4446576434137926340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ChainLength: 3
@@ -1815,7 +1847,6 @@ MonoBehaviour:
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
   canMove: 1
-  maxSlopeHeight: 0.75
   jumpForce: 0
   accelerationCurve:
     serializedVersion: 2
@@ -2036,8 +2067,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wantedTransform: {fileID: 4446576434300200080}
-  IK: {fileID: 4446576435103992776}
+  IK: {fileID: 9215642501107071772}
   height: 0.5
+  maxDistanceToTarget: 0.8
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -2071,10 +2103,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  bumpHeightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  bumpDuration: 0.5
+  bumpHeight: 4
+  eventOnStep: 
   legSpeed: 0
-  canMove: 0
   isRight: 1
   isGrounded: 0
+  forwardOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &4446576434347672850
 GameObject:
   m_ObjectHideFlags: 0
@@ -2681,7 +2722,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4446576434951854786}
-  - component: {fileID: 4446576434951854787}
+  - component: {fileID: 4213029295091884636}
   m_Layer: 0
   m_Name: Bone
   m_TagString: Untagged
@@ -2703,7 +2744,7 @@ Transform:
   m_Father: {fileID: 4446576434123756492}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4446576434951854787
+--- !u!114 &4213029295091884636
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2712,7 +2753,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4446576434951854789}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ChainLength: 3
@@ -2730,7 +2771,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4446576435103992779}
-  - component: {fileID: 4446576435103992776}
+  - component: {fileID: 9215642501107071772}
   m_Layer: 0
   m_Name: Bone
   m_TagString: Untagged
@@ -2752,7 +2793,7 @@ Transform:
   m_Father: {fileID: 4446576435191750607}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4446576435103992776
+--- !u!114 &9215642501107071772
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2761,7 +2802,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4446576435103992778}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03ca45bb53dc94f478358a1b6475653d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ChainLength: 3

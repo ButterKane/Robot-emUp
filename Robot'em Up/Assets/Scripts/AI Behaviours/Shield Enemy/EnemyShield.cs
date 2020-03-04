@@ -105,7 +105,7 @@ public class EnemyShield : EnemyBehaviour
             moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
-            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPlayer.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
+            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPlayer.transform.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
 
             Debug.DrawRay(transform.position + i_direction * 5, Vector3.up, Color.green, 2f);
             navMeshAgent.SetDestination(transform.position + i_direction * 5);

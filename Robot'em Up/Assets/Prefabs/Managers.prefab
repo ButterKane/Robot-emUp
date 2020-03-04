@@ -200,7 +200,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputDisabled: 0
-  minJoystickStrength: 0.1
+  triggerTreshold: 0.1
+  playerIndex: 0
+  moveInput: {x: 0, y: 0, z: 0}
+  deadzone: 0.2
+  mappedInputs:
+  - InputName: Move
+    P1Input: 8
+    P2Input: 8
+  - InputName: Aim
+    P1Input: 9
+    P2Input: 9
+  - InputName: Throw
+    P1Input: 13
+    P2Input: 13
+  - InputName: Dash
+    P1Input: 12
+    P2Input: 12
+  - InputName: Dunk
+    P1Input: 3
+    P2Input: 3
+  - InputName: Interact
+    P1Input: 0
+    P2Input: 0
+  - InputName: Locate
+    P1Input: 10
+    P2Input: 10
 --- !u!114 &5253247827333039789
 MonoBehaviour:
   m_ObjectHideFlags: 0
