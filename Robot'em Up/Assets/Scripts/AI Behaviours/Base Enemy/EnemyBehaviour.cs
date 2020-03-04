@@ -564,7 +564,7 @@ public class EnemyBehaviour : PawnController, IHitable
         {
             if (transform.position.y > focusedPlayer.transform.position.y - Y_Tolerance && transform.position.y < focusedPlayer.transform.position.y + Y_Tolerance)
             {
-                Debug.Log("Changing to null due to height");
+               // Debug.Log("Changing to null due to height");
                 ChangingFocus(null);
                 playerOneInRange = false;
                 playerTwoInRange = false;
@@ -607,7 +607,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
 		if (_newFocus != null)
 		{
-			Debug.Log(_newFocus);
+			//Debug.Log(_newFocus);
 			focusedPlayer = _newFocus.GetComponent<PawnController>();
 		} else
 		{
