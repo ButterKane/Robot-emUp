@@ -60,6 +60,7 @@ public class BossBehaviour : MonoBehaviour
 	private bool shoulderRotationEnabled;
 	private bool bulletStormEnabled;
 	private List<float> bulletStormCooldowns;
+	private Animator animator;
 
 	private void Start ()
 	{
@@ -248,6 +249,7 @@ public class BossBehaviour : MonoBehaviour
 	private void GetReferences()
 	{
 		navMesh = GetComponent<NavMeshAgent>();
+		animator = GetComponent<Animator>();
 	}
 	private void GenerateHealthBars ()
 	{
