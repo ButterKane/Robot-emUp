@@ -27,7 +27,7 @@ public enum BossRotationType
 
 public enum ModeTransitionConditionType
 {
-	TimeSinceModeIsEnabledGreaterThan, PlayerDistanceGreaterThan, PlayerDistanceLessThan, HPInferiorInferiorOrEqualTo, NoWallLeft, WeakPointsActivated, HitByDunk
+	TimeSinceModeIsEnabledGreaterThan, PlayerDistanceGreaterThan, PlayerDistanceLessThan, HPInferiorInferiorOrEqualTo, NoWallLeft, WeakPointsActivated, HitByDunk, SecondPhaseEnabled, FirstPhaseEnabled
 }
 
 [System.Serializable]
