@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BossPunch : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class BossPunch : MonoBehaviour
 	public float punchDamages = 5f;
 	public float punchPushForce = 10f;
 	public float punchPushHeight = 3f;
+	private bool cubeDestroyed = false;
 
 	private bool damaging;
 	private void Awake ()
@@ -68,7 +70,6 @@ public class BossPunch : MonoBehaviour
 	{
 		if (other.tag == "Player")
 		{
-			Debug.Log("Player entered zone");
 			if (damaging)
 			{
 				other.GetComponent<PlayerController>().Damage(punchDamages);
@@ -83,6 +84,24 @@ public class BossPunch : MonoBehaviour
 				pushDirection = pushDirection.normalized;
 				other.GetComponent<PlayerController>().BumpMe(punchPushForce, 0.5f, 0.5f, pushDirection, 0, 0, 0);
 			}
+		} else if (other.tag == "Boss_Destructible" && !cubeDestroyed)
+		{
+			cubeDestroyed = true;
+			StartCoroutine(Destroy_Tile_C(other.transform));
 		}
+	}
+
+	IEnumerator Destroy_Tile_C(Transform _tile)
+	{
+		Vector3 startPosition = _tile.position;
+		_tile.GetComponent<Collider>().enabled = false;
+		yield return null;
+		BossTileGenerator.instance.nms.BuildNavMesh();
+		for (float i = 0; i < 3f; i+= Time.deltaTime)
+		{
+			_tile.position = Vector3.Lerp(startPosition, startPosition + Vector3.down * 20f, i / 3f);
+			yield return null;
+		}
+		Destroy(_tile.gameObject);
 	}
 }

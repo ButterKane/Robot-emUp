@@ -1,17 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BossTileGenerator : MonoBehaviour
 {
+	public static BossTileGenerator instance;
 	public float tileSize;
 	public GameObject tilePrefab;
+	public NavMeshSurface nms;
 	BoxCollider col;
 
 	private void Awake ()
 	{
 		col = GetComponent<BoxCollider>();
 		GenerateTiles();
+		instance = this;
 	}
 	void GenerateTiles()
 	{
@@ -30,8 +34,17 @@ public class BossTileGenerator : MonoBehaviour
 				newTile.transform.localScale = Vector3.one * tileSize;
 				newTile.layer = gameObject.layer;
 				newTile.tag = gameObject.tag;
+				foreach (Transform t in newTile.transform) {
+					t.gameObject.layer = gameObject.layer;
+					t.gameObject.tag = gameObject.tag;
+				}
 			}
 		}
-		Destroy(this.gameObject);
+		col.enabled = false;
+		GetComponent<MeshRenderer>().enabled = false;
+		nms = transform.gameObject.AddComponent<NavMeshSurface>();
+		nms.layerMask = LayerMask.GetMask("Environment");
+		nms.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+		nms.BuildNavMesh();
 	}
 }

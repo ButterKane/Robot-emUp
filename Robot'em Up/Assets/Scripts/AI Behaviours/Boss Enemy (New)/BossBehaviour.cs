@@ -171,9 +171,12 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void DisableTurrets ()
 	{
 		shoulderRotationEnabled = false;
-		for (int i = 0; i < minionSpawners.Count; i++)
+		for (int i = 0; i < minions.Count; i++)
 		{
-			if (minions != null && minions[i] != null && minions[i].transform.parent != null)
+			Debug.Log(minions);
+			Debug.Log(minions[i]);
+			Debug.Log(minions[i].transform.parent);
+			if (minions != null && minions[i] != null && minions[i].transform.parent != null && minionSpawners[i] != null)
 			{
 				minionSpawners[i].RetractEnemy(minions[i]);
 			}
