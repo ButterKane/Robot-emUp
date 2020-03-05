@@ -24,7 +24,8 @@ public class DunkController : MonoBehaviour
 	public float dunkJumpFreezeDuration = 1f;
 	[Range(0f, 1f)] public float energyPercentLostOnFail = 0.2f;
 
-    [Space(15)]
+	[Space(15)]
+	[Range(0f,1f)] public float dunkHitlagForce = 0.5f;
 	public float dunkDashSpeed = 5f;
 	public float dunkExplosionRadius = 10f;
 	public int dunkDamages = 30;
@@ -178,6 +179,11 @@ public class DunkController : MonoBehaviour
 		}
 	}
 
+	public void StopDunk()
+	{
+		StopAllCoroutines();
+		ChangeState(DunkState.None);
+	}
 	IEnumerator DunkCancel_C ()
 	{
 		ChangeState(DunkState.Canceling);
@@ -188,6 +194,7 @@ public class DunkController : MonoBehaviour
 
 	IEnumerator FallOnGround_C ( float _speed )
 	{
+		Time.timeScale = 1f - dunkHitlagForce;
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = i_startPosition;
 
@@ -222,6 +229,7 @@ public class DunkController : MonoBehaviour
 		}
 		rb.isKinematic = false;
 		rb.useGravity = true;
+		Time.timeScale = 1f;
 	}
 
 	public bool isDunking()

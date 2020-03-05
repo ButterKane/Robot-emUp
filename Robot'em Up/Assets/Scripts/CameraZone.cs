@@ -17,7 +17,7 @@ public class CameraZone : MonoBehaviour
 
 	public int minPlayersRequired = 2;
 	public bool desactivateCameraOnZoneExit = false;
-	public CameraType type;
+	public CameraCustomType type;
 	private SpriteRenderer visualizer;
 	private Transform cameraPivot;
 	private Collider genCollider;
@@ -74,10 +74,10 @@ public class CameraZone : MonoBehaviour
 		{
 			switch (type)
 			{
-				case CameraType.Combat:
+				case CameraCustomType.Combat:
 					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/squareZoneVisualizerIngame");
 					break;
-				case CameraType.Circle:
+				case CameraCustomType.Circle:
 					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
 					break;
 			}
@@ -85,10 +85,10 @@ public class CameraZone : MonoBehaviour
 		{
 			switch (type)
 			{
-				case CameraType.Combat:
+				case CameraCustomType.Combat:
 					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
 					break;
-				case CameraType.Circle:
+				case CameraCustomType.Circle:
 					visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
 					break;
 			}
@@ -100,14 +100,14 @@ public class CameraZone : MonoBehaviour
 		if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
 	}
 
-	public void GenerateZone(CameraType _type) {
+	public void GenerateZone( CameraCustomType _type ) {
 		type = _type;
 		switch (type)
 		{
-			case CameraType.Combat:
+			case CameraCustomType.Combat:
 				GenerateCombatZone();
 				break;
-			case CameraType.Circle:
+			case CameraCustomType.Circle:
 				GenerateCircleZone();
 				break;
 		}
@@ -137,10 +137,10 @@ public class CameraZone : MonoBehaviour
 		}
 		switch (type)
 		{
-			case CameraType.Combat:
+			case CameraCustomType.Combat:
 				UpdateCombatZone();
 				break;
-			case CameraType.Circle:
+			case CameraCustomType.Circle:
 				UpdateCircleZone();
 				break;
 		}

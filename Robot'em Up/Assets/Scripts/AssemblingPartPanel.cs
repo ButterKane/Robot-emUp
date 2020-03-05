@@ -15,8 +15,17 @@ public class AssemblingPartPanel : MonoBehaviour
 	{
 		fillSlider = transform.Find("Slider").GetComponent<Slider>();
 	}
+
+	public void Init()
+	{
+		foreach (PressableUITrigger puit in GetComponentsInChildren<PressableUITrigger>())
+		{
+			puit.Init(revivingPlayer.playerIndex);
+		}
+	}
 	private void LateUpdate ()
 	{
+		transform.position = GameManager.mainCamera.WorldToScreenPoint(revivingPlayer.transform.position);
 		if (fillAsked)
 		{
 			currentFillHoldDuration += Time.deltaTime;

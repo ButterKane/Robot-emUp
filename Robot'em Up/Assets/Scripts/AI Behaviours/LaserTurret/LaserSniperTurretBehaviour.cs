@@ -14,10 +14,9 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     [Range(0, 1)] public float rotationSpeedReductionRatio;
 
     [Header("Laser Repulsion")]
-    public float repulseCircleRadius;
-    public float repulseCircleStrength;
-    public float finalRepulseCircleRadius;
-    public float finalRepulseCircleStrength;
+    public float repulseCircleRadius = 2;
+    public float repulseCircleStrength = 2;
+    public float playerSpeedReductionCoef = 0.5f;
 
     [Header("Laser Variables")]
     public GameObject FXChargingParticlesPrefab;
@@ -59,14 +58,14 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward), modelPivot);
             i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
-            i_instance.target = focusedPlayer;
+            i_instance.target = focusedPlayer.transform;
             i_instance.spawnParent = transform;
             shootingLaserTimeProgression = shootingLaserMaxTime;
             timeToTriggerLaserReduction = shootingLaserMaxTime - (whenToTriggerLaserReduction * shootingLaserMaxTime);
+
         }
 
-        // IF nothing is touched
-        //spawnedBullet.transform.localScale = new Vector3 (spawnedBullet.transform.localScale.x, spawnedBullet.transform.localScale.y, laserMaxLength);
+        float normalLaserWidth = i_instance.laserWidth;
 
         while (shootingLaserTimeProgression > 0)
         {
@@ -78,8 +77,9 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     i_instance.isLaserActive = false;
                     i_laserRenderer = i_instance.laserRenderer;
                 }
-                i_laserRenderer.material.color = new Color(i_laserRenderer.material.color.r, i_laserRenderer.material.color.g, i_laserRenderer.material.color.b, i_laserRenderer.material.color.a * reducingLaserFactor);
-                i_instance.laserWidth = i_instance.laserWidth * reducingLaserFactor;
+                //i_laserRenderer.material.color = new Color(i_laserRenderer.material.color.r, i_laserRenderer.material.color.g, i_laserRenderer.material.color.b, i_laserRenderer.material.color.a * reducingLaserFactor);
+
+                i_instance.laserWidth = normalLaserWidth * reducingLaserFactor;
             }
             shootingLaserTimeProgression -= Time.deltaTime;
             yield return null;
@@ -118,6 +118,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
                 aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
+                AbortAttack();
                 break;
             case TurretState.Idle:
                 break;
@@ -164,7 +165,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     {
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(modelPivot.position, modelPivot.forward, out hit, laserMaxLength, layersToCheckToScale))
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(transform.position, hit.point));
             //aimingRedDotTransform.position = transform.position + transform.up * .5f + (aimingRedDotTransform.localScale.z / 2 * transform.forward);
@@ -178,7 +179,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         {
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
-
+                aimingAtPlayerFXTransform.gameObject.SetActive(true) ;
                 aimingAtPlayerFXTransform.position = new Vector3(hit.point.x, aimingRedDotTransform.position.y, hit.point.z) + hit.normal * 0.2f;
                 aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(180, 0, 0);
                 aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
@@ -200,7 +201,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
                 //TRANSITION TO OTHER STATE
                 anticipationTime -= Time.deltaTime;
-                //aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
 
                 if (anticipationTime < maxAnticipationTime * 0.2)
                 {
@@ -222,6 +224,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             //-------------------------------------------------------
             case TurretAttackState.Attack:
                 //ADAPT FXs----------------------------------
+                aimingAtPlayerFXTransform.gameObject.SetActive(false);
+
                 Destroy(FXChargingParticlesInstance);
                 Destroy(FXChargingMainLaserInstance);
 
@@ -230,7 +234,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //ROTATE TOWARDS PLAYER-------------------------------------
                 if (focusedPlayer != null)
                 {
-                    RotateTowardsPlayerPosition();
+                    RotateTowardsPlayerPosition(rotationSpeedReductionRatio);   // rotate slower toward player
                 }
 
                 //TRANSITION TO OTHER STATE
@@ -260,18 +264,14 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
 
-                //if (focusedPlayer != null)
-                //{
-                //    RotateTowardsPlayerPosition();
-                //}
                 break;
         }
     }
 
     void AbortAttack()
     {
-        Destroy(FXChargingParticlesInstance);
-        Destroy(FXChargingMainLaserInstance);
+        if (FXChargingParticlesInstance) { Destroy(FXChargingParticlesInstance); }
+        if (FXChargingMainLaserInstance) { Destroy(FXChargingMainLaserInstance); }
         if (aimingRedDotState != AimingRedDotState.NotVisible)
         {
             ChangeAimingRedDotState(AimingRedDotState.NotVisible);
@@ -284,7 +284,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         List<GameObject> i_redDotsLoaders = new List<GameObject>();
         List<int> i_indexesToRemove = new List<int>();
         float i_anticipationProgression = maxAnticipationTime;
-        Debug.Log("on update des red dots!");
         float i_finalRedDotLength = aimingRedDotTransform.localScale.z;
         Vector3 loadingRedDotGrowth = new Vector3(0.01f, 0.01f, 0);
         float i_timeBetweenLoaderSpawnings = 0.3f;
@@ -293,7 +292,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
         while (i_anticipationProgression > 0)
         {
-            Debug.Log("chiotte");
             if (i_anticipationProgression > maxAnticipationTime * 0.6f)  // From start to 40% of completion
             {
                 //Spawn redDot loader periodically

@@ -328,7 +328,7 @@ public class PlayerController : PawnController, IHitable
 		base.UpdateAnimatorBlendTree();
 		animator.SetFloat("IdleRunningBlend", currentSpeed / moveSpeed);
 	}
-	public override void Damage ( int _amount )
+	public override void Damage ( float _amount )
 	{
         if (!isInvincible_access)
         {
@@ -346,6 +346,7 @@ public class PlayerController : PawnController, IHitable
 	{
 		if (moveState == MoveState.Dead) { return; }
 		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		dunkController.StopDunk();
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		DropBall();
@@ -462,7 +463,7 @@ public class PlayerController : PawnController, IHitable
 		UnFreeze();
 	}
 
-	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
+	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
 		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, { "Source", _source } } ) ;
 		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
@@ -488,6 +489,22 @@ public class PlayerController : PawnController, IHitable
 				//Push(-_impactVector, _damages * 10f, 1f);
 				break;
 		}
+	}
+
+	public static PlayerController GetNearestPlayer(Vector3 _point)
+	{
+		PlayerController nearestPlayer = GameManager.alivePlayers[0];
+		float closestDistance = Vector3.Distance(nearestPlayer.transform.position, _point);
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float distance = Vector3.Distance(p.transform.position, _point);
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				nearestPlayer = p;
+			}
+		}
+		return nearestPlayer;
 	}
 
 	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )

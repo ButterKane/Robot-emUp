@@ -4,19 +4,25 @@ using UnityEngine;
 
 public class PuzzleLink : PuzzleActivator, IHitable
 {
+
+
+    [Header("Puzzle Link")]
+    [Range(0.3f, 20)] public float nbSecondsLinkMaintained = 8f;
+    public MeshRenderer CompletionShader;
+
     private GameObject fX_Activation;
     private GameObject fX_Linked;
     private GameObject fX_LinkEnd;
-	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
-	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+    [SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+    [SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
 
-	public float chargingTime;
+    public float chargingTime;
 
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        if (_source == DamageSource.Ball | _source == DamageSource.Dunk)
+        if ((_source == DamageSource.Ball | _source == DamageSource.Dunk) & !shutDown)
         {
             if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
             {
@@ -31,14 +37,14 @@ public class PuzzleLink : PuzzleActivator, IHitable
                     Destroy(fX_LinkEnd);
                 }
 
-				fX_Linked = FeedbackManager.SendFeedback("event.PuzzleLinkActivated", this, transform.position, _impactVector, _impactVector).GetVFX();
+                fX_Linked = FeedbackManager.SendFeedback("event.PuzzleLinkActivated", this, transform.position, _impactVector, _impactVector).GetVFX();
 
-				if (fX_Activation == null)
+                if (fX_Activation == null)
                 {
                     fX_Activation = FeedbackManager.SendFeedback("event.PuzzleLinkActivation", this, transform.position, _impactVector, _impactVector).GetVFX();
-				}
-			    MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
-                chargingTime = puzzleData.nbSecondsLinkMaintained;
+                }
+                MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
+                chargingTime = nbSecondsLinkMaintained;
                 isActivated = true;
 
                 ActivateLinkedObjects();
@@ -56,6 +62,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
     {
         if (chargingTime > 0 && isActivated)
         {
+            CompletionShader.material.SetFloat("_AddToCompleteCircle", chargingTime / nbSecondsLinkMaintained);
             chargingTime -= Time.deltaTime;
         }
 
@@ -63,7 +70,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
         {
             isActivated = false;
             fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
-			if (fX_Activation != null)
+            if (fX_Activation != null)
             {
                 Destroy(fX_Activation);
             }
@@ -72,6 +79,22 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 Destroy(fX_Linked);
             }
             DesactiveLinkedObjects();
+        }
+    }
+
+
+    override public void customShutDown()
+    {
+        transform.position = transform.position + Vector3.up * -0.5f;
+        isActivated = false;
+        fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
+        if (fX_Activation != null)
+        {
+            Destroy(fX_Activation);
+        }
+        if (fX_Linked != null)
+        {
+            Destroy(fX_Linked);
         }
     }
 }

@@ -28,11 +28,6 @@ public class CheatCodes : MonoBehaviour
         {
             activateCheat = !activateCheat;
         }
-        if (playersInvicible && activateCheat)
-        {
-            playerOne.isInvincible_access = playersInvicible;
-            playerTwo.isInvincible_access = playersInvicible;
-        }
     }
 
     void OnGUI()
@@ -95,11 +90,8 @@ public class CheatCodes : MonoBehaviour
     {
         isInvincibilityToggled = !isInvincibilityToggled;
         playersInvicible = !playersInvicible;
-        if (!playersInvicible)
-        {
-            playerOne.isInvincible_access = playersInvicible;
-            playerTwo.isInvincible_access = playersInvicible;
-        }
+        playerOne.SetInvincible(playersInvicible);
+        playerTwo.SetInvincible(playersInvicible);
     }
 
     public void ChargeEnergy()
