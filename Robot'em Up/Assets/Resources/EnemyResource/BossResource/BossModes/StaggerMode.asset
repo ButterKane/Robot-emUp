@@ -13,20 +13,32 @@ MonoBehaviour:
   m_Name: StaggerMode
   m_EditorClassIdentifier: 
   movementType: 2
+  movementSpeedMultiplier: 1
   rotationType: 2
+  rotationSpeedMultiplier: 1
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 6
       modeTransitionConditionValue: 0
     - modeTransitionConditionType: 8
       modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 554f61180b7218d42b6098e7e79d1e57, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: 554f61180b7218d42b6098e7e79d1e57, type: 2}
+      chances: 100
   - transitionConditions:
     - modeTransitionConditionType: 6
       modeTransitionConditionValue: 0
     - modeTransitionConditionType: 7
       modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 6bb1f74c1ac400b499767a8c829bbb37, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: 6bb1f74c1ac400b499767a8c829bbb37, type: 2}
+      chances: 100
+  - transitionConditions:
+    - modeTransitionConditionType: 0
+      modeTransitionConditionValue: 15
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: 46806ef4e595b7a4c90c80b02ee74dd8, type: 2}
+      chances: 100
   actionsOnStart:
   - FallOnGround
   actionsOnMovementEnd: []

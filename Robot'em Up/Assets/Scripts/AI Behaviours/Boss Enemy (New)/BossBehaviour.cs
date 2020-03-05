@@ -169,6 +169,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		{
 			InvokeMethod(s);
 		}
+		navMesh.speed = bossDatas.globalSettings.moveSpeed * _newMode.movementSpeedMultiplier;
+		navMesh.angularSpeed = bossDatas.globalSettings.angularSpeed * _newMode.rotationSpeedMultiplier;
 	}
 
 	public void EnablePhaseTwo()
@@ -490,9 +492,23 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			}
 			if (canActivateMode)
 			{
-				ChangeMode(mt.modeToActivate);
+				ChangeMode(PickRandomMode(mt.modeToActivate));
 			}
 		}
+	}
+
+	private BossMode PickRandomMode(List<BossModeTransitionChances> bossModes)
+	{
+		int randomNumber;
+		for (int i = 0; i <= bossModes.Count; i++)
+		{
+			randomNumber = Random.Range(0, 101);
+			if (bossModes[i].chances > randomNumber)
+			{
+				return bossModes[i].mode;
+			}
+		}
+		return null;
 	}
 
 	private void SpawnElectricalPlates()
@@ -628,15 +644,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		transform.forward = -Vector3.forward;
 		animator.SetTrigger("Stagger");
 	}
-
 	IEnumerator Reconstruct_C ()
 	{
 		hitByDunk = false;
 		animator.SetTrigger("StaggerHit");
-		EnableTurrets(0.15f);
-		shoulderRotationEnabled = false;
 		yield return new WaitForSeconds(0.25f);
-		DetachTurrets();
 		animator.SetTrigger("Reconstruct");
 		ParticleSystem.EmissionModule em = bossExplosionFX.GetComponent<ParticleSystem>().emission;
 		em.enabled = false;
@@ -654,6 +666,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	IEnumerator DetachTurrets_C()
 	{
+		EnableTurrets(0.15f);
+		shoulderRotationEnabled = false;
+		yield return new WaitForSeconds(0.25f);
 		foreach (EnemyBehaviour e in minions)
 		{
 			e.enabled = false;
