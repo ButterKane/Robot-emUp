@@ -182,7 +182,7 @@ public class DunkController : MonoBehaviour
 	public void StopDunk()
 	{
 		StopAllCoroutines();
-		ChangeState(DunkState.Canceling);
+		ChangeState(DunkState.None);
 	}
 	IEnumerator DunkCancel_C ()
 	{

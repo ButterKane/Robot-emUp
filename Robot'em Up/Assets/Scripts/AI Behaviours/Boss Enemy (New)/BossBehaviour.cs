@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class BossBehaviour : MonoBehaviour
+public class BossBehaviour : MonoBehaviour, IHitable
 {
 	public enum BossPhase { PhaseOne, PhaseTwo }
 
@@ -16,17 +16,44 @@ public class BossBehaviour : MonoBehaviour
 	public float secondPhaseHP;
 	public float healthBarHeight;
 	public float minAttackRange = 15f;
+	public float maxAttackAngle = 5f;
+	public List<BossLeg> legs;
 	public Transform zoneCenter;
 	public BossMode startingMode;
 
 	[Header("BulletHell settings")]
-	public float bulletHellRotationSpeed;
-	public List<Transform> bulletSpawner;
+	public float bulletStormRotationSpeed;
 	public float minDelayBetweenBullets;
 	public float maxDelayBetweenBullets;
+	public float bulletStormCanonMaxAngle;
+	public float bulletStormCanonRotationSpeed;
+
+	[Header("WeakPoint settings")]
+	public float legMaxHP = 50;
+
+	[Header("Punch settings")]
+	public float punchDistance = 2f;
+	public float punchCooldown;
+	public float punchChargeDuration = 2f;
+	public AnimationCurve punchChargeSpeedCurve;
+	public float punchDamages = 5f;
+	public float punchPushForce = 10f;
+	public float punchPushHeight = 3f;
+	public float punchSize = 2f;
+
+	[Header("Tea bag settings")]
+	public float damageRadius;
+	public float triggerRadius;
+	public float bumpRadius;
+	public float teabagSize;
+	public float maxTimeBeforeTeaBag = 5f;
+	public float teaBagPreviewDuration = 2f;
+	public float teaBagDamages;
+	public float teaBagPushForce;
 
 	[Header("Range mode settings")]
 	public float shoulderRotationSpeed;
+	public AnimationCurve turretDetachCurve;
 
 	[Header("References")]
 	public Transform topPart;
@@ -50,6 +77,9 @@ public class BossBehaviour : MonoBehaviour
 	private float firstPhaseCurrentHealth;
 	private float secondPhaseCurrentHealth;
 
+	//Cooldown values
+	private float punchCurrentCD;
+
 	//Other values
 	private float timeSinceLastModeChange;
 	private bool weakPointsActivated;
@@ -59,8 +89,17 @@ public class BossBehaviour : MonoBehaviour
 	private List<Quaternion> shoulderInitialRotation;
 	private bool shoulderRotationEnabled;
 	private bool bulletStormEnabled;
-	private List<float> bulletStormCooldowns;
-	private Animator animator;
+	private Transform currentTarget;
+	private bool frozen;
+	private float timeBeforeTeaBag;
+	private int weakPointsActivatedCount;
+	private bool hitByDunk;
+	private GameObject bossExplosionFX;
+	private bool destroyed;
+	[HideInInspector] public Animator animator;
+
+	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
 	private void Start ()
 	{
@@ -76,7 +115,8 @@ public class BossBehaviour : MonoBehaviour
 		UpdateHealthBars();
 		UpdateCooldowns();
 		UpdateShoulderRotation();
-		UpdateBulletStormMode();
+		UpdateStormBulletMode();
+		UpdateTeaBag();
 	}
 
 
@@ -101,21 +141,42 @@ public class BossBehaviour : MonoBehaviour
 
 	}
 
-	public void EnableTurrets()
+	public void ActivateWeakPoint()
+	{
+		weakPointsActivatedCount++;
+		if (weakPointsActivatedCount >= 4)
+		{
+			weakPointsActivated = true;
+		}
+	}
+
+	public void Reconstruct ()
+	{
+		StartCoroutine(Reconstruct_C());
+	}
+
+	public void EnableTurrets ()
+	{
+		EnableTurrets(-1);
+	}
+	public void EnableTurrets(float _spawnSpeedOverride = -1)
 	{
 		shoulderRotationEnabled = true;
 		foreach (Spawner s in minionSpawners)
 		{
-			minions.Add(s.SpawnEnemy(enemyToSpawn, false));
+			minions.Add(s.SpawnEnemy(enemyToSpawn, false, _spawnSpeedOverride));
 		}
 	}
 
 	public void DisableTurrets ()
 	{
 		shoulderRotationEnabled = false;
-		for (int i = 0; i < minionSpawners.Count; i++)
+		for (int i = 0; i < minions.Count; i++)
 		{
-			if (minions[i] != null)
+			Debug.Log(minions);
+			Debug.Log(minions[i]);
+			Debug.Log(minions[i].transform.parent);
+			if (minions != null && minions[i] != null && minions[i].transform.parent != null && minionSpawners[i] != null)
 			{
 				minionSpawners[i].RetractEnemy(minions[i]);
 			}
@@ -123,6 +184,15 @@ public class BossBehaviour : MonoBehaviour
 		minions.Clear();
 	}
 
+	public Vector3 GetGroundPosition()
+	{
+		RaycastHit hit;
+		if (Physics.Raycast(transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+		{
+			return hit.point;
+		}
+		return transform.position;
+	}
 	public void ChangeMode(BossMode _newMode)
 	{
 		Debug.Log("Changing to mode: " + _newMode);
@@ -153,28 +223,60 @@ public class BossBehaviour : MonoBehaviour
 
 	public void Punch()
 	{
-		Debug.Log("Punch");
-	}
-
-	public void SpawnMinions()
-	{
-
+		if (punchCurrentCD <= 0)
+		{
+			punchCurrentCD = punchCooldown;
+			GameObject punchObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossPunch"));
+			Vector3 newPunchPosition = transform.position + (topPart.forward * punchDistance);
+			RaycastHit hit;
+			if (Physics.Raycast(punchObj.transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+			{
+				newPunchPosition.y = hit.point.y;
+			}
+			punchObj.transform.position = newPunchPosition;
+			Vector3 punchForwardFlat = currentTarget.transform.position - transform.position;
+			punchForwardFlat.y = 0;
+			punchObj.transform.rotation = Quaternion.LookRotation(punchForwardFlat);
+			punchObj.transform.localScale = Vector3.one * punchSize;
+			BossPunch punchScript = punchObj.GetComponent<BossPunch>();
+			punchScript.punchChargeDuration = punchChargeDuration;
+			punchScript.punchChargeSpeedCurve = punchChargeSpeedCurve;
+			punchScript.punchDamages = punchDamages;
+			punchScript.punchPushForce = punchPushForce;
+			punchScript.punchPushHeight = punchPushHeight;
+			punchScript.StartPunch();
+			Freeze(punchChargeDuration);
+		}
 	}
 	
 	public void StartBulletStorm ()
 	{
 		bulletStormEnabled = true;
-		Debug.Log("Bullet storm");
+		foreach (BossLeg leg in legs)
+		{
+			leg.canonMaxAngle = bulletStormCanonMaxAngle;
+			leg.canonRotationSpeed = bulletStormCanonRotationSpeed;
+			leg.maxDelayBetweenBullets = maxDelayBetweenBullets;
+			leg.minDelayBetweenBullets = minDelayBetweenBullets;
+			leg.EnableCanon();
+
+			leg.maxHP = legMaxHP;
+			leg.SetDestructible();
+		}
 	}
 
 	public void StopBulletStorm ()
 	{
 		bulletStormEnabled = false;
+		foreach (BossLeg leg in legs)
+		{
+			leg.DisableCanon();
+		}
 	}
 
-	public void DetachMinions()
+	public void DetachTurrets()
 	{
-
+		StartCoroutine(DetachTurrets_C());
 	}
 
 	public void HammerPunch()
@@ -192,6 +294,36 @@ public class BossBehaviour : MonoBehaviour
 
 	}
 
+	public void Kill()
+	{
+		animator.SetTrigger("Death");
+		FeedbackManager.SendFeedback("event.BossDeath", this);
+	}
+	public void FallOnGround ()
+	{
+		destroyed = true;
+		foreach (BossLeg leg in legs)
+		{
+			leg.RemoveExplosionFX();
+		}
+		bossExplosionFX = FeedbackManager.SendFeedback("event.BossFallOnGround", this).GetVFX();
+		EnergyManager.IncreaseEnergy(1f);
+		StartCoroutine(Stagger_C());
+	}
+	public void Teabag()
+	{
+		if (destroyed) { return; }
+		GameObject teabagObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossTeabag"));
+		teabagObj.transform.position = transform.position;
+		RaycastHit hit;
+		if (Physics.Raycast(transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Environment")))
+		{
+			teabagObj.transform.position = hit.point + Vector3.up * 0.1f;
+		}
+		BossTeaBag teabagScript = teabagObj.GetComponent<BossTeaBag>();
+		teabagScript.Init(this, teaBagPreviewDuration, teaBagPushForce, teaBagDamages, bumpRadius, damageRadius);
+	}
+
 
 	//Private functions
 
@@ -203,47 +335,11 @@ public class BossBehaviour : MonoBehaviour
 		shoulderInitialRotation = new List<Quaternion>();
 		shoulderInitialRotation.Add(shoulderLeft.transform.localRotation);
 		shoulderInitialRotation.Add(shoulderRight.transform.localRotation);
-		bulletStormCooldowns = new List<float>();
-		foreach (Transform t in bulletSpawner)
-		{
-			bulletStormCooldowns.Add(0);
-		}
 	}
 
-	private void UpdateBulletStormMode ()
+	public void Freeze(float _duration)
 	{
-		if (bulletStormEnabled)
-		{
-			topPart.localRotation = Quaternion.Euler(new Vector3(topPart.localRotation.eulerAngles.x, topPart.localRotation.eulerAngles.y + Time.deltaTime * bulletHellRotationSpeed, topPart.localRotation.eulerAngles.z));
-			for (int i = 0; i < bulletSpawner.Count; i++)
-			{
-				if (bulletStormCooldowns[i] <= 0)
-				{
-					//Spawn bullet
-					GameObject bullet = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BulletStormPrefab"));
-					bullet.transform.position = bulletSpawner[i].transform.position;
-					bullet.transform.rotation = Quaternion.LookRotation(bulletSpawner[i].forward + AddNoiseOnAngle(0, 30));
-					bulletStormCooldowns[i] = Random.Range(minDelayBetweenBullets, maxDelayBetweenBullets);
-				}
-
-			}
-		}
-	}
-
-	Vector3 AddNoiseOnAngle ( float min, float max )
-	{
-		// Find random angle between min & max inclusive
-		float xNoise = Random.Range(min, max);
-		float yNoise = 0f;
-		float zNoise = 0f;
-
-		// Convert Angle to Vector3
-		Vector3 noise = new Vector3(
-		  Mathf.Sin(2 * Mathf.PI * xNoise / 360),
-		  Mathf.Sin(2 * Mathf.PI * yNoise / 360),
-		  Mathf.Sin(2 * Mathf.PI * zNoise / 360)
-		);
-		return noise;
+		StartCoroutine(Freeze_C(_duration));
 	}
 
 	private void GetReferences()
@@ -268,14 +364,22 @@ public class BossBehaviour : MonoBehaviour
 	}
 	private void UpdateMovement()
 	{
+		if (frozen)
+		{
+			navMesh.enabled = false;
+			return;
+		} else
+		{
+			navMesh.enabled = true;
+		}
 		Vector3 destination = Vector3.zero;
 		switch (currentMode.movementType)
 		{
 			case BossMovementType.DontMove:
 				break;
 			case BossMovementType.FollowNearestPlayer:
-				PlayerController target = PlayerController.GetNearestPlayer(transform.position);
-				destination = target.transform.position;
+				currentTarget = PlayerController.GetNearestPlayer(transform.position).transform;
+				destination = currentTarget.transform.position;
 				break;
 			case BossMovementType.GoToCenter:
 				destination = zoneCenter.position;
@@ -290,9 +394,23 @@ public class BossBehaviour : MonoBehaviour
 			positionFlatted.y = 0;
 			if (Vector3.Distance(destinationFlatted, positionFlatted) < minAttackRange)
 			{
-				foreach (string s in currentMode.actionsOnMovementEnd)
+				if (currentTarget != null)
 				{
-					InvokeMethod(s);
+					Vector3 targetPositionFlat = currentTarget.position;
+					targetPositionFlat.y = topPart.position.y;
+					if (Vector3.Angle(topPart.forward, targetPositionFlat - topPart.transform.position) < maxAttackAngle)
+					{
+						foreach (string s in currentMode.actionsOnMovementEnd)
+						{
+							InvokeMethod(s);
+						}
+					}
+				} else
+				{
+					foreach (string s in currentMode.actionsOnMovementEnd)
+					{
+						InvokeMethod(s);
+					}
 				}
 			}
 		}
@@ -324,18 +442,20 @@ public class BossBehaviour : MonoBehaviour
 		healthBar1FillLerped.fillAmount = Mathf.Lerp(healthBar1FillLerped.fillAmount, firstPhaseCurrentHealth / firstPhaseHP, Time.deltaTime);
 		healthBar2FillInstant.fillAmount = secondPhaseCurrentHealth / secondPhaseHP;
 		healthBar2FillLerped.fillAmount = Mathf.Lerp(healthBar2FillInstant.fillAmount, secondPhaseCurrentHealth / secondPhaseHP, Time.deltaTime) ;
-
 	}
 
 	private void UpdateCooldowns()
 	{
 		timeSinceLastModeChange += Time.deltaTime;
-		List<float> newBulletStormCD = new List<float>();
-		foreach (float f in bulletStormCooldowns)
+		punchCurrentCD -= Time.deltaTime;
+	}
+
+	private void UpdateStormBulletMode ()
+	{
+		if (bulletStormEnabled)
 		{
-			newBulletStormCD.Add(f - Time.deltaTime);
+			transform.Rotate(Vector3.up, Time.deltaTime * bulletStormRotationSpeed);
 		}
-		bulletStormCooldowns = newBulletStormCD;
 	}
 	private void CheckForModeTransition()
 	{
@@ -373,7 +493,7 @@ public class BossBehaviour : MonoBehaviour
 
 	private void UpdateShoulderRotation()
 	{
-		if (shoulderRotationEnabled)
+		if (shoulderRotationEnabled && minions != null && minions.Count > 1)
 		{
 			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPlayer.transform.position;
 			shoulderLeft.transform.rotation = Quaternion.Lerp(shoulderLeft.transform.rotation, Quaternion.LookRotation(leftShoulderLookDirection), shoulderRotationSpeed);
@@ -386,13 +506,46 @@ public class BossBehaviour : MonoBehaviour
 		}
 	}
 
+	private void UpdateTeaBag()
+	{
+		bool playerTooClose = false;
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float playerDistance = Vector3.Distance(GetGroundPosition(), p.transform.position);
+			if (playerDistance < triggerRadius)
+			{
+				playerTooClose = true;
+			}
+		}
+		if (playerTooClose)
+		{
+			timeBeforeTeaBag += Time.deltaTime;
+			if (timeBeforeTeaBag >= maxTimeBeforeTeaBag)
+			{
+				Teabag();
+				timeBeforeTeaBag = 0f;
+			}
+		} else
+		{
+			timeBeforeTeaBag -= Time.deltaTime;
+		}
+		timeBeforeTeaBag = Mathf.Clamp(timeBeforeTeaBag, 0, maxTimeBeforeTeaBag);
+	}
+
 	private bool IsTransitionConditionValid(ModeTransitionCondition _mtc)
 	{
 		float value = _mtc.modeTransitionConditionValue;
 		bool isValid = false;
 		switch (_mtc.modeTransitionConditionType)
 		{
+			case ModeTransitionConditionType.SecondPhaseEnabled:
+				if (currentPhase == BossPhase.PhaseTwo) { isValid = true; }
+				break;
+			case ModeTransitionConditionType.FirstPhaseEnabled:
+				if (currentPhase == BossPhase.PhaseOne) { isValid = true; }
+				break;
 			case ModeTransitionConditionType.HitByDunk: //Not implemented yet
+				if (hitByDunk) { isValid = true; }
 				break;
 			case ModeTransitionConditionType.HPInferiorInferiorOrEqualTo:
 				if (GetCurrentHP() <= value) { isValid = true; }
@@ -420,4 +573,91 @@ public class BossBehaviour : MonoBehaviour
 		if (mi != null) { mi.Invoke(this, new object[0]); return mi;  } else { return null; }
 	}
 	//Coroutines
+
+	IEnumerator Freeze_C(float _duration)
+	{
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			frozen = true;
+			yield return null;
+		}
+		frozen = false;
+	}
+
+	IEnumerator Stagger_C()
+	{
+		yield return new WaitForSeconds(2f);
+		transform.forward = -Vector3.forward;
+		animator.SetTrigger("Stagger");
+	}
+
+	IEnumerator Reconstruct_C ()
+	{
+		hitByDunk = false;
+		animator.SetTrigger("StaggerHit");
+		EnableTurrets(0.15f);
+		shoulderRotationEnabled = false;
+		yield return new WaitForSeconds(0.25f);
+		DetachTurrets();
+		animator.SetTrigger("Reconstruct");
+		ParticleSystem.EmissionModule em = bossExplosionFX.GetComponent<ParticleSystem>().emission;
+		em.enabled = false;
+		foreach (BossLeg leg in legs)
+		{
+			leg.Reconstruct();
+			leg.DisableCanon();
+		}
+		yield return new WaitForSeconds(1f);
+		Destroy(bossExplosionFX.gameObject);
+		destroyed = false;
+		weakPointsActivatedCount = 0;
+		weakPointsActivated = false;
+	}
+
+	IEnumerator DetachTurrets_C()
+	{
+		foreach (EnemyBehaviour e in minions)
+		{
+			e.enabled = false;
+			e.transform.rotation = Quaternion.LookRotation(Vector3.forward);
+			e.transform.SetParent(null);
+			Vector3 endPosition = transform.position;
+			RaycastHit hit;
+			Vector3 shoulderCenterPosition = transform.position;
+			shoulderCenterPosition.y = e.transform.position.y;
+			shoulderCenterPosition.z = e.transform.position.z;
+			if (Physics.Raycast(e.transform.position + ((e.transform.position - shoulderCenterPosition).normalized * 10) - (Vector3.forward * 10), Vector3.down, out hit, 50, LayerMask.GetMask("Environment")))
+			{
+				endPosition = hit.point;
+				StartCoroutine(MoveTurretToPosition_C(e, endPosition, 1f));
+				yield return null;
+			}
+
+		}
+	}
+
+	IEnumerator MoveTurretToPosition_C(EnemyBehaviour _turret, Vector3 _endPosition, float _duration)
+	{
+		Vector3 startPosition = _turret.transform.position;
+		for (float i = 0; i < _duration; i+= Time.deltaTime)
+		{
+			Vector3 newPosition = Vector3.Lerp(startPosition, _endPosition, i / _duration);
+			newPosition.y = Mathf.Lerp(startPosition.y, _endPosition.y, turretDetachCurve.Evaluate(i / _duration));
+			_turret.transform.position = Vector3.Lerp(startPosition, _endPosition, i / _duration);
+			yield return null;
+		}
+		yield return null;
+		_turret.transform.position = _endPosition;
+		_turret.enabled = true;
+		DisableTurrets();
+	}
+
+	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
+	{
+		if (_source == DamageSource.Dunk)
+		{
+			hitByDunk = true;
+			Debug.Log("BossHitByDunk");
+		}
+	}
 }
