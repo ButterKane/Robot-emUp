@@ -292,7 +292,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
         while (i_anticipationProgression > 0)
         {
-            Debug.Log("chiotte");
             if (i_anticipationProgression > maxAnticipationTime * 0.6f)  // From start to 40% of completion
             {
                 //Spawn redDot loader periodically

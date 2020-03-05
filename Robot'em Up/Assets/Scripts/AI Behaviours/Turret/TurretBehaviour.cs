@@ -104,18 +104,23 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     void UpdateDistancesToPlayers()
     {
         distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
+        heightDeltaWithPlayerOne = Mathf.Abs(transform.position.y - playerOneTransform.position.y);
+
         distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
+        heightDeltaWithPlayerTwo = Mathf.Abs(transform.position.y - playerTwoTransform.position.y);
     }
 
     Transform GetClosestAndAvailablePlayer()
     {
-        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
-            || !playerOnePawnController.IsTargetable())
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo &&
+            (playerTwoPawnController.IsTargetable()) || !playerOnePawnController.IsTargetable()) &&
+            heightDeltaWithPlayerTwo < maxHeightOfDetection)
         {
             return playerTwoTransform;
         }
-        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && playerOnePawnController.IsTargetable())
-            || !playerTwoPawnController.IsTargetable())
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && 
+            (playerOnePawnController.IsTargetable()) || !playerTwoPawnController.IsTargetable()) &&
+            heightDeltaWithPlayerOne < maxHeightOfDetection)
         {
             return playerOneTransform;
         }
@@ -278,12 +283,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         if (Physics.Raycast(transform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
-            aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
         }
         else
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, 50);
-            aimingRedDotTransform.position = modelPivot.position + (aimingRedDotTransform.localScale.z / 2 * modelPivot.forward);
         }
     }
 
