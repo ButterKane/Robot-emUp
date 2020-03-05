@@ -5,17 +5,16 @@ using UnityEngine;
 public class BossTile : MonoBehaviour
 {
 	public Transform visuals;
-	public float respawnDelay;
-	public float fallDuration;
-	public GameObject electricalPlatePrefab;
-	public AnimationCurve fallSpeedCurve;
-	public float electricalPlateDuration;
-	public float electricalPlateActivationDuration;
-	public float electricalPlateDesactivationDuration;
 
 	private float currentElectricalPlateToggleCD;
 
 	private PuzzleEletricPlate currentElectricalPlate;
+	private BossSettings bossSettings;
+
+	private void Awake ()
+	{
+		bossSettings = BossSettings.GetDatas();	
+	}
 	public void DestroyTile()
 	{
 		StartCoroutine(Destroy_Tile_C());
@@ -23,7 +22,7 @@ public class BossTile : MonoBehaviour
 
 	public void SpawnElectricalPlate()
 	{
-		if (currentElectricalPlate != null) { return; }
+		if (currentElectricalPlate != null || visuals.GetComponent<Collider>().enabled == false) { return; }
 		StartCoroutine(SpawnElectricalPlate_C());
 	}
 
@@ -52,17 +51,17 @@ public class BossTile : MonoBehaviour
 		if (currentElectricalPlate.isActivated)
 		{
 			currentElectricalPlate.WhenDesactivate();
-			currentElectricalPlateToggleCD = electricalPlateDesactivationDuration;
+			currentElectricalPlateToggleCD = bossSettings.electricalPlateSettings.desactivationDuration;
 		} else
 		{
 			currentElectricalPlate.WhenActivate();
-			currentElectricalPlateToggleCD = electricalPlateActivationDuration;
+			currentElectricalPlateToggleCD = bossSettings.electricalPlateSettings.activationDuration;
 		}
 	}
 
 	IEnumerator SpawnElectricalPlate_C ()
 	{
-		GameObject electricalPlate = Instantiate(electricalPlatePrefab, transform);
+		GameObject electricalPlate = Instantiate(bossSettings.electricalPlateSettings.platePrefab, transform);
 		currentElectricalPlate = electricalPlate.GetComponent<PuzzleEletricPlate>();
 		currentElectricalPlate.WhenDesactivate();
 		electricalPlate.transform.localScale = new Vector3(1f, 0.1f, 1f);
@@ -73,7 +72,7 @@ public class BossTile : MonoBehaviour
 			electricalPlate.transform.position = Vector3.Lerp(startPosition, endPosition, i / 1f);
 			yield return null;
 		}
-		yield return new WaitForSeconds(electricalPlateDuration);
+		yield return new WaitForSeconds(bossSettings.electricalPlateSettings.duration);
 		DespawnElectricalPlate();
 	}
 
@@ -92,13 +91,14 @@ public class BossTile : MonoBehaviour
 
 	IEnumerator Destroy_Tile_C ()
 	{
+		if (currentElectricalPlate != null) { Destroy(currentElectricalPlate.gameObject); }
 		Vector3 startPosition = visuals.position;
 		visuals.GetComponent<Collider>().enabled = false;
 		yield return null;
 		BossTileGenerator.instance.nms.BuildNavMesh();
-		for (float i = 0; i < fallDuration; i += Time.deltaTime)
+		for (float i = 0; i < bossSettings.tilesSettings.fallDuration; i += Time.deltaTime)
 		{
-			visuals.position = Vector3.Lerp(startPosition, startPosition + Vector3.down * 20f, fallSpeedCurve.Evaluate(i / fallDuration));
+			visuals.position = Vector3.Lerp(startPosition, startPosition + Vector3.down * 20f, bossSettings.tilesSettings.fallSpeedCurve.Evaluate(i / bossSettings.tilesSettings.fallDuration));
 			yield return null;
 		}
 		visuals.gameObject.SetActive(false);
@@ -107,13 +107,13 @@ public class BossTile : MonoBehaviour
 
 	IEnumerator RespawnAfterDelay_C()
 	{
-		yield return new WaitForSeconds(respawnDelay);
+		yield return new WaitForSeconds(bossSettings.tilesSettings.reapparitionDelay);
 		Vector3 startPosition = visuals.position;
 		visuals.GetComponent<Collider>().enabled = true;
 		visuals.gameObject.SetActive(true);
-		for (float i = 0; i < fallDuration; i += Time.deltaTime)
+		for (float i = 0; i < bossSettings.tilesSettings.fallDuration; i += Time.deltaTime)
 		{
-			visuals.position = Vector3.Lerp(startPosition, startPosition + Vector3.up * 20f, fallSpeedCurve.Evaluate(i / fallDuration));
+			visuals.position = Vector3.Lerp(startPosition, startPosition + Vector3.up * 20f, bossSettings.tilesSettings.fallSpeedCurve.Evaluate(i / bossSettings.tilesSettings.fallDuration));
 			yield return null;
 		}
 	}
