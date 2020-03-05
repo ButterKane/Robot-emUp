@@ -19,10 +19,7 @@ public class BossLeg : MonoBehaviour, IHitable
 	[HideInInspector] public float canonRotationSpeed;
 	[HideInInspector] public float maxHP;
 	public float healthBarHeight = 1f;
-	public float canonRetractionDuration;
 	public float canonLength;
-	public float scaleMultiplierOnShoot;
-	public float scaleRecoverySpeed;
 	public Transform protectionPlateVisuals;
 
 	private ProceduralSpiderLegAnimator legAnimator;
@@ -42,6 +39,8 @@ public class BossLeg : MonoBehaviour, IHitable
 	private Quaternion protectionPlateInitialRotation;
 	private Vector3 protectionPlateInitialPosition;
 	private Transform protectionPlateInitialParent;
+
+	private BossSettings bossDatas;
 
 	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
@@ -65,6 +64,7 @@ public class BossLeg : MonoBehaviour, IHitable
 
 	void Awake()
 	{
+		bossDatas = BossSettings.GetDatas();
 		weakPointRedDot = protectionPlateVisuals.transform.Find("WeakPointRed");
 		weakPointRedDot.gameObject.SetActive(false);
 		legAnimator = GetComponentInParent<ProceduralSpiderLegAnimator>();
@@ -85,15 +85,16 @@ public class BossLeg : MonoBehaviour, IHitable
 			Quaternion wantedRotation = Quaternion.Euler(new Vector3(0, -90 + wantedAngle, 0));
 			if (bulletCooldown <= 0)
 			{
-				canonTube.transform.localScale = Vector3.one * scaleMultiplierOnShoot;
+				canonTube.transform.localScale = Vector3.one * bossDatas.bulletStormSettings.canonScaleMultiplierOnShoot;
 				canonVisuals.transform.localRotation = wantedRotation;
 				GameObject bullet = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BulletStormPrefab"));
 				bullet.transform.position = canonVisuals.transform.position + canonVisuals.transform.forward * 2f;
-				bullet.transform.rotation = Quaternion.LookRotation(canonVisuals.forward + AddNoiseOnAngle(0, 30));
+				bullet.transform.rotation = Quaternion.LookRotation(canonVisuals.forward + AddNoiseOnAngle(0, bossDatas.bulletStormSettings.bulletRandomness));
 				bulletCooldown = Random.Range(minDelayBetweenBullets, maxDelayBetweenBullets);
+				bullet.GetComponent<BossBullet>().Init(bossDatas);
 			} else
 			{
-				canonTube.transform.localScale = Vector3.Lerp(canonTube.transform.localScale, Vector3.one, Time.deltaTime * scaleRecoverySpeed);
+				canonTube.transform.localScale = Vector3.Lerp(canonTube.transform.localScale, Vector3.one, Time.deltaTime * bossDatas.bulletStormSettings.canonScaleRecoverSpeed);
 				bulletCooldown -= Time.deltaTime;
 			}
 		}
@@ -193,9 +194,9 @@ public class BossLeg : MonoBehaviour, IHitable
 
 	IEnumerator DeployCanon_C ()
 	{
-		for (float i = 0; i < canonRetractionDuration; i += Time.deltaTime)
+		for (float i = 0; i < bossDatas.bulletStormSettings.canonRetractionDuration; i += Time.deltaTime)
 		{
-			canonVisuals.transform.localPosition = Vector3.Lerp(canonRetractedPosition, canonDeployedPosition, i / canonRetractionDuration);
+			canonVisuals.transform.localPosition = Vector3.Lerp(canonRetractedPosition, canonDeployedPosition, i / bossDatas.bulletStormSettings.canonRetractionDuration);
 			yield return null;
 		}
 		yield return new WaitForSeconds(1f);
@@ -206,11 +207,11 @@ public class BossLeg : MonoBehaviour, IHitable
 	{
 		canonEnabled = false;
 		yield return new WaitForSeconds(1f);
-		for (float i = 0; i < canonRetractionDuration; i += Time.deltaTime)
+		for (float i = 0; i < bossDatas.bulletStormSettings.canonRetractionDuration; i += Time.deltaTime)
 		{
 			if (!destroyed)
 			{
-				canonVisuals.transform.localPosition = Vector3.Lerp(canonDeployedPosition, canonRetractedPosition, i / canonRetractionDuration);
+				canonVisuals.transform.localPosition = Vector3.Lerp(canonDeployedPosition, canonRetractedPosition, i / bossDatas.bulletStormSettings.canonRetractionDuration);
 				yield return null;
 			}
 		}

@@ -4,31 +4,27 @@ using UnityEngine;
 
 public class BossBullet : MonoBehaviour, IHitable
 {
-	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
+	private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
-	public bool hitable;
-	public float moveSpeed;
-	public float damages;
-	public float rotationSpeed;
-	public float size = 3f;
-	public float scaleSpeed = 0.2f;
-	public float lifeTime = 30f;
+	private BossSettings bossDatas;
 	Vector3 groundPosition = Vector3.zero;
 
 	private Transform model;
 	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
-		if (hitable)
+		if (bossDatas.bulletStormSettings.hitableBullet)
 		{
 			Destroy(gameObject);
 		}
 	}
 
-	void Awake()
+	public void Init ( BossSettings _bossSettings )
 	{
+		bossDatas = _bossSettings;
 		model = transform.Find("Model");
-		Destroy(this.gameObject, lifeTime);
+		Destroy(this.gameObject, bossDatas.bulletStormSettings.bulletLifetime);
+		lockable = bossDatas.bulletStormSettings.lockableBullet;
 		StartCoroutine(Scale_C());
 	}
 
@@ -36,8 +32,8 @@ public class BossBullet : MonoBehaviour, IHitable
 	{
 		Vector3 newDirection = transform.forward;
 		newDirection.y = 0f;
-		Vector3 newPosition = transform.position + newDirection * Time.deltaTime * moveSpeed;
-		model.transform.Rotate(Vector3.up, Time.deltaTime * rotationSpeed);
+		Vector3 newPosition = transform.position + newDirection * Time.deltaTime * bossDatas.bulletStormSettings.bulletMoveSpeed;
+		model.transform.Rotate(Vector3.up, Time.deltaTime * bossDatas.bulletStormSettings.bulletRotationSpeed);
 		RaycastHit hit;
 		if (Physics.Raycast(transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
 		{
@@ -61,7 +57,7 @@ public class BossBullet : MonoBehaviour, IHitable
 		if (_other.tag == "Player")
 		{
 			PlayerController hitPlayer = _other.GetComponent<PlayerController>();
-			hitPlayer.Damage(damages);
+			hitPlayer.Damage(bossDatas.bulletStormSettings.bulletDamages);
 			Destroy(gameObject);
 		}
 		if (_other.gameObject.layer == LayerMask.NameToLayer("Environment"))
@@ -72,11 +68,11 @@ public class BossBullet : MonoBehaviour, IHitable
 
 	IEnumerator Scale_C()
 	{
-		for (float i = 0; i < scaleSpeed; i+= Time.deltaTime)
+		for (float i = 0; i < bossDatas.bulletStormSettings.bulletScaleDuration; i+= Time.deltaTime)
 		{
-			transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * size, i / scaleSpeed);
+			transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * bossDatas.bulletStormSettings.bulletSize, i / bossDatas.bulletStormSettings.bulletScaleDuration);
 			yield return null;
 		}
-		transform.localScale = Vector3.one * size;
+		transform.localScale = Vector3.one * bossDatas.bulletStormSettings.bulletSize;
 	}
 }

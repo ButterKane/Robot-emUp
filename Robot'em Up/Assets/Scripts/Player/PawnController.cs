@@ -62,6 +62,7 @@ public class PawnController : MonoBehaviour
 
 	private bool isInvincible;
     public float invincibilityTime = 1;
+    private bool isInvincibleWithCheat;
     public bool ignoreEletricPlates = false;
     private Coroutine invincibilityCoroutine;
 
@@ -184,7 +185,10 @@ public class PawnController : MonoBehaviour
         UpdateAnimatorBlendTree();
 		UpdateSpeedCoef();
 		CheckIfGrounded();
-		UpdateInvincibilityCooldown();
+        if (!isInvincibleWithCheat)
+        {
+            UpdateInvincibilityCooldown();
+        }
 	}
 
     #region Movement
@@ -514,7 +518,9 @@ public class PawnController : MonoBehaviour
 	public void SetInvincible(bool _state)
     {
         isInvincible_access = _state;
+        isInvincibleWithCheat = _state;
     }
+
 	public virtual void UpdateAnimatorBlendTree ()
 	{
 		if (animator == null) { return; }
@@ -573,7 +579,8 @@ public class PawnController : MonoBehaviour
 		if (invincibilityCooldown > 0)
 		{
 			invincibilityCooldown -= Time.deltaTime;
-		} else
+		}
+        else
 		{
 			isInvincible_access = false;
 			gameObject.layer = 8; // 8 = Player Layer
