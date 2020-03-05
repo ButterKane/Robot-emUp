@@ -31,6 +31,7 @@ public class EnemyShield : EnemyBehaviour
 
     [Space(2)]
     [Header("Attack")]
+    public RushAttackHitBox attackHitBox;
     public Vector2 minMaxAttackSpeed = new Vector2(7, 15);
     public AnimationCurve attackSpeedVariation;
     public float attackChargeDuration = 5f;
@@ -53,10 +54,9 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterPreparingAttackState()
     {
         initialSpeed = navMeshAgent.speed;
-        Debug.Log("initial speed " + initialSpeed + "and speed coef is " + GetSpeedCoef());
         acceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
-        animator.SetTrigger("AttackTrigger");
+        animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
     }
@@ -74,6 +74,7 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         attackSound = "EnemyShieldAttack";
+        attackHitBox.ToggleCollider(true);
         attackTimeProgression = 0;
         base.EnterAttackingState();
     }
@@ -118,7 +119,7 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
             animator.SetTrigger("EndOfAttackTrigger");
-
+            
             navMeshAgent.enabled = false;
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
@@ -177,13 +178,4 @@ public class EnemyShield : EnemyBehaviour
 		StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
 		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.transform.tag == "Player")
-        {
-            other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, damage, DamageSource.EnemyContact);
-            StopAttack();
-        }
-    }
 }
