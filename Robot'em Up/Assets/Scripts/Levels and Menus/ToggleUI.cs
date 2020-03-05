@@ -8,10 +8,8 @@ public class ToggleUI : UIBehaviour
 {
     public bool defaultValueIsYes = true;
     [ReadOnly] public bool buttonIsYes;
-    private bool selectionIsYes;
     public Image yesButton;
     public Image noButton;
-    public Image currentSelectionHighlight;
     public Color selectedButtonColor = new Color(0.5f, 0.5f, 1f, 1);
     public Color normalButtonColor = new Color(0.1f, 0.1f, 0.1f, 1);
 
@@ -25,11 +23,7 @@ public class ToggleUI : UIBehaviour
     {
         if (isSelected)
         {
-            UpdateSelectionVisual();
-        }
-        else if (isSelected == false && currentSelectionHighlight.enabled == true)
-        {
-            currentSelectionHighlight.enabled = false;
+            ColorizeButton();
         }
 
         if (buttonIsYes != defaultValueIsYes)
@@ -58,40 +52,15 @@ public class ToggleUI : UIBehaviour
         }
     }
 
-    public void UpdateSelectionVisual()
-    {
-        currentSelectionHighlight.enabled = true;
-
-        switch (selectionIsYes)
-        {
-            case true:
-                currentSelectionHighlight.transform.localPosition = yesButton.transform.localPosition;
-                break;
-            case false:
-                currentSelectionHighlight.transform.localPosition = noButton.transform.localPosition;
-                break;
-        }
-    }
-
-    public void ConfirmSelection()
-    {
-        buttonIsYes = selectionIsYes;
-        ColorizeButton();
-    }
 
     public override void IncreaseValue()
     {
-        selectionIsYes = !selectionIsYes;
+        buttonIsYes = !buttonIsYes;
     }
 
     public override void DecreaseValue()
     {
-        selectionIsYes = !selectionIsYes;
-    }
-
-    public override void PressingA()
-    {
-        ConfirmSelection();
+        buttonIsYes = !buttonIsYes;
     }
 
     public override void ResetValueToDefault()

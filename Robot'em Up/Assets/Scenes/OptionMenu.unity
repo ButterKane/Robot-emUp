@@ -228,7 +228,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 6.5999756}
+  m_AnchoredPosition: {x: 0, y: 6.5998535}
   m_SizeDelta: {x: 450, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &127389299
@@ -5305,7 +5305,7 @@ GameObject:
   - component: {fileID: 1096385842}
   - component: {fileID: 1096385841}
   m_Layer: 5
-  m_Name: Toggle Title
+  m_Name: Box Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5559,6 +5559,14 @@ MonoBehaviour:
   - {fileID: 1127507415}
   - {fileID: 1603329954}
   - {fileID: 613629288}
+  categoriesTitles:
+  - {fileID: 1163014193}
+  - {fileID: 1274529559}
+  - {fileID: 231709321}
+  - {fileID: 327639554}
+  LBImage: {fileID: 1836043545}
+  RBImage: {fileID: 2038704713}
+  unselectedCategoryTitleOpacity: 0.3
   currentCategory: 
   selectedSettingIndex: 0
   selectedSettingName: 
@@ -5617,7 +5625,7 @@ Canvas:
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
@@ -5954,7 +5962,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &1186088802
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5975,8 +5983,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 430475f570cc05c47938f72e941d74f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsArea: {fileID: 0}
-  boxTitle: {fileID: 0}
+  settingsArea: {fileID: 1186088801}
+  boxTitle: {fileID: 1096385841}
   selectedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.7}
   normalColor: {r: 0.2, g: 0.2, b: 0.2, a: 0.7}
   isSelected: 0
@@ -6434,7 +6442,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -34.3}
+  m_AnchoredPosition: {x: 0, y: -34.30005}
   m_SizeDelta: {x: 585, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1346971726
