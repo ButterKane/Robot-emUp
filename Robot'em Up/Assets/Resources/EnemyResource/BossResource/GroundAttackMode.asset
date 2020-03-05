@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1605df8fadd89bc4fbdba9219d47bd98, type: 3}
-  m_Name: RangeMode
+  m_Name: GroundAttackMode
   m_EditorClassIdentifier: 
-  movementType: 1
+  movementType: 2
   rotationType: 0
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 0
-      modeTransitionConditionValue: 15
-    modeToActivate: {fileID: 11400000, guid: fc87683d8f322f341956cff796122704, type: 2}
+      modeTransitionConditionValue: 5
+    modeToActivate: {fileID: 11400000, guid: bb7ca9d173d7f7b4a9d90c9a8b74994e, type: 2}
   - transitionConditions:
     - modeTransitionConditionType: 3
       modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
+    modeToActivate: {fileID: 11400000, guid: 2ab438a82be1f914ca173ce71a1d04d6, type: 2}
   actionsOnStart:
-  - EnableTurretsInstantly
-  actionsOnMovementEnd: []
-  actionsOnEnd:
-  - DisableTurrets
+  - GroundAttack
+  actionsOnMovementEnd:
+  - HammerPunch
+  actionsOnEnd: []

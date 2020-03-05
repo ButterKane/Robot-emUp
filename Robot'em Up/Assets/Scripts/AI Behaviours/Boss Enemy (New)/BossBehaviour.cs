@@ -20,6 +20,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public List<BossLeg> legs;
 	public Transform zoneCenter;
 	public BossMode startingMode;
+	public BossTileGenerator tileGenerator;
 
 	[Header("BulletHell settings")]
 	public float bulletStormRotationSpeed;
@@ -27,6 +28,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public float maxDelayBetweenBullets;
 	public float bulletStormCanonMaxAngle;
 	public float bulletStormCanonRotationSpeed;
+
+	[Header("Electrical plates settings")]
+	public float groundAttackPreparationDuration;
 
 	[Header("WeakPoint settings")]
 	public float legMaxHP = 50;
@@ -40,6 +44,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public float punchPushForce = 10f;
 	public float punchPushHeight = 3f;
 	public float punchSize = 2f;
+
+	[Header("Hammer settings")]
+	public float hammerCooldown = 5f;
+	public float hammerChargeDuration = 2f;
+	public AnimationCurve hammerChargeSpeedCurve;
 
 	[Header("Tea bag settings")]
 	public float damageRadius;
@@ -79,6 +88,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	//Cooldown values
 	private float punchCurrentCD;
+	private float hammerCurrentCD;
 
 	//Other values
 	private float timeSinceLastModeChange;
@@ -96,7 +106,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	private bool hitByDunk;
 	private GameObject bossExplosionFX;
 	private bool destroyed;
+	private bool groundAttackActivated;
 	[HideInInspector] public Animator animator;
+	[HideInInspector] public List<BossTile> tiles;
 
 	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
@@ -107,6 +119,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		GenerateHealthBars();
 		InitializeValues();
 		ChangeMode(startingMode);
+		tiles = tileGenerator.GenerateTiles();
 	}
 	private void Update ()
 	{
@@ -155,7 +168,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		StartCoroutine(Reconstruct_C());
 	}
 
-	public void EnableTurrets ()
+	public void EnableTurretsInstantly ()
 	{
 		EnableTurrets(-1);
 	}
@@ -281,7 +294,48 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	public void HammerPunch()
 	{
-
+		if (hammerCurrentCD <= 0)
+		{
+			Vector3 playerPosition = currentTarget.transform.position;
+			Collider[] enviroNearPlayer = Physics.OverlapSphere(playerPosition, 5f, LayerMask.GetMask("Environment"));
+			Transform nearestTile = null;
+			float nearestDistance = 5f;
+			for (int i = 0; i < enviroNearPlayer.Length; i++)
+			{
+				if (enviroNearPlayer[i].gameObject.tag == "Boss_Tile")
+				{
+					if (Vector3.Distance(enviroNearPlayer[i].transform.position, playerPosition) <= nearestDistance)
+					{
+						nearestTile = enviroNearPlayer[i].transform;
+						nearestDistance = Vector3.Distance(enviroNearPlayer[i].transform.position, playerPosition);
+					}
+				}
+			}
+			if (nearestTile == null) { return; }
+			hammerCurrentCD = hammerCooldown;
+			GameObject hammerObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossHammer"));
+			Vector3 newHammerPosition = nearestTile.transform.position + Vector3.up * 1f;
+			RaycastHit hit;
+			if (Physics.Raycast(hammerObj.transform.position, Vector3.down, out hit, 100f, LayerMask.GetMask("Environment")))
+			{
+				newHammerPosition.y = hit.point.y;
+				Debug.Log(newHammerPosition.y);
+			}
+			else
+			{
+				Debug.Log("No hit");
+			}
+			hammerObj.transform.position = newHammerPosition;
+			Vector3 hammerForwardFlat = currentTarget.transform.position - transform.position;
+			hammerForwardFlat.y = 0;
+			hammerObj.transform.rotation = Quaternion.identity;
+			hammerObj.transform.localScale = Vector3.one * 10f;
+			BossPunch hammerScript = hammerObj.GetComponent<BossPunch>();
+			hammerScript.punchChargeDuration = hammerChargeDuration;
+			hammerScript.punchChargeSpeedCurve = hammerChargeSpeedCurve;
+			hammerScript.StartPunch();
+			Freeze(hammerChargeDuration);
+		}
 	}
 
 	public void LaserAttack()
@@ -291,7 +345,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	public void GroundAttack()
 	{
-
+		if (!groundAttackActivated)
+		{
+			groundAttackActivated = true;
+			StartCoroutine(GroundAttack_C());
+		}
 	}
 
 	public void Kill()
@@ -335,6 +393,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		shoulderInitialRotation = new List<Quaternion>();
 		shoulderInitialRotation.Add(shoulderLeft.transform.localRotation);
 		shoulderInitialRotation.Add(shoulderRight.transform.localRotation);
+		tiles = new List<BossTile>();
 	}
 
 	public void Freeze(float _duration)
@@ -448,6 +507,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		timeSinceLastModeChange += Time.deltaTime;
 		punchCurrentCD -= Time.deltaTime;
+		hammerCurrentCD -= Time.deltaTime;
 	}
 
 	private void UpdateStormBulletMode ()
@@ -472,6 +532,17 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			if (canActivateMode)
 			{
 				ChangeMode(mt.modeToActivate);
+			}
+		}
+	}
+
+	private void SpawnElectricalPlates()
+	{
+		for (int i = 0; i < tiles.Count; i++)
+		{
+			if (i % 2 != 0)
+			{
+				tiles[i].SpawnElectricalPlate();
 			}
 		}
 	}
@@ -650,6 +721,15 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		_turret.transform.position = _endPosition;
 		_turret.enabled = true;
 		DisableTurrets();
+	}
+
+	IEnumerator GroundAttack_C()
+	{
+		for (float i = 0; i < groundAttackPreparationDuration; i += Time.deltaTime)
+		{
+			yield return null;
+		}
+		SpawnElectricalPlates();
 	}
 
 	public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
