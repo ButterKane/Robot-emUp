@@ -8,7 +8,9 @@ using UnityEngine.Events;
 public class BossMode : ScriptableObject
 {
 	public BossMovementType movementType;
+	public float movementSpeedMultiplier = 1;
 	public BossRotationType rotationType;
+	public float rotationSpeedMultiplier = 1;
 	public List<ModeTransition> modeTransitions = new List<ModeTransition>();
 	public List<string> actionsOnStart = new List<string>();
 	public List<string> actionsOnMovementEnd = new List<string>();
@@ -34,7 +36,7 @@ public enum ModeTransitionConditionType
 public class ModeTransition
 {
 	public List<ModeTransitionCondition> transitionConditions = new List<ModeTransitionCondition>();
-	public BossMode modeToActivate;
+	public List<BossModeTransitionChances> modeToActivate = new List<BossModeTransitionChances>();
 }
 
 [System.Serializable]
@@ -42,4 +44,11 @@ public class ModeTransitionCondition
 {
 	public ModeTransitionConditionType modeTransitionConditionType;
 	public float modeTransitionConditionValue;
+}
+
+[System.Serializable]
+public class BossModeTransitionChances
+{
+	public BossMode mode;
+	public int chances = 100;
 }

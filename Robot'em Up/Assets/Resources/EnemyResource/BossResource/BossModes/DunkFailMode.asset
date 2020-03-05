@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1605df8fadd89bc4fbdba9219d47bd98, type: 3}
-  m_Name: LaserMode
+  m_Name: DunkFailMode
   m_EditorClassIdentifier: 
   movementType: 2
   movementSpeedMultiplier: 1
@@ -19,17 +19,11 @@ MonoBehaviour:
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 0
-      modeTransitionConditionValue: 5
-    modeToActivate:
-    - mode: {fileID: 11400000, guid: bb7ca9d173d7f7b4a9d90c9a8b74994e, type: 2}
-      chances: 100
-  - transitionConditions:
-    - modeTransitionConditionType: 3
-      modeTransitionConditionValue: 0
+      modeTransitionConditionValue: 2.5
     modeToActivate:
     - mode: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
       chances: 100
   actionsOnStart:
-  - LaserAttack
+  - Reconstruct
   actionsOnMovementEnd: []
   actionsOnEnd: []
