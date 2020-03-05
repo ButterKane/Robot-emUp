@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using XInputDotNetPure;
 
 public class SettingsMenu : MonoBehaviour
@@ -10,6 +11,11 @@ public class SettingsMenu : MonoBehaviour
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
     public List<GameObject> menuCategories = new List<GameObject>();
+    public List<Image> categoriesTitles = new List<Image>();
+    public Image LBImage;
+    public Image RBImage;
+    [Range(0, 1)] public float unselectedCategoryTitleOpacity = 0.3f;
+    [Range(0, 1)] public float joystickTreshold = 0.6f;
     [ReadOnly] public string currentCategory;
     private GameObject selectedCategory;
     private int selectedCategoryIndex;
@@ -18,7 +24,6 @@ public class SettingsMenu : MonoBehaviour
     private UIBehaviour selectedSetting;
     [ReadOnly] public int selectedSettingIndex;
     [ReadOnly] public string selectedSettingName;
-    public string storedPreviousScene;
 
     private bool waitForResetReset;
     private bool waitForJoystickYReset;
@@ -32,6 +37,13 @@ public class SettingsMenu : MonoBehaviour
     private int categoryNumber;
     private bool isInputChangingOpen;
 
+    void Awake()
+    {
+        foreach(var category in menuCategories)
+        {
+            category.SetActive(true);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -49,37 +61,51 @@ public class SettingsMenu : MonoBehaviour
             i_addition = (int)Mathf.Sign(_plusOrMinus);
         }
 
-        if (selectedCategoryIndex + i_addition < menuCategories.Count && selectedCategoryIndex + i_addition >= 0)
+        if (selectedCategoryIndex + i_addition >= 0 && selectedCategoryIndex + i_addition < menuCategories.Count)
         {
             selectedCategoryIndex += i_addition;
             settingsParentScript = menuCategories[selectedCategoryIndex].GetComponent<SettingsMenuOrganizer>();
 
-            DisplayCategorySettings();
+            DisplayCategory();
 
             selectedSettingIndex = 0;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);    // Always reset to the first setting of the new category
             SetDescriptionTexts(selectedSetting);
 
         }
+
+        if (selectedCategoryIndex > 0)
+        {
+            LBImage.SetAlpha(1);
+        }
         else
         {
-            Debug.Log("play out of array sound");
+            LBImage.SetAlpha(unselectedCategoryTitleOpacity);
+        }
 
-            // Play "error" sound
+        if (selectedCategoryIndex >= menuCategories.Count-1)
+        {
+            RBImage.SetAlpha(unselectedCategoryTitleOpacity);
+        }
+        else
+        {
+            RBImage.SetAlpha(1);
         }
     }
 
-    void DisplayCategorySettings()
+    void DisplayCategory()
     {
         for (int i = 0; i < menuCategories.Count; i++)
         {
             if (i == selectedCategoryIndex)
             {
+                categoriesTitles[i].SetAlpha(1);
                 menuCategories[i].SetActive(true);
                 selectedCategory = menuCategories[i];
             }
             else
             {
+                categoriesTitles[i].SetAlpha(unselectedCategoryTitleOpacity);
                 menuCategories[i].SetActive(false);
             }
         }
@@ -100,7 +126,7 @@ public class SettingsMenu : MonoBehaviour
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
 
         // Managing Up and Down
-        if (i_state.ThumbSticks.Left.Y > 0 || i_state.DPad.Up == ButtonState.Pressed)
+        if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
         {
             if (!waitForJoystickYReset)
             {
@@ -108,7 +134,7 @@ public class SettingsMenu : MonoBehaviour
                 waitForJoystickYReset = true;
             }
         }
-        else if (i_state.ThumbSticks.Left.Y < 0 || i_state.DPad.Down == ButtonState.Pressed)
+        else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
         {
             if (!waitForJoystickYReset)
             {
@@ -123,7 +149,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // Managing Left and Right
-        if (i_state.ThumbSticks.Left.X > 0 || i_state.DPad.Right == ButtonState.Pressed)
+        if (i_state.ThumbSticks.Left.X > joystickTreshold || i_state.DPad.Right == ButtonState.Pressed)
         {
             if (!waitForJoystickXReset)
             {
@@ -132,7 +158,7 @@ public class SettingsMenu : MonoBehaviour
                 currentRestTimeOfJoystickX = restTimeOfJoystickX;
             }
         }
-        else if (i_state.ThumbSticks.Left.X < 0 || i_state.DPad.Left == ButtonState.Pressed)
+        else if (i_state.ThumbSticks.Left.X < -joystickTreshold || i_state.DPad.Left == ButtonState.Pressed)
         {
             if (!waitForJoystickXReset)
             {
