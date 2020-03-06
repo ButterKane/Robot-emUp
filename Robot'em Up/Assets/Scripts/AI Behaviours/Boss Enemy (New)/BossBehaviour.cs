@@ -539,11 +539,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	private void UpdateShoulderRotation()
 	{
-		if (shoulderRotationEnabled && minions != null && minions.Count > 1 && minions[0].focusedPlayer != null && minions[1].focusedPlayer != null)
+		if (shoulderRotationEnabled && minions != null && minions.Count > 1 && minions[0].focusedPawnController != null && minions[1].focusedPawnController != null)
 		{
-			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPlayer.transform.position;
+			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPawnController.transform.position;
 			shoulderLeft.transform.rotation = Quaternion.Lerp(shoulderLeft.transform.rotation, Quaternion.LookRotation(leftShoulderLookDirection), bossDatas.rangeModeSettings.shoulderRotationSpeed);
-			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - minions[1].focusedPlayer.transform.position;
+			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - minions[1].focusedPawnController.transform.position;
 			shoulderRight.transform.rotation = Quaternion.Lerp(shoulderRight.transform.rotation, Quaternion.LookRotation(rightShoulderLookDirection), bossDatas.rangeModeSettings.shoulderRotationSpeed);
 		} else
 		{

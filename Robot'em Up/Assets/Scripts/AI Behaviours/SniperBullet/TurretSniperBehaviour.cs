@@ -17,7 +17,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));
-        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer.transform;
+        spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPawnController.transform;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
     }
 
@@ -131,7 +131,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 //ADAPT FXs
                 if (i_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayer.transform.position + Vector3.up * 0.1f;
+                    aimingAtPlayerFXTransform.position = focusedPawnController.transform.position + Vector3.up * 0.1f;
 					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
 					aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
@@ -143,7 +143,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 }
 
                 //ROTATE TOWARDS PLAYER
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                     // rotating an object here works, so the method must be malfunctionning or the mainbody rotation is touched somewhere else
@@ -169,7 +169,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 //ADAPT FXs----------------------------------
                 if (i_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayer.transform.position + Vector3.up * 0.1f;
+                    aimingAtPlayerFXTransform.position = focusedPawnController.transform.position + Vector3.up * 0.1f;
 					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
@@ -180,7 +180,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
                 //ROTATE TOWARDS PLAYER-------------------------------------
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -200,7 +200,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                     ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
 
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }

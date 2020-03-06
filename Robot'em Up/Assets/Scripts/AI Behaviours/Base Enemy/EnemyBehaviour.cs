@@ -61,7 +61,7 @@ public class EnemyBehaviour : PawnController, IHitable
     protected float distanceWithFocusedPlayer;
     protected float heightDeltaWithPlayerOne;
     protected float heightDeltaWithPlayerTwo;
-    [System.NonSerialized] public PawnController focusedPlayer = null;
+    /*[System.NonSerialized]*/ public PawnController focusedPawnController = null;
     public float energyGainedOnHit = 1;
     public int damage = 10;
     public float powerLevel = 1;
@@ -194,7 +194,7 @@ public class EnemyBehaviour : PawnController, IHitable
                     CheckDistanceAndAdaptFocus();
                     timeBetweenCheck = maxTimeBetweenCheck;
                 }
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     ChangeState(EnemyState.Following);
                 }
@@ -208,9 +208,9 @@ public class EnemyBehaviour : PawnController, IHitable
                     timeBetweenCheck = maxTimeBetweenCheck;
                 }
 
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
-					Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.GetCenterPosition() - transform.position) ;
+					Quaternion _targetRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - transform.position) ;
                     _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
                     transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
 
@@ -222,7 +222,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
                         Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
 
-                        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPlayer.transform.position - i_p0, Vector3.up);
+                        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
 
                         int i_moveSens = i_angle > 1 ? 1 : -1;
 
@@ -231,13 +231,13 @@ public class EnemyBehaviour : PawnController, IHitable
                         // Calculating position on bezier curve, following start point, end point and avancement
                         // In this version, the avancement has been replaced by a constant because it's recalculated every frame
                         Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-                        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPlayer.transform.position)); }
+                        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position)); }
                     }
                     else
                     {
                         if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
                         {
-                            navMeshAgent.SetDestination(focusedPlayer.transform.position);
+                            navMeshAgent.SetDestination(focusedPawnController.transform.position);
                         }
                     }
 
@@ -340,7 +340,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (anticipationTime > portionOfAnticipationWithRotation * maxAnticipationTime)
         {
-            Quaternion _targetRotation = Quaternion.LookRotation(focusedPlayer.transform.position - transform.position);
+            Quaternion _targetRotation = Quaternion.LookRotation(focusedPawnController.transform.position - transform.position);
             _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
             transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
         }
@@ -398,8 +398,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
         distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
-        if (focusedPlayer != null)
-            distanceWithFocusedPlayer = Vector3.Distance(transform.position, focusedPlayer.transform.position);
+        if (focusedPawnController != null)
+            distanceWithFocusedPlayer = Vector3.Distance(transform.position, focusedPawnController.transform.position);
     }
 
     Transform GetClosestAndAvailablePlayer()
@@ -543,8 +543,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         //print(focusedPlayer);
         //Checking who is in range
-        float Y_Tolerance = 3f;
-        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - Y_Tolerance && transform.position.y < playerOneTransform.position.y + Y_Tolerance)
+        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - maxHeightOfDetection && transform.position.y < playerOneTransform.position.y + maxHeightOfDetection)
         {
             playerOneInRange = true;
         }
@@ -553,7 +552,7 @@ public class EnemyBehaviour : PawnController, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable() && transform.position.y > playerTwoTransform.position.y - Y_Tolerance && transform.position.y < playerTwoTransform.position.y + Y_Tolerance)
+        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable() && transform.position.y > playerTwoTransform.position.y - maxHeightOfDetection && transform.position.y < playerTwoTransform.position.y + maxHeightOfDetection)
         {
             playerTwoInRange = true;
         }
@@ -563,9 +562,9 @@ public class EnemyBehaviour : PawnController, IHitable
         }
 
         //Unfocus player because of distance
-        if (focusedPlayer != null)
+        if (focusedPawnController != null)
         {
-            if (transform.position.y > focusedPlayer.transform.position.y - Y_Tolerance && transform.position.y < focusedPlayer.transform.position.y + Y_Tolerance)
+            if (transform.position.y > focusedPawnController.transform.position.y - maxHeightOfDetection && transform.position.y < focusedPawnController.transform.position.y + maxHeightOfDetection)
             {
                // Debug.Log("Changing to null due to height");
                 ChangingFocus(null);
@@ -575,8 +574,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 EnterState(EnemyState.Idle);
 
             }
-            if ((focusedPlayer == playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !playerOnePawnController.IsTargetable()))
-                || ((focusedPlayer == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
+            if ((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !playerOnePawnController.IsTargetable()))
+                || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
             }
@@ -585,13 +584,13 @@ public class EnemyBehaviour : PawnController, IHitable
         //Changing focus between the two
         if ((playerOneInRange && playerOnePawnController.IsTargetable())
             && (playerTwoInRange && playerTwoPawnController.IsTargetable())
-            && focusedPlayer != null)
+            && focusedPawnController != null)
         {
-            if (focusedPlayer == playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if (focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerTwoTransform);
             }
-            else if (focusedPlayer == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPawnController.transform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerOneTransform);
             }
@@ -600,7 +599,7 @@ public class EnemyBehaviour : PawnController, IHitable
         //no focused yet ? Choose one
         if (((playerOneInRange && playerOnePawnController.IsTargetable())
             || (playerTwoInRange && playerTwoPawnController.IsTargetable()))
-            && focusedPlayer == null)
+            && focusedPawnController == null)
         {
             ChangingFocus(GetClosestAndAvailablePlayer());
         }
@@ -611,10 +610,10 @@ public class EnemyBehaviour : PawnController, IHitable
 		if (_newFocus != null)
 		{
 			//Debug.Log(_newFocus);
-			focusedPlayer = _newFocus.GetComponent<PawnController>();
+			focusedPawnController = _newFocus.GetComponent<PawnController>();
 		} else
 		{
-			focusedPlayer = null;
+			focusedPawnController = null;
 		}
         //AddSpeedCoef(new SpeedCoef(0.5f, 0.2f, SpeedMultiplierReason.ChangingFocus, false));
     }
