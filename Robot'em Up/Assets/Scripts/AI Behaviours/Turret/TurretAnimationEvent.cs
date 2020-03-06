@@ -55,4 +55,9 @@ public class TurretAnimationEvent : MonoBehaviour
             canCallFollowingState = true;
         }
     }
+
+    void FinishedDeploying()
+    {
+        myScript.ChangingState(TurretState.Idle);
+    }
 }
