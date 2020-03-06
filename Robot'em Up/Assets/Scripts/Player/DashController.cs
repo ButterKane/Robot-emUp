@@ -206,9 +206,9 @@ public class DashController : MonoBehaviour
 						{
 							dashController.StopAllCoroutines();
 							dashController.ChangeState(DashState.None);
-							linkedPawn.Push(-i_dashDirection, pushForce / 2f, pushHeight);
+							linkedPawn.Push(PushForce.Light, -i_dashDirection, pushForce / 2f, 0.5f, pushHeight);
 						}
-						hitPawn.Push(i_dashDirection, pushForce, pushHeight);
+						hitPawn.Push(PushForce.Light, i_dashDirection, pushForce, 0.5f, pushHeight);
 						if (!unstoppableDash)
 						{
 							ChangeState(DashState.None);

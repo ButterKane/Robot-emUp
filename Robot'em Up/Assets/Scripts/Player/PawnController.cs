@@ -14,7 +14,8 @@ public enum MoveState
     Bumped,
 	Jumping,
 	Climbing,
-	Dead
+	Dead,
+	Pushed
 }
 
 public enum SpeedMultiplierReason
@@ -29,6 +30,12 @@ public enum SpeedMultiplierReason
 	Dunk,
 	ChangingFocus,
 	Unknown
+}
+
+public enum PushForce
+{
+	Heavy,
+	Light
 }
 
 public class SpeedCoef
@@ -241,6 +248,7 @@ public class PawnController : MonoBehaviour
     void Move()
     {
         if (moveState == MoveState.Blocked) { currentSpeed = 0; return; }
+		if (moveState == MoveState.Pushed) { return; }
         Vector3 myVel = rb.velocity;
         myVel.y = 0;
         myVel = Vector3.ClampMagnitude(myVel, moveSpeed * GetSpeedCoef());
@@ -547,12 +555,10 @@ public class PawnController : MonoBehaviour
         StartCoroutine(Bump_C());
     }
 
-	public virtual void Push(Vector3 _pushDirection, float _pushForce, float _pushHeight)
+	public virtual void Push ( PushForce _forceType, Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight)
 	{
-		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
-		_pushDirection.y = _pushHeight;
-		//_pushDirection.y = Mathf.Clamp((_pushForce/10f),0.1f, 0.75f);
-		rb.AddForce(_pushDirection.normalized * _pushForce, ForceMode.Impulse);
+		Debug.Log("Push " + _pushDirection);
+		StartCoroutine(Push_C(_forceType, _pushDirection, _pushDistance, _pushDuration, _pushHeight));
 	}
     #endregion
 
@@ -613,6 +619,36 @@ public class PawnController : MonoBehaviour
 		{
 			animator.ResetTrigger("ClimbTrigger");
 		}
+	}
+
+	private IEnumerator Push_C ( PushForce _forceType, Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	{
+		moveState = MoveState.Pushed;
+		_pushDirection.y = 0.05f;
+		Vector3 rbInitialPosition = rb.position;
+		Vector3 rbEndPosition = rbInitialPosition + _pushDirection * _pushDistance;
+		switch (_forceType)
+		{
+			case PushForce.Light:
+				for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
+				{
+					Debug.Log("Adding force of " + _pushDirection);
+					moveState = MoveState.Pushed;
+					rb.velocity += _pushDirection / _pushDuration;
+					yield return null;
+				}
+				break;
+			case PushForce.Heavy:
+				FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
+				for (float i = 0; i < _pushDuration; i += Time.deltaTime)
+				{
+					moveState = MoveState.Pushed;
+					rb.velocity += (_pushDirection / _pushDuration) * Time.deltaTime;
+					yield return null;
+				}
+				break;
+		}
+		moveState = MoveState.Idle;
 	}
 
     private IEnumerator Bump_C()
