@@ -68,4 +68,10 @@ public class ToggleUI : UIBehaviour
         buttonIsYes = defaultValueIsYes;
         ColorizeButton();
     }
+
+    public void ForceModifyValue(bool _value)
+    {
+        buttonIsYes = _value;
+        ColorizeButton();
+    }
 }

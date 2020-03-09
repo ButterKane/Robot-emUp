@@ -23,14 +23,19 @@ public class SettingMenuEditor : Editor
         DrawDefaultInspector();
 
         SettingsMenu myScript = (SettingsMenu)target;
-        if (GUILayout.Button("ComputeSettingsValues"))
+        if (GUILayout.Button("Compute settings values"))
         {
             myScript.ComputeSettingsSaved();
         }
 
-        if (GUILayout.Button("DisplayAllSettingsValues"))
+        if (GUILayout.Button("Display all saved settings values"))
         {
             myScript.DisplaySettingsValues();
+        }
+
+        if (GUILayout.Button("Assign saved settings values"))
+        {
+            myScript.AssignSavedValues();
         }
     }
 }

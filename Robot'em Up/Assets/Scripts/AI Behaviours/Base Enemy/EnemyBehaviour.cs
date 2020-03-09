@@ -95,10 +95,12 @@ public class EnemyBehaviour : PawnController, IHitable
     [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
     public float distanceToAttack = 5;
     [Range(0, 1)] public float portionOfAnticipationWithRotation = 0.3f;
+    public float cooldownAfterAttackTime = 1f;
 
 
     protected float anticipationTime;
     protected float attackDuration;
+    protected float cooldownDuration;
     protected bool endOfAttackTriggerLaunched;
     
 
@@ -240,8 +242,8 @@ public class EnemyBehaviour : PawnController, IHitable
                             navMeshAgent.SetDestination(focusedPawnController.transform.position);
                         }
                     }
-
-                    if (distanceWithFocusedPlayer <= distanceToAttack)
+                    cooldownDuration -= Time.deltaTime;
+                    if (distanceWithFocusedPlayer <= distanceToAttack && cooldownDuration < 0)
                     {
                         ChangeState(EnemyState.PreparingAttack);
                     }
@@ -378,6 +380,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 DestroySpawnedAttackUtilities();
                 break;
             case EnemyState.PauseAfterAttack:
+                cooldownDuration = cooldownAfterAttackTime;
                 break;
             case EnemyState.Dying:
                 break;
@@ -564,16 +567,17 @@ public class EnemyBehaviour : PawnController, IHitable
         //Unfocus player because of distance
         if (focusedPawnController != null)
         {
-            if (transform.position.y > focusedPawnController.transform.position.y - maxHeightOfDetection && transform.position.y < focusedPawnController.transform.position.y + maxHeightOfDetection)
+            if (focusedPawnController.transform.position.y < transform.position.y - maxHeightOfDetection && focusedPawnController.transform.position.y >  transform.position.y + maxHeightOfDetection)
             {
-               // Debug.Log("Changing to null due to height");
+                //Debug.Log("Changing to null due to height");
                 ChangingFocus(null);
                 playerOneInRange = false;
                 playerTwoInRange = false;
                 ExitState();
                 EnterState(EnemyState.Idle);
-
+                return;
             }
+            
             if ((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !playerOnePawnController.IsTargetable()))
                 || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
