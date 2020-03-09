@@ -29,9 +29,9 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         {
             Vector3 i_spawnPosition;
             i_spawnPosition = bulletSpawn.position;
-            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(focusedPlayer.position + Vector3.up));
-            spawnedBullet.transform.LookAt(focusedPlayer.position + Vector3.up * 3);
-            spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPlayer;
+            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(focusedPawnController.transform.position + Vector3.up));
+            spawnedBullet.transform.LookAt(focusedPawnController.transform.position + Vector3.up * 3);
+            spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPawnController.transform;
             spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
 
         }
@@ -51,7 +51,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
     {
         Activated = true;
         meshRenderer.material = TurretActivated;
-        focusedPlayer = PlayerTargeted;
+        // focusedPawnController.transform = PlayerTargeted;
     }
 
     public void DesactivateTurret()
@@ -76,7 +76,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         base.Update();
         if (OnBoss)
         {
-            focusedPlayer = PlayerTargeted;
+            // focusedPawnController.transform = PlayerTargeted;
             invincibilityTime = 0.1f;
         }
         if (Activated)
@@ -93,9 +93,9 @@ public class BossTurretSniperBehaviour : TurretBehaviour
     }
 
 
-    protected override void RotateTowardsPlayerAndHisForward()
+    protected override void RotateTowardsPlayerAndHisForward(float _rotationSpeedModRatio = 0)
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position + Vector3.up * 1 + focusedPlayer.forward * focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * 0.1f - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPawnController.transform.position + Vector3.up * 1 + focusedPawnController.transform.forward * focusedPawnController.transform.GetComponent<Rigidbody>().velocity.magnitude * 0.1f - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(wantedRotation.eulerAngles.x, wantedRotation.eulerAngles.y, wantedRotation.eulerAngles.x);
 
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
@@ -103,9 +103,9 @@ public class BossTurretSniperBehaviour : TurretBehaviour
 
 
     //unused
-    protected override void RotateTowardsPlayerPosition()
+    protected override void RotateTowardsPlayerPosition(float _rotationSpeedModRatio = 0)
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.position * 1 - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPawnController.transform.position * 1 - modelPivot.position);
         wantedRotation.eulerAngles = new Vector3(wantedRotation.eulerAngles.x, wantedRotation.eulerAngles.y, wantedRotation.eulerAngles.x);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
@@ -167,7 +167,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
     {
         bool i_aimAtPlayer;
 
-        if (Physics.Raycast(modelPivot.position, modelPivot.forward, Vector3.Distance(modelPivot.position, focusedPlayer.position), layersToCheckToScale))
+        if (Physics.Raycast(modelPivot.position, modelPivot.forward, Vector3.Distance(modelPivot.position, focusedPawnController.transform.position), layersToCheckToScale))
         {
             i_aimAtPlayer = false;
         }
@@ -192,7 +192,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 //ADAPT FXs
                 if (i_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayer.position;
+                    aimingAtPlayerFXTransform.position = focusedPawnController.transform.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
@@ -204,7 +204,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 }
 
                 //ROTATE TOWARDS PLAYER
-                if (focusedPlayer != null)
+                if (focusedPawnController.transform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                     // rotating an object here works, so the method must be malfunctionning or the mainbody rotation is touched somewhere else
@@ -230,7 +230,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 //ADAPT FXs----------------------------------
                 if (i_aimAtPlayer)
                 {
-                    aimingAtPlayerFXTransform.position = focusedPlayer.position;
+                    aimingAtPlayerFXTransform.position = focusedPawnController.transform.position;
                     aimingAtPlayerFXTransform.rotation = Quaternion.Euler(90, 0, 0);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
@@ -241,7 +241,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
                 //ROTATE TOWARDS PLAYER-------------------------------------
-                if (focusedPlayer != null)
+                if (focusedPawnController.transform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -261,7 +261,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                     ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 }
 
-                if (focusedPlayer != null)
+                if (focusedPawnController.transform != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
