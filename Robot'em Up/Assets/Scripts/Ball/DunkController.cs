@@ -74,7 +74,7 @@ public class DunkController : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			jumpCoroutine = StartCoroutine(Dunk_C());
+			pawnController.ChangeState("Dunk", Dunk_C());
 		}
 		if (currentCD >= 0)
 		{
@@ -113,6 +113,7 @@ public class DunkController : MonoBehaviour
 
 	public void Dunk ()
 	{
+		Debug.Log("Dunk");
 		if (!CanDunk()) { return; }
 		jumpCoroutine = StartCoroutine(Dunk_C());
 	}
