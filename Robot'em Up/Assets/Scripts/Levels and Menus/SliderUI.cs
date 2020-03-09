@@ -42,26 +42,35 @@ public class SliderUI : UIBehaviour
         valueText.text = Mathf.RoundToInt(slider.value *100).ToString() ;
     }
 
-    public void UpdateSliderValue(int _valueToAdd)
+    public void UpdateSliderValue(int _valueToAdd, bool _valueIsAdded)
     {
-        if (currentTimeProgressionBeforeValueChange <= 0)
+        if (_valueIsAdded)
         {
-            slider.value += (float)_valueToAdd / 100;
+            if (currentTimeProgressionBeforeValueChange <= 0)
+            {
+                slider.value += (float)_valueToAdd / 100;
+                currentValue = (int)slider.value * 100;
+                currentTimeProgressionBeforeValueChange = timeBetweenValueChange;
+                UpdateSliderText();
+            }
+            currentTimeProgressionBeforeValueChange -= Time.unscaledDeltaTime;
+        }
+        else
+        {
+            slider.value = (float)_valueToAdd / 100;
             currentValue = (int)slider.value * 100;
             currentTimeProgressionBeforeValueChange = timeBetweenValueChange;
-            UpdateSliderText();
         }
-        currentTimeProgressionBeforeValueChange -= Time.unscaledDeltaTime;
     }
 
     public override void IncreaseValue()
     {
-        UpdateSliderValue(1);
+        UpdateSliderValue(1, true);
     }
 
     public override void DecreaseValue()
     {
-        UpdateSliderValue(-1);
+        UpdateSliderValue(-1, true);
     }
 
     public override void ResetValueToDefault()
@@ -70,5 +79,10 @@ public class SliderUI : UIBehaviour
         timeBetweenValueChange = defaultTimeBetweenChangeValue;
         currentTimeProgressionBeforeValueChange = 0;
         UpdateSliderText();
+    }
+
+    public void ForceModifyValue(int _value)
+    {
+        UpdateSliderValue(_value, false);
     }
 }

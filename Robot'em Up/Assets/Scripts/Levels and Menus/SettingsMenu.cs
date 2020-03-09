@@ -328,7 +328,7 @@ public class SettingsMenu : MonoBehaviour
         GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
     }
 
-    void OpenInputChaging()
+    void OpenInputChanging()
     {
         Debug.Log("Opening input changing");
         isInputChangingOpen = true;
@@ -339,6 +339,7 @@ public class SettingsMenu : MonoBehaviour
         isInputChangingOpen = false;
     }
 
+    // Get all settings in the option menu and save their names + current value in matching dictionaries (one for the sliders, one for multichoices and one for toggles)
     public void ComputeSettingsSaved()
     {
         sliderSettings.Clear();
@@ -377,6 +378,7 @@ public class SettingsMenu : MonoBehaviour
 
     }
 
+    // Display all the values saved for the settings, keyed with their names
     public void DisplaySettingsValues()
     {
         foreach (var slider in sliderSettings)
@@ -390,6 +392,57 @@ public class SettingsMenu : MonoBehaviour
         foreach (var toggle in toggleSettings)
         {
             Debug.Log("Computed setting " + toggle.Key + " with value " + toggle.Value);
+        }
+    }
+
+    // Assign saved salues to settings
+    public void AssignSavedValues()
+    {
+        for (int i = 0; i < menuCategories.Count; i++)
+        {
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+
+            for (int j = 0; j < i_settingsRef.Length; j++)
+            {
+                UIBehaviour i_thisSetting = i_settingsRef[j].GetComponent<UIBehaviour>();
+
+                if (i_thisSetting is SliderUI)
+                {
+                    SliderUI i_sliderRef = i_thisSetting as SliderUI;
+
+                    foreach(var savedSetting in sliderSettings)
+                    {
+                        if (savedSetting.Key == i_sliderRef.name)
+                        {
+                            Debug.Log(savedSetting.Key + " new value is " + savedSetting.Value);
+                            i_sliderRef.ForceModifyValue(savedSetting.Value);
+                        }
+                    }
+                }
+                else if (i_thisSetting is MultichoiceUI)
+                {
+                    MultichoiceUI i_multiChoiceRef = i_thisSetting as MultichoiceUI;
+
+                    foreach (var savedSetting in multiChoiceSettings)
+                    {
+                        if (savedSetting.Key == i_multiChoiceRef.name)
+                        {
+                            i_multiChoiceRef.ForceModifyValue(savedSetting.Value);
+                        }
+                    }
+                }
+                else if (i_thisSetting is ToggleUI)
+                {
+                    ToggleUI i_toggleRef = i_thisSetting as ToggleUI;
+                    foreach (var savedSetting in toggleSettings)
+                    {
+                        if (savedSetting.Key == i_toggleRef.name)
+                        {
+                            i_toggleRef.ForceModifyValue(savedSetting.Value);
+                        }
+                    }
+                }
+            }
         }
     }
 }

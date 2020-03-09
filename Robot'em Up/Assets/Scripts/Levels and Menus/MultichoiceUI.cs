@@ -48,7 +48,15 @@ public class MultichoiceUI : UIBehaviour
 
         if (_overrideIndex != null)
         {
-            selectedChoiceIndex = (int)_overrideIndex;
+            if ((int)_overrideIndex >= 0 && (int)_overrideIndex < choices.Length)
+            {
+                selectedChoiceIndex = (int)_overrideIndex;
+            }
+            else
+            {
+                Debug.LogWarning("Given index for multichoice setting " + name + " wasn't a valid index, so it was set to 0");
+                selectedChoiceIndex = 0;
+            }
         }
         else
         {
@@ -72,5 +80,10 @@ public class MultichoiceUI : UIBehaviour
     public override void ResetValueToDefault()
     {
         ChangeChoice(0, defaultValue);
+    }
+
+    public void ForceModifyValue(int _index)
+    {
+        ChangeChoice(0, _index);
     }
 }
