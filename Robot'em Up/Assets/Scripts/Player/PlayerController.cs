@@ -192,7 +192,8 @@ public class PlayerController : PawnController, IHitable
 				{
 					dashDirection = transform.forward;
 				}
-				dashController.Dash(dashDirection);
+				//dashController.Dash(dashDirection);
+				Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
 			}
 			dashPressed = true;
 		} else

@@ -81,13 +81,13 @@ public class EnemyManager : MonoBehaviour
 
         foreach (var enemy in enemiesThatSurround)
         {
-            if (enemy.focusedPlayer != null)
+            if (enemy.focusedPawnController != null)
             {
-                if (enemy.focusedPlayer.gameObject == playerOne.gameObject)
+                if (enemy.focusedPawnController.gameObject == playerOne.gameObject)
                 {
                     i_groupOne.Add(enemy);
                 }
-                else if (enemy.focusedPlayer.gameObject == playerTwo.gameObject)
+                else if (enemy.focusedPawnController.gameObject == playerTwo.gameObject)
                 {
                     i_groupTwo.Add(enemy);
                 }
@@ -111,7 +111,7 @@ public class EnemyManager : MonoBehaviour
 
         _enemies.Sort((a, b) =>
         {
-            var i_target = a.focusedPlayer;
+            var i_target = a.focusedPawnController;
             var i_dstToA = (i_target.transform.position - a.transform.position).magnitude;
             var i_dstToB = (i_target.transform.position - b.transform.position).magnitude;
 

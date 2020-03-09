@@ -13,24 +13,24 @@ MonoBehaviour:
   m_Name: HammerMode
   m_EditorClassIdentifier: 
   movementType: 0
+  movementSpeedMultiplier: 1
   rotationType: 0
+  rotationSpeedMultiplier: 1
   modeTransitions:
-  - transitionConditions:
-    - modeTransitionConditionType: 0
-      modeTransitionConditionValue: 15
-    - modeTransitionConditionType: 8
-      modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 918332048799adf498c1f8f5db148c23, type: 2}
   - transitionConditions:
     - modeTransitionConditionType: 3
       modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
+      chances: 100
   - transitionConditions:
     - modeTransitionConditionType: 0
       modeTransitionConditionValue: 15
-    - modeTransitionConditionType: 7
-      modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 918332048799adf498c1f8f5db148c23, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: d20d111373f41524ab76e6621fa7734a, type: 2}
+      chances: 50
+    - mode: {fileID: 11400000, guid: 918332048799adf498c1f8f5db148c23, type: 2}
+      chances: 50
   actionsOnStart: []
   actionsOnMovementEnd:
   - HammerPunch

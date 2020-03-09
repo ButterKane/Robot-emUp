@@ -58,7 +58,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward), modelPivot);
             i_instance = spawnedBullet.GetComponent<LaserSniper>();
             i_instance.enemyScript = this;
-            i_instance.target = focusedPlayer.transform;
+            i_instance.target = focusedPawnController.transform;
             i_instance.spawnParent = transform;
             shootingLaserTimeProgression = shootingLaserMaxTime;
             timeToTriggerLaserReduction = shootingLaserMaxTime - (whenToTriggerLaserReduction * shootingLaserMaxTime);
@@ -194,7 +194,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
 
                 //ROTATE TOWARDS PLAYER
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerPosition();
                 }
@@ -232,7 +232,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 ChangeAimingRedDotState(AimingRedDotState.NotVisible);
 
                 //ROTATE TOWARDS PLAYER-------------------------------------
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerPosition(rotationSpeedReductionRatio);   // rotate slower toward player
                 }

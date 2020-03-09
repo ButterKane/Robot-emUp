@@ -233,7 +233,7 @@ namespace DitzelGames.FastIK
 
         void OnDrawGizmos()
         {
-#if UNITY_EDITOR
+		#if UNITY_EDITOR
             var current = this.transform;
             for (int i = 0; i < ChainLength && current != null && current.parent != null; i++)
             {
@@ -243,8 +243,8 @@ namespace DitzelGames.FastIK
                 Handles.DrawWireCube(Vector3.up * 0.5f, Vector3.one);
                 current = current.parent;
             }
-        }
-#endif
+		#endif
+		}
 
-    }
+	}
 }

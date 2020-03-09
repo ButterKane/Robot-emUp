@@ -31,6 +31,7 @@ public class EnemyShield : EnemyBehaviour
 
     [Space(2)]
     [Header("Attack")]
+    public RushAttackHitBox attackHitBox;
     public Vector2 minMaxAttackSpeed = new Vector2(7, 15);
     public AnimationCurve attackSpeedVariation;
     public float attackChargeDuration = 5f;
@@ -53,10 +54,9 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterPreparingAttackState()
     {
         initialSpeed = navMeshAgent.speed;
-        Debug.Log("initial speed " + initialSpeed + "and speed coef is " + GetSpeedCoef());
         acceleration = navMeshAgent.acceleration;
         anticipationTime = maxAnticipationTime;
-        animator.SetTrigger("AttackTrigger");
+        animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
     }
@@ -74,6 +74,7 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         attackSound = "EnemyShieldAttack";
+        attackHitBox.ToggleCollider(true);
         attackTimeProgression = 0;
         base.EnterAttackingState();
     }
@@ -105,7 +106,7 @@ public class EnemyShield : EnemyBehaviour
             moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
-            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPlayer.transform.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
+            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPawnController.transform.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
 
             Debug.DrawRay(transform.position + i_direction * 5, Vector3.up, Color.green, 2f);
             navMeshAgent.SetDestination(transform.position + i_direction * 5);
@@ -118,7 +119,7 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
             animator.SetTrigger("EndOfAttackTrigger");
-
+            
             navMeshAgent.enabled = false;
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
@@ -177,13 +178,4 @@ public class EnemyShield : EnemyBehaviour
 		StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
 		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.transform.tag == "Player")
-        {
-            other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, damage, DamageSource.EnemyContact);
-            StopAttack();
-        }
-    }
 }
