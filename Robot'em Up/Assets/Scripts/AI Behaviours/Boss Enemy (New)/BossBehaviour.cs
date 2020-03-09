@@ -300,7 +300,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			Vector3 newLaserPosition = laserObj.transform.position;
 			newLaserPosition.y = hit.point.y;
 			laserObj.transform.position = newLaserPosition;
-		}
+            laserObj.transform.parent = transform;
+        }
 	}
 
 	public void GroundAttack()
