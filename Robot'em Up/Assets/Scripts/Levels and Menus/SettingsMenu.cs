@@ -8,6 +8,10 @@ using XInputDotNetPure;
 
 public class SettingsMenu : MonoBehaviour
 {
+    public static Dictionary<string, int> sliderSettings = new Dictionary<string, int>();
+    public static Dictionary<string, int> multiChoiceSettings =  new Dictionary<string, int>();
+    public static Dictionary<string, bool> toggleSettings =  new Dictionary<string, bool>();
+
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
     public List<GameObject> menuCategories = new List<GameObject>();
@@ -42,6 +46,18 @@ public class SettingsMenu : MonoBehaviour
         foreach(var category in menuCategories)
         {
             category.SetActive(true);
+        }
+        foreach (var slider in sliderSettings)
+        {
+            Debug.Log("Current setting " + slider.Key + " with value " + slider.Value);
+        }
+        foreach (var multiChoice in multiChoiceSettings)
+        {
+            Debug.Log("Current setting " + multiChoice.Key + " with value " + multiChoice.Value);
+        }
+        foreach (var toggle in toggleSettings)
+        {
+            Debug.Log("Current setting " + toggle.Key + " with value " + toggle.Value);
         }
     }
 
@@ -321,5 +337,59 @@ public class SettingsMenu : MonoBehaviour
     {
         Debug.Log("Closing input changing");
         isInputChangingOpen = false;
+    }
+
+    public void ComputeSettingsSaved()
+    {
+        sliderSettings.Clear();
+        sliderSettings = new Dictionary<string, int>();
+        multiChoiceSettings.Clear();
+        multiChoiceSettings = new Dictionary<string, int>();
+        toggleSettings.Clear();
+        toggleSettings = new Dictionary<string, bool>();
+
+        for (int i = 0; i < menuCategories.Count; i++)
+        {
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+
+            for (int j = 0; j < i_settingsRef.Length; j++)
+            {
+                UIBehaviour i_thisSetting = i_settingsRef[j].GetComponent<UIBehaviour>();
+                if (i_thisSetting is SliderUI)
+                {
+                    SliderUI i_sliderRef = i_thisSetting as SliderUI;
+                    sliderSettings.Add(i_sliderRef.name, i_sliderRef.currentValue);
+                }
+                else if (i_thisSetting is MultichoiceUI)
+                {
+                    MultichoiceUI i_multiChoiceRef = i_thisSetting as MultichoiceUI;
+                    multiChoiceSettings.Add(i_multiChoiceRef.name, i_multiChoiceRef.selectedChoiceIndex);
+                }
+                else if (i_thisSetting is ToggleUI)
+                {
+                    ToggleUI i_toggleRef = i_thisSetting as ToggleUI;
+                    toggleSettings.Add(i_toggleRef.name, i_toggleRef.buttonIsYes);
+                }
+            }
+        }
+
+        DisplaySettingsValues();
+
+    }
+
+    public void DisplaySettingsValues()
+    {
+        foreach (var slider in sliderSettings)
+        {
+            Debug.Log("Computed setting " + slider.Key + " with value " + slider.Value);
+        }
+        foreach (var multiChoice in multiChoiceSettings)
+        {
+            Debug.Log("Computed setting " + multiChoice.Key + " with value " + multiChoice.Value);
+        }
+        foreach (var toggle in toggleSettings)
+        {
+            Debug.Log("Computed setting " + toggle.Key + " with value " + toggle.Value);
+        }
     }
 }

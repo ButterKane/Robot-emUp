@@ -16,7 +16,7 @@ public class MultichoiceUI : UIBehaviour
 {
     public int defaultValue = 0;
     public Choice[] choices;
-    [ReadOnly] public int selectedChoiceIndex;
+    public int selectedChoiceIndex;
     public Color selectedChoiceColor = new Color(0.5f, 0.5f, 1f, 1);
     public Color normalChoiceColor = new Color(0.1f, 0.1f, 0.1f, 1);
     public TextMeshProUGUI displayText;
