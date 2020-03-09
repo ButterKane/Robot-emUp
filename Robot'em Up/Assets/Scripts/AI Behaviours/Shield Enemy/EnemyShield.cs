@@ -74,6 +74,8 @@ public class EnemyShield : EnemyBehaviour
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
     {
         attackSound = "EnemyShieldAttack";
+        animator.ResetTrigger("EndOfAttackTrigger");
+        animator.ResetTrigger("AttackTouchedTrigger");
         attackHitBox.ToggleCollider(true);
         attackTimeProgression = 0;
         base.EnterAttackingState();

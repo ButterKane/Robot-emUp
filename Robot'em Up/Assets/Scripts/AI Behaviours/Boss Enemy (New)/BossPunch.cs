@@ -113,5 +113,10 @@ public class BossPunch : MonoBehaviour
 			cubeDestroyed = true;
 			other.GetComponentInParent<BossTile>().DestroyTile();
 		}
+        else if (other.tag == "Boss_Destructible")
+        {
+            Destroy(other.gameObject);
+
+        }
 	}
 }

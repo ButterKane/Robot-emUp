@@ -578,24 +578,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_MethodName: SetAIPossession
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
   waveList:
   - maxPowerLevel:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 2
+        value: 4
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -604,7 +593,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 6
+        value: 4
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -614,7 +603,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 20
+    duration: 800
     pauseBeforeNextWave: 1
     onEndEvents:
       m_PersistentCalls:
@@ -628,17 +617,10 @@ MonoBehaviour:
       isEnabled: 0
     currentEnemies:
     - enemyType:
-        name: Basic
-        prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        name: LaserTurret
+        prefab: {fileID: 4808274588740219700, guid: 60dff2fafe754694e8eb44c3b62bc836,
           type: 3}
-        color: {r: 1, g: 0.14010851, b: 0, a: 1}
-      probability: 0
-      spawnIndexes: 
-    - enemyType:
-        name: DefaultTurret
-        prefab: {fileID: 6086072691216837907, guid: 920f5953dff5ed041977f995546341eb,
-          type: 3}
-        color: {r: 0.92129517, g: 1, b: 0, a: 1}
+        color: {r: 0, g: 0.4716981, b: 0.01347706, a: 1}
       probability: 1
       spawnIndexes: 0000000001000000
   - maxPowerLevel:
