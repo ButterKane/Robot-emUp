@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalSettings:
     startingMode: {fileID: 11400000, guid: f7997692992e4194c9393844fb3387be, type: 2}
-    moveSpeed: 6
-    angularSpeed: 100
-    stopDistance: 10
+    moveSpeed: 10
+    angularSpeed: 170
+    stopDistance: 5
     obstacleAvoidanceRadius: 8
     obstacleAvoidanceHeight: 4
     topPartRotationSpeed: 100
     firstPhaseHP: 200
     secondPhaseHP: 180
     healthBarHeight: 55
-    minAttackRange: 15
-    maxAttackAngle: 5
+    minAttackRange: 20
+    maxAttackAngle: 15
   staggerSettings:
     energyGainedOnHit: 0.5
   laserSettings:
@@ -81,7 +81,7 @@ MonoBehaviour:
     canonMaxAngle: 75
     canonRotationSpeed: 10
   tilesSettings:
-    reapparitionDelay: 20
+    reapparitionDelay: 50
     fallDuration: 2
     fallSpeedCurve:
       serializedVersion: 2
@@ -117,8 +117,8 @@ MonoBehaviour:
   weakPointSettings:
     legMaxHP: 50
   punchSettings:
-    distance: 13
-    cooldown: 5
+    distance: 20
+    cooldown: 4
     chargeDuration: 1.5
     chargeSpeedCurve:
       serializedVersion: 2
@@ -144,10 +144,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    damages: 5
-    pushForce: 10
+    damages: 33
+    pushForce: 15
     pushHeight: 3
-    hitboxSize: 8
+    hitboxSize: 14
     chargingColor: {r: 1, g: 0.23137255, b: 0.23137255, a: 1}
     hitColor: {r: 0.85882354, g: 0.10980392, b: 0.10980392, a: 1}
   hammerSettings:
@@ -182,11 +182,11 @@ MonoBehaviour:
   teaBagSettings:
     damageRadius: 7
     triggerRadius: 10
-    bumpRadius: 12
+    bumpRadius: 14
     hitboxSize: 7
-    maxTimeBeforeTeaBag: 2.5
+    maxTimeBeforeTeaBag: 1
     previewDuration: 2
-    damages: 50
+    damages: 33
     pushForce: 20
   rangeModeSettings:
     shoulderRotationSpeed: 10

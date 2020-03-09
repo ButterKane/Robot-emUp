@@ -332,8 +332,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		if (destroyed) { return; }
 		GameObject teabagObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossTeabag"));
-		teabagObj.transform.position = transform.position;
-		RaycastHit hit;
+        teabagObj.transform.parent = transform;
+        teabagObj.transform.position = transform.position;
+        RaycastHit hit;
 		if (Physics.Raycast(transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Environment")))
 		{
 			teabagObj.transform.position = hit.point + Vector3.up * 0.1f;

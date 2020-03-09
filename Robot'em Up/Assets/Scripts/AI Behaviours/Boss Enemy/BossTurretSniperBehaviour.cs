@@ -51,7 +51,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
     {
         Activated = true;
         meshRenderer.material = TurretActivated;
-        // focusedPawnController.transform = PlayerTargeted;
+        focusedPawnController = PlayerTargeted.GetComponent<PawnController>();
     }
 
     public void DesactivateTurret()
@@ -76,7 +76,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         base.Update();
         if (OnBoss)
         {
-            // focusedPawnController.transform = PlayerTargeted;
+            focusedPawnController = PlayerTargeted.GetComponent<PawnController>();
             invincibilityTime = 0.1f;
         }
         if (Activated)
