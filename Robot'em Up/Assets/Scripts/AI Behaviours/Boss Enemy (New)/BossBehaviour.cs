@@ -299,7 +299,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		{
 			Vector3 newLaserPosition = laserObj.transform.position;
 			newLaserPosition.y = hit.point.y;
-			laserObj.transform.position = newLaserPosition;
+            newLaserPosition.x = transform.position.x;
+            newLaserPosition.z = transform.position.z;
+            laserObj.transform.position = newLaserPosition;
             laserObj.transform.parent = transform;
         }
 	}

@@ -17,7 +17,7 @@ MonoBehaviour:
     moveSpeed: 10
     angularSpeed: 170
     stopDistance: 5
-    obstacleAvoidanceRadius: 8
+    obstacleAvoidanceRadius: 7
     obstacleAvoidanceHeight: 4
     topPartRotationSpeed: 130
     firstPhaseHP: 300
@@ -29,10 +29,10 @@ MonoBehaviour:
     energyGainedOnHit: 0.5
   laserSettings:
     duration: 10
-    rotationSpeed: 20
+    rotationSpeed: 50
     damagesOnEnter: 50
     damagesPerSecond: 1000
-    defaultWidth: 8
+    defaultWidth: 15
     chargingWidth: 1
     chargeDuration: 1
     chargeDelay: 1
@@ -63,16 +63,16 @@ MonoBehaviour:
     maxLength: 200
     maxLengthIncrementationSpeed: 10
   bulletStormSettings:
-    bodyRotationSpeed: 80
+    bodyRotationSpeed: 70
     minDelayBetweenBullets: 0.05
     maxDelayBetweenBullets: 0.1
     lockableBullet: 0
     hitableBullet: 1
-    bulletMoveSpeed: 20
-    bulletDamages: 10
+    bulletMoveSpeed: 10
+    bulletDamages: 15
     bulletRotationSpeed: 100
     bulletSize: 1
-    bulletScaleDuration: 1
+    bulletScaleDuration: 0.5
     bulletLifetime: 10
     bulletRandomness: 0
     canonRetractionDuration: 1
@@ -82,7 +82,7 @@ MonoBehaviour:
     canonRotationSpeed: 10
   tilesSettings:
     reapparitionDelay: 50
-    fallDuration: 2
+    fallDuration: 3
     fallSpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -111,15 +111,15 @@ MonoBehaviour:
     platePrefab: {fileID: 1260329285050522132, guid: a8988fa4423b901448c6dd647fc2fadc,
       type: 3}
     groundAttackPreparationDuration: 2
-    duration: 20
+    duration: 18
     activationDuration: 3
-    desactivationDuration: 5
+    desactivationDuration: 3
   weakPointSettings:
-    legMaxHP: 60
+    legMaxHP: 55
   punchSettings:
     distance: 20
     cooldown: 4
-    chargeDuration: 1.5
+    chargeDuration: 0.9
     chargeSpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -152,7 +152,7 @@ MonoBehaviour:
     hitColor: {r: 0.85882354, g: 0.10980392, b: 0.10980392, a: 1}
   hammerSettings:
     cooldown: 5
-    chargeDuration: 2.5
+    chargeDuration: 1.5
     chargeSpeedCurve:
       serializedVersion: 2
       m_Curve:
