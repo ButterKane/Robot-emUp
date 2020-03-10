@@ -39,6 +39,12 @@ public enum PushForce
 	Light
 }
 
+public enum WallSplatForce
+{
+	Heavy,
+	Light
+}
+
 public class SpeedCoef
 {
 	public SpeedCoef ( float _speedCoef, float _duration, SpeedMultiplierReason _reason, bool _stackable )
@@ -154,6 +160,7 @@ public class PawnController : MonoBehaviour
 	private PawnStates pawnStates;
 	private Coroutine pawnStateCoroutine;
 	private Coroutine currentStateCoroutine;
+	private PushDatas pushDatas;
 
 
     [HideInInspector] public PassController passController;
@@ -177,6 +184,7 @@ public class PawnController : MonoBehaviour
 		}
 		currentHealth = maxHealth;
 		targetable = true;
+		pushDatas = PushDatas.GetDatas();
 		if (GetComponent<PlayerController>() != null)
 		{
 			isPlayer = true;
@@ -203,10 +211,6 @@ public class PawnController : MonoBehaviour
         {
             UpdateInvincibilityCooldown();
         }
-		if (Input.GetKeyDown(KeyCode.N))
-		{
-			Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
-		}
 	}
 
     #region Movement
@@ -227,8 +231,9 @@ public class PawnController : MonoBehaviour
 
     void Rotate()
     {
+		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
 		//Rotation while moving
-        if (moveInput.magnitude >= 0.5f)
+		if (moveInput.magnitude >= 0.5f)
             turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
 
 		//Rotation while aiming or shooting
@@ -386,11 +391,13 @@ public class PawnController : MonoBehaviour
 			}
 			newState.currentCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, newState));
 			currentState = newState;
+			Debug.Log("State started");
 		}
 	}
 
 	void StopCurrentState()
 	{
+		if (currentState == null) { return; }
 		if (currentState.invincibleDuringState)
 		{
 			SetInvincible(false);
@@ -406,6 +413,7 @@ public class PawnController : MonoBehaviour
 			currentState.cancelCoroutine.StartCoroutine();
 		}
 		currentState = null;
+		Debug.Log("State finished");
 	}
 
 	IEnumerator StartStateCoroutine(IEnumerator coroutine, PawnState state)
@@ -637,15 +645,17 @@ public class PawnController : MonoBehaviour
 		ChangeState("Bump", Bump_C());
     }
 
-	public virtual void Push ( PushForce _forceType, Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight)
+	public virtual void Push ( PushForce _forceType, Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight)
 	{
 		switch (_forceType)
 		{
 			case PushForce.Light:
-				ChangeState("PushLight", PushLight_C(_pushDirection, _pushDistance, _pushDuration, _pushHeight));
+				ChangeState("PushLight", PushLight_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 				break;
 			case PushForce.Heavy:
-				ChangeState("PushHeavy", PushHeavy_C(_pushDirection, _pushDistance, _pushDuration, _pushHeight));
+				Vector3 forwardDirection = (_pushDirectionFlat.normalized * _pushDistance) + new Vector3(0,_pushHeight,0);
+				transform.forward = forwardDirection;
+				ChangeState("PushHeavy", PushHeavy_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 				break;
 		}
 	}
@@ -688,6 +698,23 @@ public class PawnController : MonoBehaviour
 		invincibilityCooldown = invincibilityTime;
     }
 
+	private void OnCollisionEnter ( Collision collision )
+	{
+		if (collision.gameObject.layer == LayerMask.NameToLayer("Environment"))
+		{
+			Debug.Log("Hit env: " + collision.gameObject.name);
+			if (moveState == MoveState.Pushed)
+			{
+				WallSplat(WallSplatForce.Heavy, collision);
+				//StopCurrentState();
+			}
+		}
+	}
+
+	private void WallSplat( WallSplatForce _force, Collision _collision ) {
+		ChangeState("WallSplat", WallSplat_C(_force, _collision));
+	}
+
 	private IEnumerator ClimbLedge_C(Collider _ledge)
 	{
 		Vector3 i_startPosition = transform.position;
@@ -710,34 +737,112 @@ public class PawnController : MonoBehaviour
 		}
 	}
 
-	private IEnumerator PushLight_C ( Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	private IEnumerator PushLight_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
 	{
 		moveState = MoveState.Pushed;
-		_pushDirection.y = 0.05f;
-		Vector3 rbInitialPosition = rb.position;
+		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
+		Vector3 moveDirection = _pushFlatDirection;
+		moveDirection.y = _pushHeight;
+		rb.useGravity = false;
+		Vector3 initialPosition = transform.position;
+		Vector3 endPosition = initialPosition + moveDirection;
+		Vector3 moveOffset = Vector3.zero;
 		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
 		{
-			Debug.Log("Adding force of " + _pushDirection);
 			moveState = MoveState.Pushed;
-			rb.velocity += _pushDirection / _pushDuration;
+			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
+			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
 			yield return null;
 		}
+		rb.useGravity = true;
 		moveState = MoveState.Idle;
 	}
 
-	private IEnumerator PushHeavy_C ( Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
 	{
-		moveState = MoveState.Pushed;
-		_pushDirection.y = 0.05f;
-		Vector3 rbInitialPosition = rb.position;
 		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
-		for (float i = 0; i < _pushDuration; i += Time.deltaTime)
+		moveState = MoveState.Pushed;
+		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
+		Vector3 moveDirection = _pushFlatDirection;
+		moveDirection.y = _pushHeight;
+		transform.forward = moveDirection;
+		rb.useGravity = false;
+		Vector3 initialPosition = transform.position;
+		Vector3 endPosition = initialPosition + moveDirection;
+		Vector3 moveOffset = Vector3.zero;
+		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
 		{
 			moveState = MoveState.Pushed;
-			rb.velocity += (_pushDirection / _pushDuration) * Time.deltaTime;
+			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.heavyPushAirControlSpeed;
+			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
 			yield return null;
 		}
+		rb.useGravity = true;
 		moveState = MoveState.Idle;
+	}
+
+	private IEnumerator CancelPush_C()
+	{
+		rb.useGravity = true;
+		moveState = MoveState.Idle;
+		yield return null;
+	}
+
+	private IEnumerator WallSplat_C (WallSplatForce _force, Collision _collision)
+	{
+		moveState = MoveState.Pushed;
+		if (isPlayer)
+		{
+			FeedbackManager.SendFeedback("event.PlayerWallSplatHit", this);
+		} else
+		{
+			FeedbackManager.SendFeedback("event.EnemyWallSplatHit", this);
+		}
+		transform.forward = _collision.GetContact(0).normal;
+		Vector3 initialPosition = transform.position;
+		Damage(pushDatas.wallSplatDamages);
+		switch (_force)
+		{
+			case WallSplatForce.Light:
+				animator.SetTrigger("WallSplatHit");
+				animator.SetTrigger("WallSplatRecover");
+				float wallSplatLightRecoverTime = pushDatas.wallSplatLightRecoverTime + Random.Range(pushDatas.randomWallSplatLightRecoverTimeAddition.x, pushDatas.randomWallSplatLightRecoverTimeAddition.y) ;
+				if (isPlayer) { wallSplatLightRecoverTime = pushDatas.wallSplatPlayerLightRecoverTime; }
+				yield return new WaitForSeconds(wallSplatLightRecoverTime);
+				break;
+			case WallSplatForce.Heavy:
+				animator.SetTrigger("WallSplatHit");
+				float wallSplatForward = pushDatas.wallSplatHeavyForwardPush;
+				float wallSplatFallSpeed = pushDatas.wallSplatHeavyFallSpeed;
+				float wallSplatHeavyRecoverTime = pushDatas.wallSplatHeavyRecoverTime + Random.Range(pushDatas.randomWallSplatHeavyRecoverTimeAddition.x, pushDatas.randomWallSplatHeavyRecoverTimeAddition.y);
+				AnimationCurve wallSplatSpeedCurve = pushDatas.wallSplatHeavySpeedCurve;
+				AnimationCurve wallSplatHeightCurve = pushDatas.wallSplatHeavyHeightCurve;
+				if (isPlayer) { 
+					wallSplatForward = pushDatas.wallSplatPlayerHeavyForwardPush;
+					wallSplatFallSpeed = pushDatas.wallSplatPlayerHeavyFallSpeed;
+					wallSplatHeavyRecoverTime = pushDatas.wallSplatPlayerHeavyRecoverTime;
+					wallSplatSpeedCurve = pushDatas.wallSplatPlayerHeavySpeedCurve;
+					wallSplatHeightCurve = pushDatas.wallSplatPlayerHeavyHeightCurve;
+				}
+				Vector3 endPosition = transform.position + (_collision.GetContact(0).normal * wallSplatForward);
+				RaycastHit hit;
+				if (Physics.Raycast(endPosition, Vector3.down, out hit, 1000, LayerMask.GetMask("Environment")))
+				{
+					endPosition = hit.point;
+				}
+				for (float i = 0; i < 1f; i+= Time.deltaTime * wallSplatFallSpeed)
+				{
+					Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, wallSplatSpeedCurve.Evaluate(i / 1f));
+					newPosition.y = Mathf.Lerp(initialPosition.y, endPosition.y, 1f - wallSplatHeightCurve.Evaluate(i / 1f));
+					transform.position = newPosition;
+					yield return null;
+				}
+				animator.SetTrigger("WallSplatRecover");
+				yield return new WaitForSeconds(wallSplatHeavyRecoverTime);
+				break;
+		}
+		moveState = MoveState.Idle;
+		yield return null;
 	}
 
 
