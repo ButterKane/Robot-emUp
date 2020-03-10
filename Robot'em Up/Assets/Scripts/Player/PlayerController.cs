@@ -192,8 +192,8 @@ public class PlayerController : PawnController, IHitable
 				{
 					dashDirection = transform.forward;
 				}
-				//dashController.Dash(dashDirection);
-				Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
+				dashController.Dash(dashDirection);
+				//Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
 			}
 			dashPressed = true;
 		} else
@@ -263,7 +263,7 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && enableDunk)
 		{
-			dunkController.Dunk();
+			//dunkController.Dunk();
 		}
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
