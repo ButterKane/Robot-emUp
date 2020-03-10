@@ -298,10 +298,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
-    public void AbortAttack()
+    public virtual void AbortAttack()
     {
         attackState = TurretAttackState.Rest;
-        ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        if (aimingRedDotState != AimingRedDotState.NotVisible)
+        {
+            ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        }
         ChangingState(TurretState.Hiding);
     }
 

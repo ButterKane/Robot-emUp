@@ -314,7 +314,7 @@ public class PlayerController : PawnController, IHitable
 		return lookInput;
 	}
 
-	public override void Heal ( int _amount )
+	public override void Heal ( float _amount )
 	{
 		base.Heal(_amount);
 		PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
@@ -343,7 +343,21 @@ public class PlayerController : PawnController, IHitable
         }
 	}
 
-	public override void Kill ()
+    public override void DamageFromLaser(float _amount)
+    {
+        if (!isInvincible_access)
+        {
+            animator.SetTrigger("HitTrigger");
+            PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
+            if (i_potentialPlayerUI != null)
+            {
+                i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
+            }
+            base.DamageFromLaser(_amount);
+        }
+    }
+
+    public override void Kill ()
 	{
 		if (moveState == MoveState.Dead) { return; }
 		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
@@ -482,7 +496,7 @@ public class PlayerController : PawnController, IHitable
                 break;
 
             case DamageSource.Laser:
-                Damage(_damages);
+                DamageFromLaser(_damages);
                 break;
 
 			case DamageSource.SpawnImpact:

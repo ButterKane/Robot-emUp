@@ -508,7 +508,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Laser:
-                Damage(_damages);
+                DamageFromLaser(_damages);
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
