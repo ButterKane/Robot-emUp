@@ -31,8 +31,14 @@ public class BossModeEditor : Editor
 		SerializedProperty m_movementType = serializedObject.FindProperty("movementType");
 		EditorGUILayout.PropertyField(m_movementType);
 
+		SerializedProperty m_movementSpeedMultiplier = serializedObject.FindProperty("movementSpeedMultiplier");
+		EditorGUILayout.PropertyField(m_movementSpeedMultiplier);
+
 		SerializedProperty m_rotationType = serializedObject.FindProperty("rotationType");
 		EditorGUILayout.PropertyField(m_rotationType);
+
+		SerializedProperty m_rotationSpeedMultiplier = serializedObject.FindProperty("rotationSpeedMultiplier");
+		EditorGUILayout.PropertyField(m_rotationSpeedMultiplier);
 
 		//-------------- ON START EVENTS ------------------//
 		GUILayout.BeginVertical(EditorStyles.helpBox);
@@ -126,99 +132,130 @@ public class BossModeEditor : Editor
 
 		//-------------- END CONDITIONS ------------------//
 		GUILayout.BeginVertical(EditorStyles.helpBox);
-		GUILayout.Label("End conditions", EditorStyles.centeredGreyMiniLabel);
-		for (int i = 0; i < bossMode.modeTransitions.Count; i++)
 		{
-			GUILayout.BeginHorizontal();
+			EditorGUIUtility.labelWidth = 75;
+			GUILayout.Label("End conditions", EditorStyles.centeredGreyMiniLabel);
+			for (int i = 0; i < bossMode.modeTransitions.Count; i++)
 			{
-				GUI.backgroundColor = Color.grey;
-				Rect r = EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+				GUILayout.BeginHorizontal();
 				{
-					GUILayout.Space(10);
-					GUILayout.BeginHorizontal();
-					GUILayout.FlexibleSpace();
-					GUILayout.Label("IF", EditorStyles.boldLabel);
-					GUILayout.FlexibleSpace();
-					GUILayout.EndHorizontal();
-					for (int y = 0; y < bossMode.modeTransitions[i].transitionConditions.Count; y++)
+					GUI.backgroundColor = Color.grey;
+					Rect r = EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 					{
-						GUILayout.BeginHorizontal();
-						{
-							SerializedProperty m_transitionConditionType = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].transitionConditions.Array.data[" + y + "].modeTransitionConditionType");
-							EditorGUILayout.PropertyField(m_transitionConditionType, GUIContent.none);
-							bool showAmount = false;
-							switch (bossMode.modeTransitions[i].transitionConditions[y].modeTransitionConditionType)
-							{
-								case ModeTransitionConditionType.TimeSinceModeIsEnabledGreaterThan:
-									showAmount = true;
-									break;
-								case ModeTransitionConditionType.HPInferiorInferiorOrEqualTo:
-									showAmount = true;
-									break;
-								case ModeTransitionConditionType.PlayerDistanceGreaterThan:
-									showAmount = true;
-									break;
-								case ModeTransitionConditionType.PlayerDistanceLessThan:
-									showAmount = true;
-									break;
-							}
-							if (showAmount)
-							{
-								SerializedProperty m_modeTransitionConditionValue = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].transitionConditions.Array.data[" + y + "].modeTransitionConditionValue");
-								EditorGUILayout.PropertyField(m_modeTransitionConditionValue, GUIContent.none);
-							}
-							if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
-							{
-								bossMode.modeTransitions[i].transitionConditions.Remove(bossMode.modeTransitions[i].transitionConditions[y]);
-							}
-						}
-						GUILayout.EndHorizontal();
-						if (y < bossMode.modeTransitions[i].transitionConditions.Count - 1)
-						{
+						GUILayout.Space(10);
 							GUILayout.BeginHorizontal();
 							GUILayout.FlexibleSpace();
-							GUILayout.Label("AND", EditorStyles.boldLabel);
+							GUILayout.Label("IF", EditorStyles.boldLabel);
 							GUILayout.FlexibleSpace();
+						GUILayout.EndHorizontal();
+						for (int y = 0; y < bossMode.modeTransitions[i].transitionConditions.Count; y++)
+						{
+							GUILayout.BeginHorizontal();
+							{
+								SerializedProperty m_transitionConditionType = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].transitionConditions.Array.data[" + y + "].modeTransitionConditionType");
+								EditorGUILayout.PropertyField(m_transitionConditionType, GUIContent.none);
+								bool showAmount = false;
+								switch (bossMode.modeTransitions[i].transitionConditions[y].modeTransitionConditionType)
+								{
+									case ModeTransitionConditionType.TimeSinceModeIsEnabledGreaterThan:
+										showAmount = true;
+										break;
+									case ModeTransitionConditionType.HPInferiorInferiorOrEqualTo:
+										showAmount = true;
+										break;
+									case ModeTransitionConditionType.PlayerDistanceGreaterThan:
+										showAmount = true;
+										break;
+									case ModeTransitionConditionType.PlayerDistanceLessThan:
+										showAmount = true;
+										break;
+								}
+								if (showAmount)
+								{
+									SerializedProperty m_modeTransitionConditionValue = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].transitionConditions.Array.data[" + y + "].modeTransitionConditionValue");
+									EditorGUILayout.PropertyField(m_modeTransitionConditionValue, GUIContent.none);
+								}
+								if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
+								{
+									bossMode.modeTransitions[i].transitionConditions.Remove(bossMode.modeTransitions[i].transitionConditions[y]);
+								}
+							}
+							GUILayout.EndHorizontal();
+							if (y < bossMode.modeTransitions[i].transitionConditions.Count - 1)
+							{
+								GUILayout.BeginHorizontal();
+									GUILayout.FlexibleSpace();
+									GUILayout.Label("AND", EditorStyles.boldLabel);
+									GUILayout.FlexibleSpace();
+								GUILayout.EndHorizontal();
+							}
+						}
+						GUILayout.BeginHorizontal();
+						{
+							GUILayout.FlexibleSpace();
+							if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.Height(20)))
+							{
+								bossMode.modeTransitions[i].transitionConditions.Add(new ModeTransitionCondition());
+							}
+							GUILayout.FlexibleSpace();
+						}
+						GUILayout.EndHorizontal();
+						GUILayout.Space(15);
+						GUILayout.BeginHorizontal();
+							GUILayout.FlexibleSpace();
+							GUILayout.Label("THEN CHANGE MODE TO:", EditorStyles.boldLabel);
+							GUILayout.FlexibleSpace();
+						GUILayout.EndHorizontal();
+						for (int y = 0; y < bossMode.modeTransitions[i].modeToActivate.Count; y++)
+						{
+							if (y > 0 && y < bossMode.modeTransitions[i].modeToActivate.Count)
+							{
+								GUILayout.BeginHorizontal();
+									GUILayout.FlexibleSpace();
+									GUILayout.Label("OR:", EditorStyles.boldLabel);
+									GUILayout.FlexibleSpace();
+								GUILayout.EndHorizontal();
+							}
+							GUILayout.BeginHorizontal();
+								SerializedProperty m_modeToActivate = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].modeToActivate.Array.data[" + y + "].mode");
+								EditorGUILayout.PropertyField(m_modeToActivate, GUIContent.none, true, GUILayout.MinWidth(100));
+
+								SerializedProperty m_modeChances = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].modeToActivate.Array.data[" + y + "].chances");
+								EditorGUILayout.PropertyField(m_modeChances, new GUIContent("% Chances:"), true, GUILayout.MinWidth(50));
+
+								if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
+								{
+									bossMode.modeTransitions[i].modeToActivate.Remove(bossMode.modeTransitions[i].modeToActivate[y]);
+								}
 							GUILayout.EndHorizontal();
 						}
-					}
-					GUILayout.BeginHorizontal();
-					{
+						GUILayout.BeginHorizontal();
 						GUILayout.FlexibleSpace();
 						if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.Height(20)))
 						{
-							bossMode.modeTransitions[i].transitionConditions.Add(new ModeTransitionCondition());
+							bossMode.modeTransitions[i].modeToActivate.Add(new BossModeTransitionChances());
 						}
 						GUILayout.FlexibleSpace();
+						GUILayout.EndHorizontal();
 					}
-					GUILayout.EndHorizontal();
-					GUILayout.Space(15);
-					GUILayout.BeginHorizontal();
-					GUILayout.FlexibleSpace();
-					GUILayout.Label("THEN CHANGE MODE TO:", EditorStyles.boldLabel);
-					GUILayout.FlexibleSpace();
-					GUILayout.EndHorizontal();
-					SerializedProperty m_modeToActivate = serializedObject.FindProperty("modeTransitions.Array.data[" + i + "].modeToActivate");
-					EditorGUILayout.PropertyField(m_modeToActivate);
-					GUILayout.Space(10);
+					EditorGUILayout.EndVertical();
+					GUI.backgroundColor = Color.white;
+					if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(80), GUILayout.ExpandHeight(true)))
+					{
+						RemoveEndCondition(bossMode.modeTransitions[i]);
+					}
 				}
-				EditorGUILayout.EndVertical();
-				GUI.backgroundColor = Color.white;
-				if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(40), GUILayout.ExpandHeight(true)))
-				{
-					RemoveEndCondition(bossMode.modeTransitions[i]);
-				}
+				GUILayout.EndHorizontal();
 			}
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.Height(20)))
+			{
+				AddEndCondition();
+			}
+			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 		}
-		GUILayout.BeginHorizontal();
-		GUILayout.FlexibleSpace();
-		if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.Height(20)))
-		{
-			AddEndCondition();
-		}
-		GUILayout.FlexibleSpace();
-		GUILayout.EndHorizontal();
 		GUILayout.EndVertical();
 
 

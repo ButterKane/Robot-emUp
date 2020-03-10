@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: WeakPointMode
   m_EditorClassIdentifier: 
   movementType: 2
+  movementSpeedMultiplier: 1
   rotationType: 2
+  rotationSpeedMultiplier: 1
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 5
       modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 2ab438a82be1f914ca173ce71a1d04d6, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: 2ab438a82be1f914ca173ce71a1d04d6, type: 2}
+      chances: 100
   actionsOnStart:
   - StartBulletStorm
   actionsOnMovementEnd: []

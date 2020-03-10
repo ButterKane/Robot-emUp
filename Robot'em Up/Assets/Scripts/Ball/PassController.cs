@@ -358,6 +358,10 @@ public class PassController : MonoBehaviour
 
 	public bool CanReceive()
 	{
+		if (linkedPlayer.currentState != null && !linkedPlayer.currentState.allowBallReception)
+		{
+			return false;
+		}
 		return canReceive;
 	}
 
@@ -393,6 +397,11 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
+		if (linkedPlayer.currentState != null && !linkedPlayer.currentState.allowBallThrow)
+		{
+			Debug.Log(linkedPlayer.currentState.name);
+			return false;
+		}
 		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
 		{
 			return false;

@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: WaitingMode
   m_EditorClassIdentifier: 
   movementType: 2
+  movementSpeedMultiplier: 1
   rotationType: 1
+  rotationSpeedMultiplier: 1
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 2
       modeTransitionConditionValue: 40
-    modeToActivate: {fileID: 11400000, guid: fc87683d8f322f341956cff796122704, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: fc87683d8f322f341956cff796122704, type: 2}
+      chances: 100
   actionsOnStart: []
   actionsOnMovementEnd: []
   actionsOnEnd: []

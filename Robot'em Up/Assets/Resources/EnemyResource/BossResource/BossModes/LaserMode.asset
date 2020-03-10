@@ -13,16 +13,22 @@ MonoBehaviour:
   m_Name: LaserMode
   m_EditorClassIdentifier: 
   movementType: 2
+  movementSpeedMultiplier: 1
   rotationType: 2
+  rotationSpeedMultiplier: 1
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 0
       modeTransitionConditionValue: 5
-    modeToActivate: {fileID: 11400000, guid: bb7ca9d173d7f7b4a9d90c9a8b74994e, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: bb7ca9d173d7f7b4a9d90c9a8b74994e, type: 2}
+      chances: 100
   - transitionConditions:
     - modeTransitionConditionType: 3
       modeTransitionConditionValue: 0
-    modeToActivate: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
+      chances: 100
   actionsOnStart:
   - LaserAttack
   actionsOnMovementEnd: []

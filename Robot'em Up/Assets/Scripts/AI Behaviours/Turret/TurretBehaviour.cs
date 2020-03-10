@@ -42,7 +42,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     //[Space(2)]
     //[Header("Global")]
-    PawnController focusedPlayerPawnController;
     public bool arenaTurret;
 
     [Space(2)]
@@ -71,7 +70,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     public LayerMask layersToCheckToScale;
     //MISC
     Vector3 wantedAimingPosition;
-    Quaternion wantedRotation;
+    protected Quaternion wantedRotation;
 
     [Space(2)]
     [Header("Bullet")]
@@ -139,14 +138,14 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     protected virtual void RotateTowardsPlayerAndHisForward(float _rotationSpeedModRatio = 0)
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.GetCenterPosition() + focusedPlayer.transform.forward*focusedPlayer.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() + focusedPawnController.transform.forward*focusedPawnController.GetComponent<Rigidbody>().velocity.magnitude * forwardPredictionRatio - modelPivot.position);
       //  wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1-_rotationSpeedModRatio)));
     }
 
     protected virtual void RotateTowardsPlayerPosition(float _rotationSpeedModRatio = 0)
     {
-        wantedRotation = Quaternion.LookRotation(focusedPlayer.GetCenterPosition() - modelPivot.position);
+        wantedRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - modelPivot.position);
        // wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1-_rotationSpeedModRatio)));
     }
@@ -157,6 +156,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         switch (turretState)
         {
             case TurretState.Attacking:
+                CheckDistanceAndAdaptFocus();
                 AttackingUpdateState();		
                 break;
 
@@ -180,12 +180,14 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
             case TurretState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
+
                 if (timeBetweenCheck <= 0)
                 {
                     CheckDistanceAndAdaptFocus();
                     timeBetweenCheck = maxTimeBetweenCheck;
                 }
-                if(focusedPlayer != null)
+
+                if(focusedPawnController != null)
                 {
                     ChangingState(TurretState.Attacking);
                 }
@@ -220,6 +222,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretState.Hiding:
                 animator.SetTrigger("HidingTrigger");
                 if (baseAnimator != null) { baseAnimator.SetTrigger("HidingTrigger"); }
+                ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 break;
             case TurretState.GettingOutOfGround:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
@@ -248,7 +251,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretAttackState.Anticipation:
                 ChangeAimingRedDotState(AimingRedDotState.Following);
 
-                if (focusedPlayer != null)
+                if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
@@ -295,6 +298,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         attackState = TurretAttackState.Rest;
     }
 
+    public void AbortAttack()
+    {
+        attackState = TurretAttackState.Rest;
+        ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        ChangingState(TurretState.Hiding);
+    }
+
     public virtual void Shoot()
     {
         Vector3 i_spawnPosition;
@@ -307,24 +317,17 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     void ChangingFocus(Transform _newFocus)
     {
-        if(focusedPlayer == null && _newFocus!=null)
+        if(focusedPawnController == null && _newFocus!=null)
         {
             ChangingState(TurretState.GettingOutOfGround);
         }
-        else if(focusedPlayer != null && _newFocus == null)
+        else if(focusedPawnController != null && _newFocus == null)
         {
-            ChangingState(TurretState.Hiding);
+            AbortAttack();
         }
 
-        focusedPlayer = _newFocus.GetComponent<PawnController>();
-        if(_newFocus != null)
-        {
-            focusedPlayerPawnController = _newFocus.gameObject.GetComponent<PlayerController>();
-        }
-        else
-        {
-            focusedPlayerPawnController = null;
-        }
+        if (_newFocus != null) { focusedPawnController = _newFocus.GetComponent<PawnController>(); }
+        else { focusedPawnController = null; }
     }
 
     void CheckDistanceAndAdaptFocus()
@@ -348,11 +351,12 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             playerTwoInRange = false;
         }
 
+
         //Unfocus player because of distance
-        if (focusedPlayer != null)
+        if (focusedPawnController != null)
         {
-            if((focusedPlayer == playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !playerOnePawnController.IsTargetable())) 
-                || ((focusedPlayer == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
+            if((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !playerOnePawnController.IsTargetable())) 
+                || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
             }
@@ -361,13 +365,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         //Changing focus between the two
         if((playerOneInRange && playerOnePawnController.IsTargetable()) 
             && (playerTwoInRange && playerTwoPawnController.IsTargetable()) 
-            && focusedPlayer != null)
+            && focusedPawnController != null)
         {
-            if(focusedPlayer == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if(focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerTwoTransform);
             }
-            else if (focusedPlayer == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPawnController.transform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerOneTransform);
             }
@@ -376,7 +380,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         //no focused yet ? Choose one
         if(((playerOneInRange && playerOnePawnController.IsTargetable()) 
             || (playerTwoInRange && playerTwoPawnController.IsTargetable())) 
-            && focusedPlayer == null)
+            && focusedPawnController == null)
         {
             ChangingFocus(GetClosestAndAvailablePlayer());
         }

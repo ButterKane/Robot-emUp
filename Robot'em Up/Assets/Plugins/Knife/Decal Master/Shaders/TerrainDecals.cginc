@@ -20,7 +20,7 @@ float _TerrainClipHeightPower;
 #endif
 
 float GetTerrainBlending(float3 wpos)
-{
+{/*
 #if MULTI_TERRAIN_DECAL
 	float alpha = 1;
 	for(int i = 0; i < TerrainsCount; i++)
@@ -44,7 +44,8 @@ float GetTerrainBlending(float3 wpos)
 	}
 	
 	return alpha;
-#elif TERRAIN_DECAL
+	*/
+#if TERRAIN_DECAL
 	float alpha = 1;
 	
 	float3 terrainPos = mul(_World2Terrain, float4(wpos, 1));

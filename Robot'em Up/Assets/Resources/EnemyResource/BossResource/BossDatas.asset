@@ -14,25 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalSettings:
     startingMode: {fileID: 11400000, guid: f7997692992e4194c9393844fb3387be, type: 2}
-    moveSpeed: 6
-    angularSpeed: 100
-    stopDistance: 10
-    obstacleAvoidanceRadius: 8
+    moveSpeed: 10
+    angularSpeed: 170
+    stopDistance: 5
+    obstacleAvoidanceRadius: 7
     obstacleAvoidanceHeight: 4
-    topPartRotationSpeed: 100
-    firstPhaseHP: 200
-    secondPhaseHP: 180
+    topPartRotationSpeed: 130
+    firstPhaseHP: 300
+    secondPhaseHP: 220
     healthBarHeight: 55
-    minAttackRange: 15
-    maxAttackAngle: 5
+    minAttackRange: 20
+    maxAttackAngle: 15
   staggerSettings:
     energyGainedOnHit: 0.5
   laserSettings:
     duration: 10
-    rotationSpeed: 20
+    rotationSpeed: 50
     damagesOnEnter: 50
     damagesPerSecond: 1000
-    defaultWidth: 8
+    defaultWidth: 15
     chargingWidth: 1
     chargeDuration: 1
     chargeDelay: 1
@@ -63,16 +63,16 @@ MonoBehaviour:
     maxLength: 200
     maxLengthIncrementationSpeed: 10
   bulletStormSettings:
-    bodyRotationSpeed: 80
+    bodyRotationSpeed: 70
     minDelayBetweenBullets: 0.05
     maxDelayBetweenBullets: 0.1
     lockableBullet: 0
     hitableBullet: 1
-    bulletMoveSpeed: 20
-    bulletDamages: 10
+    bulletMoveSpeed: 10
+    bulletDamages: 15
     bulletRotationSpeed: 100
     bulletSize: 1
-    bulletScaleDuration: 1
+    bulletScaleDuration: 0.5
     bulletLifetime: 10
     bulletRandomness: 0
     canonRetractionDuration: 1
@@ -81,8 +81,8 @@ MonoBehaviour:
     canonMaxAngle: 75
     canonRotationSpeed: 10
   tilesSettings:
-    reapparitionDelay: 20
-    fallDuration: 2
+    reapparitionDelay: 50
+    fallDuration: 3
     fallSpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -111,15 +111,15 @@ MonoBehaviour:
     platePrefab: {fileID: 1260329285050522132, guid: a8988fa4423b901448c6dd647fc2fadc,
       type: 3}
     groundAttackPreparationDuration: 2
-    duration: 20
+    duration: 18
     activationDuration: 3
-    desactivationDuration: 5
+    desactivationDuration: 3
   weakPointSettings:
-    legMaxHP: 50
+    legMaxHP: 55
   punchSettings:
-    distance: 13
-    cooldown: 5
-    chargeDuration: 1.5
+    distance: 20
+    cooldown: 4
+    chargeDuration: 0.9
     chargeSpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -144,15 +144,15 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    damages: 5
-    pushForce: 10
+    damages: 33
+    pushForce: 15
     pushHeight: 3
-    hitboxSize: 8
+    hitboxSize: 13
     chargingColor: {r: 1, g: 0.23137255, b: 0.23137255, a: 1}
     hitColor: {r: 0.85882354, g: 0.10980392, b: 0.10980392, a: 1}
   hammerSettings:
     cooldown: 5
-    chargeDuration: 2.5
+    chargeDuration: 1.5
     chargeSpeedCurve:
       serializedVersion: 2
       m_Curve:
@@ -182,12 +182,12 @@ MonoBehaviour:
   teaBagSettings:
     damageRadius: 7
     triggerRadius: 10
-    bumpRadius: 12
+    bumpRadius: 14
     hitboxSize: 7
-    maxTimeBeforeTeaBag: 2.5
+    maxTimeBeforeTeaBag: 2
     previewDuration: 2
-    damages: 50
-    pushForce: 20
+    damages: 33
+    pushForce: 15
   rangeModeSettings:
     shoulderRotationSpeed: 10
     turretDetachSpeedCurve:

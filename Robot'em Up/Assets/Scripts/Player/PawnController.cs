@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using MyBox;
 using UnityEngine.AI;
+using System.Reflection;
 
 public enum MoveState
 {
@@ -14,7 +15,8 @@ public enum MoveState
     Bumped,
 	Jumping,
 	Climbing,
-	Dead
+	Dead,
+	Pushed
 }
 
 public enum SpeedMultiplierReason
@@ -29,6 +31,12 @@ public enum SpeedMultiplierReason
 	Dunk,
 	ChangingFocus,
 	Unknown
+}
+
+public enum PushForce
+{
+	Heavy,
+	Light
 }
 
 public class SpeedCoef
@@ -65,6 +73,7 @@ public class PawnController : MonoBehaviour
     private bool isInvincibleWithCheat;
     public bool ignoreEletricPlates = false;
     private Coroutine invincibilityCoroutine;
+	[HideInInspector] public PawnState currentState = null;
 
     [Space(2)]
     [Separator("Movement settings")]
@@ -142,6 +151,9 @@ public class PawnController : MonoBehaviour
 	protected NavMeshAgent navMeshAgent;
 	private float invincibilityCooldown;
     private float accumulatedDamage;    // Stores the damage that is not an integer. Useful for things like continuous damage
+	private PawnStates pawnStates;
+	private Coroutine pawnStateCoroutine;
+	private Coroutine currentStateCoroutine;
 
 
     [HideInInspector] public PassController passController;
@@ -171,9 +183,11 @@ public class PawnController : MonoBehaviour
 		}
         moveState = MoveState.Idle;
         accumulatedDamage = 0;
-    }
+		pawnStates = Resources.Load<PawnStates>("PawnStateDatas");
+		currentState = null;
+	}
 
-    protected virtual void FixedUpdate()
+	protected virtual void FixedUpdate()
     {
 		if (frozen) { return; }
         CheckMoveState();
@@ -189,6 +203,10 @@ public class PawnController : MonoBehaviour
         {
             UpdateInvincibilityCooldown();
         }
+		if (Input.GetKeyDown(KeyCode.N))
+		{
+			Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
+		}
 	}
 
     #region Movement
@@ -241,6 +259,7 @@ public class PawnController : MonoBehaviour
     void Move()
     {
         if (moveState == MoveState.Blocked) { currentSpeed = 0; return; }
+		if (moveState == MoveState.Pushed) { return; }
         Vector3 myVel = rb.velocity;
         myVel.y = 0;
         myVel = Vector3.ClampMagnitude(myVel, moveSpeed * GetSpeedCoef());
@@ -273,7 +292,7 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Climbing;
 			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-			StartCoroutine(ClimbLedge_C(i_foundLedge));
+			ChangeState("Climb", ClimbLedge_C(i_foundLedge));
 		}
 	}
 
@@ -339,7 +358,72 @@ public class PawnController : MonoBehaviour
     #endregion
     #region Public functions
 
-	
+	public void ChangeState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null)
+	{
+		PawnState newState = pawnStates.GetPawnStateByName(_newStateName);
+		bool canOverrideState;
+		if (currentState != null)
+		{
+			if (pawnStates.IsStateOverriden(currentState, newState) || currentState.currentCoroutine == null)
+			{
+				//Must cancel current state and replace by new state
+				StopCurrentState();
+				canOverrideState = true;
+			} else
+			{
+				//Can't override current state, cancel action
+				return;
+			}
+		} else
+		{
+			canOverrideState = true;
+		}
+		if (canOverrideState)
+		{
+			if (_coroutineToCancel != null)
+			{
+				newState.cancelCoroutine = _coroutineToCancel;
+			}
+			newState.currentCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, newState));
+			currentState = newState;
+		}
+	}
+
+	void StopCurrentState()
+	{
+		if (currentState.invincibleDuringState)
+		{
+			SetInvincible(false);
+		}
+		if (currentState.currentCoroutine != null)
+		{
+
+			StopCoroutine(currentState.currentCoroutine);
+		}
+
+		if (currentState.cancelCoroutine != null)
+		{
+			currentState.cancelCoroutine.StartCoroutine();
+		}
+		currentState = null;
+	}
+
+	IEnumerator StartStateCoroutine(IEnumerator coroutine, PawnState state)
+	{
+		if (state.invincibleDuringState)
+		{
+			SetInvincible(true);
+		}
+		yield return coroutine;
+		currentState = null;
+		yield return null;
+		if (state.invincibleDuringState)
+		{
+			SetInvincible(false);
+		}
+		state.currentCoroutine = null;
+	}
+
 	public int GetHealth()
 	{
 		return currentHealth;
@@ -416,6 +500,11 @@ public class PawnController : MonoBehaviour
 	{
         if (!isInvincible_access && invincibilityCoroutine == null)
         {
+			if (currentState != null && currentState.invincibleDuringState) { return; }
+			if (currentState != null && currentState.damagesCancelState)
+			{
+				StopCurrentState();
+			}
 			SetInvincible();
 			FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 
@@ -517,6 +606,7 @@ public class PawnController : MonoBehaviour
 
 	public void SetInvincible(bool _state)
     {
+		Debug.Log("Setinvincible");
         isInvincible_access = _state;
         isInvincibleWithCheat = _state;
     }
@@ -544,15 +634,20 @@ public class PawnController : MonoBehaviour
         gettingUpDuration = maxGettingUpDuration;
         fallingTriggerLaunched = false;
 
-        StartCoroutine(Bump_C());
+		ChangeState("Bump", Bump_C());
     }
 
-	public virtual void Push(Vector3 _pushDirection, float _pushForce, float _pushHeight)
+	public virtual void Push ( PushForce _forceType, Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight)
 	{
-		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
-		_pushDirection.y = _pushHeight;
-		//_pushDirection.y = Mathf.Clamp((_pushForce/10f),0.1f, 0.75f);
-		rb.AddForce(_pushDirection.normalized * _pushForce, ForceMode.Impulse);
+		switch (_forceType)
+		{
+			case PushForce.Light:
+				ChangeState("PushLight", PushLight_C(_pushDirection, _pushDistance, _pushDuration, _pushHeight));
+				break;
+			case PushForce.Heavy:
+				ChangeState("PushHeavy", PushHeavy_C(_pushDirection, _pushDistance, _pushDuration, _pushHeight));
+				break;
+		}
 	}
     #endregion
 
@@ -615,7 +710,38 @@ public class PawnController : MonoBehaviour
 		}
 	}
 
-    private IEnumerator Bump_C()
+	private IEnumerator PushLight_C ( Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	{
+		moveState = MoveState.Pushed;
+		_pushDirection.y = 0.05f;
+		Vector3 rbInitialPosition = rb.position;
+		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
+		{
+			Debug.Log("Adding force of " + _pushDirection);
+			moveState = MoveState.Pushed;
+			rb.velocity += _pushDirection / _pushDuration;
+			yield return null;
+		}
+		moveState = MoveState.Idle;
+	}
+
+	private IEnumerator PushHeavy_C ( Vector3 _pushDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	{
+		moveState = MoveState.Pushed;
+		_pushDirection.y = 0.05f;
+		Vector3 rbInitialPosition = rb.position;
+		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
+		for (float i = 0; i < _pushDuration; i += Time.deltaTime)
+		{
+			moveState = MoveState.Pushed;
+			rb.velocity += (_pushDirection / _pushDuration) * Time.deltaTime;
+			yield return null;
+		}
+		moveState = MoveState.Idle;
+	}
+
+
+	private IEnumerator Bump_C()
     {
         EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
         if (enemy != null) { enemy.ChangeState(EnemyState.Bumped); }

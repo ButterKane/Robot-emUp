@@ -19,7 +19,6 @@ public class DashController : MonoBehaviour
 	public int maxStackAmount = 3;
 
 	public bool unstoppableDash;
-	public bool invincibleDuringDash;
 	public float pushForce = 80f;
 	public float pushHeight = 0.2f;
 	public float dashHitboxSize = 0.7f;
@@ -103,7 +102,7 @@ public class DashController : MonoBehaviour
 
 		currentStackAmount--;
 		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
-		StartCoroutine(Dash_C(i_startPosition, i_endPosition));
+		linkedPawn.ChangeState("Dash", Dash_C(i_startPosition, i_endPosition), StopDash_C());
 		currentUseCooldown = useCooldown;
 	}
 	void ChangeState(DashState _newState)
@@ -183,7 +182,6 @@ public class DashController : MonoBehaviour
 	{
 		Vector3 i_dashDirection = _endPosition - _startPosition;
 		ChangeState(DashState.Dashing);
-		if (invincibleDuringDash) { linkedPawn.SetInvincible(true); }
 		float i_cloneCounter = 0;
 		for (float i = 0; i <= duration; i += Time.deltaTime)
 		{
@@ -206,9 +204,9 @@ public class DashController : MonoBehaviour
 						{
 							dashController.StopAllCoroutines();
 							dashController.ChangeState(DashState.None);
-							linkedPawn.Push(-i_dashDirection, pushForce / 2f, pushHeight);
+							linkedPawn.Push(PushForce.Light, -i_dashDirection, pushForce / 2f, 0.5f, pushHeight);
 						}
-						hitPawn.Push(i_dashDirection, pushForce, pushHeight);
+						hitPawn.Push(PushForce.Light, i_dashDirection, pushForce, 0.5f, pushHeight);
 						if (!unstoppableDash)
 						{
 							ChangeState(DashState.None);
@@ -229,7 +227,13 @@ public class DashController : MonoBehaviour
 		GenerateClone();
 		ChangeState(DashState.None);
 		StartCoroutine(FadePlayerSpeed());
-		linkedPawn.SetInvincible(false);
+	}
+
+	IEnumerator StopDash_C()
+	{
+		yield return null;
+		ChangeState(DashState.None);
+		StopAllCoroutines();
 	}
 
 	IEnumerator FadePlayerSpeed()

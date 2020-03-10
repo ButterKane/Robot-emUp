@@ -336,7 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 1.5
-  invincibilityTime: 1
+  invincibilityTime: 0.05
   ignoreEletricPlates: 0
   canMove: 0
   jumpForce: 0
@@ -383,13 +383,15 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 4
-  energyGainedOnHit: 1
-  damage: 10
+  focusedPawnController: {fileID: 0}
+  energyGainedOnHit: 0.08
+  damage: 100
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 0
+  lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 100
+  maxHeightOfDetection: 3
   unfocusDistance: 120
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 10
@@ -399,17 +401,17 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  maxAnticipationTime: 3
+  maxAnticipationTime: 3.5
   maxTimePauseAfterAttack: 1
   hitBoxOffset: {x: 0, y: 0, z: 0}
-  rotationSpeedPreparingAttack: 0.2
+  rotationSpeedPreparingAttack: 1
   distanceToAttack: 0
   portionOfAnticipationWithRotation: 1
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
-  spawnImpactRadius: 1
-  spawnImpactDamages: 1
+  spawnImpactRadius: 3
+  spawnImpactDamages: 20
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
@@ -417,9 +419,9 @@ MonoBehaviour:
   turretState: 0
   modelPivot: {fileID: 5738937565884906333}
   arenaTurret: 0
-  defaultForwardPredictionRatio: 0.85
+  defaultForwardPredictionRatio: 1
   minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
-  maxRotationSpeed: 5
+  maxRotationSpeed: 1000
   maxRestTime: 4
   randomRangeRestTime: 0.5
   aimingRedDotTransform: {fileID: 7381191969145207244}
@@ -454,46 +456,28 @@ MonoBehaviour:
     type: 3}
   damagePerSecond: 100
   laserMaxLength: 100
-  shootingLaserMaxTime: 10
-  whenToTriggerLaserReduction: 0.7
+  shootingLaserMaxTime: 1.5
+  whenToTriggerLaserReduction: 0.5
   reducingOfLaserWidth:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.99057007
-      inSlope: -1.4882246
-      outSlope: -1.4882246
-      tangentMode: 34
+      value: 1
+      inSlope: -0.08560447
+      outSlope: -0.08560447
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0.339978
     - serializedVersion: 3
-      time: 0.6007379
-      value: 0.09653711
-      inSlope: -1.4882246
-      outSlope: -0.0135233775
-      tangentMode: 5
+      time: 1
+      value: 0
+      inSlope: -2.8573632
+      outSlope: -2.8573632
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9040945
-      value: 0.093471885
-      inSlope: -0.010104374
-      outSlope: -0.94404745
-      tangentMode: 69
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9981079
-      value: 0.0047187805
-      inSlope: -0.94404745
-      outSlope: -0.94404745
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.08080238
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

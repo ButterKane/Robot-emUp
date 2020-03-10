@@ -169,6 +169,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		{
 			InvokeMethod(s);
 		}
+		navMesh.speed = bossDatas.globalSettings.moveSpeed * _newMode.movementSpeedMultiplier;
+		navMesh.angularSpeed = bossDatas.globalSettings.angularSpeed * _newMode.rotationSpeedMultiplier;
 	}
 
 	public void EnablePhaseTwo()
@@ -297,8 +299,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		{
 			Vector3 newLaserPosition = laserObj.transform.position;
 			newLaserPosition.y = hit.point.y;
-			laserObj.transform.position = newLaserPosition;
-		}
+            newLaserPosition.x = transform.position.x;
+            newLaserPosition.z = transform.position.z;
+            laserObj.transform.position = newLaserPosition;
+            laserObj.transform.parent = transform;
+        }
 	}
 
 	public void GroundAttack()
@@ -330,8 +335,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		if (destroyed) { return; }
 		GameObject teabagObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossTeabag"));
-		teabagObj.transform.position = transform.position;
-		RaycastHit hit;
+        teabagObj.transform.parent = transform;
+        teabagObj.transform.position = transform.position;
+        RaycastHit hit;
 		if (Physics.Raycast(transform.position, Vector3.down, out hit, 10, LayerMask.GetMask("Environment")))
 		{
 			teabagObj.transform.position = hit.point + Vector3.up * 0.1f;
@@ -490,9 +496,23 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			}
 			if (canActivateMode)
 			{
-				ChangeMode(mt.modeToActivate);
+				ChangeMode(PickRandomMode(mt.modeToActivate));
 			}
 		}
+	}
+
+	private BossMode PickRandomMode(List<BossModeTransitionChances> bossModes)
+	{
+		int randomNumber;
+		for (int i = 0; i <= bossModes.Count; i++)
+		{
+			randomNumber = Random.Range(0, 101);
+			if (bossModes[i].chances > randomNumber)
+			{
+				return bossModes[i].mode;
+			}
+		}
+		return null;
 	}
 
 	private void SpawnElectricalPlates()
@@ -523,11 +543,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	private void UpdateShoulderRotation()
 	{
-		if (shoulderRotationEnabled && minions != null && minions.Count > 1 && minions[0].focusedPlayer != null && minions[1].focusedPlayer != null)
+		if (shoulderRotationEnabled && minions != null && minions.Count > 1 && minions[0].focusedPawnController != null && minions[1].focusedPawnController != null)
 		{
-			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPlayer.transform.position;
+			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPawnController.transform.position;
 			shoulderLeft.transform.rotation = Quaternion.Lerp(shoulderLeft.transform.rotation, Quaternion.LookRotation(leftShoulderLookDirection), bossDatas.rangeModeSettings.shoulderRotationSpeed);
-			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - minions[1].focusedPlayer.transform.position;
+			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - minions[1].focusedPawnController.transform.position;
 			shoulderRight.transform.rotation = Quaternion.Lerp(shoulderRight.transform.rotation, Quaternion.LookRotation(rightShoulderLookDirection), bossDatas.rangeModeSettings.shoulderRotationSpeed);
 		} else
 		{
@@ -628,15 +648,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		transform.forward = -Vector3.forward;
 		animator.SetTrigger("Stagger");
 	}
-
 	IEnumerator Reconstruct_C ()
 	{
 		hitByDunk = false;
 		animator.SetTrigger("StaggerHit");
-		EnableTurrets(0.15f);
-		shoulderRotationEnabled = false;
 		yield return new WaitForSeconds(0.25f);
-		DetachTurrets();
 		animator.SetTrigger("Reconstruct");
 		ParticleSystem.EmissionModule em = bossExplosionFX.GetComponent<ParticleSystem>().emission;
 		em.enabled = false;
@@ -654,6 +670,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	IEnumerator DetachTurrets_C()
 	{
+		EnableTurrets(0.15f);
+		shoulderRotationEnabled = false;
+		yield return new WaitForSeconds(0.25f);
 		foreach (EnemyBehaviour e in minions)
 		{
 			e.enabled = false;

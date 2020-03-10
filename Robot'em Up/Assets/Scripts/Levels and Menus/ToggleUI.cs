@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ToggleUI : UIBehaviour
 {
     public bool defaultValueIsYes = true;
-    [ReadOnly] public bool buttonIsYes;
+    public bool buttonIsYes = true;
     public Image yesButton;
     public Image noButton;
     public Color selectedButtonColor = new Color(0.5f, 0.5f, 1f, 1);
@@ -66,6 +66,12 @@ public class ToggleUI : UIBehaviour
     public override void ResetValueToDefault()
     {
         buttonIsYes = defaultValueIsYes;
+        ColorizeButton();
+    }
+
+    public void ForceModifyValue(bool _value)
+    {
+        buttonIsYes = _value;
         ColorizeButton();
     }
 }

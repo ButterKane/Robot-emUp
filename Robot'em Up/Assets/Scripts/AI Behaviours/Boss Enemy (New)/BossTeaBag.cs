@@ -52,7 +52,7 @@ public class BossTeaBag : MonoBehaviour
 			{
 				Vector3 pushDirection = Vector3.Normalize(p.transform.position - transform.position);
 				pushDirection.y = 0.1f;
-				p.Push(pushDirection, pushForce, 0f);
+				p.Push(PushForce.Heavy, pushDirection, pushForce, 0.5f, 0.2f);
 			}
 		}
 		Destroy(this.gameObject);
