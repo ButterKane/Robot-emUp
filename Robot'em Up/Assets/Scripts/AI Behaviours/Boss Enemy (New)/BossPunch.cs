@@ -100,13 +100,13 @@ public class BossPunch : MonoBehaviour
 				Vector3 pushDirection = other.transform.position - transform.position;
 				pushDirection.y = punchPushHeight;
 				pushDirection = pushDirection.normalized;
-				other.GetComponent<PlayerController>().BumpMe(punchPushForce, 0.5f, 0.5f, pushDirection, 0, 0, 0);
+				other.GetComponent<PlayerController>().BumpMe(pushDirection, punchPushForce, 0.5f, 0.5f);
 			} else if (canPushPlayers && pushCollider != null && pushCollider.enabled)
 			{
 				Vector3 pushDirection = other.transform.position - transform.position;
 				pushDirection.y = punchPushHeight;
 				pushDirection = pushDirection.normalized;
-				other.GetComponent<PlayerController>().BumpMe(punchPushForce, 0.5f, 0.5f, pushDirection, 0, 0, 0);
+				other.GetComponent<PlayerController>().BumpMe(pushDirection, punchPushForce, 0.5f, 0.5f);
 			}
 		} else if (other.tag == "Boss_Tile" && !cubeDestroyed && canDestroyEnviro && destroyEnviroCollider != null && destroyEnviroCollider.enabled)
 		{

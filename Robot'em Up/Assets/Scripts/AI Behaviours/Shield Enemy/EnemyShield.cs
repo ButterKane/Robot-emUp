@@ -38,9 +38,6 @@ public class EnemyShield : EnemyBehaviour
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim = 0.9f;    // At what % of the attack duration do we want to stop animation to trigger?
     public float attackRaycastDistance = 2;
     public float maxRotationSpeed = 20; // How many angle it can rotates in one second
-    public float BumpOtherDistanceMod = 0.5f;
-    public float BumpOtherDurationMod = 0.2f;
-    public float BumpOtherRestDurationMod = 0.3f;
     private float attackTimeProgression;
     private float initialSpeed;
 

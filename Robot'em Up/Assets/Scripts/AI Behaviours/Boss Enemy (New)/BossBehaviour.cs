@@ -611,9 +611,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			case ModeTransitionConditionType.NoWallLeft: //Not implemented yet
 				break;
 			case ModeTransitionConditionType.PlayerDistanceGreaterThan:
+				if (GameManager.alivePlayers.Count <= 0) { isValid = true; break; }
 				if (Vector3.Distance(PlayerController.GetNearestPlayer(transform.position).transform.position, transform.position) > value) { isValid = true; }
 				break;
 			case ModeTransitionConditionType.PlayerDistanceLessThan:
+				if (GameManager.alivePlayers.Count <= 0) { isValid = true; break; }
 				if (Vector3.Distance(PlayerController.GetNearestPlayer(transform.position).transform.position, transform.position) < value) { isValid = true; }
 				break;
 			case ModeTransitionConditionType.TimeSinceModeIsEnabledGreaterThan:

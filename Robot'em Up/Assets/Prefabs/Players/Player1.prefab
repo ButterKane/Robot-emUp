@@ -60,6 +60,14 @@ MonoBehaviour:
   totalHeight: 2
   invincibilityTime: 0.15
   ignoreEletricPlates: 0
+  currentState:
+    name: New state
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
   canMove: 1
   jumpForce: 800
   accelerationCurve:
@@ -101,7 +109,7 @@ MonoBehaviour:
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
   isBumpable: 1
-  maxGettingUpDuration: 0.6
+  maxGettingUpDuration: 0.15
   bumpDistanceCurve:
     serializedVersion: 2
     m_Curve:
@@ -264,7 +272,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  linkMaterial: {fileID: 2100000, guid: 53c0ab8d7f71e4d4c89b6c3661d514dd, type: 2}
+  linkMaterial: {fileID: 0}
   linkWidth: 0.2
   opacityFadeCurve:
     serializedVersion: 2
@@ -331,7 +339,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxStackAmount: 3
   unstoppableDash: 0
-  invincibleDuringDash: 1
   pushForce: 150
   pushHeight: 0.7
   dashHitboxSize: 0.7

@@ -11,6 +11,13 @@ public class PushDatas : ScriptableObject
 	public AnimationCurve heavyPushSpeedCurve;
 	public float heavyPushAirControlSpeed;
 
+	[Header("Bump settings")]
+	public float bumpRestDuration;
+	public float bumpPlayerRestDuration;
+	public Vector2 bumpRandomRangeModifier;
+	public Vector2 bumpRandomDurationModifier;
+	public Vector2 bumpRandomRestModifier;
+
 	[Header("WallSplat Default")]
 	public float wallSplatHeavyForwardPush = 3f;
 	public float wallSplatLightRecoverTime = 0.5f;
@@ -21,6 +28,7 @@ public class PushDatas : ScriptableObject
 	public Vector2 randomWallSplatHeavyRecoverTimeAddition;
 	public Vector2 randomWallSplatLightRecoverTimeAddition;
 	public float wallSplatDamages;
+	public float wallSplatPlayerDamages;
 
 	[Header("WallSplat Player")]
 	public float wallSplatPlayerHeavyForwardPush = 3f;
