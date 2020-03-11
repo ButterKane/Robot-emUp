@@ -175,7 +175,6 @@ public class TurretSniperBehaviour : TurretBehaviour
 			hit = hits[i];
 			aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
         }
-        Debug.Log("red dot state = " + aimingRedDotState);
         switch (attackState)
         {
             //-------------------------------------------------------
