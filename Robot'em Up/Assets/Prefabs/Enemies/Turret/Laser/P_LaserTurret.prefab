@@ -376,6 +376,7 @@ MonoBehaviour:
     damagesCancelState: 0
     allowBallReception: 0
     allowBallThrow: 0
+    preventMoving: 0
   canMove: 0
   jumpForce: 0
   accelerationCurve:
@@ -486,7 +487,7 @@ MonoBehaviour:
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
   endAimingFXScaleMultiplier: 0
   startAimingFXCircleThickness: 0
-  rotationSpeedReductionRatio: 0.5
+  rotationSpeedReductionRatio: 0.929
   repulseCircleRadius: 2
   repulseCircleStrength: 1
   playerSpeedReductionCoef: 0.5
@@ -494,10 +495,10 @@ MonoBehaviour:
     type: 3}
   FXChargingMainLaserPrefab: {fileID: 6736872685272898243, guid: c122507af11acc54cab938b0547fcfa4,
     type: 3}
-  damagePerSecond: 100
+  damagePerSecond: 50
   laserMaxLength: 100
-  shootingLaserMaxTime: 1.5
-  whenToTriggerLaserReduction: 0.5
+  shootingLaserMaxTime: 3
+  whenToTriggerLaserReduction: 0.8
   reducingOfLaserWidth:
     serializedVersion: 2
     m_Curve:
