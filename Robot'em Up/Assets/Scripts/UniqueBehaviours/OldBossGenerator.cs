@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Events;
 
 public class OldBossGenerator : MonoBehaviour
 {
     public float waitingTimeForNextEnemy;
     public float randomLenghtTime;
     public List<GameObject> listOfEnemiesPrefabToSpawn;
+    public UnityEvent SpawnerToTrigger;
 
     [ReadOnly] public float currentTimer;
 
@@ -30,8 +32,9 @@ public class OldBossGenerator : MonoBehaviour
             }
             else
             {
-                var newInst = Instantiate(listOfEnemiesPrefabToSpawn[Random.Range(0, listOfEnemiesPrefabToSpawn.Count)], transform.position, Quaternion.identity);
-                newInst.transform.position = new Vector3(newInst.transform.position.x + Random.Range(-0.5f, 0.5f), newInst.transform.position.y, newInst.transform.position.z + Random.Range(-0.5f, 0.5f));
+                SpawnerToTrigger.Invoke();
+               // var newInst = Instantiate(listOfEnemiesPrefabToSpawn[Random.Range(0, listOfEnemiesPrefabToSpawn.Count)], transform.position, Quaternion.identity);
+               // newInst.transform.position = new Vector3(newInst.transform.position.x + Random.Range(-0.5f, 0.5f), newInst.transform.position.y, newInst.transform.position.z + Random.Range(-0.5f, 0.5f));
             }
         }
     }
