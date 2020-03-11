@@ -80,7 +80,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     i_laserRenderer = i_instance.laserRenderer;
                 }
                 //i_laserRenderer.material.color = new Color(i_laserRenderer.material.color.r, i_laserRenderer.material.color.g, i_laserRenderer.material.color.b, i_laserRenderer.material.color.a * reducingLaserFactor);
-
+                
                 i_instance.laserWidth = normalLaserWidth * reducingLaserFactor;
             }
             shootingLaserTimeProgression -= Time.deltaTime;
@@ -209,7 +209,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 break;
             case TurretAttackState.Attack:
-                StopLaser();
+                ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 break;
             case TurretAttackState.Rest:
                 animator.SetTrigger("FromRestToIdleTrigger");
