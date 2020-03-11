@@ -43,6 +43,7 @@ public class PawnState
 	public bool damagesCancelState;
 	public bool allowBallReception;
 	public bool allowBallThrow;
+	public bool preventMoving;
 
 	[HideInInspector] public Coroutine currentCoroutine;
 	[HideInInspector] public IEnumerator cancelCoroutine;

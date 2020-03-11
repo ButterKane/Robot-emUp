@@ -34,6 +34,8 @@ public class PawnStatesEditor : Editor
 					EditorGUILayout.PropertyField(m_allowBallReception);
 					SerializedProperty m_allowBallThrow = serializedObject.FindProperty("pawnStates.Array.data[" + i + "].allowBallThrow");
 					EditorGUILayout.PropertyField(m_allowBallThrow);
+					SerializedProperty m_preventMoving = serializedObject.FindProperty("pawnStates.Array.data[" + i + "].preventMoving");
+					EditorGUILayout.PropertyField(m_preventMoving);
 
 					EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 					EditorGUILayout.LabelField("Can override: ", EditorStyles.boldLabel);

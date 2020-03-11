@@ -137,10 +137,16 @@ public class PlayerController : PawnController, IHitable
 		Vector3 camRightNormalized = cam.transform.right;
 		camRightNormalized.y = 0;
 		camRightNormalized = camRightNormalized.normalized;
-		moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
-		moveInput.y = 0;
-		moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-		lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+		if ((currentState != null && !currentState.preventMoving) || currentState == null)
+		{
+			moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
+			moveInput.y = 0;
+			moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
+			lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+		} else
+		{
+			moveInput = Vector3.zero;
+		}
 		if (lookInput.magnitude > 0.1f)
 		{
 			passController.Aim();
@@ -192,8 +198,9 @@ public class PlayerController : PawnController, IHitable
 				{
 					dashDirection = transform.forward;
 				}
-				dashController.Dash(dashDirection);
-				//Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
+				//dashController.Dash(dashDirection);
+				Push(PushForce.Heavy, Vector3.forward, 10f, 0.5f, 5f);
+				//BumpMe(10f, 1f, 1f, Vector3.forward, 1, 1, 1);
 			}
 			dashPressed = true;
 		} else
@@ -343,7 +350,7 @@ public class PlayerController : PawnController, IHitable
         }
 	}
 
-	public override void Kill ()
+	public void KillWithoutCorePart()
 	{
 		if (moveState == MoveState.Dead) { return; }
 		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
@@ -356,13 +363,17 @@ public class PlayerController : PawnController, IHitable
 		DisableInput();
 		StartCoroutine(HideAfterDelay(0.5f));
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
-		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 		GameManager.deadPlayers.Add(this);
 		if (GameManager.deadPlayers.Count > 1)
 		{
 			Analytics.CustomEvent("PlayerSimultaneousDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		}
 		GameManager.alivePlayers.Remove(this);
+	}
+	public override void Kill ()
+	{
+		KillWithoutCorePart();
+		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 	}
 
 	public void Revive(PlayerController _player)
