@@ -320,7 +320,6 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         navMeshAgent.enabled = false;
         animator.SetTrigger("BumpTrigger");
-        mustCancelBump = false;
     }
 
     public virtual void EnterPreparingAttackState()
@@ -427,10 +426,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
-        float i_BumpDistanceMod = 0.5f;
-        float i_BumpDurationMod = 0.5f;
-        float i_BumpRestDurationMod = 0.5f;
-
+        if (!CanDamage()) { return; }
         switch (_source)
         {
             case DamageSource.Dunk:
@@ -450,11 +446,8 @@ public class EnemyBehaviour : PawnController, IHitable
                     if (_thrower.GetComponent<DunkController>() != null)
                     {
                         DunkController i_controller = _thrower.GetComponent<DunkController>();
-                        i_BumpDistanceMod = i_controller.bumpDistanceMod;
-                        i_BumpDurationMod = i_controller.bumpDurationMod;
-                        i_BumpRestDurationMod = i_controller.bumpRestDurationMod;
                     }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
+                    BumpMe(i_normalizedImpactVector.normalized, 10, 1, 1);
                     whatBumps = WhatBumps.Dunk;
                 }
                 else
@@ -468,13 +461,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                    if (_bumpModificators != default(Vector3))
-                    {
-                        i_BumpDistanceMod = _bumpModificators.x;
-                        i_BumpDurationMod = _bumpModificators.y;
-                        i_BumpRestDurationMod = _bumpModificators.z;
-                    }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
+                    BumpMe(i_normalizedImpactVector.normalized, 10, 1, 1);
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
@@ -484,7 +471,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
-				Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+                Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 				animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 damageAfterBump = 0;
@@ -492,6 +479,16 @@ public class EnemyBehaviour : PawnController, IHitable
                 whatBumps = WhatBumps.Pass;
                 //Staggered(whatBumps);
                 Damage(_damages);
+                BallDatas bd = _ball.currentBallDatas;
+                float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
+                Debug.Log(ballChargePercent);
+                if (ballChargePercent >= bd.minimalChargeForBump)
+                {
+                    BumpMe(_impactVector.normalized, 10, 1, 1);
+                } else if (ballChargePercent >= bd.minimalChargeForPush)
+                {
+                    Push(PushForce.Heavy, _impactVector.normalized, 10, 1, 1);
+                }
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
@@ -640,12 +637,6 @@ public class EnemyBehaviour : PawnController, IHitable
     //            break;
     //    }
     //}
-
-    public override void BumpMe(float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod)
-    {
-        base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
-        ChangeState(EnemyState.Bumped);
-    }
 
     IEnumerator WaitABit_C(float _duration)
     {

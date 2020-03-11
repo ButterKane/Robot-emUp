@@ -44,7 +44,4 @@ public class PawnState
 	public bool allowBallReception;
 	public bool allowBallThrow;
 	public bool preventMoving;
-
-	[HideInInspector] public Coroutine currentCoroutine;
-	[HideInInspector] public IEnumerator cancelCoroutine;
 }

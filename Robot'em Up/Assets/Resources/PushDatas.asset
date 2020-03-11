@@ -62,6 +62,11 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   heavyPushAirControlSpeed: 10
+  bumpRestDuration: 1.2
+  bumpPlayerRestDuration: 0.2
+  bumpRandomRangeModifier: {x: -0.1, y: 0.1}
+  bumpRandomDurationModifier: {x: -0.1, y: 0.1}
+  bumpRandomRestModifier: {x: -0.1, y: 0.1}
   wallSplatHeavyForwardPush: 1
   wallSplatLightRecoverTime: 0.5
   wallSplatHeavyRecoverTime: 1
@@ -114,10 +119,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  randomWallSplatHeavyRecoverTimeAddition: {x: 0, y: 0}
+  randomWallSplatLightRecoverTimeAddition: {x: 0, y: 0}
+  wallSplatDamages: 20
+  wallSplatPlayerDamages: 1
   wallSplatPlayerHeavyForwardPush: 1
   wallSplatPlayerLightRecoverTime: 0.2
   wallSplatPlayerHeavyRecoverTime: 0.3
-  wallSplatPlayerHeavyFallSpeed: 2
+  wallSplatPlayerHeavyFallSpeed: 1.5
   wallSplatPlayerHeavyHeightCurve:
     serializedVersion: 2
     m_Curve:

@@ -52,6 +52,7 @@ public class PlayerController : PawnController, IHitable
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
 	private Vector3 previousPosition;
+	private bool rbPressed;
 
 	public void Start ()
 	{
@@ -165,6 +166,11 @@ public class PlayerController : PawnController, IHitable
 				extendingArmsController.DisableThrowDirectionIndicator();
 			}
 		}
+		if (state.Buttons.B == ButtonState.Pressed)
+		{
+			StartCoroutine(PushEverything_C());
+		}
+
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
 			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
@@ -188,6 +194,23 @@ public class PlayerController : PawnController, IHitable
 		{
 			dunkController.Dunk();
 		}
+		if (state.Buttons.RightShoulder == ButtonState.Pressed)
+		{
+			rbPressed = true;
+			if (lookInput.magnitude > 0.1f)
+			{
+				extendingArmsController.SetThrowDirection(lookInput);
+			}
+			else
+			{
+				extendingArmsController.DisableThrowDirectionIndicator();
+			}
+		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed )
+		{
+			rbPressed = false;
+			extendingArmsController.DisableThrowDirectionIndicator();
+			extendingArmsController.ExtendArm();
+		}
 		if (state.Triggers.Left > triggerTreshold)
 		{
 			//extendingArmsController.ExtendArm();
@@ -199,8 +222,8 @@ public class PlayerController : PawnController, IHitable
 					dashDirection = transform.forward;
 				}
 				//dashController.Dash(dashDirection);
-				Push(PushForce.Heavy, Vector3.forward, 10f, 0.5f, 5f);
-				//BumpMe(10f, 1f, 1f, Vector3.forward, 1, 1, 1);
+				//Push(PushForce.Heavy, Vector3.forward, 10f, 0.5f, 5f);
+				//BumpMe(transform.forward, 10f, 1f, 1f);
 			}
 			dashPressed = true;
 		} else
@@ -229,6 +252,15 @@ public class PlayerController : PawnController, IHitable
 				UnFreeze();
 				SetTargetable();
 			}
+		}
+	}
+
+	IEnumerator PushEverything_C ()
+	{
+		foreach (PawnController p in FindObjectsOfType<PawnController>())
+		{
+			p.BumpMe(-p.transform.forward, 10, 1, 1);
+			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
@@ -483,7 +515,7 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
-                BumpMe(10, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
+                BumpMe(i_normalizedImpactVector, 10, 1, 1);
 				Damage(_damages);
 				break;
 
@@ -505,6 +537,7 @@ public class PlayerController : PawnController, IHitable
 
 	public static PlayerController GetNearestPlayer(Vector3 _point)
 	{
+		if (GameManager.alivePlayers.Count <= 0) { return null; }
 		PlayerController nearestPlayer = GameManager.alivePlayers[0];
 		float closestDistance = Vector3.Distance(nearestPlayer.transform.position, _point);
 		foreach (PlayerController p in GameManager.alivePlayers)
@@ -517,10 +550,5 @@ public class PlayerController : PawnController, IHitable
 			}
 		}
 		return nearestPlayer;
-	}
-
-	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
-	{
-		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
 	}
 }
