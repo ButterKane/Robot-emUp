@@ -21,33 +21,49 @@ MonoBehaviour:
     damagesCancelState: 0
     allowBallReception: 1
     allowBallThrow: 0
+    preventMoving: 0
   - name: PushHeavy
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 0
-    allowBallReception: 1
-    allowBallThrow: 1
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
   - name: PushLight
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 1
     allowBallThrow: 1
+    preventMoving: 0
   - name: Bump
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 0
-    allowBallReception: 0
-    allowBallThrow: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 1
   - name: Dash
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 1
     allowBallReception: 1
     allowBallThrow: 1
+    preventMoving: 0
   - name: Climb
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 1
     allowBallThrow: 1
+    preventMoving: 0
+  - name: WallSplat
+    stateOverriden:
+    - PushHeavy
+    - Bump
+    - PushLight
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 1

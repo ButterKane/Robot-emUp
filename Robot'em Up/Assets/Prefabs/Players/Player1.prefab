@@ -60,6 +60,14 @@ MonoBehaviour:
   totalHeight: 2
   invincibilityTime: 0.15
   ignoreEletricPlates: 0
+  currentState:
+    name: New state
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
   canMove: 1
   jumpForce: 800
   accelerationCurve:
@@ -101,7 +109,7 @@ MonoBehaviour:
   climbForwardPushForce: 450
   climbUpwardPushForce: 450
   isBumpable: 1
-  maxGettingUpDuration: 0.6
+  maxGettingUpDuration: 0.15
   bumpDistanceCurve:
     serializedVersion: 2
     m_Curve:
@@ -264,7 +272,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  linkMaterial: {fileID: 2100000, guid: 53c0ab8d7f71e4d4c89b6c3661d514dd, type: 2}
+  linkMaterial: {fileID: 0}
   linkWidth: 0.2
   opacityFadeCurve:
     serializedVersion: 2
@@ -331,7 +339,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxStackAmount: 3
   unstoppableDash: 0
-  invincibleDuringDash: 1
   pushForce: 150
   pushHeight: 0.7
   dashHitboxSize: 0.7
@@ -531,7 +538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55f159eef03d1448acab6d2ae2628d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimType: 1
+  aimType: 0
   startTransform: {fileID: 4655006219135653576}
   armTransform: {fileID: 509570522770558410}
   forwardSpeed: 100
@@ -898,7 +905,7 @@ Transform:
   m_GameObject: {fileID: 1303474972067149720}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.87, y: 0.09699998, z: 0.297}
-  m_LocalScale: {x: 0.48012, y: 0.22313651, z: 0.48012}
+  m_LocalScale: {x: 0.47998556, y: 0.22313651, z: 0.48012}
   m_Children: []
   m_Father: {fileID: 164450937343815701}
   m_RootOrder: 1

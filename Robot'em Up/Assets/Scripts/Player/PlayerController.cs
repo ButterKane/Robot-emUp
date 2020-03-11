@@ -52,6 +52,7 @@ public class PlayerController : PawnController, IHitable
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
 	private Vector3 previousPosition;
+	private bool rbPressed;
 
 	public void Start ()
 	{
@@ -137,10 +138,16 @@ public class PlayerController : PawnController, IHitable
 		Vector3 camRightNormalized = cam.transform.right;
 		camRightNormalized.y = 0;
 		camRightNormalized = camRightNormalized.normalized;
-		moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
-		moveInput.y = 0;
-		moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-		lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+		if ((currentState != null && !currentState.preventMoving) || currentState == null)
+		{
+			moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
+			moveInput.y = 0;
+			moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
+			lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+		} else
+		{
+			moveInput = Vector3.zero;
+		}
 		if (lookInput.magnitude > 0.1f)
 		{
 			passController.Aim();
@@ -159,6 +166,11 @@ public class PlayerController : PawnController, IHitable
 				extendingArmsController.DisableThrowDirectionIndicator();
 			}
 		}
+		if (state.Buttons.B == ButtonState.Pressed)
+		{
+			StartCoroutine(PushEverything_C());
+		}
+
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
 			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
@@ -182,6 +194,23 @@ public class PlayerController : PawnController, IHitable
 		{
 			dunkController.Dunk();
 		}
+		if (state.Buttons.RightShoulder == ButtonState.Pressed)
+		{
+			rbPressed = true;
+			if (lookInput.magnitude > 0.1f)
+			{
+				extendingArmsController.SetThrowDirection(lookInput);
+			}
+			else
+			{
+				extendingArmsController.DisableThrowDirectionIndicator();
+			}
+		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed )
+		{
+			rbPressed = false;
+			extendingArmsController.DisableThrowDirectionIndicator();
+			extendingArmsController.ExtendArm();
+		}
 		if (state.Triggers.Left > triggerTreshold)
 		{
 			//extendingArmsController.ExtendArm();
@@ -192,8 +221,9 @@ public class PlayerController : PawnController, IHitable
 				{
 					dashDirection = transform.forward;
 				}
-				dashController.Dash(dashDirection);
-				//Push(PushForce.Light, transform.forward, 10f, 1f, 1f);
+				//dashController.Dash(dashDirection);
+				//Push(PushForce.Heavy, Vector3.forward, 10f, 0.5f, 5f);
+				//BumpMe(transform.forward, 10f, 1f, 1f);
 			}
 			dashPressed = true;
 		} else
@@ -222,6 +252,15 @@ public class PlayerController : PawnController, IHitable
 				UnFreeze();
 				SetTargetable();
 			}
+		}
+	}
+
+	IEnumerator PushEverything_C ()
+	{
+		foreach (PawnController p in FindObjectsOfType<PawnController>())
+		{
+			p.BumpMe(-p.transform.forward, 10, 1, 1);
+			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
@@ -314,7 +353,7 @@ public class PlayerController : PawnController, IHitable
 		return lookInput;
 	}
 
-	public override void Heal ( float _amount )
+	public override void Heal ( int _amount )
 	{
 		base.Heal(_amount);
 		PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
@@ -343,21 +382,7 @@ public class PlayerController : PawnController, IHitable
         }
 	}
 
-    public override void DamageFromLaser(float _amount)
-    {
-        if (!isInvincible_access)
-        {
-            animator.SetTrigger("HitTrigger");
-            PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
-            if (i_potentialPlayerUI != null)
-            {
-                i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
-            }
-            base.DamageFromLaser(_amount);
-        }
-    }
-
-    public override void Kill ()
+	public void KillWithoutCorePart()
 	{
 		if (moveState == MoveState.Dead) { return; }
 		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
@@ -370,13 +395,17 @@ public class PlayerController : PawnController, IHitable
 		DisableInput();
 		StartCoroutine(HideAfterDelay(0.5f));
 		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
-		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 		GameManager.deadPlayers.Add(this);
 		if (GameManager.deadPlayers.Count > 1)
 		{
 			Analytics.CustomEvent("PlayerSimultaneousDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		}
 		GameManager.alivePlayers.Remove(this);
+	}
+	public override void Kill ()
+	{
+		KillWithoutCorePart();
+		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 	}
 
 	public void Revive(PlayerController _player)
@@ -486,7 +515,7 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
-                BumpMe(10, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
+                BumpMe(i_normalizedImpactVector, 10, 1, 1);
 				Damage(_damages);
 				break;
 
@@ -496,7 +525,7 @@ public class PlayerController : PawnController, IHitable
                 break;
 
             case DamageSource.Laser:
-                DamageFromLaser(_damages);
+                Damage(_damages);
                 break;
 
 			case DamageSource.SpawnImpact:
@@ -508,6 +537,7 @@ public class PlayerController : PawnController, IHitable
 
 	public static PlayerController GetNearestPlayer(Vector3 _point)
 	{
+		if (GameManager.alivePlayers.Count <= 0) { return null; }
 		PlayerController nearestPlayer = GameManager.alivePlayers[0];
 		float closestDistance = Vector3.Distance(nearestPlayer.transform.position, _point);
 		foreach (PlayerController p in GameManager.alivePlayers)
@@ -520,10 +550,5 @@ public class PlayerController : PawnController, IHitable
 			}
 		}
 		return nearestPlayer;
-	}
-
-	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
-	{
-		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
 	}
 }
