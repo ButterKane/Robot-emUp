@@ -110,7 +110,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
-    public override void ExitState()
+    public override void ExitTurretState()
     {
         switch (turretState)
         {
@@ -133,7 +133,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterState()
+    public override void EnterTurretState()
     {
         //print(State);
         switch (turretState)
@@ -253,7 +253,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 if (restTime <= 0)
                 {
                     animator.SetTrigger("FromRestToIdleTrigger");
-                    ChangingState(TurretState.Idle);
+                    ChangingTurretState(TurretState.Idle);
                 }
 
                 if (aimingRedDotState != AimingRedDotState.NotVisible)
