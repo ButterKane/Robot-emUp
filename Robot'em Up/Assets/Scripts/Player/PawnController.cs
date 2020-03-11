@@ -679,7 +679,13 @@ public class PawnController : MonoBehaviour
 		{
 			if (moveState == MoveState.Pushed)
 			{
-				WallSplat(WallSplatForce.Heavy, collision);
+				if (currentState.name == "Bump")
+				{
+					WallSplat(WallSplatForce.Heavy, collision);
+				} else
+				{
+					WallSplat(WallSplatForce.Light, collision);
+				}
 			}
 		}
 	}
@@ -710,7 +716,7 @@ public class PawnController : MonoBehaviour
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
 		if (currentState != null && currentState.name == "WallSplat") { return; }
-		ChangeState("WallSplat", WallSplat_C(_force, _normalDirection));
+		ChangeState("WallSplat", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
 	}
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)
@@ -737,6 +743,7 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator PushLight_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
 	{
+		animator.SetBool("PushedBool", true);
 		moveState = MoveState.Pushed;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
@@ -754,10 +761,12 @@ public class PawnController : MonoBehaviour
 		}
 		rb.useGravity = true;
 		moveState = MoveState.Idle;
+		animator.SetBool("PushedBool", false);
 	}
 
 	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
 	{
+		animator.SetBool("PushedBool", true);
 		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
@@ -787,6 +796,7 @@ public class PawnController : MonoBehaviour
 		}
 		rb.useGravity = true;
 		moveState = MoveState.Idle;
+		animator.SetBool("PushedBool", false);
 	}
 
 	private IEnumerator CancelPush_C()
@@ -814,14 +824,14 @@ public class PawnController : MonoBehaviour
 		switch (_force)
 		{
 			case WallSplatForce.Light:
-				animator.SetTrigger("WallSplatHit");
-				animator.SetTrigger("WallSplatRecover");
+				animator.SetTrigger("WallSplatTrigger");
+				animator.SetTrigger("StandingUpTrigger");
 				float wallSplatLightRecoverTime = pushDatas.wallSplatLightRecoverTime + Random.Range(pushDatas.randomWallSplatLightRecoverTimeAddition.x, pushDatas.randomWallSplatLightRecoverTimeAddition.y) ;
 				if (isPlayer) { wallSplatLightRecoverTime = pushDatas.wallSplatPlayerLightRecoverTime; }
 				yield return new WaitForSeconds(wallSplatLightRecoverTime);
 				break;
 			case WallSplatForce.Heavy:
-				animator.SetTrigger("WallSplatHit");
+				animator.SetTrigger("WallSplatTrigger");
 				float wallSplatForward = pushDatas.wallSplatHeavyForwardPush;
 				float wallSplatFallSpeed = pushDatas.wallSplatHeavyFallSpeed;
 				float wallSplatHeavyRecoverTime = pushDatas.wallSplatHeavyRecoverTime + Random.Range(pushDatas.randomWallSplatHeavyRecoverTimeAddition.x, pushDatas.randomWallSplatHeavyRecoverTimeAddition.y);
@@ -849,18 +859,29 @@ public class PawnController : MonoBehaviour
 					yield return null;
 				}
 				transform.position = endPosition;
-				animator.SetTrigger("WallSplatRecover");
+				animator.SetTrigger("StandingUpTrigger");
 				moveState = MoveState.Idle;
 				yield return new WaitForSeconds(wallSplatHeavyRecoverTime);
 				break;
 		}
 		moveState = MoveState.Idle;
+		animator.ResetTrigger("FallingTrigger");
+		animator.ResetTrigger("StandingUpTrigger");
+		yield return null;
+	}
+
+	private IEnumerator CancelWallSplat_C()
+	{
+		moveState = MoveState.Idle;
+		animator.ResetTrigger("FallingTrigger");
+		animator.ResetTrigger("StandingUpTrigger");
 		yield return null;
 	}
 
 
 	private IEnumerator Bump_C( Vector3 _bumpDirectionFlat, float _bumpDistance, float _bumpDuration, float _bumpHeight )
     {
+		animator.SetTrigger("BumpTrigger");
 		moveState = MoveState.Pushed;
 		FeedbackManager.SendFeedback(eventOnBeingBumpedAway, this);
 
@@ -939,13 +960,15 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator CancelBump_C()
 	{
+		animator.ResetTrigger("FallingTrigger");
+		animator.ResetTrigger("StandingUpTrigger");
 		moveState = MoveState.Pushed;
 		float restDuration = pushDatas.bumpRestDuration;
 		if (isPlayer) { restDuration = pushDatas.bumpPlayerRestDuration; }
 		restDuration = restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
 		float gettingUpDuration = maxGettingUpDuration;
 
-		if (animator != null) { animator.SetTrigger("FallingTrigger"); }
+		//if (animator != null) { animator.SetTrigger("FallingTrigger"); }
 		if (damageAfterBump > 0)
 		{
 			Damage(damageAfterBump);
@@ -956,7 +979,7 @@ public class PawnController : MonoBehaviour
 			restDuration -= Time.deltaTime;
 			if (restDuration <= 0 && animator != null)
 			{
-				animator.SetTrigger("StandingUpTrigger");
+				//animator.SetTrigger("StandingUpTrigger");
 			}
 			yield return null;
 		}

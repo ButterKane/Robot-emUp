@@ -52,6 +52,7 @@ public class PlayerController : PawnController, IHitable
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
 	private Vector3 previousPosition;
+	private bool rbPressed;
 
 	public void Start ()
 	{
@@ -192,6 +193,23 @@ public class PlayerController : PawnController, IHitable
 		if (state.Buttons.Y == ButtonState.Pressed && enableDunk && revivablePlayers.Count <= 0)
 		{
 			dunkController.Dunk();
+		}
+		if (state.Buttons.RightShoulder == ButtonState.Pressed)
+		{
+			rbPressed = true;
+			if (lookInput.magnitude > 0.1f)
+			{
+				extendingArmsController.SetThrowDirection(lookInput);
+			}
+			else
+			{
+				extendingArmsController.DisableThrowDirectionIndicator();
+			}
+		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed )
+		{
+			rbPressed = false;
+			extendingArmsController.DisableThrowDirectionIndicator();
+			extendingArmsController.ExtendArm();
 		}
 		if (state.Triggers.Left > triggerTreshold)
 		{

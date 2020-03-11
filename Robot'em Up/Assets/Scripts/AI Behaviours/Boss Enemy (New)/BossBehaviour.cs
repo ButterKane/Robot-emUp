@@ -402,8 +402,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			case BossMovementType.DontMove:
 				break;
 			case BossMovementType.FollowNearestPlayer:
-				currentTarget = PlayerController.GetNearestPlayer(transform.position).transform;
-				destination = currentTarget.transform.position;
+				if (GameManager.alivePlayers.Count > 0)
+				{
+					currentTarget = PlayerController.GetNearestPlayer(transform.position).transform;
+					destination = currentTarget.transform.position;
+				}
 				break;
 			case BossMovementType.GoToCenter:
 				destination = zoneCenter.position;
