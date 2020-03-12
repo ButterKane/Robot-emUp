@@ -129,7 +129,6 @@ namespace Knife.DeferredDecals
 
             if(systems.Length > 1)
             {
-                Debug.LogError("Must be only one deferred decals system");
                 Disable();
             }
             Disable();

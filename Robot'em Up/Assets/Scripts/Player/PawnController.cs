@@ -909,6 +909,7 @@ public class PawnController : MonoBehaviour
 		if (isPlayer) { restDuration = pushDatas.bumpPlayerRestDuration; }
 	     restDuration = restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
 		Vector3 bumpDirection = _bumpDirectionFlat;
+		bumpDirection.y = 0;
 		Vector3 bumpInitialPosition = transform.position;
 		Vector3 bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
 

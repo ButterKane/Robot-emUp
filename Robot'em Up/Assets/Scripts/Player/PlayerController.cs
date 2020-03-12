@@ -150,7 +150,10 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (lookInput.magnitude > 0.1f)
 		{
-			passController.Aim();
+			if (!rbPressed)
+			{
+				passController.Aim();
+			}
 			extendingArmsController.SetDirection(lookInput);
 		} else
 		{
@@ -190,6 +193,7 @@ public class PlayerController : PawnController, IHitable
 			ForceRotate(); //Player will rotate toward look input
 			if (extendingArmsController != null)
 			{
+				passController.StopAim();
 				extendingArmsController.TogglePreview(true);
 			}
 		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed )
