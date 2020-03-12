@@ -18,6 +18,7 @@ public class Spawner : MonoBehaviour
 	public AnimationCurve verticalLerpCurve;
 	public float delayBeforeActivation = 1;
 	public bool attachSpawnedObject = false;
+	public GameObject enemyToSpawn;
 
 	public Vector3 endPosition;
 	public SpriteRenderer endPositionVisualizer;
@@ -93,7 +94,7 @@ public class Spawner : MonoBehaviour
 		if (IsBlocked()) { return false; }
 		return true;
 	}
-	public EnemyBehaviour SpawnEnemy(EnemyData _enemy, bool _addSmallRandomDelay)
+	public EnemyBehaviour SpawnEnemy(EnemyData _enemy, bool _addSmallRandomDelay, float _spawnSpeedOverride = -1)
 	{
 		spawning = true;
 		GameObject i_newEnemy = Instantiate(_enemy.prefab).gameObject;
@@ -108,8 +109,15 @@ public class Spawner : MonoBehaviour
 		currentDelayBeforeBeingFree = delayBeforeBeingFree;
 		i_enemyBehaviour.ChangeState(EnemyState.Spawning);
 		if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
-		StartCoroutine(SpawnEnemy_C(i_enemyBehaviour, _addSmallRandomDelay));
+		StartCoroutine(SpawnEnemy_C(i_enemyBehaviour, _addSmallRandomDelay, _spawnSpeedOverride));
 		return i_enemyBehaviour;
+	}
+
+	public void SpawnEnemy()
+	{
+		EnemyData newEnemyData = new EnemyData();
+		newEnemyData.prefab = enemyToSpawn;
+		SpawnEnemy(newEnemyData, false);
 	}
 
 	public void RetractEnemy(EnemyBehaviour _enemy)
@@ -134,8 +142,12 @@ public class Spawner : MonoBehaviour
 		}
 		Destroy(_enemy.gameObject);
 	}
-	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy, bool _addSmallRandomDelay)
+	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy, bool _addSmallRandomDelay, float _spawnSpeedOverride)
 	{
+		if (_spawnSpeedOverride != -1)
+		{
+			spawnDuration = _spawnSpeedOverride;
+		}
 		//_enemy.transform.localScale = Vector3.one;
 		_enemy.gameObject.SetActive(false);
 		_enemy.transform.position = startPosition.position;
@@ -143,7 +155,10 @@ public class Spawner : MonoBehaviour
 
 		opened = true;
 		if (animator) { animator.SetTrigger("Open"); }
-		yield return new WaitForSeconds(0.1f);
+		if (_spawnSpeedOverride != -1)
+		{
+			yield return new WaitForSeconds(0.1f);
+		}
 		_enemy.ChangeState(EnemyState.Spawning);
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		GameObject explosionVisualizer = default;

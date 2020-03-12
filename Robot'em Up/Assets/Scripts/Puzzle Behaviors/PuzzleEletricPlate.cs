@@ -161,6 +161,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                 Destroy(myFx);
             }
 			myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
+            myFx.transform.parent = transform;
         }
     }
 }

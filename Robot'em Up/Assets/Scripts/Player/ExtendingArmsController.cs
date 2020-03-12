@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using Knife.DeferredDecals;
 
 public enum ExtendingArmsAimType
 {
@@ -18,118 +19,193 @@ public enum ArmState
 }
 public class ExtendingArmsController : MonoBehaviour
 {
-	[Separator("General Settings")]
-	public ExtendingArmsAimType aimType;
-	public Transform startTransform;
+	private ArmState currentState;
+	private PlayerController linkedPlayer;
+	private bool previewShown;
+	private Transform grabbedObject;
+	private Transform currentHitDecal;
+	private Decal currentHitDecalScript;
+	private Vector3 directionSet;
+	private float timeBetweenLastDirectionSet;
+	private Transform grabHand;
+	private Transform previewHitObject;
+
 	public Transform armTransform;
-	public float forwardSpeed;
-	public float retractionSpeed;
-	public float maxDistance;
-	public float freezeDuration;
-	public float dragSpeed;
-	public float maxDistanceFromWall;
-	public float armRadius;
-	public float cooldown = 0.1f;
-	[ConditionalField(nameof(aimType), false, ExtendingArmsAimType.TwinStick)] public GameObject directionIndicator;
+	[Header("Preview settings")]
+	public LineRenderer previewLineRenderer;
+	public GameObject previewHitDecal;
+	public SpriteRenderer previewDirectionVisualizer;
+	public Color grabbablePreviewColor;
+	public Color notGrabbablePreviewColor;
 
-	[Separator("Renderer Settings")]
-	public Color armColor;
-	public float armWidth;
-	public Material armMaterial;
-
-	private Vector3 throwDirection;
-	private GameObject throwDirectionIndicator;
-	private LineRenderer lineRenderer;
-	private Coroutine armExtensionCoroutine;
-	private PawnController pawnController;
-	private Vector3 currentEndPosition;
-	private Transform secondDirectionIndicator;
-	private SpriteRenderer secondDirectionIndicatorSprite;
-	private float currentCD;
-
-	private ArmState armState;
+	[Header("Settings")]
+	public AnimationCurve extensionSpeedCurve;
+	public AnimationCurve retractionSpeedCurve;
+	public AnimationCurve dashSpeedCurve;
+	public float delayBeforeResettingJoystickDirection;
+	public LineRenderer lineRenderer;
+	public float maxRange;
+	public float rangeTolerance;
+	public float grabExtentionSpeed;
+	public float grabRetractionSpeed;
+	public float dashSpeed;
+	public float distanceFromHandOnDash = 1;
+	public int frameCountBetweenCollisionRecalculationDuringDash = 1;
+	public float dashHitboxRadius = 10f;
+	public float dashCollisionPushForce = 5f;
 
 	private void Awake ()
 	{
-		pawnController = GetComponent<PawnController>();
-		InstantiateLineRenderer();
-		InstantiateThrowDirectionIndicator();
-		if (aimType != ExtendingArmsAimType.ForwardAiming)
-		{
-			throwDirectionIndicator.SetActive(true);
-		}
-		armState = ArmState.Retracted;
+		linkedPlayer = GetComponent<PlayerController>();
+		GeneratePreviewDecal();
+		GenerateGrabHand();
+		TogglePreview(false);
+		ChangeState(ArmState.Retracted);
 	}
+
 	private void Update ()
 	{
-		UpdateArm();
-		if (currentCD > 0 && armState == ArmState.Retracted)
-		{
-			currentCD -= Time.deltaTime;
-		}
+		ShowPreview();
+		UpdateDirectionBuffer();
+		UpdateGrab();
 	}
 
-	public void SetThrowDirection(Vector3 _direction)
+	public void SetDirection(Vector3 _direction)
 	{
-		RaycastHit hit;
-		if (Physics.Raycast(startTransform.position, throwDirection, out hit, maxDistance))
+		directionSet = _direction;
+		timeBetweenLastDirectionSet = 0;
+	}
+
+	public void TogglePreview(bool _state)
+	{
+		previewShown = _state;
+		if (!_state)
 		{
-			currentEndPosition = hit.point;
-			secondDirectionIndicatorSprite.color = Color.green;
+			previewDirectionVisualizer.enabled = false;
+			previewLineRenderer.enabled = false;
+			currentHitDecal.gameObject.SetActive(false);
 		} else
 		{
-			currentEndPosition = startTransform.position + (throwDirection * maxDistance);
-			secondDirectionIndicatorSprite.color = Color.red;
+			previewDirectionVisualizer.enabled = true;
+			previewLineRenderer.enabled = true;
 		}
-		if (aimType != ExtendingArmsAimType.TwinStick) { return; }
-		if (!throwDirectionIndicator.activeSelf) { throwDirectionIndicator.SetActive(true); }
-		Vector3 i_flattedDirection = SwissArmyKnife.GetFlattedDownPosition(_direction, Vector3.zero).normalized;
-		throwDirectionIndicator.transform.forward = i_flattedDirection;
-		throwDirection = i_flattedDirection;
-
-		//Update second indicator position
-		secondDirectionIndicator.transform.localPosition = new Vector3(0, 0, Vector3.Distance(startTransform.position, currentEndPosition));
-	}
-
-	public void DisableThrowDirectionIndicator()
-	{
-		throwDirectionIndicator.SetActive(false);
 	}
 
 	public void ExtendArm()
 	{
-		if (armState != ArmState.Retracted || currentCD > 0) { return; }
-		switch (aimType)
-		{
-			case ExtendingArmsAimType.ForwardAiming:
-				throwDirection = transform.forward;
-				break;
-			case ExtendingArmsAimType.TwinStick:
-				if (!throwDirectionIndicator.activeSelf) { return; }
-				transform.forward = throwDirection;
-				pawnController.SetLookInput(throwDirection);
-				break;
-			default:
-				break;
+		if (directionSet != Vector3.zero && currentState == ArmState.Retracted) {
+			linkedPlayer.ChangeState("GrabThrowing", ExtendArm_C(), RetractArm_C());
 		}
-		SetThrowDirection(throwDirection);
-		armExtensionCoroutine = StartCoroutine(ExtendArm_C(throwDirection));
 	}
 
-	void UpdateArm()
+	public void RetractArm()
 	{
-		if (armState != ArmState.Retracted)
+		StartCoroutine(RetractArm_C());
+	}
+
+	private void UpdateDirectionBuffer ()
+	{
+		if (timeBetweenLastDirectionSet < delayBeforeResettingJoystickDirection)
+		{
+			timeBetweenLastDirectionSet += Time.deltaTime;
+		}
+		else
+		{
+			directionSet = Vector3.zero;
+		}
+	}
+
+	private void UpdateGrab ()
+	{
+		if (grabHand.gameObject.activeSelf && lineRenderer != null)
 		{
 			lineRenderer.positionCount = 2;
-			lineRenderer.SetPosition(0, startTransform.position);
-			lineRenderer.SetPosition(1, armTransform.position);
-		} else
+			lineRenderer.SetPosition(0, armTransform.position);
+			lineRenderer.SetPosition(1, grabHand.transform.position);
+		}
+		else
 		{
 			lineRenderer.positionCount = 0;
 		}
+		if (Vector3.Distance(grabHand.position, armTransform.position) >= maxRange + rangeTolerance)
+		{
+			RetractArm();
+		}
+	}
+	private void ShowPreview ()
+	{
+		if (!previewShown) { return; }
+		previewLineRenderer.positionCount = 2;
+
+		Vector3 hitPosition = previewLineRenderer.transform.position;
+		RaycastHit hit;
+		if (Physics.Raycast(previewLineRenderer.transform.position, previewLineRenderer.transform.forward, out hit, maxRange, LayerMask.GetMask("PlayerPart")))
+		{
+			hitPosition = hit.point;
+			currentHitDecal.gameObject.SetActive(true);
+			currentHitDecal.transform.position = hit.point;
+			currentHitDecal.transform.forward = hit.normal;
+			previewHitObject = hit.collider.transform;
+		}
+		else if (Physics.Raycast(previewLineRenderer.transform.position, previewLineRenderer.transform.forward, out hit, maxRange, ~0, QueryTriggerInteraction.Ignore))
+		{
+			hitPosition = hit.point;
+			currentHitDecal.gameObject.SetActive(true);
+			currentHitDecal.transform.position = hit.point;
+			currentHitDecal.transform.forward = hit.normal;
+			previewHitObject = hit.collider.transform;
+		}
+		else {
+			currentHitDecal.gameObject.SetActive(false);
+			previewHitObject = null;
+		}
+		previewLineRenderer.SetPosition(0, previewLineRenderer.transform.position);
+		previewLineRenderer.SetPosition(1, hitPosition - (previewLineRenderer.transform.position - hitPosition).normalized * 0.5f);
+		if (previewHitObject != null)
+		{
+			if (IsGrabbable(previewHitObject))
+			{
+				previewLineRenderer.startColor = grabbablePreviewColor;
+				previewLineRenderer.endColor = grabbablePreviewColor;
+				currentHitDecalScript.InstancedColor = grabbablePreviewColor;
+			} else
+			{
+				previewLineRenderer.startColor = notGrabbablePreviewColor;
+				previewLineRenderer.endColor = notGrabbablePreviewColor;
+				currentHitDecalScript.InstancedColor = notGrabbablePreviewColor;
+			}
+		}
 	}
 
-	void ChangeState(ArmState _newState)
+	private void GeneratePreviewDecal ()
+	{
+		currentHitDecal = Instantiate(previewHitDecal).transform;
+		currentHitDecalScript = currentHitDecal.GetComponentInChildren<Decal>();
+		currentHitDecal.gameObject.SetActive(false);
+	}
+
+	private void GenerateGrabHand ()
+	{
+		grabHand = Instantiate(Resources.Load<GameObject>("PlayerResource/GrabHand")).transform;
+		grabHand.transform.SetParent(armTransform);
+		grabHand.transform.localPosition = Vector3.zero;
+		grabHand.transform.localRotation = Quaternion.identity;
+		grabHand.gameObject.SetActive(false);
+	}
+
+	private bool IsGrabbable (Transform t)
+	{
+		if (t.gameObject.GetComponent<Grabbable>() != null || t.gameObject.layer == LayerMask.NameToLayer("Player") || t.gameObject.layer == LayerMask.NameToLayer("PlayerPart"))
+		{
+			return true;
+		}
+		return false;
+	}
+	private void CheckWhatGotGrabbed ()
+	{
+		StartCoroutine(CheckWhatGotGrabbed_C());
+	}
+	private void ChangeState (ArmState _newState)
 	{
 		switch (_newState)
 		{
@@ -144,120 +220,222 @@ public class ExtendingArmsController : MonoBehaviour
 			default:
 				break;
 		}
-		armState = _newState;
+		currentState = _newState;
 	}
 
-	private void InstantiateThrowDirectionIndicator ()
+	IEnumerator RetractWithObject_C()
 	{
-		throwDirectionIndicator = Instantiate(directionIndicator);
-		throwDirectionIndicator.name = "ThrowDirectionIndicator";
-		throwDirectionIndicator.transform.SetParent(this.transform);
-		throwDirectionIndicator.transform.localPosition = Vector3.zero;
-		throwDirectionIndicator.transform.localScale = Vector3.one;
-		throwDirectionIndicator.transform.localRotation = Quaternion.identity;
-		secondDirectionIndicator = throwDirectionIndicator.transform.Find("SecondIndicator");
-		secondDirectionIndicatorSprite = secondDirectionIndicator.GetComponentInChildren<SpriteRenderer>();
-		secondDirectionIndicator.transform.localPosition = new Vector3(0, 0, maxDistance);
-	}
-
-	private void InstantiateLineRenderer()
-	{
-		GameObject i_lineRendererObj = new GameObject();
-		i_lineRendererObj.name = "ExtendingArmsRenderer";
-		i_lineRendererObj.transform.SetParent(this.transform);
-		lineRenderer = i_lineRendererObj.AddComponent<LineRenderer>();
-		lineRenderer.startWidth = armWidth;
-		lineRenderer.endWidth = armWidth;
-		lineRenderer.startColor = armColor;
-		lineRenderer.endColor = armColor;
-		lineRenderer.material = armMaterial;
-	}
-
-	private bool TryToAttachArm()
-	{
-		Collider[] i_colliderFound = Physics.OverlapSphere(armTransform.position, armRadius, LayerMask.GetMask("Environment"));
-		if (i_colliderFound.Length > 0)
-		{
-			armTransform.SetParent(i_colliderFound[0].transform, true);
-			armTransform.position = i_colliderFound[0].ClosestPointOnBounds(armTransform.position);
-			return true;
-		}
-		return false;
-	}
-
-	IEnumerator ExtendArm_C(Vector3 _direction)
-	{
-		ChangeState(ArmState.Extending);
-		Vector3 i_startPosition = startTransform.position;
-		Vector3 i_endPosition = currentEndPosition;
-		armTransform.SetParent(null, true);
-		for (float i = 0; i < 1; i += Time.deltaTime * forwardSpeed / Vector3.Distance(i_startPosition, i_endPosition))
-		{
-			armTransform.position = Vector3.Lerp(i_startPosition, i_endPosition, i / 1f);
-			armTransform.transform.forward = i_endPosition - armTransform.position;
-			if (TryToAttachArm())
-			{
-				ChangeState(ArmState.Extended);
-				StartCoroutine(RetractArm_C());
-			}
-			yield return new WaitForEndOfFrame();
-		}
-		armTransform.position = i_endPosition;
-		if (TryToAttachArm())
-		{
-			StartCoroutine(RetractArm_C());
-		}
-		StartCoroutine(RetractArm_C());
-	}
-
-	IEnumerator RetractArm_C()
-	{
-		if (armExtensionCoroutine != null) { StopCoroutine(armExtensionCoroutine); }
 		ChangeState(ArmState.Retracting);
-
-		if (armTransform.parent != null) //Something got grabbed
+		PlayerController grabbedPlayer = null;
+		if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("Player"))
 		{
-			Vector3 i_direction = (armTransform.position - pawnController.transform.position).normalized;
-			Vector3 i_startPosition = pawnController.transform.position;
-			Vector3 i_endPosition = armTransform.position - (i_direction * maxDistanceFromWall);
-			if (Vector3.Distance(i_startPosition, i_endPosition) <= 3) { CancelRetraction(); StopAllCoroutines(); }
-			yield return new WaitForSeconds(freezeDuration);
-			pawnController.Freeze();
-
-			for (float i = 0; i < 1f; i+= Time.deltaTime * dragSpeed / Vector3.Distance(i_startPosition, i_endPosition))
+			grabbedPlayer = grabbedObject.GetComponent<PlayerController>();
+			grabbedPlayer.Freeze();
+			grabbedPlayer.moveState = MoveState.Blocked;
+			grabbedPlayer.animator.SetTrigger("GrabDashTrigger");
+		}
+		grabHand.gameObject.SetActive(true);
+		grabHand.transform.SetParent(null, true);
+		grabHand.transform.localScale = Vector3.one;
+		Vector3 startPosition = grabHand.transform.position;
+		grabHand.transform.localRotation = Quaternion.identity;
+		float totalDistance = Vector3.Distance(startPosition, armTransform.position);
+		List<EnemyBehaviour> enemyHit = new List<EnemyBehaviour>();
+		int colliderRecalculationIterationCount = frameCountBetweenCollisionRecalculationDuringDash;
+		for (float i = 0; i < totalDistance; i += Time.deltaTime * grabRetractionSpeed)
+		{
+			grabHand.transform.position = Vector3.Lerp(startPosition, armTransform.position, retractionSpeedCurve.Evaluate(i / totalDistance));
+			if (grabbedPlayer != null)
 			{
-				yield return new WaitForEndOfFrame();
-				pawnController.transform.position = Vector3.Lerp(i_startPosition, i_endPosition, i / 1f);
-				if (Physics.Raycast(pawnController.transform.position, i_direction.normalized, 1f, LayerMask.GetMask("Environment")))
+				grabbedPlayer.transform.position = grabHand.transform.position;
+				grabbedPlayer.transform.forward = startPosition - armTransform.position;
+			} else
+			{
+				grabbedObject.transform.position = grabHand.transform.position;
+			}
+			colliderRecalculationIterationCount--;
+			if (colliderRecalculationIterationCount <= 0)
+			{
+				colliderRecalculationIterationCount = frameCountBetweenCollisionRecalculationDuringDash;
+				foreach (Collider c in Physics.OverlapSphere(grabbedObject.transform.position, dashHitboxRadius, LayerMask.GetMask("Enemy")))
 				{
-					Debug.Log("Cancelled grab");
-					CancelRetraction();
-					StopAllCoroutines();
+					EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
+					if (!enemyHit.Contains(enemy))
+					{
+						enemy.BumpMe(c.transform.position - grabbedObject.transform.position, dashCollisionPushForce, 1f, 1f);
+						enemyHit.Add(enemy);
+					}
 				}
 			}
-			pawnController.UnFreeze();
-			pawnController.transform.position = i_endPosition;
-		} else //Nothing got grabbed
-		{
-			Vector3 i_startPosition = armTransform.position;
-			for (float i = 0; i < 1; i += Time.deltaTime * retractionSpeed / Vector3.Distance(i_startPosition, startTransform.position))
-			{
-				yield return new WaitForEndOfFrame();
-				armTransform.position = Vector3.Lerp(i_startPosition, startTransform.position, i / 1f);
-				armTransform.transform.forward = startTransform.position - i_startPosition;
-			}
+			yield return null;
 		}
-		CancelRetraction();
+		grabHand.transform.SetParent(armTransform, true);
+		grabHand.transform.localRotation = Quaternion.identity;
+		grabHand.transform.position = armTransform.position;
+		grabHand.transform.localScale = Vector3.one;
+		if (grabbedPlayer != null)
+		{
+			grabbedPlayer.UnFreeze();
+			grabbedPlayer.moveState = MoveState.Idle;
+			grabbedPlayer.animator.SetTrigger("GrabDashRecover");
+		}
+		ChangeState(ArmState.Retracted);
+	}
+	IEnumerator DashTowardHand_C()
+	{
+		linkedPlayer.animator.SetTrigger("GrabDashTrigger");
+		linkedPlayer.Freeze();
+		linkedPlayer.moveState = MoveState.Blocked;
+		Vector3 startPosition = armTransform.transform.position;
+		Vector3 endPosition = grabHand.transform.position;
+		float totalDistance = Vector3.Distance(startPosition, endPosition);
+		List<EnemyBehaviour> enemyHit = new List<EnemyBehaviour>();
+		int colliderRecalculationIterationCount = frameCountBetweenCollisionRecalculationDuringDash;
+		for (float i = 0; i < totalDistance - distanceFromHandOnDash; i+= Time.deltaTime * dashSpeed)
+		{
+			Vector3 armPosition = Vector3.Lerp(startPosition, endPosition, dashSpeedCurve.Evaluate(i / totalDistance));
+			linkedPlayer.transform.position = armPosition + (linkedPlayer.transform.position - armTransform.position);
+			linkedPlayer.transform.forward = endPosition - startPosition;
+			colliderRecalculationIterationCount--;
+			if (colliderRecalculationIterationCount <= 0)
+			{
+				colliderRecalculationIterationCount = frameCountBetweenCollisionRecalculationDuringDash;
+				foreach (Collider c in Physics.OverlapSphere(transform.position, dashHitboxRadius, LayerMask.GetMask("Enemy")))
+				{
+					EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
+					if (!enemyHit.Contains(enemy))
+					{
+						enemy.BumpMe(c.transform.position - transform.position, dashCollisionPushForce, 1f, 1f);
+						enemyHit.Add(enemy);
+					}
+				}
+			}
+			yield return null;
+		}
+		linkedPlayer.UnFreeze();
+		linkedPlayer.moveState = MoveState.Idle;
+		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		RetractArm();
 	}
 
-	void CancelRetraction()
+	IEnumerator CancelDashTowardHand_C ()
 	{
-		pawnController.UnFreeze();
-		armTransform.SetParent(startTransform, true);
-		armTransform.localPosition = Vector3.zero;
-		armTransform.localRotation = Quaternion.identity;
-		armTransform.localScale = Vector3.one;
-		currentCD = cooldown;
+		yield return null;
+		linkedPlayer.UnFreeze();
+		linkedPlayer.moveState = MoveState.Idle;
+		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		RetractArm();
+	}
+
+	IEnumerator CancelGrabObjectRetraction_C ()
+	{
+		yield return null;
+		linkedPlayer.UnFreeze();
+		linkedPlayer.moveState = MoveState.Idle;
+		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		PlayerController grabbedPlayer;
+		grabbedPlayer = grabbedObject.GetComponent<PlayerController>();
+		if (grabbedPlayer != null)
+		{
+			grabbedPlayer.UnFreeze();
+			grabbedPlayer.moveState = MoveState.Idle;
+			grabbedPlayer.animator.SetTrigger("GrabDashRecover");
+		}
+		RetractArm();
+	}
+
+	IEnumerator ExtendArm_C ()
+	{
+		ChangeState(ArmState.Extending);
+		grabHand.gameObject.SetActive(true);
+		FeedbackManager.SendFeedback("event.GrabExtensionStart", grabHand);
+		grabHand.transform.SetParent(null, true);
+		grabHand.transform.localScale = Vector3.one;
+		Vector3 startPosition = grabHand.transform.position;
+		Vector3 hitPosition = startPosition + directionSet.normalized * maxRange;
+		Transform hitObject = null;
+		RaycastHit hit;
+		if (Physics.Raycast(grabHand.transform.position, directionSet, out hit, maxRange, LayerMask.GetMask("PlayerPart")))
+		{
+			hitPosition = hit.point;
+			grabbedObject = hit.collider.transform;
+		} else if (Physics.Raycast(grabHand.transform.position, directionSet, out hit, maxRange, ~0, QueryTriggerInteraction.Ignore))
+		{
+			hitPosition = hit.point;
+			grabbedObject = hit.collider.transform;
+		}
+		float totalDistance = Vector3.Distance(startPosition, hitPosition);
+		for (float i = 0; i < totalDistance; i += Time.deltaTime * grabExtentionSpeed)
+		{
+			grabHand.transform.position = Vector3.Lerp(startPosition, hitPosition, extensionSpeedCurve.Evaluate( i / totalDistance));
+			yield return null;
+		}
+		if (hitObject != null)
+		{
+			//grabHand.transform.SetParent(hitObject.transform, true); //Must be fixed, causes deformations
+		}
+		ChangeState(ArmState.Extended);
+		grabHand.transform.forward = hit.normal;
+		CheckWhatGotGrabbed();
+	}
+
+	IEnumerator RetractArm_C ()
+	{
+		ChangeState(ArmState.Retracting);
+		grabHand.gameObject.SetActive(true);
+		FeedbackManager.SendFeedback("event.GrabRetractionStart", grabHand);
+		grabHand.transform.SetParent(null, true);
+		grabHand.transform.localScale = Vector3.one;
+		Vector3 startPosition = grabHand.transform.position;
+		grabHand.transform.localRotation = Quaternion.identity;
+		float totalDistance = Vector3.Distance(startPosition, armTransform.position);
+		for (float i = 0; i < totalDistance; i += Time.deltaTime * grabRetractionSpeed)
+		{
+			grabHand.transform.position = Vector3.Lerp(startPosition, armTransform.position, retractionSpeedCurve.Evaluate(i / totalDistance));
+			yield return null;
+		}
+		grabHand.transform.SetParent(armTransform, true);
+		grabHand.transform.localRotation = Quaternion.identity;
+		grabHand.transform.position = armTransform.position;
+		grabHand.transform.localScale = Vector3.one;
+		FeedbackManager.SendFeedback("event.GrabRetractionEnd", grabHand);
 		ChangeState(ArmState.Retracted);
+	}
+
+	IEnumerator CheckWhatGotGrabbed_C ()
+	{
+		yield return new WaitForSeconds(0.1f);
+		//If grabbable wall: dash
+		if (grabbedObject == null)
+		{
+			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
+			RetractArm();
+		}
+		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
+		{
+			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
+			linkedPlayer.ChangeState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
+		}
+		//If player: dash player toward me
+		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("Player"))
+		{
+			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
+			linkedPlayer.ChangeState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
+		}
+		//If other player part: dash part toward me and collect it
+		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("PlayerPart"))
+		{
+			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
+			linkedPlayer.ChangeState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
+		}
+		//If enemy shield: wait for other grab //SCOPE ++
+
+		//Else: Retract without anything
+		else
+		{
+			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
+			grabbedObject = null;
+			RetractArm();
+		}
 	}
 }

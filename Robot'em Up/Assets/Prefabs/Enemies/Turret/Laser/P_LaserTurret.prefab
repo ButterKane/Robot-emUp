@@ -194,6 +194,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myScript: {fileID: 0}
+--- !u!1 &2762754806651016671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5576413525067530283}
+  m_Layer: 0
+  m_Name: P_SniperTurretAimingAtPlayerFX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5576413525067530283
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2762754806651016671}
+  m_LocalRotation: {x: -0.70710677, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8542555192393257471}
+  m_Father: {fileID: 2606373637356797361}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: -90.00001, y: 0, z: 0}
 --- !u!1 &2798787559611071523
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,7 +318,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5738937565884906333}
-  - {fileID: 6763244872527407770}
+  - {fileID: 5576413525067530283}
   - {fileID: 3164548329669528513}
   - {fileID: 4155180671091968368}
   m_Father: {fileID: 0}
@@ -336,8 +367,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 1.5
-  invincibilityTime: 1
+  invincibilityTime: 0.05
   ignoreEletricPlates: 0
+  currentState:
+    name: New state
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
   canMove: 0
   jumpForce: 0
   accelerationCurve:
@@ -383,13 +422,15 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 4
-  energyGainedOnHit: 1
-  damage: 10
+  focusedPawnController: {fileID: 0}
+  energyGainedOnHit: 0.08
+  damage: 100
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 0
+  lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 100
+  maxHeightOfDetection: 3
   unfocusDistance: 120
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 10
@@ -399,17 +440,18 @@ MonoBehaviour:
   timeToRecoverSlowFromPass: 0
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
-  maxAnticipationTime: 3
+  maxAnticipationTime: 3.5
   maxTimePauseAfterAttack: 1
   hitBoxOffset: {x: 0, y: 0, z: 0}
-  rotationSpeedPreparingAttack: 0.2
+  rotationSpeedPreparingAttack: 1
   distanceToAttack: 0
   portionOfAnticipationWithRotation: 1
+  cooldownAfterAttackTime: 1
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
-  spawnImpactRadius: 1
-  spawnImpactDamages: 1
+  spawnImpactRadius: 3
+  spawnImpactDamages: 20
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
@@ -417,9 +459,9 @@ MonoBehaviour:
   turretState: 0
   modelPivot: {fileID: 5738937565884906333}
   arenaTurret: 0
-  defaultForwardPredictionRatio: 0.85
+  defaultForwardPredictionRatio: 1
   minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
-  maxRotationSpeed: 5
+  maxRotationSpeed: 1000
   maxRestTime: 4
   randomRangeRestTime: 0.5
   aimingRedDotTransform: {fileID: 7381191969145207244}
@@ -432,68 +474,51 @@ MonoBehaviour:
   followingAimingColorIntensity: 5
   layersToCheckToScale:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 4352
   bulletPrefab: {fileID: 98529408051223827, guid: 9f1e04e3f52292b469d5528f887eea43,
     type: 3}
   bulletSpawn: {fileID: 2950884111546952476}
   canBulletTouchEnemies: 0
   bulletDamageRatioToEnemies: 0.5
   minMaxFollowingAimingRedDotScale: {x: 0.1, y: 0.2}
-  aimingAtPlayerFXTransform: {fileID: 6763244872527407770}
-  aimingAtPlayerFXRenderer: {fileID: 6763244872527407768}
+  aimingAtPlayerFXTransform: {fileID: 5576413525067530283}
+  aimingAtPlayerFXRenderer: {fileID: 8542555192393257469}
   aimingAtPlayerFXScaleOnWall: {x: 2, y: 2, z: 2}
   aimingAtPlayerFXScaleOnPlayer: {x: 6, y: 6, z: 6}
   endAimingFXScaleMultiplier: 0
-  rotationSpeedReductionRatio: 0.5
+  startAimingFXCircleThickness: 0
+  rotationSpeedReductionRatio: 0.929
   repulseCircleRadius: 2
-  repulseCircleStrength: 2
+  repulseCircleStrength: 1
   playerSpeedReductionCoef: 0.5
   FXChargingParticlesPrefab: {fileID: 147226, guid: d33e6250f9821824d9f179f05808ba22,
     type: 3}
   FXChargingMainLaserPrefab: {fileID: 6736872685272898243, guid: c122507af11acc54cab938b0547fcfa4,
     type: 3}
-  damagePerSecond: 100
+  damagePerSecond: 50
   laserMaxLength: 100
-  shootingLaserMaxTime: 10
-  whenToTriggerLaserReduction: 0.7
+  shootingLaserMaxTime: 3
+  whenToTriggerLaserReduction: 0.8
   reducingOfLaserWidth:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.99057007
-      inSlope: -1.4882246
-      outSlope: -1.4882246
-      tangentMode: 34
+      value: 1
+      inSlope: -0.08560447
+      outSlope: -0.08560447
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0.339978
     - serializedVersion: 3
-      time: 0.6007379
-      value: 0.09653711
-      inSlope: -1.4882246
-      outSlope: -0.0135233775
-      tangentMode: 5
+      time: 1
+      value: 0
+      inSlope: -2.8573632
+      outSlope: -2.8573632
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9040945
-      value: 0.093471885
-      inSlope: -0.010104374
-      outSlope: -0.94404745
-      tangentMode: 69
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.9981079
-      value: 0.0047187805
-      inSlope: -0.94404745
-      outSlope: -0.94404745
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.08080238
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -855,17 +880,17 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 4346710910731879046}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &8744049214987765162
+--- !u!1001 &5913091766103293647
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 2606373637356797361}
+    m_TransformParent: {fileID: 5576413525067530283}
     m_Modifications:
     - target: {fileID: 2630881796360466225, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_Name
-      value: P_SniperTurretAimingAtPlayerFX
+      value: Visuals
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
@@ -885,7 +910,7 @@ PrefabInstance:
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
@@ -900,17 +925,17 @@ PrefabInstance:
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: -0.00000032782555
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
@@ -925,29 +950,29 @@ PrefabInstance:
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cccfb20e48f9184099401344ea3c902, type: 3}
---- !u!4 &6763244872527407770 stripped
+--- !u!4 &8542555192393257471 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
     type: 3}
-  m_PrefabInstance: {fileID: 8744049214987765162}
+  m_PrefabInstance: {fileID: 5913091766103293647}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &6763244872527407768 stripped
+--- !u!23 &8542555192393257469 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2630881796360466226, guid: 4cccfb20e48f9184099401344ea3c902,
     type: 3}
-  m_PrefabInstance: {fileID: 8744049214987765162}
+  m_PrefabInstance: {fileID: 5913091766103293647}
   m_PrefabAsset: {fileID: 0}
