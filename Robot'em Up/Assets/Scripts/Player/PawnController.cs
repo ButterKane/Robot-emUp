@@ -152,6 +152,7 @@ public class PawnController : MonoBehaviour
 	private Coroutine currentStateCoroutine;
 	private IEnumerator currentStateStopCoroutine;
 	private PushDatas pushDatas;
+	private bool rotationForced;
 
 
     [HideInInspector] public PassController passController;
@@ -220,11 +221,19 @@ public class PawnController : MonoBehaviour
         }
     }
 
+	public void ForceRotate()
+	{
+		if (lookInput.magnitude >= 0.1f)
+		{
+			turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
+			rotationForced = true;
+		}
+	}
     void Rotate()
     {
 		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
 		//Rotation while moving
-		if (moveInput.magnitude >= 0.5f)
+		if (moveInput.magnitude >= 0.5f && !rotationForced)
             turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
 
 		//Rotation while aiming or shooting
@@ -234,6 +243,7 @@ public class PawnController : MonoBehaviour
 				turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
 		}
 
+		rotationForced = false;
 		transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
 	}
 
