@@ -19,6 +19,10 @@ public class TurretSniperBehaviour : TurretBehaviour
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));
         spawnedBullet.GetComponent<TurretSniperBullet>().target = focusedPawnController.transform;
         spawnedBullet.GetComponent<TurretSniperBullet>().spawnParent = transform;
+        if (aimingRedDotState != AimingRedDotState.NotVisible)
+        {
+            ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        }
     }
 
     public override void Die()
@@ -37,7 +41,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         UpdateAimingCubeState();
     }
 
-    public override void ExitState()
+    public override void ExitTurretState()
     {
         switch (turretState)
         {
@@ -60,7 +64,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterState()
+    public override void EnterTurretState()
     {
         //print(State);
         switch (turretState)
@@ -81,6 +85,8 @@ public class TurretSniperBehaviour : TurretBehaviour
                 animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
+                ChangeAimingRedDotState(AimingRedDotState.Following);
+                aimingAtPlayerFXTransform.gameObject.SetActive(true);
                 //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
                 break;
@@ -89,7 +95,55 @@ public class TurretSniperBehaviour : TurretBehaviour
                 break;
         }
     }
+    public override void EnterTurretAttackState()
+    {
+        switch (attackState)
+        {
+            case TurretAttackState.Anticipation:
+                //VARIABLES GAMEPLAY------------------
+                animator.SetTrigger("AnticipationTrigger");
+                anticipationTime = maxAnticipationTime;
+                restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
+                //VARIABLES FXs--------------------------------------
+                ChangeAimingRedDotState(AimingRedDotState.Following);
+                aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
+                aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
+                aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
+
+                break;
+            case TurretAttackState.Attack:
+                animator.SetTrigger("AttackTrigger");
+                //Shoot();
+                break;
+            case TurretAttackState.Rest:
+                ResetValuesAtEndOfAttack();
+                restTime = maxRestTime;
+                break;
+            case TurretAttackState.NotAttacking:
+                break;
+        }
+    }
+
+    public override void ExitTurretAttackState()
+    {
+        switch (attackState)
+        {
+            case TurretAttackState.Anticipation:
+                //ADAPT FXs----------------------------------
+                aimingAtPlayerFXTransform.gameObject.SetActive(false);
+                break;
+            case TurretAttackState.Attack:
+                ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+                break;
+            case TurretAttackState.Rest:
+                animator.SetTrigger("FromRestToIdleTrigger");
+                break;
+            case TurretAttackState.NotAttacking:
+                break;
+        }
+    }
     public override void AttackingUpdateState()
     {
 		bool i_aimAtPlayer = false;
@@ -121,91 +175,57 @@ public class TurretSniperBehaviour : TurretBehaviour
 			hit = hits[i];
 			aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
         }
-
-        //Adapt PlayerFXRenderer
-
         switch (attackState)
         {
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
-                //ADAPT FXs
+                // UPDATE FXS -------------------------------
+
+                // Circle on player
+                aimingAtPlayerFXTransform.gameObject.SetActive(true);
                 if (i_aimAtPlayer)
                 {
                     aimingAtPlayerFXTransform.position = focusedPawnController.transform.position + Vector3.up * 0.1f;
-					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
-					aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
-                }
-                else
-                {
-                    aimingAtPlayerFXTransform.position = hit.point + hit.normal * 0.2f;
-                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal);
-					aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
-                }
-
-                //ROTATE TOWARDS PLAYER
-                if (focusedPawnController != null)
-                {
-                    RotateTowardsPlayerAndHisForward();
-                    // rotating an object here works, so the method must be malfunctionning or the mainbody rotation is touched somewhere else
-                }
-
-                //TRANSITION TO OTHER STATE
-                anticipationTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime/maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
-
-                if (anticipationTime <= 0)
-                {
-                    attackState = TurretAttackState.Attack;
-                    animator.SetTrigger("AttackTrigger");
-                    // reset FX variables before attacking ! --------------------------------------------------------------------------
-                    aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 10);
-                    aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.yellow);
-                    aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
-                }
-                break;
-            //-------------------------------------------------------
-            case TurretAttackState.Attack:
-                //ADAPT FXs----------------------------------
-                if (i_aimAtPlayer)
-                {
-                    aimingAtPlayerFXTransform.position = focusedPawnController.transform.position + Vector3.up * 0.1f;
-					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
+                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnPlayer;
                 }
                 else
                 {
                     aimingAtPlayerFXTransform.position = hit.point + hit.normal * 0.2f;
-					aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal);
+                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
-                //ROTATE TOWARDS PLAYER-------------------------------------
+
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+
+                //ROTATE TOWARDS PLAYER
                 if (focusedPawnController != null)
                 {
-                    RotateTowardsPlayerAndHisForward();
+                    RotateTowardsPlayerPosition();
                 }
+
+                //TRANSITION TO OTHER STATE
+                anticipationTime -= Time.deltaTime;
+
+                if (anticipationTime <= 0)
+                {
+                    ChangingTurretAttackState(TurretAttackState.Attack);
+                }
+                break;
+            //-------------------------------------------------------
+            case TurretAttackState.Attack:
+                    ChangingTurretAttackState(TurretAttackState.Rest);
                 break;
             //-------------------------------------------------------
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
                 if (restTime <= 0)
                 {
-                    animator.SetTrigger("FromRestToIdleTrigger");
-                    ChangingState(TurretState.Idle);
-                }
-
-                if (aimingRedDotState != AimingRedDotState.NotVisible)
-                {
-                    ChangeAimingRedDotState(AimingRedDotState.NotVisible);
-                }
-
-                if (focusedPawnController != null)
-                {
-                    RotateTowardsPlayerAndHisForward();
+                    ChangingTurretAttackState(TurretAttackState.NotAttacking);
+                    ChangingTurretState(TurretState.Idle);
                 }
                 break;
-             //-------------------------------------------------------
         }
     }
 

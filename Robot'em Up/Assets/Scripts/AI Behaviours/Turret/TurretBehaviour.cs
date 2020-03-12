@@ -21,6 +21,7 @@ public enum TurretAttackState
     Anticipation,
     Attack,
     Rest,
+    NotAttacking
 }
 
 public enum AimingRedDotState
@@ -85,18 +86,18 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         isBumpable = false;
         if (arenaTurret)
         {
-            ChangingState(TurretState.WaitForCombatStart);
+            ChangingTurretState(TurretState.WaitForCombatStart);
         }
         else
         {
-            ChangingState(TurretState.Idle);
+            ChangingTurretState(TurretState.Hidden);
         }
     }
 
     new protected virtual void Update()
     {
         UpdateDistancesToPlayers();
-        UpdateState();
+        UpdateTurretState();
 		UpdateHealthBar();
 	}
 
@@ -129,11 +130,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
     }
 
-    public void ChangingState(TurretState _newState)
+    public void ChangingTurretState(TurretState _newState)
     {
-        ExitState();
+        ExitTurretState();
         turretState = _newState;
-        EnterState();
+        EnterTurretState();
     }
 
     protected virtual void RotateTowardsPlayerAndHisForward(float _rotationSpeedModRatio = 0)
@@ -150,7 +151,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1-_rotationSpeedModRatio)));
     }
 
-    public virtual void UpdateState()
+    public virtual void UpdateTurretState()
     {
         //print("Global State : " + State);
         switch (turretState)
@@ -173,6 +174,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                     CheckDistanceAndAdaptFocus();
                     timeBetweenCheck = maxTimeBetweenCheck;
                 }
+                if (focusedPawnController != null)
+                {
+                    Deploy();
+                }
                 break;
 
             case TurretState.Dying:
@@ -189,13 +194,18 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
                 if(focusedPawnController != null)
                 {
-                    ChangingState(TurretState.Attacking);
+                    ChangingTurretState(TurretState.Attacking);
                 }
                 break;
         }
     }
 
-    public virtual void ExitState()
+    public void Deploy()
+    {
+        ChangingTurretState(TurretState.Idle);
+    }
+
+    public virtual void ExitTurretState()
     {
         switch (turretState)
         {
@@ -204,6 +214,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretState.GettingOutOfGround:
                 break;
             case TurretState.Hidden:
+                animator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Dying:
                 break;
@@ -214,7 +225,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
     }
 
-    public virtual void EnterState()
+    public virtual void EnterTurretState()
     {
         //print(State);
         switch (turretState)
@@ -233,13 +244,56 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretState.Dying:
                 break;
             case TurretState.Attacking:
-                attackState = TurretAttackState.Anticipation;
+                ChangingTurretAttackState(TurretAttackState.Anticipation);
+                break;
+            case TurretState.Idle:
+                timeBetweenCheck = 0;
+                break;
+        }
+    }
+
+    public void ChangingTurretAttackState(TurretAttackState _newState)
+    {
+        ExitTurretAttackState();
+        attackState = _newState;
+        EnterTurretAttackState();
+    }
+
+    public virtual void EnterTurretAttackState()
+    {
+        switch (attackState)
+        {
+            case TurretAttackState.Anticipation:
+                ChangeAimingRedDotState(AimingRedDotState.Following);
                 animator.SetTrigger("AnticipationTrigger");
                 anticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + UnityEngine.Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 break;
-            case TurretState.Idle:
-                timeBetweenCheck = 0;
+            case TurretAttackState.Attack:
+                attackState = TurretAttackState.Attack;
+                ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+                animator.SetTrigger("AttackTrigger");
+                break;
+            case TurretAttackState.Rest:
+                break;
+            case TurretAttackState.NotAttacking:
+                break;
+        }
+    }
+
+    public virtual void ExitTurretAttackState()
+    {
+        switch (attackState)
+        {
+            case TurretAttackState.Anticipation:
+                break;
+            case TurretAttackState.Attack:
+                break;
+            case TurretAttackState.Rest:
+                animator.SetTrigger("FromRestToIdleTrigger");
+                
+                break;
+            case TurretAttackState.NotAttacking:
                 break;
         }
     }
@@ -249,8 +303,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         switch (attackState)
         {
             case TurretAttackState.Anticipation:
-                ChangeAimingRedDotState(AimingRedDotState.Following);
-
+                
                 if (focusedPawnController != null)
                 {
                     RotateTowardsPlayerAndHisForward();
@@ -258,25 +311,21 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 anticipationTime -= Time.deltaTime;
                 if (anticipationTime <= 0)
                 {
-                    attackState = TurretAttackState.Attack;
-                    animator.SetTrigger("AttackTrigger");
+                    ChangingTurretAttackState(TurretAttackState.Attack);
                 }
                 break;
 
             case TurretAttackState.Attack:
-                
+                ChangingTurretAttackState(TurretAttackState.Rest);
                 break;
 
             case TurretAttackState.Rest:
                 restTime -= Time.deltaTime;
-                if (aimingRedDotState != AimingRedDotState.NotVisible)
-                {
-                    ChangeAimingRedDotState(AimingRedDotState.NotVisible);
-                }
                 if (restTime <= 0)
                 {
-                    animator.SetTrigger("FromRestToIdleTrigger");
-                    ChangingState(TurretState.Idle);
+                    ChangingTurretAttackState(TurretAttackState.NotAttacking);
+                    
+                    ChangingTurretState(TurretState.Idle);
                 }
                 break;
         }
@@ -293,16 +342,19 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         }
     }
 
-    public void TransitionFromAttackToRest() //called from animation event !
+    public virtual void ResetValuesAtEndOfAttack()
     {
-        attackState = TurretAttackState.Rest;
+
     }
 
-    public void AbortAttack()
+    public virtual void AbortAttack()
     {
         attackState = TurretAttackState.Rest;
-        ChangeAimingRedDotState(AimingRedDotState.NotVisible);
-        ChangingState(TurretState.Hiding);
+        if (aimingRedDotState != AimingRedDotState.NotVisible)
+        {
+            ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        }
+        ChangingTurretState(TurretState.Idle);
     }
 
     public virtual void Shoot()
@@ -313,13 +365,18 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         spawnedBullet.GetComponent<TurretBasicBullet>().launcher = transform;
         spawnedBullet.GetComponent<TurretBasicBullet>().canHitEnemies = canBulletTouchEnemies;
         spawnedBullet.GetComponent<TurretBasicBullet>().damageModificator = bulletDamageRatioToEnemies;
+
+        if (aimingRedDotState != AimingRedDotState.NotVisible)
+        {
+            ChangeAimingRedDotState(AimingRedDotState.NotVisible);
+        }
     }
 
     void ChangingFocus(Transform _newFocus)
     {
         if(focusedPawnController == null && _newFocus!=null)
         {
-            ChangingState(TurretState.GettingOutOfGround);
+            if (turretState == TurretState.Hidden) { ChangingTurretState(TurretState.GettingOutOfGround); }
         }
         else if(focusedPawnController != null && _newFocus == null)
         {
