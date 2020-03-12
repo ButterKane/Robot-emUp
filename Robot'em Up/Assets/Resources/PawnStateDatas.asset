@@ -13,51 +13,51 @@ MonoBehaviour:
   m_Name: PawnStateDatas
   m_EditorClassIdentifier: 
   pawnStates:
-  - name: Dunk
+  - name: PushedHeavy
     stateOverriden:
-    - PushLight
-    - PushHeavy
-    invincibleDuringState: 1
-    damagesCancelState: 0
-    allowBallReception: 1
-    allowBallThrow: 0
-    preventMoving: 0
-  - name: PushHeavy
-    stateOverriden: []
+    - ShieldEnemyCharge
+    - MeleeEnemyAnticipation
+    - RedBarrelAnticipation
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 0
     allowBallThrow: 0
     preventMoving: 0
-  - name: PushLight
+  - name: PushedLight
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 1
     allowBallThrow: 1
     preventMoving: 0
-  - name: Bump
-    stateOverriden: []
+  - name: Bumped
+    stateOverriden:
+    - ShieldEnemyCharge
+    - MeleeEnemyAnticipation
+    - RedBarrelAnticipation
+    - GrabPulling
+    - GrabThrowing
+    - GrabDashing
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 1
     allowBallThrow: 1
     preventMoving: 1
-  - name: Dash
+  - name: Dashing
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 1
     allowBallReception: 1
     allowBallThrow: 1
     preventMoving: 0
-  - name: Climb
+  - name: Climbing
     stateOverriden: []
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 1
     allowBallThrow: 1
     preventMoving: 0
-  - name: WallSplat
+  - name: WallSplatted
     stateOverriden:
     - PushHeavy
     - Bump
@@ -66,4 +66,46 @@ MonoBehaviour:
     damagesCancelState: 0
     allowBallReception: 0
     allowBallThrow: 0
+    preventMoving: 1
+  - name: ShieldEnemyCharging
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
+  - name: MeleeEnemyAnticipating
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
+  - name: RedBarrelAnticipating
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 1
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 1
+  - name: GrabDashing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 1
+  - name: GrabThrowing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 0
+  - name: GrabPulling
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
     preventMoving: 1

@@ -298,7 +298,7 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Climbing;
 			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-			ChangeState("Climb", ClimbLedge_C(i_foundLedge));
+			ChangeState("Climbed", ClimbLedge_C(i_foundLedge));
 		}
 	}
 
@@ -634,7 +634,7 @@ public class PawnController : MonoBehaviour
 	public virtual void BumpMe( Vector3 _bumpDirectionFlat, float _bumpDistance, float _bumpDuration, float _bumpHeight)
     {
 		if (!isBumpable) { return; }
-		ChangeState("Bump", Bump_C(_bumpDirectionFlat, _bumpDistance, _bumpDuration, _bumpHeight), CancelBump_C());
+		ChangeState("Bumped", Bump_C(_bumpDirectionFlat, _bumpDistance, _bumpDuration, _bumpHeight), CancelBump_C());
     }
 
 	public virtual void Push ( PushForce _forceType, Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight)
@@ -642,12 +642,12 @@ public class PawnController : MonoBehaviour
 		switch (_forceType)
 		{
 			case PushForce.Light:
-				ChangeState("PushLight", PushLight_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+				ChangeState("PushedLight", PushLight_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 				break;
 			case PushForce.Heavy:
 				Vector3 forwardDirection = (_pushDirectionFlat.normalized * _pushDistance) + new Vector3(0,_pushHeight,0);
 				transform.forward = forwardDirection;
-				ChangeState("PushHeavy", PushHeavy_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+				ChangeState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 				break;
 		}
 	}
@@ -734,7 +734,7 @@ public class PawnController : MonoBehaviour
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
 		if (currentState != null && currentState.name == "WallSplat") { return; }
-		ChangeState("WallSplat", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
+		ChangeState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
 	}
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)
@@ -909,6 +909,7 @@ public class PawnController : MonoBehaviour
 		if (isPlayer) { restDuration = pushDatas.bumpPlayerRestDuration; }
 	     restDuration = restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
 		Vector3 bumpDirection = _bumpDirectionFlat;
+		bumpDirection.y = 0;
 		Vector3 bumpInitialPosition = transform.position;
 		Vector3 bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
 

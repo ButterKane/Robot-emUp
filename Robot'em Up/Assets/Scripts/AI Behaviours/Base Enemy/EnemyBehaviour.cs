@@ -269,7 +269,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.Dying:
-                Kill();
+                
                 break;
         }
     }
@@ -310,6 +310,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
+                Kill();
                 break;
             case EnemyState.Spawning:
                 break;
@@ -457,7 +458,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.RedBarrelExplosion:
-                if (isBumpable)
+                if (isBumpable && enemyType != EnemyTypes.RedBarrel)
                 {
                     damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);

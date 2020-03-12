@@ -74,7 +74,7 @@ public class DunkController : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			pawnController.ChangeState("Dunk", Dunk_C());
+			pawnController.ChangeState("Dunking", Dunk_C());
 		}
 		if (currentCD >= 0)
 		{

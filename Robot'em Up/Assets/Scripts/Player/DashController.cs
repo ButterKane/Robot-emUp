@@ -102,7 +102,7 @@ public class DashController : MonoBehaviour
 
 		currentStackAmount--;
 		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
-		linkedPawn.ChangeState("Dash", Dash_C(i_startPosition, i_endPosition), StopDash_C());
+		linkedPawn.ChangeState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
 		currentUseCooldown = useCooldown;
 	}
 	void ChangeState(DashState _newState)
