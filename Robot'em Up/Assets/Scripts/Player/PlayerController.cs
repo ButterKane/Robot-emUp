@@ -382,7 +382,22 @@ public class PlayerController : PawnController, IHitable
         }
 	}
 
-	public void KillWithoutCorePart()
+    public override void DamageFromLaser(float _amount)
+    {
+        if (!isInvincible_access)
+        {
+            animator.SetTrigger("HitTrigger");
+            PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
+            if (i_potentialPlayerUI != null)
+            {
+                i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
+            }
+
+            base.DamageFromLaser(_amount);
+        }
+    }
+
+    public void KillWithoutCorePart()
 	{
 		if (moveState == MoveState.Dead) { return; }
 		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
@@ -525,7 +540,7 @@ public class PlayerController : PawnController, IHitable
                 break;
 
             case DamageSource.Laser:
-                Damage(_damages);
+                DamageFromLaser(_damages);
                 break;
 
 			case DamageSource.SpawnImpact:
