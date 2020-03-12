@@ -63,7 +63,7 @@ public class SpeedCoef
 public class PawnController : MonoBehaviour
 {
 	[Separator("General settings")]
-	public int maxHealth;
+	public float maxHealth;
 	public float totalHeight;
 	public bool isInvincible_access
     {
@@ -133,7 +133,7 @@ public class PawnController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	protected float currentSpeed;
-    [System.NonSerialized] public int currentHealth;
+    [System.NonSerialized] public float currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
@@ -433,12 +433,12 @@ public class PawnController : MonoBehaviour
 		currentStateCoroutine = null;
 	}
 
-	public int GetHealth()
+	public float GetHealth()
 	{
 		return currentHealth;
 	}
 
-	public int GetMaxHealth()
+	public float GetMaxHealth()
 	{
 		return maxHealth;
 	}
@@ -500,7 +500,7 @@ public class PawnController : MonoBehaviour
 
 	public virtual void Heal(int _amount)
 	{
-		int i_newHealth = currentHealth + _amount;
+		float i_newHealth = currentHealth + _amount;
 		currentHealth = Mathf.Clamp(i_newHealth, 0, GetMaxHealth());
 		FeedbackManager.SendFeedback(eventOnHealing, this);
 	}
@@ -517,16 +517,7 @@ public class PawnController : MonoBehaviour
 		SetInvincible();
 		FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 
-        int i_actualDamages = (int)_amount;
-        accumulatedDamage += _amount - i_actualDamages;
-
-        if (accumulatedDamage >= 1)
-        {
-            i_actualDamages += (int)accumulatedDamage;
-            accumulatedDamage -= (int)accumulatedDamage;
-        }
-
-        currentHealth -= i_actualDamages;
+        currentHealth -= _amount;
 
         if (currentHealth <= 0)
         {
@@ -537,6 +528,23 @@ public class PawnController : MonoBehaviour
             MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
         }
 	}
+
+    public virtual void DamageFromLaser(float _amount)
+    {
+        if (!CanDamage()) { return; }
+        FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
+
+        currentHealth -= _amount;
+
+        if (currentHealth <= 0)
+        {
+            Kill();
+        }
+        if (GetComponent<PlayerController>() != null)
+        {
+            MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
+        }
+    }
 	public Animator GetAnimator ()
 	{
 		return animator;

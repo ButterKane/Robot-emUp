@@ -17,11 +17,11 @@ public class TurretAnimationEvent : MonoBehaviour
 
     void FinishedPrepareAttack()
     {
-        myScript.ChangingState(TurretState.Attacking);
+        myScript.ChangingTurretState(TurretState.Attacking);
     }
     void FinishedHiding()
     {
-        myScript.ChangingState(TurretState.Hidden);
+        myScript.ChangingTurretState(TurretState.Hidden);
     }
     void Attack()
     {
@@ -47,17 +47,14 @@ public class TurretAnimationEvent : MonoBehaviour
         myScript.ChangeAimingRedDotState(AimingRedDotState.Locking);
     }
 
-    void GoToRestAttackState()
-    {
-        if(myScript.attackState == TurretAttackState.Attack)
-        {
-            myScript.TransitionFromAttackToRest();
-            canCallFollowingState = true;
-        }
-    }
 
     void FinishedDeploying()
     {
-        myScript.ChangingState(TurretState.Idle);
+        myScript.ChangingTurretState(TurretState.Idle);
+    }
+
+    void ResetAttackVariables()
+    {
+        myScript.ResetValuesAtEndOfAttack();
     }
 }
