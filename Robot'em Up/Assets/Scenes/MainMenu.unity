@@ -2031,12 +2031,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db06233ad7a5f694e895ffb46eae2877, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMainMenuActive: 1
   menuButtons:
   - {fileID: 634458515}
   - {fileID: 619668879}
   - {fileID: 1163014192}
   - {fileID: 708450404}
   - {fileID: 926919876}
+  optionMenuPrefab: {fileID: 3990827997643161736, guid: dc13041436b957b47a8ca288565745a2,
+    type: 3}
   selectorArrow: {fileID: 2116886518}
   selectorOutline: {fileID: 1951929326}
   sceneList: {fileID: 248740856}
@@ -2533,8 +2536,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1097741913}
   m_HandleRect: {fileID: 1097741912}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2905,7 +2908,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1714493392}
   m_HandleRect: {fileID: 1714493390}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

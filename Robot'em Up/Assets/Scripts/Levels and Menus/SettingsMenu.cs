@@ -40,6 +40,7 @@ public class SettingsMenu : MonoBehaviour
     private bool waitForAReset;
     private int categoryNumber;
     private bool isInputChangingOpen;
+    public MainMenu scriptLinkedToThisOne;
 
     void Awake()
     {
@@ -136,6 +137,7 @@ public class SettingsMenu : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("bidouille");
         currentCategory = selectedCategory.name;
         selectedSettingName = selectedSetting.gameObject.name;
 
@@ -325,7 +327,9 @@ public class SettingsMenu : MonoBehaviour
 
     void ReturnToMainMenu()
     {
-        GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
+       scriptLinkedToThisOne.isMainMenuActive = true;
+       gameObject.SetActive(false);
+       //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
     }
 
     void OpenInputChanging()
