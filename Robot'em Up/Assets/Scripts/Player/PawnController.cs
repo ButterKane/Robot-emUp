@@ -697,7 +697,8 @@ public class PawnController : MonoBehaviour
 		{
 			if (moveState == MoveState.Pushed)
 			{
-				if (currentState.name == "Bump")
+				Debug.Log("WallSplat");
+				if (currentState.name == "Bumped")
 				{
 					WallSplat(WallSplatForce.Heavy, collision);
 				} else
@@ -726,14 +727,14 @@ public class PawnController : MonoBehaviour
 	}
 
 	private void WallSplat( WallSplatForce _force, Collision _collision ) {
-		if (currentState != null && currentState.name == "WallSplat") { return; }
+		if (currentState != null && currentState.name == "WallSplatted") { return; }
 		Vector3 _normalDirection = _collision.GetContact(0).normal;
 		WallSplat(_force, _normalDirection);
 	}
 
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
-		if (currentState != null && currentState.name == "WallSplat") { return; }
+		if (currentState != null && currentState.name == "WallSplatted") { return; }
 		ChangeState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
 	}
 
@@ -826,6 +827,7 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator WallSplat_C (WallSplatForce _force, Vector3 _normalDirection)
 	{
+		animator.SetTrigger("FallingTrigger");
 		moveState = MoveState.Pushed;
 		if (isPlayer)
 		{
@@ -899,6 +901,7 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator Bump_C( Vector3 _bumpDirectionFlat, float _bumpDistance, float _bumpDuration, float _bumpHeight )
     {
+		animator.SetTrigger("FallingTrigger");
 		animator.SetTrigger("BumpTrigger");
 		moveState = MoveState.Pushed;
 		FeedbackManager.SendFeedback(eventOnBeingBumpedAway, this);
