@@ -70,33 +70,6 @@ public class ExtendingArmsController : MonoBehaviour
 		UpdateGrab();
 	}
 
-	private void UpdateDirectionBuffer ()
-	{
-		if (timeBetweenLastDirectionSet < delayBeforeResettingJoystickDirection) {
-			timeBetweenLastDirectionSet += Time.deltaTime;
-		} else
-		{
-			directionSet = Vector3.zero;
-		}
-	}
-
-	private void UpdateGrab ()
-	{
-		if (grabHand.gameObject.activeSelf && lineRenderer != null)
-		{
-			lineRenderer.positionCount = 2;
-			lineRenderer.SetPosition(0, armTransform.position);
-			lineRenderer.SetPosition(1, grabHand.transform.position);
-		} else
-		{
-			lineRenderer.positionCount = 0;
-		}
-		if (Vector3.Distance(grabHand.position, armTransform.position) >= maxRange + rangeTolerance)
-		{
-			RetractArm();
-		}
-	}
-
 	public void SetDirection(Vector3 _direction)
 	{
 		directionSet = _direction;
@@ -121,17 +94,45 @@ public class ExtendingArmsController : MonoBehaviour
 	public void ExtendArm()
 	{
 		if (directionSet != Vector3.zero && currentState == ArmState.Retracted) {
-			StartCoroutine(ExtendArm_C());
+			linkedPlayer.ChangeState("GrabThrowing", ExtendArm_C(), RetractArm_C());
 		}
 	}
 
 	public void RetractArm()
 	{
-		if (currentState != ArmState.Extended) { return; }
 		StartCoroutine(RetractArm_C());
 	}
 
-	void ShowPreview()
+	private void UpdateDirectionBuffer ()
+	{
+		if (timeBetweenLastDirectionSet < delayBeforeResettingJoystickDirection)
+		{
+			timeBetweenLastDirectionSet += Time.deltaTime;
+		}
+		else
+		{
+			directionSet = Vector3.zero;
+		}
+	}
+
+	private void UpdateGrab ()
+	{
+		if (grabHand.gameObject.activeSelf && lineRenderer != null)
+		{
+			lineRenderer.positionCount = 2;
+			lineRenderer.SetPosition(0, armTransform.position);
+			lineRenderer.SetPosition(1, grabHand.transform.position);
+		}
+		else
+		{
+			lineRenderer.positionCount = 0;
+		}
+		if (Vector3.Distance(grabHand.position, armTransform.position) >= maxRange + rangeTolerance)
+		{
+			RetractArm();
+		}
+	}
+	private void ShowPreview ()
 	{
 		if (!previewShown) { return; }
 		previewLineRenderer.positionCount = 2;
@@ -176,14 +177,14 @@ public class ExtendingArmsController : MonoBehaviour
 		}
 	}
 
-	void GeneratePreviewDecal ()
+	private void GeneratePreviewDecal ()
 	{
 		currentHitDecal = Instantiate(previewHitDecal).transform;
 		currentHitDecalScript = currentHitDecal.GetComponentInChildren<Decal>();
 		currentHitDecal.gameObject.SetActive(false);
 	}
 
-	void GenerateGrabHand ()
+	private void GenerateGrabHand ()
 	{
 		grabHand = Instantiate(Resources.Load<GameObject>("PlayerResource/GrabHand")).transform;
 		grabHand.transform.SetParent(armTransform);
@@ -192,7 +193,7 @@ public class ExtendingArmsController : MonoBehaviour
 		grabHand.gameObject.SetActive(false);
 	}
 
-	bool IsGrabbable(Transform t)
+	private bool IsGrabbable (Transform t)
 	{
 		if (t.gameObject.GetComponent<Grabbable>() != null || t.gameObject.layer == LayerMask.NameToLayer("Player") || t.gameObject.layer == LayerMask.NameToLayer("PlayerPart"))
 		{
@@ -200,40 +201,11 @@ public class ExtendingArmsController : MonoBehaviour
 		}
 		return false;
 	}
-	void CheckWhatGotGrabbed()
+	private void CheckWhatGotGrabbed ()
 	{
-		//If grabbable wall: dash
-		if (grabbedObject == null) {
-			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
-			RetractArm();
-		}
-		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
-		{
-			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			StartCoroutine(DashTowardHand_C());
-		} 
-		//If player: dash player toward me
-		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("Player")) {
-			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			StartCoroutine(RetractWithObject_C());
-		}
-		//If other player part: dash part toward me and collect it
-		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("PlayerPart"))
-		{
-			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			StartCoroutine(RetractWithObject_C());
-		}
-		//If enemy shield: wait for other grab //SCOPE ++
-
-		//Else: Retract without anything
-		else
-		{
-			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
-			grabbedObject = null;
-			RetractArm();
-		}
+		StartCoroutine(CheckWhatGotGrabbed_C());
 	}
-	void ChangeState(ArmState _newState)
+	private void ChangeState (ArmState _newState)
 	{
 		switch (_newState)
 		{
@@ -428,5 +400,42 @@ public class ExtendingArmsController : MonoBehaviour
 		grabHand.transform.localScale = Vector3.one;
 		FeedbackManager.SendFeedback("event.GrabRetractionEnd", grabHand);
 		ChangeState(ArmState.Retracted);
+	}
+
+	IEnumerator CheckWhatGotGrabbed_C ()
+	{
+		yield return new WaitForSeconds(0.1f);
+		//If grabbable wall: dash
+		if (grabbedObject == null)
+		{
+			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
+			RetractArm();
+		}
+		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
+		{
+			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
+			linkedPlayer.ChangeState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
+		}
+		//If player: dash player toward me
+		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("Player"))
+		{
+			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
+			linkedPlayer.ChangeState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
+		}
+		//If other player part: dash part toward me and collect it
+		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("PlayerPart"))
+		{
+			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
+			linkedPlayer.ChangeState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
+		}
+		//If enemy shield: wait for other grab //SCOPE ++
+
+		//Else: Retract without anything
+		else
+		{
+			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
+			grabbedObject = null;
+			RetractArm();
+		}
 	}
 }

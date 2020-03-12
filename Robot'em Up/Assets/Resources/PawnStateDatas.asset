@@ -13,15 +13,6 @@ MonoBehaviour:
   m_Name: PawnStateDatas
   m_EditorClassIdentifier: 
   pawnStates:
-  - name: Dunking
-    stateOverriden:
-    - PushLight
-    - PushHeavy
-    invincibleDuringState: 1
-    damagesCancelState: 0
-    allowBallReception: 1
-    allowBallThrow: 0
-    preventMoving: 0
   - name: PushedHeavy
     stateOverriden:
     - ShieldEnemyCharge
@@ -44,6 +35,9 @@ MonoBehaviour:
     - ShieldEnemyCharge
     - MeleeEnemyAnticipation
     - RedBarrelAnticipation
+    - GrabPulling
+    - GrabThrowing
+    - GrabDashing
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 1
@@ -93,4 +87,25 @@ MonoBehaviour:
     damagesCancelState: 1
     allowBallReception: 0
     allowBallThrow: 0
+    preventMoving: 1
+  - name: GrabDashing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 1
+  - name: GrabThrowing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 0
+  - name: GrabPulling
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
     preventMoving: 1
