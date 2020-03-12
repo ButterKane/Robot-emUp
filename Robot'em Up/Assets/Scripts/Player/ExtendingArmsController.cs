@@ -262,7 +262,7 @@ public class ExtendingArmsController : MonoBehaviour
 					EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
 					if (!enemyHit.Contains(enemy))
 					{
-						enemy.BumpMe(c.transform.position - grabbedObject.transform.position, dashCollisionPushForce, 1f, 1f);
+						enemy.BumpMe(c.transform.position - grabbedObject.transform.position, BumpForce.Force1);
 						enemyHit.Add(enemy);
 					}
 				}
@@ -305,7 +305,7 @@ public class ExtendingArmsController : MonoBehaviour
 					EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
 					if (!enemyHit.Contains(enemy))
 					{
-						enemy.BumpMe(c.transform.position - transform.position, dashCollisionPushForce, 1f, 1f);
+						enemy.BumpMe(c.transform.position - transform.position, BumpForce.Force1);
 						enemyHit.Add(enemy);
 					}
 				}

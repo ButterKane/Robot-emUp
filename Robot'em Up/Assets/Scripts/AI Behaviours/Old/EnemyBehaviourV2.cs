@@ -426,7 +426,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                         i_BumpDurationMod = i_controller.bumpDurationMod;
                         i_BumpRestDurationMod = i_controller.bumpRestDurationMod;
                     }
-                    BumpMe(i_normalizedImpactVector.normalized, 10, 1, 1);
+                    BumpMe(i_normalizedImpactVector.normalized,BumpForce.Force2);
                     whatBumps = WhatBumps.Dunk;
                 }
                 else
@@ -448,7 +448,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                         i_BumpDurationMod = _bumpModificators.y;
                         i_BumpRestDurationMod = _bumpModificators.z;
                     }
-                    BumpMe(i_normalizedImpactVector.normalized, 10, 1, 1);
+                    BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
