@@ -132,6 +132,8 @@ namespace Knife.DeferredDecals
                 Debug.LogError("Must be only one deferred decals system");
                 Disable();
             }
+            Disable();
+            Enable();
         }
 
         private void OnEnable()

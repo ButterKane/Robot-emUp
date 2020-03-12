@@ -151,20 +151,10 @@ public class PlayerController : PawnController, IHitable
 		if (lookInput.magnitude > 0.1f)
 		{
 			passController.Aim();
+			extendingArmsController.SetDirection(lookInput);
 		} else
 		{
 			passController.StopAim();
-		}
-
-		if (extendingArmsController != null)
-		{
-			if (lookInput.magnitude > 0.1f)
-			{
-				extendingArmsController.SetThrowDirection(lookInput);
-			} else
-			{
-				extendingArmsController.DisableThrowDirectionIndicator();
-			}
 		}
 		if (state.Buttons.B == ButtonState.Pressed)
 		{
@@ -197,19 +187,19 @@ public class PlayerController : PawnController, IHitable
 		if (state.Buttons.RightShoulder == ButtonState.Pressed)
 		{
 			rbPressed = true;
-			if (lookInput.magnitude > 0.1f)
+			ForceRotate(); //Player will rotate toward look input
+			if (extendingArmsController != null)
 			{
-				extendingArmsController.SetThrowDirection(lookInput);
-			}
-			else
-			{
-				extendingArmsController.DisableThrowDirectionIndicator();
+				extendingArmsController.TogglePreview(true);
 			}
 		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed )
 		{
 			rbPressed = false;
-			extendingArmsController.DisableThrowDirectionIndicator();
-			extendingArmsController.ExtendArm();
+			if (extendingArmsController != null)
+			{
+				extendingArmsController.ExtendArm();
+				extendingArmsController.TogglePreview(false);
+			}
 		}
 		if (state.Triggers.Left > triggerTreshold)
 		{
@@ -221,7 +211,7 @@ public class PlayerController : PawnController, IHitable
 				{
 					dashDirection = transform.forward;
 				}
-				//dashController.Dash(dashDirection);
+				dashController.Dash(dashDirection);
 				//Push(PushForce.Heavy, Vector3.forward, 10f, 0.5f, 5f);
 				//BumpMe(transform.forward, 10f, 1f, 1f);
 			}
@@ -273,16 +263,6 @@ public class PlayerController : PawnController, IHitable
 		moveInput.y = 0;
 		moveInput.Normalize();
 		lookInput = SwissArmyKnife.GetMouseDirection(cam, transform.position);
-		if (extendingArmsController != null)
-		{
-			if (lookInput.magnitude > 0.1f)
-			{
-				extendingArmsController.SetThrowDirection(lookInput);
-			} else
-			{
-				extendingArmsController.DisableThrowDirectionIndicator();
-			}
-		}
 		if (Input.GetMouseButton(1))
 		{
 			passController.Aim();
