@@ -96,17 +96,26 @@ public class BossPunch : MonoBehaviour
 		{
 			if (canDamagePlayers && damageCollider != null && damageCollider.enabled)
 			{
+				//Punch direct hit
 				other.GetComponent<PlayerController>().Damage(punchDamages);
 				Vector3 pushDirection = other.transform.position - transform.position;
 				pushDirection.y = punchPushHeight;
 				pushDirection = pushDirection.normalized;
-				other.GetComponent<PlayerController>().BumpMe(pushDirection, punchPushForce, 0.5f, 0.5f);
+				other.GetComponent<PlayerController>().BumpMe(pushDirection, BumpForce.Force3);
 			} else if (canPushPlayers && pushCollider != null && pushCollider.enabled)
 			{
+				//Punch push
 				Vector3 pushDirection = other.transform.position - transform.position;
 				pushDirection.y = punchPushHeight;
 				pushDirection = pushDirection.normalized;
-				other.GetComponent<PlayerController>().BumpMe(pushDirection, punchPushForce, 0.5f, 0.5f);
+				other.GetComponent<PlayerController>().Push(PushType.Heavy, pushDirection,PushForce.Force3);
+			} else if (canDestroyEnviro && destroyEnviroCollider != null && destroyEnviroCollider.enabled)
+			{
+				//Hammer hit
+				Vector3 pushDirection = other.transform.position - transform.position;
+				pushDirection.y = punchPushHeight;
+				pushDirection = pushDirection.normalized;
+				other.GetComponent<PlayerController>().BumpMe(pushDirection, BumpForce.Force2);
 			}
 		} else if (other.tag == "Boss_Tile" && !cubeDestroyed && canDestroyEnviro && destroyEnviroCollider != null && destroyEnviroCollider.enabled)
 		{

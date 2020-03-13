@@ -62,6 +62,7 @@ public class BossLaser : MonoBehaviour
 		{
 			PlayerController player = other.GetComponent<PlayerController>();
 			player.Damage(Time.deltaTime * bossDatas.laserSettings.damagesPerSecond);
+			player.Push(PushType.Light, transform.forward, PushForce.Force1);
 		}
 	}
 
