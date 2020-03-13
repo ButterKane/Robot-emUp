@@ -57,6 +57,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         if (Explosion_C == null)
         {
             Explosion_C = ExplosionSequence_C(isExplosionSafe);
+            ChangeState("RedBarrelAnticipating", Explosion_C, null);
             StartCoroutine(Explosion_C);
         }
     }
