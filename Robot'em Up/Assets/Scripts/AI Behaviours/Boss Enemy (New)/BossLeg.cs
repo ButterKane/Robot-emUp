@@ -18,6 +18,7 @@ public class BossLeg : MonoBehaviour, IHitable
 	[HideInInspector] public float canonMaxAngle;
 	[HideInInspector] public float canonRotationSpeed;
 	[HideInInspector] public float maxHP;
+	[HideInInspector] public float perfectReceptionDamageMultiplier = 0.25f;
 	public float healthBarHeight = 1f;
 	public float canonLength;
 	public Transform protectionPlateVisuals;
@@ -47,6 +48,10 @@ public class BossLeg : MonoBehaviour, IHitable
 		if (destroyed) { return; }
 		FeedbackManager.SendFeedback("event.BossLegHit", this);
 		legAnimator.StartCoroutine(legAnimator.BumpLeg_C());
+		if (_source == DamageSource.PerfectReceptionExplosion)
+		{
+			_damages = _damages *perfectReceptionDamageMultiplier;
+		}
 		if (destroyable)
 		{
 			currentHP -= _damages;
