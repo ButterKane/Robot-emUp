@@ -487,19 +487,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 whatBumps = WhatBumps.Pass;
                 //Staggered(whatBumps);
                 Damage(_damages);
-                BallDatas bd = _ball.currentBallDatas;
-                float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
-                Debug.Log(ballChargePercent);
-                if (ballChargePercent >= bd.minimalChargeForBump)
-                {
-                    BumpMe(_impactVector.normalized, BumpForce.Force1);
-                } else if (ballChargePercent >= bd.minimalChargeForHeavyPush)
-                {
-                    Push(PushType.Heavy, _impactVector.normalized, PushForce.Force1);
-                } else if (ballChargePercent >= bd.minimalChargeForLightPush)
-                {
-                    Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
-                }
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
@@ -508,7 +495,24 @@ public class EnemyBehaviour : PawnController, IHitable
 
             case DamageSource.PerfectReceptionExplosion:
                 Damage(_damages);
-                if (currentHealth <= 0)
+
+				BallDatas bd = _ball.currentBallDatas;
+				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
+				Debug.Log(ballChargePercent);
+				if (ballChargePercent >= bd.minimalChargeForBump)
+				{
+					BumpMe(_impactVector.normalized, BumpForce.Force1);
+				}
+				else if (ballChargePercent >= bd.minimalChargeForHeavyPush)
+				{
+					Push(PushType.Heavy, _impactVector.normalized, PushForce.Force1);
+				}
+				else if (ballChargePercent >= bd.minimalChargeForLightPush)
+				{
+					Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
+				}
+
+				if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
                 }
