@@ -48,7 +48,7 @@ public class EnemyShield : EnemyBehaviour
     }
 
     // ATTACK
-    public override IEnumerator EnterPreparingAttackState()
+    public override void EnterPreparingAttackState()
     {
         initialSpeed = navMeshAgent.speed;
         acceleration = navMeshAgent.acceleration;
@@ -56,7 +56,6 @@ public class EnemyShield : EnemyBehaviour
         animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
-        yield return null;
     }
 
     public override void PreparingAttackState()

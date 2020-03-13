@@ -83,7 +83,19 @@ MonoBehaviour:
     allowBallThrow: 0
     preventMoving: 0
   - name: MeleeEnemyAnticipating
-    stateOverriden: []
+    stateOverriden:
+    - ShieldEnemyCharging
+    - MeleeEnemyAnticipating
+    - RedBarrelAnticipating
+    - GrabDashing
+    - GrabThrowing
+    - GrabPulling
+    - WallSplatted
+    - Climbing
+    - Dashing
+    - Bumped
+    - PushedLight
+    - PushedHeavy
     invincibleDuringState: 0
     damagesCancelState: 0
     allowBallReception: 0
