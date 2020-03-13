@@ -808,7 +808,6 @@ public class PawnController : MonoBehaviour
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = _pushHeight;
-		rb.useGravity = false;
 		Vector3 initialPosition = transform.position;
 		Vector3 endPosition = initialPosition + moveDirection;
 		Vector3 moveOffset = Vector3.zero;
@@ -819,7 +818,6 @@ public class PawnController : MonoBehaviour
 			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
 			yield return null;
 		}
-		rb.useGravity = true;
 		moveState = MoveState.Idle;
 		animator.SetBool("PushedBool", false);
 	}
@@ -878,7 +876,6 @@ public class PawnController : MonoBehaviour
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = _pushHeight;
 		transform.forward = moveDirection;
-		rb.useGravity = false;
 		Vector3 initialPosition = transform.position;
 		Vector3 endPosition = initialPosition + moveDirection;
 		Vector3 moveOffset = Vector3.zero;
@@ -899,14 +896,12 @@ public class PawnController : MonoBehaviour
 			transform.position = newPosition;
 			yield return null;
 		}
-		rb.useGravity = true;
 		moveState = MoveState.Idle;
 		animator.SetBool("PushedBool", false);
 	}
 
 	private IEnumerator CancelPush_C()
 	{
-		rb.useGravity = true;
 		moveState = MoveState.Idle;
 		yield return null;
 	}

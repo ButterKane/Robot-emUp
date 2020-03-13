@@ -24,11 +24,12 @@ public class EnemyMelee : EnemyBehaviour
         armScript = GetComponentInChildren<EnemyArmAttack>();
     }
 
-    public override void EnterPreparingAttackState()
+    public override IEnumerator EnterPreparingAttackState()
     {
         base.EnterPreparingAttackState();
         attackPreviewPlane = null;
         InititateMeleeHitBox();
+        yield return null;
     }
 
     public void InititateMeleeHitBox()
