@@ -100,10 +100,7 @@ public class DashController : MonoBehaviour
 		}
 		i_endPosition.y = i_startPosition.y;
 
-		currentStackAmount--;
-		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
 		linkedPawn.ChangeState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
-		currentUseCooldown = useCooldown;
 	}
 	void ChangeState(DashState _newState)
 	{
@@ -180,6 +177,10 @@ public class DashController : MonoBehaviour
 
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )
 	{
+		currentUseCooldown = useCooldown;
+		currentStackAmount--;
+		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
+
 		Vector3 i_dashDirection = _endPosition - _startPosition;
 		ChangeState(DashState.Dashing);
 		float i_cloneCounter = 0;
@@ -216,7 +217,6 @@ public class DashController : MonoBehaviour
 				}
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{
-					Debug.Log("Hit enviro");
 					StartCoroutine(StopDash_C());
 				}
 			}
@@ -227,14 +227,14 @@ public class DashController : MonoBehaviour
 		GenerateClone();
 		ChangeState(DashState.None);
 		StartCoroutine(FadePlayerSpeed());
+		yield return null;
 	}
 
 	IEnumerator StopDash_C()
 	{
-		yield return null;
 		GenerateClone();
 		ChangeState(DashState.None);
-		StopAllCoroutines();
+		yield return null;
 	}
 
 	IEnumerator FadePlayerSpeed()
