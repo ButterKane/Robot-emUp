@@ -318,11 +318,7 @@ public class SettingsMenu : MonoBehaviour
 
     void ResetToDefault()
     {
-        SettingsMenuOrganizer i_categoryScript = selectedCategory.GetComponent<SettingsMenuOrganizer>();
-        foreach (var setting in i_categoryScript.childrenObjects)
-        {
-            setting.GetComponent<UIBehaviour>().ResetValueToDefault();
-        }
+        selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
     }
 
     void ReturnToMainMenu()

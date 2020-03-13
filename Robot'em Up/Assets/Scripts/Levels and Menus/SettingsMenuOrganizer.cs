@@ -12,6 +12,7 @@ public class SettingsMenuOrganizer : MonoBehaviour
     public float boxesWidth = 470;
     [ReadOnly] public RectTransform[] settingsToOrganize;
     [ReadOnly] public GameObject[] childrenObjects;
+    [ReadOnly] public UIBehaviour selectedSettingInChildren;
 
     private void Awake()
     {
@@ -58,6 +59,7 @@ public class SettingsMenuOrganizer : MonoBehaviour
             if (i == _index)
             {
                 settingScriptToReturn = childrenObjects[i].GetComponent<UIBehaviour>().SelectThisSetting();
+                selectedSettingInChildren = settingScriptToReturn;
             }
             else
             {
