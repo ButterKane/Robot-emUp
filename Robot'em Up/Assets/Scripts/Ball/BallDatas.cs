@@ -22,6 +22,7 @@ public class BallDatas : ScriptableObject
 	public float timescaleOnHit = 0.1f;
 	public float timescaleDurationOnHit = 0.1f;
 	public Gradient colorOverDamage;
-	public float minimalChargeForPush;
+	public float minimalChargeForHeavyPush;
 	public float minimalChargeForBump;
+	public float minimalChargeForLightPush;
 }

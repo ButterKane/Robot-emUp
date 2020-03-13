@@ -86,7 +86,7 @@ public class BossTile : MonoBehaviour
 			currentElectricalPlate.transform.position = Vector3.Lerp(startPosition, endPosition, i / 1f);
 			yield return null;
 		}
-		Destroy(currentElectricalPlate);
+		Destroy(currentElectricalPlate.gameObject);
 	}
 
 	IEnumerator Destroy_Tile_C ()

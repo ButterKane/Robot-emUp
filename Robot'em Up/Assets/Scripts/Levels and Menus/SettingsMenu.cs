@@ -40,6 +40,7 @@ public class SettingsMenu : MonoBehaviour
     private bool waitForAReset;
     private int categoryNumber;
     private bool isInputChangingOpen;
+    public MainMenu scriptLinkedToThisOne;
 
     void Awake()
     {
@@ -136,6 +137,7 @@ public class SettingsMenu : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("bidouille");
         currentCategory = selectedCategory.name;
         selectedSettingName = selectedSetting.gameObject.name;
 
@@ -316,16 +318,14 @@ public class SettingsMenu : MonoBehaviour
 
     void ResetToDefault()
     {
-        SettingsMenuOrganizer i_categoryScript = selectedCategory.GetComponent<SettingsMenuOrganizer>();
-        foreach (var setting in i_categoryScript.childrenObjects)
-        {
-            setting.GetComponent<UIBehaviour>().ResetValueToDefault();
-        }
+        selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
     }
 
     void ReturnToMainMenu()
     {
-        GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
+       scriptLinkedToThisOne.isMainMenuActive = true;
+       gameObject.SetActive(false);
+       //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
     }
 
     void OpenInputChanging()

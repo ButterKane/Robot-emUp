@@ -9,9 +9,11 @@ public class MainMenu : MonoBehaviour
 {
 	private List<Button> buttons = new List<Button>();
 
-    private bool isMainMenuActive = true;
+    public bool isMainMenuActive = true;
     public List<Button> menuButtons = new List<Button>();
-	private Button selectedButton;
+    [SerializeField] private GameObject optionMenuPrefab;
+    private GameObject optionMenu;
+    private Button selectedButton;
 	public Image selectorArrow;
 	public Image selectorOutline;
 	private int selectedButtonIndex;
@@ -23,7 +25,15 @@ public class MainMenu : MonoBehaviour
 	public ScrollRect sceneList;
 	private bool enableRBandRTButtons;
 
-	void SelectButton(Button _button)
+    private void Start()
+    {
+        optionMenu = Instantiate(optionMenuPrefab);
+        optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
+        optionMenu.SetActive(false);
+        SelectButton(menuButtons[0]);
+    }
+
+    void SelectButton(Button _button)
 	{
 		selectedButton = _button;
 		RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
@@ -72,7 +82,8 @@ public class MainMenu : MonoBehaviour
 
     public void GoToSettings()
     {
-        SceneManager.LoadScene("OptionMenu", LoadSceneMode.Additive);
+        optionMenu.SetActive(true);
+        //SceneManager.LoadScene("OptionMenu", LoadSceneMode.Additive);
         isMainMenuActive = false;
     }
 

@@ -57,6 +57,7 @@ public class IndianaExplosion : MonoBehaviour
             foreach (var item in listPawnsHere)
             {
                 item.Damage(indianaManager.damageToPawn);
+                item.Push(PushType.Light, item.transform.position - transform.position, PushForce.Force2);
             }
         }
         if (waitingForExplosion < -2)
