@@ -292,7 +292,8 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Climbing;
 			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-			ChangeState("Climbed", ClimbLedge_C(i_foundLedge));
+            //ChangeState("Climbed", ClimbLedge_C(i_foundLedge));
+            StartCoroutine(ClimbLedge_C(i_foundLedge));
 		}
 	}
 
