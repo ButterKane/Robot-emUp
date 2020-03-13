@@ -142,6 +142,7 @@ MonoBehaviour:
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
   moveInput: {x: 0, y: 0, z: 0}
+  climbingHoldTime: 0
   passController: {fileID: 514769572}
   playerIndex: 0
   triggerTreshold: 0.1
@@ -341,7 +342,7 @@ MonoBehaviour:
   unstoppableDash: 0
   pushForce: 150
   pushHeight: 0.7
-  dashHitboxSize: 0.7
+  dashHitboxSize: 1
   useCooldown: 0.2
   defaultStackRecoveryDuration: 3
   minStackRecoverySpeedMultiplier: 1

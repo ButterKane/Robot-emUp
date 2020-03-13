@@ -131,7 +131,7 @@ public class PawnController : MonoBehaviour
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
-	private float climbingHoldTime;
+	[HideInInspector] public float climbingHoldTime;
 	[System.NonSerialized] public Animator animator;
 	private Vector3 initialScale;
 	private bool frozen;
@@ -292,8 +292,8 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Climbing;
 			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-            //ChangeState("Climbed", ClimbLedge_C(i_foundLedge));
-            StartCoroutine(ClimbLedge_C(i_foundLedge));
+            ChangeState("Climbing", ClimbLedge_C(i_foundLedge));
+            //StartCoroutine(ClimbLedge_C(i_foundLedge));
 		}
 	}
 
@@ -634,6 +634,7 @@ public class PawnController : MonoBehaviour
 
 	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
 	{
+		if (!isBumpable) { return; }
 		switch (_forceType)
 		{
 			case PushType.Light:
@@ -655,7 +656,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (!CanClimb()) { return null; }
 		RaycastHit hit;
-		if (Physics.SphereCast(GetCenterPosition(), 1f, transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
+		if (Physics.SphereCast(GetCenterPosition() - transform.forward * 2f, 0.5f, transform.forward, out hit, minDistanceToClimb + 2f, LayerMask.GetMask("Environment")))
 		{
 			if (hit.transform.tag == "Ledge")
 			{
@@ -730,11 +731,17 @@ public class PawnController : MonoBehaviour
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
 		if (currentState != null && currentState.name == "WallSplatted") { return; }
+		Vector3 _normalDirectinoNormalized = _normalDirection.normalized;
+		if (Mathf.Abs(_normalDirectinoNormalized.y )> (Mathf.Abs(_normalDirectinoNormalized.x) + Mathf.Abs(_normalDirectinoNormalized.z)))
+		{
+			Debug.Log("Tried wallsplat on ground: Return"); return;
+		}
 		ChangeState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
 	}
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)
 	{
+		Debug.Log("Climbing");
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = i_startPosition;
 		i_endPosition.y = _ledge.transform.position.y + _ledge.bounds.extents.y + 1f;
@@ -803,8 +810,8 @@ public class PawnController : MonoBehaviour
 				}
 				break;
 		}
-		animator.SetBool("PushedBool", true);
 		moveState = MoveState.Pushed;
+		_pushFlatDirection.y = 0;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = _pushHeight;
@@ -821,7 +828,6 @@ public class PawnController : MonoBehaviour
 		}
 		rb.useGravity = true;
 		moveState = MoveState.Idle;
-		animator.SetBool("PushedBool", false);
 	}
 
 	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, PushForce _force )
@@ -874,6 +880,7 @@ public class PawnController : MonoBehaviour
 		animator.SetBool("PushedBool", true);
 		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
+		_pushFlatDirection.y = 0;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = _pushHeight;
