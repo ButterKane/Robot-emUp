@@ -328,7 +328,7 @@ public class EnemyBehaviour : PawnController, IHitable
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
-        yield return null;
+		yield return null;
     }
 
     public virtual IEnumerator ResetPreparingAttackState()
