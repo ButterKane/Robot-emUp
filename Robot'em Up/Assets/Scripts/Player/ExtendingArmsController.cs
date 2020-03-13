@@ -279,6 +279,7 @@ public class ExtendingArmsController : MonoBehaviour
 			grabbedPlayer.moveState = MoveState.Idle;
 			grabbedPlayer.animator.SetTrigger("GrabDashRecover");
 		}
+		grabbedObject = null;
 		ChangeState(ArmState.Retracted);
 	}
 	IEnumerator DashTowardHand_C()
@@ -382,6 +383,7 @@ public class ExtendingArmsController : MonoBehaviour
 	IEnumerator RetractArm_C ()
 	{
 		ChangeState(ArmState.Retracting);
+		grabbedObject = null;
 		grabHand.gameObject.SetActive(true);
 		FeedbackManager.SendFeedback("event.GrabRetractionStart", grabHand);
 		grabHand.transform.SetParent(null, true);

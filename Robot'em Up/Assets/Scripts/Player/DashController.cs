@@ -216,8 +216,8 @@ public class DashController : MonoBehaviour
 				}
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{
-					ChangeState(DashState.None);
-					StopAllCoroutines();
+					Debug.Log("Hit enviro");
+					StartCoroutine(StopDash_C());
 				}
 			}
 			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashDistanceCurve.Evaluate(i/duration));
@@ -232,6 +232,7 @@ public class DashController : MonoBehaviour
 	IEnumerator StopDash_C()
 	{
 		yield return null;
+		GenerateClone();
 		ChangeState(DashState.None);
 		StopAllCoroutines();
 	}

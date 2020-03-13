@@ -301,7 +301,8 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                ChangeState("MeleeEnemyAnticipating",EnterPreparingAttackState(), ResetPreparingAttackState());
+				EnterPreparingAttackState();
+                //ChangeState("MeleeEnemyAnticipating",EnterPreparingAttackState(), ResetPreparingAttackState());
                 break;
             case EnemyState.Attacking:
                 EnterAttackingState();
@@ -323,12 +324,11 @@ public class EnemyBehaviour : PawnController, IHitable
         animator.SetTrigger("BumpTrigger");
     }
 
-    public virtual IEnumerator EnterPreparingAttackState()
+    public virtual void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
-        yield return null;
     }
 
     public virtual IEnumerator ResetPreparingAttackState()

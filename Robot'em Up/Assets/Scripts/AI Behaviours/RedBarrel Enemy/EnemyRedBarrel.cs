@@ -57,8 +57,9 @@ public class EnemyRedBarrel : EnemyBehaviour
         if (Explosion_C == null)
         {
             Explosion_C = ExplosionSequence_C(isExplosionSafe);
-            ChangeState("RedBarrelAnticipating", Explosion_C, null);
-            StartCoroutine(Explosion_C);
+			Debug.Log("Changing state");
+            ChangeState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
+            //StartCoroutine(Explosion_C);
         }
     }
 
@@ -100,6 +101,7 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     private IEnumerator ExplosionSequence_C(bool _isSafeExplosion)
     {
+		Debug.Log("Starting explosion sequence");
         animator.SetTrigger("DeathTrigger");
         if (_isSafeExplosion) { FeedbackManager.SendFeedback(buildUpSafeExplosionFX, this); }
         else { FeedbackManager.SendFeedback(buildUpExplosionFX, this); }
@@ -143,4 +145,13 @@ public class EnemyRedBarrel : EnemyBehaviour
             base.Kill();
         }
     }
+
+	private IEnumerator CancelExplosionSequence_C ()
+	{
+		Explosion_C = null;
+		willExplode = false;
+		explosionRadiusTransform.gameObject.SetActive(false);
+		explosionGrowingRenderer.localScale = Vector3.zero;
+		yield return null;
+	}
 }
