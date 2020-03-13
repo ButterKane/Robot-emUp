@@ -10,7 +10,7 @@ public class PuzzleDoor : PuzzleActivable
 
     override public void WhenActivate()
     {
-        Debug.Log("Activate a door");
+        // Debug.Log("Activate a door");
         isActivated = true;
         UpdateLights();
         foreach (var item in activatorsToShutDown)
