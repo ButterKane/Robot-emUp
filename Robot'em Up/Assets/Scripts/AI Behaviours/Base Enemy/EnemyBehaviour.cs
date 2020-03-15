@@ -301,7 +301,8 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.ChangingFocus:
                 break;
             case EnemyState.PreparingAttack:
-                EnterPreparingAttackState();
+				EnterPreparingAttackState();
+                //ChangeState("MeleeEnemyAnticipating",EnterPreparingAttackState(), ResetPreparingAttackState());
                 break;
             case EnemyState.Attacking:
                 EnterAttackingState();
@@ -328,6 +329,12 @@ public class EnemyBehaviour : PawnController, IHitable
         navMeshAgent.enabled = false;
         anticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
+    }
+
+    public virtual IEnumerator ResetPreparingAttackState()
+    {
+        ChangeState(EnemyState.Idle);
+        yield return null;
     }
 
     public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
@@ -448,7 +455,7 @@ public class EnemyBehaviour : PawnController, IHitable
                     {
                         DunkController i_controller = _thrower.GetComponent<DunkController>();
                     }
-                    BumpMe(i_normalizedImpactVector.normalized, 10, 1, 1);
+                    BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                     whatBumps = WhatBumps.Dunk;
                 }
                 else
@@ -462,7 +469,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                    BumpMe(i_normalizedImpactVector.normalized, 10, 1, 1);
+                    BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
@@ -480,16 +487,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 whatBumps = WhatBumps.Pass;
                 //Staggered(whatBumps);
                 Damage(_damages);
-                BallDatas bd = _ball.currentBallDatas;
-                float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
-                Debug.Log(ballChargePercent);
-                if (ballChargePercent >= bd.minimalChargeForBump)
-                {
-                    BumpMe(_impactVector.normalized, 10, 1, 1);
-                } else if (ballChargePercent >= bd.minimalChargeForPush)
-                {
-                    Push(PushForce.Heavy, _impactVector.normalized, 10, 1, 1);
-                }
                 if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
@@ -498,7 +495,24 @@ public class EnemyBehaviour : PawnController, IHitable
 
             case DamageSource.PerfectReceptionExplosion:
                 Damage(_damages);
-                if (currentHealth <= 0)
+
+				BallDatas bd = _ball.currentBallDatas;
+				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
+				Debug.Log(ballChargePercent);
+				if (ballChargePercent >= bd.minimalChargeForBump)
+				{
+					BumpMe(_impactVector.normalized, BumpForce.Force1);
+				}
+				else if (ballChargePercent >= bd.minimalChargeForHeavyPush)
+				{
+					Push(PushType.Heavy, _impactVector.normalized, PushForce.Force1);
+				}
+				else if (ballChargePercent >= bd.minimalChargeForLightPush)
+				{
+					Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
+				}
+
+				if (currentHealth <= 0)
                 {
                     ChangeState(EnemyState.Dying);
                 }
@@ -512,6 +526,15 @@ public class EnemyBehaviour : PawnController, IHitable
                     ChangeState(EnemyState.Dying);
                 }
 
+                break;
+            case DamageSource.ReviveExplosion:
+                Push(PushType.Heavy, _impactVector, PushForce.Force2);
+                break;
+            case DamageSource.DeathExplosion:
+                Push(PushType.Heavy, _impactVector, PushForce.Force2);
+                break;
+            case DamageSource.SpawnImpact:
+                Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
         }
 

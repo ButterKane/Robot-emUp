@@ -54,6 +54,7 @@ public class OldBoss_MainTurret : MonoBehaviour
         {
             PawnController pawn = other.gameObject.GetComponent<PawnController>();
             pawn.Damage(damageToPlayer);
+            pawn.Push(PushType.Light, pawn.transform.position - transform.position, PushForce.Force1);
         }
 
 
@@ -62,7 +63,6 @@ public class OldBoss_MainTurret : MonoBehaviour
 
             EnemyBehaviour ennemy = other.gameObject.GetComponent<EnemyBehaviour>();
             ennemy.OnHit(null, Vector3.zero, null, damageToPlayer, DamageSource.RedBarrelExplosion);
-            
         }
 
     }

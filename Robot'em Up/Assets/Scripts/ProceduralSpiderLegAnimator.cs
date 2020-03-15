@@ -19,6 +19,8 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 	[HideInInspector] public bool isGrounded;
 	public Vector3 forwardOffset;
 	private Coroutine moveCoroutine;
+	public bool bumpPawnsOnGrounded;
+	public float bumpPawnRadius = 2f;
 
 	private void Awake ()
 	{
@@ -78,6 +80,19 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 		if (eventOnStep != "")
 		{
 			FeedbackManager.SendFeedback(eventOnStep, this);
+		}
+		if (bumpPawnsOnGrounded)
+		{
+			List<PawnController> hitPawns = new List<PawnController>();
+			foreach (Collider c in Physics.OverlapSphere(IK.Target.transform.position, bumpPawnRadius))
+			{
+				PawnController pawnController = c.GetComponentInParent<PawnController>();
+				if (pawnController != null && !hitPawns.Contains(pawnController))
+				{
+					pawnController.Push(PushType.Light, pawnController.transform.position - IK.Target.transform.position, PushForce.Force1);
+					hitPawns.Add(pawnController);
+				}
+			}
 		}
 	}
 

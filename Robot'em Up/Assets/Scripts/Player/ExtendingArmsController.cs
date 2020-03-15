@@ -262,7 +262,7 @@ public class ExtendingArmsController : MonoBehaviour
 					EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
 					if (!enemyHit.Contains(enemy))
 					{
-						enemy.BumpMe(c.transform.position - grabbedObject.transform.position, dashCollisionPushForce, 1f, 1f);
+						enemy.BumpMe(c.transform.position - grabbedObject.transform.position, BumpForce.Force1);
 						enemyHit.Add(enemy);
 					}
 				}
@@ -279,6 +279,7 @@ public class ExtendingArmsController : MonoBehaviour
 			grabbedPlayer.moveState = MoveState.Idle;
 			grabbedPlayer.animator.SetTrigger("GrabDashRecover");
 		}
+		grabbedObject = null;
 		ChangeState(ArmState.Retracted);
 	}
 	IEnumerator DashTowardHand_C()
@@ -305,7 +306,7 @@ public class ExtendingArmsController : MonoBehaviour
 					EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
 					if (!enemyHit.Contains(enemy))
 					{
-						enemy.BumpMe(c.transform.position - transform.position, dashCollisionPushForce, 1f, 1f);
+						enemy.BumpMe(c.transform.position - transform.position, BumpForce.Force1);
 						enemyHit.Add(enemy);
 					}
 				}
@@ -382,6 +383,7 @@ public class ExtendingArmsController : MonoBehaviour
 	IEnumerator RetractArm_C ()
 	{
 		ChangeState(ArmState.Retracting);
+		grabbedObject = null;
 		grabHand.gameObject.SetActive(true);
 		FeedbackManager.SendFeedback("event.GrabRetractionStart", grabHand);
 		grabHand.transform.SetParent(null, true);
@@ -404,7 +406,7 @@ public class ExtendingArmsController : MonoBehaviour
 
 	IEnumerator CheckWhatGotGrabbed_C ()
 	{
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForEndOfFrame();
 		//If grabbable wall: dash
 		if (grabbedObject == null)
 		{

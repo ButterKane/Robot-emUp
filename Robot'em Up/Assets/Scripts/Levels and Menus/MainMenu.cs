@@ -30,6 +30,7 @@ public class MainMenu : MonoBehaviour
         optionMenu = Instantiate(optionMenuPrefab);
         optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
         optionMenu.SetActive(false);
+        SelectButton(menuButtons[0]);
     }
 
     void SelectButton(Button _button)

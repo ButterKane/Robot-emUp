@@ -253,7 +253,7 @@ public class PlayerController : PawnController, IHitable
 	{
 		foreach (PawnController p in FindObjectsOfType<PawnController>())
 		{
-			p.BumpMe(-p.transform.forward, 10, 1, 1);
+			p.BumpMe(-p.transform.forward, BumpForce.Force2);
 			yield return new WaitForSeconds(0.1f);
 		}
 	}
@@ -393,7 +393,7 @@ public class PlayerController : PawnController, IHitable
 		Freeze();
 		DisableInput();
 		StartCoroutine(HideAfterDelay(0.5f));
-		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionDamage, DamageSource.DeathExplosion));
 		GameManager.deadPlayers.Add(this);
 		if (GameManager.deadPlayers.Count > 1)
 		{
@@ -424,7 +424,7 @@ public class PlayerController : PawnController, IHitable
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
 		List<ReviveInformations> i_newRevivablePlayers = new List<ReviveInformations>();
-		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f,reviveExplosionRadius, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
 			if (inf.linkedPlayer != _player)
@@ -470,13 +470,13 @@ public class PlayerController : PawnController, IHitable
 		Hide();
 	}
 
-	IEnumerator ProjectEnemiesInRadiusAfterDelay(float _delay, float _radius, float _force, int _damages, DamageSource _damageSource)
+	IEnumerator ProjectEnemiesInRadiusAfterDelay(float _delay, float _radius, int _damages, DamageSource _damageSource)
 	{
 		yield return new WaitForSeconds(_delay);
 		foreach (Collider hit in Physics.OverlapSphere(transform.position, _radius))
 		{
 			IHitable potentialHitableObject = hit.transform.GetComponent<IHitable>();
-			if (potentialHitableObject != null) { potentialHitableObject.OnHit(null, (hit.transform.position - transform.position).normalized * _force, this, _damages, _damageSource); }
+			if (potentialHitableObject != null) { potentialHitableObject.OnHit(null, (hit.transform.position - transform.position).normalized, this, _damages, _damageSource); }
 		}
 	}
 
@@ -514,13 +514,13 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
-                BumpMe(i_normalizedImpactVector, 10, 1, 1);
+                BumpMe(i_normalizedImpactVector, BumpForce.Force2);
 				Damage(_damages);
 				break;
 
             case DamageSource.EnemyContact:
                 Damage(_damages);
-                //Push(_impactVector, 30, 2f);
+                Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
 
             case DamageSource.Laser:
@@ -529,7 +529,7 @@ public class PlayerController : PawnController, IHitable
 
 			case DamageSource.SpawnImpact:
 				Damage(_damages);
-				//Push(-_impactVector, _damages * 10f, 1f);
+				Push(PushType.Light, _impactVector, PushForce.Force1);
 				break;
 		}
 	}

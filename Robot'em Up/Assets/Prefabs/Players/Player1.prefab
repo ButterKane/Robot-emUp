@@ -142,6 +142,7 @@ MonoBehaviour:
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
   moveInput: {x: 0, y: 0, z: 0}
+  climbingHoldTime: 0
   passController: {fileID: 514769572}
   playerIndex: 0
   triggerTreshold: 0.1
@@ -191,7 +192,7 @@ MonoBehaviour:
   perfectReceptionMinDistance: 10
   perfectReceptionMinDelay: 0.2
   perfectReceptionExplosionRadius: 7
-  perfectReceptionExplosionDamages: 10
+  perfectReceptionExplosionDamages: 5
   curveMaxLateralDistance: 0
   curveMaxPlayerDistance: 0
   curveRaycastIteration: 25
@@ -341,7 +342,7 @@ MonoBehaviour:
   unstoppableDash: 0
   pushForce: 150
   pushHeight: 0.7
-  dashHitboxSize: 0.7
+  dashHitboxSize: 1
   useCooldown: 0.2
   defaultStackRecoveryDuration: 3
   minStackRecoverySpeedMultiplier: 1
@@ -599,29 +600,29 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2.1263576
-      outSlope: 2.1263576
-      tangentMode: 34
+      inSlope: 4.2906837
+      outSlope: 4.2906837
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0.30876008
     - serializedVersion: 3
-      time: 0.16399255
-      value: 0.3487068
-      inSlope: 1.4527047
-      outSlope: 1.4527047
-      tangentMode: 34
+      time: 0.18229778
+      value: 0.5380095
+      inSlope: 2.3044975
+      outSlope: 1.5646782
+      tangentMode: 1
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0.40177736
+      outWeight: 0.07301117
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.77905184
-      outSlope: 0.77905184
-      tangentMode: 34
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -630,9 +631,9 @@ MonoBehaviour:
   lineRenderer: {fileID: 5424946305745891468}
   maxRange: 30
   rangeTolerance: 20
-  grabExtentionSpeed: 25
-  grabRetractionSpeed: 40
-  dashSpeed: 30
+  grabExtentionSpeed: 100
+  grabRetractionSpeed: 100
+  dashSpeed: 60
   distanceFromHandOnDash: 1
   frameCountBetweenCollisionRecalculationDuringDash: 1
   dashHitboxRadius: 3
@@ -1664,6 +1665,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5825664154814933021}
     m_Modifications:
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1728,16 +1739,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_Name
-      value: FX_Magnet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}

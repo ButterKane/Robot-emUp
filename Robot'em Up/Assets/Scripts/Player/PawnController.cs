@@ -33,13 +33,7 @@ public enum SpeedMultiplierReason
 	Unknown
 }
 
-public enum PushForce
-{
-	Heavy,
-	Light
-}
-
-public enum WallSplatForce
+public enum PushType
 {
 	Heavy,
 	Light
@@ -137,7 +131,7 @@ public class PawnController : MonoBehaviour
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
-	private float climbingHoldTime;
+	[HideInInspector] public float climbingHoldTime;
 	[System.NonSerialized] public Animator animator;
 	private Vector3 initialScale;
 	private bool frozen;
@@ -298,7 +292,8 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Climbing;
 			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-			ChangeState("Climbed", ClimbLedge_C(i_foundLedge));
+            ChangeState("Climbing", ClimbLedge_C(i_foundLedge));
+            //StartCoroutine(ClimbLedge_C(i_foundLedge));
 		}
 	}
 
@@ -366,10 +361,12 @@ public class PawnController : MonoBehaviour
 
 	public void ChangeState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null)
 	{
+		Debug.Log("Changing state: previous state: " + currentState + " New state: " + _newStateName);
 		PawnState newState = pawnStates.GetPawnStateByName(_newStateName);
 		bool canOverrideState;
 		if (currentState != null)
 		{
+			Debug.Log("Current state not null");
 			if (pawnStates.IsStateOverriden(currentState, newState) || currentStateCoroutine == null)
 			{
 				//Must cancel current state and replace by new state
@@ -377,6 +374,7 @@ public class PawnController : MonoBehaviour
 				canOverrideState = true;
 			} else
 			{
+				Debug.Log("Current state not null & can't be override");
 				//Can't override current state, cancel action
 				return;
 			}
@@ -386,10 +384,12 @@ public class PawnController : MonoBehaviour
 		}
 		if (canOverrideState)
 		{
+			Debug.Log("Can override state");
 			if (_coroutineToCancel != null)
 			{
 				currentStateStopCoroutine = _coroutineToCancel;
 			}
+			Debug.Log("Starting new state coroutine");
 			currentStateCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, newState));
 			PawnState newStateInstance = new PawnState();
 			newStateInstance.allowBallReception = newState.allowBallReception;
@@ -631,23 +631,24 @@ public class PawnController : MonoBehaviour
 		if (animator == null) { return; }
 	}
 
-	public virtual void BumpMe( Vector3 _bumpDirectionFlat, float _bumpDistance, float _bumpDuration, float _bumpHeight)
+	public virtual void BumpMe( Vector3 _bumpDirectionFlat, BumpForce _force)
     {
 		if (!isBumpable) { return; }
-		ChangeState("Bumped", Bump_C(_bumpDirectionFlat, _bumpDistance, _bumpDuration, _bumpHeight), CancelBump_C());
+		ChangeState("Bumped", Bump_C(_bumpDirectionFlat, _force), CancelBump_C());
     }
 
-	public virtual void Push ( PushForce _forceType, Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight)
+	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
 	{
+		if (!isBumpable) { return; }
 		switch (_forceType)
 		{
-			case PushForce.Light:
-				ChangeState("PushedLight", PushLight_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+			case PushType.Light:
+				ChangeState("PushedLight", PushLight_C(_pushDirectionFlat, _force), CancelPush_C());
 				break;
-			case PushForce.Heavy:
-				Vector3 forwardDirection = (_pushDirectionFlat.normalized * _pushDistance) + new Vector3(0,_pushHeight,0);
+			case PushType.Heavy:
+				Vector3 forwardDirection = _pushDirectionFlat.normalized;
 				transform.forward = forwardDirection;
-				ChangeState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+				ChangeState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _force), CancelPush_C());
 				break;
 		}
 	}
@@ -660,7 +661,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (!CanClimb()) { return null; }
 		RaycastHit hit;
-		if (Physics.SphereCast(GetCenterPosition(), 1f, transform.forward, out hit, minDistanceToClimb, LayerMask.GetMask("Environment")))
+		if (Physics.SphereCast(GetCenterPosition() - transform.forward * 2f, 0.5f, transform.forward, out hit, minDistanceToClimb + 2f, LayerMask.GetMask("Environment")))
 		{
 			if (hit.transform.tag == "Ledge")
 			{
@@ -697,7 +698,8 @@ public class PawnController : MonoBehaviour
 		{
 			if (moveState == MoveState.Pushed)
 			{
-				if (currentState.name == "Bump")
+				Debug.Log("WallSplat");
+				if (currentState.name == "Bumped")
 				{
 					WallSplat(WallSplatForce.Heavy, collision);
 				} else
@@ -726,19 +728,25 @@ public class PawnController : MonoBehaviour
 	}
 
 	private void WallSplat( WallSplatForce _force, Collision _collision ) {
-		if (currentState != null && currentState.name == "WallSplat") { return; }
+		if (currentState != null && currentState.name == "WallSplatted") { return; }
 		Vector3 _normalDirection = _collision.GetContact(0).normal;
 		WallSplat(_force, _normalDirection);
 	}
 
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
-		if (currentState != null && currentState.name == "WallSplat") { return; }
+		if (currentState != null && currentState.name == "WallSplatted") { return; }
+		Vector3 _normalDirectinoNormalized = _normalDirection.normalized;
+		if (Mathf.Abs(_normalDirectinoNormalized.y )> (Mathf.Abs(_normalDirectinoNormalized.x) + Mathf.Abs(_normalDirectinoNormalized.z)))
+		{
+			Debug.Log("Tried wallsplat on ground: Return"); return;
+		}
 		ChangeState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
 	}
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)
 	{
+		Debug.Log("Climbing");
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = i_startPosition;
 		i_endPosition.y = _ledge.transform.position.y + _ledge.bounds.extents.y + 1f;
@@ -759,14 +767,59 @@ public class PawnController : MonoBehaviour
 		}
 	}
 
-	private IEnumerator PushLight_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	private IEnumerator PushLight_C ( Vector3 _pushFlatDirection, PushForce _force )
 	{
-		animator.SetBool("PushedBool", true);
+		float _pushDistance = 0;
+		float _pushDuration = 0;
+		float _pushHeight = 0;
+		switch (_force)
+		{
+			case PushForce.Force1:
+				if (isPlayer)
+				{
+					_pushDistance = pushDatas.lightPushPlayerForce1Distance;
+					_pushDuration = pushDatas.lightPushPlayerForce1Duration;
+					_pushHeight = pushDatas.lightPushPlayerForce1Height;
+				}
+				else
+				{
+					_pushDistance = pushDatas.lightPushForce1Distance;
+					_pushDuration = pushDatas.lightPushForce1Duration;
+					_pushHeight = pushDatas.lightPushForce1Height;
+				}
+				break;
+			case PushForce.Force2:
+				if (isPlayer)
+				{
+					_pushDistance = pushDatas.lightPushPlayerForce2Distance;
+					_pushDuration = pushDatas.lightPushPlayerForce2Duration;
+					_pushHeight = pushDatas.lightPushPlayerForce2Height;
+				} else
+				{
+					_pushDistance = pushDatas.lightPushForce2Distance;
+					_pushDuration = pushDatas.lightPushForce2Duration;
+					_pushHeight = pushDatas.lightPushForce2Height;
+				}
+				break;
+			case PushForce.Force3:
+				if (isPlayer)
+				{
+					_pushDistance = pushDatas.lightPushPlayerForce3Distance;
+					_pushDuration = pushDatas.lightPushPlayerForce3Duration;
+					_pushHeight = pushDatas.lightPushPlayerForce3Height;
+				} else
+				{
+					_pushDistance = pushDatas.lightPushForce3Distance;
+					_pushDuration = pushDatas.lightPushForce3Duration;
+					_pushHeight = pushDatas.lightPushForce3Height;
+				}
+				break;
+		}
 		moveState = MoveState.Pushed;
+		_pushFlatDirection.y = 0;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = _pushHeight;
-		rb.useGravity = false;
 		Vector3 initialPosition = transform.position;
 		Vector3 endPosition = initialPosition + moveDirection;
 		Vector3 moveOffset = Vector3.zero;
@@ -777,21 +830,64 @@ public class PawnController : MonoBehaviour
 			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
 			yield return null;
 		}
-		rb.useGravity = true;
 		moveState = MoveState.Idle;
-		animator.SetBool("PushedBool", false);
 	}
 
-	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
+	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, PushForce _force )
 	{
+		float _pushDistance = 0;
+		float _pushDuration = 0;
+		float _pushHeight = 0;
+		switch (_force)
+		{
+			case PushForce.Force1:
+				if (isPlayer)
+				{
+					_pushDistance = pushDatas.heavyPushPlayerForce1Distance;
+					_pushDuration = pushDatas.heavyPushPlayerForce1Duration;
+					_pushHeight = pushDatas.heavyPushPlayerForce1Height;
+				} else
+				{
+					_pushDistance = pushDatas.heavyPushForce1Distance;
+					_pushDuration = pushDatas.heavyPushForce1Duration;
+					_pushHeight = pushDatas.heavyPushForce1Height;
+				}
+				break;					  
+			case PushForce.Force2:
+				if (isPlayer)
+				{
+					_pushDistance = pushDatas.heavyPushPlayerForce2Distance;
+					_pushDuration = pushDatas.heavyPushPlayerForce2Duration;
+					_pushHeight = pushDatas.heavyPushPlayerForce2Height;
+				} else
+				{
+					_pushDistance = pushDatas.heavyPushForce2Distance;
+					_pushDuration = pushDatas.heavyPushForce2Duration;
+					_pushHeight = pushDatas.heavyPushForce2Height;
+				}
+				break;					  
+			case PushForce.Force3:
+				if (isPlayer)
+				{
+					_pushDistance = pushDatas.heavyPushPlayerForce3Distance;
+					_pushDuration = pushDatas.heavyPushPlayerForce3Duration;
+					_pushHeight = pushDatas.heavyPushPlayerForce3Height;
+				} else
+				{
+					_pushDistance = pushDatas.heavyPushForce3Distance;
+					_pushDuration = pushDatas.heavyPushForce3Duration;
+					_pushHeight = pushDatas.heavyPushForce3Height;
+				}
+				break;
+		}
 		animator.SetBool("PushedBool", true);
 		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
+		_pushFlatDirection.y = 0;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = _pushHeight;
 		transform.forward = moveDirection;
-		rb.useGravity = false;
 		Vector3 initialPosition = transform.position;
 		Vector3 endPosition = initialPosition + moveDirection;
 		Vector3 moveOffset = Vector3.zero;
@@ -812,20 +908,19 @@ public class PawnController : MonoBehaviour
 			transform.position = newPosition;
 			yield return null;
 		}
-		rb.useGravity = true;
 		moveState = MoveState.Idle;
 		animator.SetBool("PushedBool", false);
 	}
 
 	private IEnumerator CancelPush_C()
 	{
-		rb.useGravity = true;
 		moveState = MoveState.Idle;
 		yield return null;
 	}
 
 	private IEnumerator WallSplat_C (WallSplatForce _force, Vector3 _normalDirection)
 	{
+		animator.SetTrigger("FallingTrigger");
 		moveState = MoveState.Pushed;
 		if (isPlayer)
 		{
@@ -897,14 +992,53 @@ public class PawnController : MonoBehaviour
 	}
 
 
-	private IEnumerator Bump_C( Vector3 _bumpDirectionFlat, float _bumpDistance, float _bumpDuration, float _bumpHeight )
+	private IEnumerator Bump_C( Vector3 _bumpDirectionFlat, BumpForce _force )
     {
+		animator.SetTrigger("FallingTrigger");
 		animator.SetTrigger("BumpTrigger");
 		moveState = MoveState.Pushed;
 		FeedbackManager.SendFeedback(eventOnBeingBumpedAway, this);
 
-		float bumpDistance = _bumpDistance + Random.Range(pushDatas.bumpRandomRangeModifier.x, pushDatas.bumpRandomRangeModifier.y);
-		float bumpDuration = _bumpDuration + Random.Range(pushDatas.bumpRandomDurationModifier.x, pushDatas.bumpRandomDurationModifier.y);
+		float bumpDistance = 0;
+		float bumpDuration = 0;
+		switch (_force)
+		{
+			case BumpForce.Force1:
+				if (isPlayer)
+				{
+					bumpDistance = pushDatas.BumpPlayerForce1Distance;
+					bumpDuration = pushDatas.BumpPlayerForce1Duration;
+				} else
+				{
+					bumpDistance = pushDatas.BumpForce1Distance;
+					bumpDuration = pushDatas.BumpForce1Duration;
+				}
+				break;
+			case BumpForce.Force2:
+				if (isPlayer)
+				{
+					bumpDistance = pushDatas.BumpPlayerForce2Distance;
+					bumpDuration = pushDatas.BumpPlayerForce2Duration;
+				} else
+				{
+					bumpDistance = pushDatas.BumpForce2Distance;
+					bumpDuration = pushDatas.BumpForce2Duration;
+				}
+				break;
+			case BumpForce.Force3:
+				if (isPlayer)
+				{
+					bumpDistance = pushDatas.BumpPlayerForce3Distance;
+					bumpDuration = pushDatas.BumpPlayerForce3Duration;
+				} else
+				{
+					bumpDistance = pushDatas.BumpForce3Distance;
+					bumpDuration = pushDatas.BumpForce3Duration;
+				}
+				break;
+		}
+		bumpDistance = bumpDistance + Random.Range(pushDatas.bumpRandomRangeModifier.x, pushDatas.bumpRandomRangeModifier.y);
+		bumpDuration = bumpDuration + Random.Range(pushDatas.bumpRandomDurationModifier.x, pushDatas.bumpRandomDurationModifier.y);
 		float restDuration = pushDatas.bumpRestDuration;
 		if (isPlayer) { restDuration = pushDatas.bumpPlayerRestDuration; }
 	     restDuration = restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);

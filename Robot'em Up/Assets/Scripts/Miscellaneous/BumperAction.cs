@@ -20,7 +20,7 @@ public class BumperAction : MonoBehaviour
             if (i_enemy)
             {
                 Vector3 i_bumpDirection = SwissArmyKnife.GetFlattedDownDirection( i_enemy.transform.position - transform.position);
-                i_enemy.BumpMe(i_bumpDirection, bumpDistance, bumpDuration, 1);
+                i_enemy.BumpMe(i_bumpDirection, BumpForce.Force3);
             }
         }
         if (_other.gameObject.tag == " Player")
@@ -29,7 +29,7 @@ public class BumperAction : MonoBehaviour
             if (i_player)
             {
                 Vector3 bumpDirection = SwissArmyKnife.GetFlattedDownDirection(i_player.transform.position - transform.position);
-                i_player.BumpMe(bumpDirection, bumpDistance, bumpDuration, 1);
+                i_player.BumpMe(bumpDirection, BumpForce.Force3);
             }
         }
     }
