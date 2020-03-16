@@ -311,7 +311,17 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
-                Kill();
+                bool i_thereIsAnAnimation = false;
+                foreach (AnimatorControllerParameter param in animator.parameters)
+                {
+                    if (param.name == "DeathTrigger") { animator.SetTrigger("DeathTrigger"); i_thereIsAnAnimation = true; Freeze(); navMeshAgent.isStopped = true; }
+                }
+                
+                if(!i_thereIsAnAnimation)
+                {
+                    Kill();
+                }
+                
                 break;
             case EnemyState.Spawning:
                 break;
@@ -487,10 +497,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 whatBumps = WhatBumps.Pass;
                 //Staggered(whatBumps);
                 Damage(_damages);
-                if (currentHealth <= 0)
-                {
-                    ChangeState(EnemyState.Dying);
-                }
                 break;
 
             case DamageSource.PerfectReceptionExplosion:
@@ -511,20 +517,11 @@ public class EnemyBehaviour : PawnController, IHitable
 				{
 					Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
 				}
-
-				if (currentHealth <= 0)
-                {
-                    ChangeState(EnemyState.Dying);
-                }
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 break;
 
             case DamageSource.Laser:
-                DamageFromLaser(_damages);
-                if (currentHealth <= 0)
-                {
-                    ChangeState(EnemyState.Dying);
-                }
+                Damage(_damages);
 
                 break;
             case DamageSource.ReviveExplosion:
@@ -537,9 +534,21 @@ public class EnemyBehaviour : PawnController, IHitable
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
         }
-
-
     }
+
+    public override void Damage(float _amount)
+    {
+        if (!CanDamage()) { return; }
+        FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
+
+        currentHealth -= _amount;
+
+        if (currentHealth <= 0)
+        {
+            ChangeState(EnemyState.Dying);
+        }
+    }
+
 
     public override void Kill()
     {
