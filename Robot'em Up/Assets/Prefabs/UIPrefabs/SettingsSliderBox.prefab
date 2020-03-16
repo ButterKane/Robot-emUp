@@ -174,7 +174,34 @@ MonoBehaviour:
   changeIcon: {fileID: 1519171436663985932}
   slider: {fileID: 3742986860186028014}
   defaultValue: 50
+  currentValue: 0
   valueText: {fileID: 4144183984654808858}
+  minMaxTimeBeforeReset: {x: 0.2, y: 0.5}
+  timeToReachMinTimeBeforeReset: 2
+  timeBeforeResetEvolution:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0008285004
+      value: 1.0080645
+      inSlope: -1.4420552
+      outSlope: -1.4420552
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.037251655
+    - serializedVersion: 3
+      time: 1
+      value: -0.00806427
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3742986859356258426
 GameObject:
   m_ObjectHideFlags: 0
