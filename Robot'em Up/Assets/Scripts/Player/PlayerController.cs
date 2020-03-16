@@ -550,4 +550,14 @@ public class PlayerController : PawnController, IHitable
 		}
 		return nearestPlayer;
 	}
+
+	public PlayerController GetOtherPlayer()
+	{
+		List<PlayerController> players = GameManager.alivePlayers;
+		foreach (PlayerController p in players)
+		{
+			if (p != this) { return p; }
+		}
+		return null;
+	}
 }
