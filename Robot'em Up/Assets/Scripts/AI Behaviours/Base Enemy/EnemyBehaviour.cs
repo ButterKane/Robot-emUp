@@ -125,6 +125,8 @@ public class EnemyBehaviour : PawnController, IHitable
     public Vector2 minMaxDropForce;
     public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
+    public float waitTimeBeforeDisappear = 1;
+    private float currentDeathWaitTime;
     private HealthBar healthBar;
 
     protected virtual void Start()
@@ -269,7 +271,11 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.Dying:
-                
+                currentDeathWaitTime -= Time.deltaTime;
+                if (currentDeathWaitTime < 0)
+                {
+                    Kill();
+                }
                 break;
         }
     }
@@ -311,6 +317,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
+                currentDeathWaitTime = waitTimeBeforeDisappear;
                 bool i_thereIsAnAnimation = false;
                 foreach (AnimatorControllerParameter param in animator.parameters)
                 {

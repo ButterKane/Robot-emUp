@@ -38,7 +38,6 @@ public class TurretSniperBullet : MonoBehaviour
 	{
 		if (_other.tag == "Player")
 		{
-			Debug.Log("Damaging player");
 			_other.GetComponent<PawnController>().Damage(damageDealt);
 			GameObject i_impactFX = Instantiate(impactFX, transform.position, Quaternion.identity);
 			i_impactFX.transform.localScale = impactFXScale;
