@@ -406,7 +406,7 @@ public class ExtendingArmsController : MonoBehaviour
 
 	IEnumerator CheckWhatGotGrabbed_C ()
 	{
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForEndOfFrame();
 		//If grabbable wall: dash
 		if (grabbedObject == null)
 		{

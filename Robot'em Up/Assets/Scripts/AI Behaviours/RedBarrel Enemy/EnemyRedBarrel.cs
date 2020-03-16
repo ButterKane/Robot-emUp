@@ -7,7 +7,8 @@ public class EnemyRedBarrel : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Red Barrel Death variables")]
-    public bool isExplosionSafe;
+    public bool willExplodeWhenKilled;
+    [ReadOnly] public bool isExplosionSafe;
     public string buildUpExplosionFX = "event.RedBarrelEnemyDeathPart1";
     public string buildUpSafeExplosionFX = "event.RedBarrelEnemyDeathPart1Bis";
     public string explosionFX = "event.RedBarrelEnemyDeathPart2";
@@ -51,8 +52,12 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     public override void Kill()
     {
-        if (currentHealth <= 0) {isExplosionSafe = true;}
-        else                    {isExplosionSafe = false;}
+        if (currentHealth <= 0)
+        {
+            if (willExplodeWhenKilled) { isExplosionSafe = true; }
+            else { base.Kill(); return; }
+        }
+        else {isExplosionSafe = false;}
 
         if (Explosion_C == null)
         {
