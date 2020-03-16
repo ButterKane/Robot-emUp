@@ -134,7 +134,7 @@ public class PawnController : MonoBehaviour
 	[HideInInspector] public float climbingHoldTime;
 	[System.NonSerialized] public Animator animator;
 	private Vector3 initialScale;
-	private bool frozen;
+	protected bool frozen;
 	private bool isPlayer;
 	protected bool targetable;
 	protected float damageAfterBump;
@@ -187,7 +187,7 @@ public class PawnController : MonoBehaviour
         CheckMoveState();
         Rotate();
 		UpdateAcceleration();
-		Move();
+        Move();
         ApplyDrag();
         ApplyCustomGravity();
         UpdateAnimatorBlendTree();
