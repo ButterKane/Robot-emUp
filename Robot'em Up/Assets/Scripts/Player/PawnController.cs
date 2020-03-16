@@ -933,7 +933,7 @@ public class PawnController : MonoBehaviour
 		Vector3 initialPosition = transform.position;
 		float damages = pushDatas.wallSplatDamages;
 		if (isPlayer) { damages = pushDatas.wallSplatPlayerDamages; }
-		Damage(pushDatas.wallSplatDamages);
+		Damage(damages);
 		switch (_force)
 		{
 			case WallSplatForce.Light:
