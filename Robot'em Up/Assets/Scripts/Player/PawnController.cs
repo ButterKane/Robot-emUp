@@ -134,7 +134,7 @@ public class PawnController : MonoBehaviour
 	[HideInInspector] public float climbingHoldTime;
 	[System.NonSerialized] public Animator animator;
 	private Vector3 initialScale;
-	private bool frozen;
+	protected bool frozen;
 	private bool isPlayer;
 	protected bool targetable;
 	protected float damageAfterBump;
@@ -187,7 +187,7 @@ public class PawnController : MonoBehaviour
         CheckMoveState();
         Rotate();
 		UpdateAcceleration();
-		Move();
+        Move();
         ApplyDrag();
         ApplyCustomGravity();
         UpdateAnimatorBlendTree();
@@ -637,6 +637,11 @@ public class PawnController : MonoBehaviour
 		ChangeState("Bumped", Bump_C(_bumpDirectionFlat, _force), CancelBump_C());
     }
 
+	public void PushLightCustom( Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight )
+	{
+		if (!isBumpable) { return; }
+		ChangeState("PushedLight", CustomLightPush_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+	}
 	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
 	{
 		if (!isBumpable) { return; }
@@ -767,6 +772,25 @@ public class PawnController : MonoBehaviour
 		}
 	}
 
+	private IEnumerator CustomLightPush_C( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight)
+	{
+		moveState = MoveState.Pushed;
+		_pushFlatDirection.y = 0;
+		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
+		Vector3 moveDirection = _pushFlatDirection;
+		moveDirection.y = _pushHeight;
+		Vector3 initialPosition = transform.position;
+		Vector3 endPosition = initialPosition + moveDirection;
+		Vector3 moveOffset = Vector3.zero;
+		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
+		{
+			moveState = MoveState.Pushed;
+			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
+			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
+			yield return null;
+		}
+		moveState = MoveState.Idle;
+	}
 	private IEnumerator PushLight_C ( Vector3 _pushFlatDirection, PushForce _force )
 	{
 		float _pushDistance = 0;
@@ -815,22 +839,7 @@ public class PawnController : MonoBehaviour
 				}
 				break;
 		}
-		moveState = MoveState.Pushed;
-		_pushFlatDirection.y = 0;
-		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
-		Vector3 moveDirection = _pushFlatDirection;
-		moveDirection.y = _pushHeight;
-		Vector3 initialPosition = transform.position;
-		Vector3 endPosition = initialPosition + moveDirection;
-		Vector3 moveOffset = Vector3.zero;
-		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
-		{
-			moveState = MoveState.Pushed;
-			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
-			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
-			yield return null;
-		}
-		moveState = MoveState.Idle;
+		yield return StartCoroutine(CustomLightPush_C(_pushFlatDirection, _pushDistance, _pushDuration, _pushHeight));
 	}
 
 	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, PushForce _force )
