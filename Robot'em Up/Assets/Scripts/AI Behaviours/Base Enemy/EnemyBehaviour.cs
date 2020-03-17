@@ -69,6 +69,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
     public bool arenaRobot;
+    public bool isDeploymentFast = true;
 
     [Space(3)]
     [Header("Focus")]
@@ -133,6 +134,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     protected virtual void Start()
     {
+        animator.SetBool("isFastDeployment", isDeploymentFast);
         timeBetweenCheck = maxTimeBetweenCheck;
         playerOneTransform = GameManager.playerOne.transform;
         playerTwoTransform = GameManager.playerTwo.transform;
