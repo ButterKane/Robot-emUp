@@ -19,6 +19,7 @@ public enum EnemyState
     PauseAfterAttack,
     Dying,
     Spawning,
+    Deploying
 }
 public enum WhatBumps
 {
@@ -343,6 +344,12 @@ public class EnemyBehaviour : PawnController, IHitable
                 
                 break;
             case EnemyState.Spawning:
+                break;
+            case EnemyState.Deploying:
+                foreach (AnimatorControllerParameter param in animator.parameters)
+                {
+                    if (param.name == "DeployTrigger") { animator.SetTrigger("DeployTrigger");}
+                }
                 break;
         }
     }
