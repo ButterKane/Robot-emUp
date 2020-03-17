@@ -13,6 +13,7 @@ public class CorePart : MonoBehaviour
 	public bool grounded = false;
 	public int totalPartCount;
 	PlayerController picker = null;
+	private Collider col;
 	public void Init(PawnController _linkedPawn, Vector3 _throwVector, int _totalPartCount, int _healthValue)
 	{
 		linkedPawn = _linkedPawn;
@@ -58,7 +59,9 @@ public class CorePart : MonoBehaviour
 					Destroy(collider);
 				}
 			}
-            if(animator != null) //if not an enemy core
+			col = GetComponent<Collider>();
+			ExtendingArmsController.grabableObjects.Add(col);
+			if (animator != null) //if not an enemy core
 			    animator.SetTrigger("showArrow");
 			rb.isKinematic = true;
 		}
@@ -75,5 +78,13 @@ public class CorePart : MonoBehaviour
 		if (animator != null)
 			animator.SetTrigger("pick");
 		picker = _player;
+	}
+
+	private void OnDestroy ()
+	{
+		if (col != null)
+		{
+			ExtendingArmsController.grabableObjects.Remove(col);
+		}
 	}
 }

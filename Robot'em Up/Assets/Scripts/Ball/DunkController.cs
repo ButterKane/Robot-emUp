@@ -145,7 +145,6 @@ public class DunkController : MonoBehaviour
 
 	public void Dunk ()
 	{
-		Debug.Log("Dunk");
 		if (!CanDunk()) { return; }
 		jumpCoroutine = StartCoroutine(Dunk_C());
 	}

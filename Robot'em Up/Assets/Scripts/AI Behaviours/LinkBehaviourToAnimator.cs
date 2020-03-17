@@ -67,4 +67,9 @@ public class LinkBehaviourToAnimator : MonoBehaviour
         enemyScriptRef.Kill();
     }
 
+    public void EndOfDeployment()
+    {
+        enemyScriptRef.ChangeState(EnemyState.Idle);
+    }
+
 }
