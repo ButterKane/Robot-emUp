@@ -136,12 +136,17 @@ public class EnemyShield : EnemyBehaviour
     // Ususally called when hitting player
     public void StopAttack()
     {
-        navMeshAgent.SetDestination(transform.position);
+        //navMeshAgent.SetDestination(transform.position);
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
         mustCancelAttack = true;
         animator.SetTrigger("AttackTouchedTrigger");
-
+        attackHitBox.ToggleCollider(false);
         navMeshAgent.enabled = false;
+    }
+
+    public override void DestroySpawnedAttackUtilities()
+    {
+        attackHitBox.ToggleCollider(false); // well, it's not destroying it, more like deactivating it. But that's the same point
     }
 
     // BUMPED
