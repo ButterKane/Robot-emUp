@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b3612c46d798b74eb04d36f798799fe, type: 3}
+  m_Name: PawnStateDatas
+  m_EditorClassIdentifier: 
+  pawnStates:
+  - name: PushedHeavy
+    stateOverriden:
+    - ShieldEnemyCharge
+    - MeleeEnemyAnticipation
+    - RedBarrelAnticipation
+    - RedBarrelAnticipating
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
+  - name: PushedLight
+    stateOverriden:
+    - RedBarrelAnticipating
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 0
+  - name: Bumped
+    stateOverriden:
+    - ShieldEnemyCharge
+    - MeleeEnemyAnticipation
+    - RedBarrelAnticipation
+    - GrabPulling
+    - GrabThrowing
+    - GrabDashing
+    - RedBarrelAnticipating
+    - MeleeEnemyAnticipating
+    - ShieldEnemyCharging
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 1
+  - name: Dashing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 1
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 0
+  - name: Climbing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 0
+  - name: WallSplatted
+    stateOverriden:
+    - PushHeavy
+    - Bump
+    - PushLight
+    - Bumped
+    - PushedHeavy
+    - PushedLight
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 1
+  - name: ShieldEnemyCharging
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
+  - name: MeleeEnemyAnticipating
+    stateOverriden:
+    - ShieldEnemyCharging
+    - MeleeEnemyAnticipating
+    - RedBarrelAnticipating
+    - GrabDashing
+    - GrabThrowing
+    - GrabPulling
+    - WallSplatted
+    - Climbing
+    - Dashing
+    - Bumped
+    - PushedLight
+    - PushedHeavy
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
+  - name: RedBarrelAnticipating
+    stateOverriden:
+    - MeleeEnemyAnticipating
+    - RedBarrelAnticipating
+    invincibleDuringState: 0
+    damagesCancelState: 1
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 1
+  - name: GrabDashing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 1
+  - name: GrabThrowing
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 0
+  - name: GrabPulling
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 1
+    allowBallThrow: 1
+    preventMoving: 1

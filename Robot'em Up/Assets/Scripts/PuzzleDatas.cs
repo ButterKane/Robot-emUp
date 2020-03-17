@@ -19,6 +19,8 @@ public class PuzzleDatas : ScriptableObject
     public int DamageEletricPlateEnnemies;
     [Range(0.01f, 0.5f)]
     public float timeCheckingDamageEletricPlate;
+    [Range(0f, 1f)]
+    public float timeOrangePressurePlate;
 
     [Header("FX")]
 	public GameObject charging;
@@ -44,6 +46,7 @@ public class PuzzleDatas : ScriptableObject
     public Material m_switchActivate;
     public Material m_switchDesactivate;
     public Material m_puzzleElectreticPlate;
+    public Material m_puzzleElectreticPlate_Orange;
     public Material m_puzzleElectreticPlate_Activated;
 
 

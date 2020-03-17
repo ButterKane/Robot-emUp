@@ -16,44 +16,66 @@ public class SceneLoader : MonoBehaviour
 		{
 			loadedScenes[i] = SceneManager.GetSceneAt(i);
 		}
-		buildIndex = loadedScenes[countLoaded-1].buildIndex;
+		buildIndex = loadedScenes[countLoaded - 1].buildIndex;
 		if (GameManager.GetSceneNameFromIndex(buildIndex) == "MainSceneTemplate")
 		{
 			buildIndex = loadedScenes[countLoaded - 2].buildIndex;
 		}
 	}
 
-	public void LoadNextLevel()
+	public void LoadNextLevel ()
 	{
 		for (int i = buildIndex + 1; i < buildIndex + 3; i++)
 		{
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
 			{
-				SceneManager.LoadSceneAsync(i, LoadSceneMode.Additive);
+				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive));
 			}
 		}
 
-		if (buildIndex-1 >= 0 && SceneManager.GetSceneByBuildIndex(buildIndex-1).isLoaded)
+		if (buildIndex - 1 >= 0 && SceneManager.GetSceneByBuildIndex(buildIndex - 1).isLoaded)
 		{
-			SceneManager.UnloadSceneAsync(buildIndex-1, UnloadSceneOptions.None);
+			StartCoroutine(UnloadLevelAsynchronously_C(buildIndex - 1, UnloadSceneOptions.None));
 		}
 		Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
 		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex + 1));
 	}
 
-	public void LoadPreviousLevel()
+	public void LoadPreviousLevel ()
 	{
 		for (int i = buildIndex - 1; i > buildIndex - 3; i--)
 		{
 			if (i <= 0) { continue; }
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
 			{
-				SceneManager.LoadSceneAsync(i, LoadSceneMode.Additive);
+				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive));
 			}
 		}
 		if (SceneManager.GetSceneByBuildIndex(buildIndex + 2).isLoaded)
 		{
-			SceneManager.UnloadSceneAsync(buildIndex + 2, UnloadSceneOptions.None);
+			StartCoroutine(UnloadLevelAsynchronously_C(buildIndex + 2, UnloadSceneOptions.None));
+		}
+	}
+
+	IEnumerator LoadLevelAsynchronously_C ( int _buildIndex, LoadSceneMode _mode )
+	{
+		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(_buildIndex, _mode);
+		asyncLoad.allowSceneActivation = false;
+		while (asyncLoad.progress < 0.9f)
+		{
+			yield return null;
+		}
+		asyncLoad.allowSceneActivation = true;
+	}
+
+	IEnumerator UnloadLevelAsynchronously_C ( int _buildIndex, UnloadSceneOptions _mode )
+	{
+		AsyncOperation asyncLoad = SceneManager.UnloadSceneAsync(_buildIndex, _mode);
+
+		// Wait until the asynchronous scene fully loads
+		while (!asyncLoad.isDone)
+		{
+			yield return new WaitForSeconds(1);
 		}
 	}
 }

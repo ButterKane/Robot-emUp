@@ -36,7 +36,7 @@ public class TriggerToStartFight : MonoBehaviour
                 {
                     for (int i = 0; i < turretArray.Length; i++)
                     {
-                        turretArray[i].ChangingState(TurretState.Idle);
+                        turretArray[i].ChangingTurretState(TurretState.Idle);
                     }
                 }
                 

@@ -236,6 +236,7 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 2
+  focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
   damage: 40
   powerLevel: 2.5
@@ -243,6 +244,7 @@ MonoBehaviour:
   lockHitboxSize: 2
   arenaRobot: 0
   focusDistance: 50
+  maxHeightOfDetection: 3
   unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
@@ -258,6 +260,7 @@ MonoBehaviour:
   rotationSpeedPreparingAttack: 0
   distanceToAttack: 5
   portionOfAnticipationWithRotation: 0.3
+  cooldownAfterAttackTime: 0
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
@@ -355,27 +358,27 @@ PrefabInstance:
       propertyPath: m_Speed
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 017d549570572da4c855d6f51c980b04, type: 2}
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 882a1f1e2cd950a4280f0e40a0925c57, type: 2}
-    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 91581867e61188b41a0ce2a988b3e000, type: 2}
-    - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

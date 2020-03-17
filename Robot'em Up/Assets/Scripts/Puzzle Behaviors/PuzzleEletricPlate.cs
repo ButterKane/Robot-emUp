@@ -122,11 +122,11 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenActivate()
     {
+        StopAllCoroutines();
         isActivated = true;
 
         UpdateLights();
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
-
 
         if (myFx != null)
         {
@@ -149,18 +149,26 @@ public class PuzzleEletricPlate : PuzzleActivable
         
         if (i_checkAllConditionsCustom)
         {
-
-            isActivated = false;
-            UpdateLights();
-            meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
-
-            Destroy(myFx);
-
-            if (myFx != null)
-            {
-                Destroy(myFx);
-            }
-			myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
+            meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Orange;
+            StartCoroutine(GettingEletrified());
         }
+    }
+
+    public IEnumerator GettingEletrified ()
+    {
+        yield return new WaitForSeconds(puzzleData.timeOrangePressurePlate);
+
+        isActivated = false;
+        UpdateLights();
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
+
+        Destroy(myFx);
+
+        if (myFx != null)
+        {
+            Destroy(myFx);
+        }
+        myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
+        myFx.transform.parent = transform;
     }
 }

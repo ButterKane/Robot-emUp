@@ -60,47 +60,7 @@ public class Retriever : MonoBehaviour
 			if (!i_corePart.CanBePicked()) { return; }
 			if (i_corePart.linkedPawn != null)
 			{
-				i_corePart.Pick(playerController);
-				bool i_partsFound = false;
-				List<ReviveInformations> newList = new List<ReviveInformations>();
-				foreach (ReviveInformations parts in retrievedParts)
-				{
-					if (parts.linkedPlayer == i_corePart.linkedPawn)
-					{
-						i_partsFound = true;
-						parts.amount++;
-						parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
-						parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
-						if (parts.amount >= parts.maxAmount)
-						{
-							FeedbackManager.SendFeedback("event.PlayerPickingLastBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
-							parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
-							playerController.AddRevivablePlayer(parts);
-						}
-						else
-						{
-							FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
-							newList.Add(parts);
-						}
-					}
-					else
-					{
-						newList.Add(parts);
-					}
-				}
-				retrievedParts = newList;
-				if (!i_partsFound)
-				{
-					ReviveInformations i_newPart = new ReviveInformations();
-					i_newPart.linkedPlayer = (PlayerController)i_corePart.linkedPawn;
-					i_newPart.maxAmount = i_corePart.totalPartCount;
-					i_newPart.amount = 1;
-					i_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
-					i_newPart.linkedPanel.revivedPlayer = i_newPart.linkedPlayer;
-					i_newPart.linkedPanel.revivingPlayer = playerController;
-					i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + i_corePart.totalPartCount;
-					retrievedParts.Add(i_newPart);
-				}
+				RetrieveCorePart(i_corePart);
 			} else
 			{
 				if (playerController.GetHealth() < playerController.GetMaxHealth())
@@ -111,4 +71,69 @@ public class Retriever : MonoBehaviour
 			}
 		}
     }
+
+	public void AllowPlayerRevive(ReviveInformations parts)
+	{
+		FeedbackManager.SendFeedback("event.PlayerPickingLastBodyPart", playerController, playerController.transform.position, playerController.transform.position - transform.position, playerController.transform.position - transform.position);
+		parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
+		playerController.AddRevivablePlayer(parts);
+	}
+
+	public void AllowPlayerRevive(PlayerController player)
+	{
+		ReviveInformations i_newPart = new ReviveInformations();
+		i_newPart.linkedPlayer = player;
+		i_newPart.maxAmount = player.revivePartsCount;
+		i_newPart.amount = player.revivePartsCount;
+		i_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
+		i_newPart.linkedPanel.revivedPlayer = i_newPart.linkedPlayer;
+		i_newPart.linkedPanel.revivingPlayer = playerController;
+		i_newPart.linkedPanel.Init();
+		i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + player.revivePartsCount;
+		AllowPlayerRevive(i_newPart);
+	}
+
+	public void RetrieveCorePart(CorePart i_corePart)
+	{
+		i_corePart.Pick(playerController);
+		bool i_partsFound = false;
+		List<ReviveInformations> newList = new List<ReviveInformations>();
+		foreach (ReviveInformations parts in retrievedParts)
+		{
+			if (parts.linkedPlayer == i_corePart.linkedPawn)
+			{
+				i_partsFound = true;
+				parts.amount++;
+				parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
+				parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
+				if (parts.amount >= parts.maxAmount)
+				{
+					AllowPlayerRevive(parts);
+				}
+				else
+				{
+					FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, i_corePart.transform.position, i_corePart.transform.position - transform.position, i_corePart.transform.position - transform.position);
+					newList.Add(parts);
+				}
+			}
+			else
+			{
+				newList.Add(parts);
+			}
+		}
+		retrievedParts = newList;
+		if (!i_partsFound)
+		{
+			ReviveInformations i_newPart = new ReviveInformations();
+			i_newPart.linkedPlayer = (PlayerController)i_corePart.linkedPawn;
+			i_newPart.maxAmount = i_corePart.totalPartCount;
+			i_newPart.amount = 1;
+			i_newPart.linkedPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/CollectedPartsPanel"), GameManager.mainCanvas.transform).GetComponent<AssemblingPartPanel>();
+			i_newPart.linkedPanel.revivedPlayer = i_newPart.linkedPlayer;
+			i_newPart.linkedPanel.revivingPlayer = playerController;
+			i_newPart.linkedPanel.Init();
+			i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + i_corePart.totalPartCount;
+			retrievedParts.Add(i_newPart);
+		}
+	}
 }

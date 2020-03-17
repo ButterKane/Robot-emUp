@@ -18,6 +18,7 @@ public enum DunkState
 public class DunkController : MonoBehaviour
 {
 	[Separator("General settings")]
+	public bool enableDunkAspiration;
 	public float dunkJumpHeight = 5f;
 	public float dunkJumpLength = 1f;
 	public float dunkJumpDuration = 2f;
@@ -28,6 +29,8 @@ public class DunkController : MonoBehaviour
 	[Range(0f,1f)] public float dunkHitlagForce = 0.5f;
 	public float dunkDashSpeed = 5f;
 	public float dunkExplosionRadius = 10f;
+	public float dunkAspirationRadius = 15f;
+	public float aspirationMinDistanceToPlayer = 4;
 	public int dunkDamages = 30;
 	public float dunkProjectionForce = 10f;
 
@@ -39,6 +42,11 @@ public class DunkController : MonoBehaviour
     public float dunkSnapTreshold = 30f;
 	public float dunkCooldown = 3f;
 	public float dunkCancelFreezeDuration = 0.4f;
+
+	[Space(15)]
+	public float dunkForwardAngleTreshold = 7.5f;
+	public float dunkMaxForwardDistance = 5f;
+	public float dunkForwardSpeed = 5f;
 
 	private DunkState dunkState;
 
@@ -59,22 +67,28 @@ public class DunkController : MonoBehaviour
 	private float currentCD;
 	private GameObject dunkWaitingFX;
 	private GameObject dunkDashFX;
+	private GameObject currentDunkReadyPanel;
+	private GameObject currentDunkReadyFX;
 
 	private void Awake ()
 	{
+		EnergyManager.IncreaseEnergy(1f);
         dunkState = DunkState.None;
 
         rb = GetComponent<Rigidbody>();
 		passController = GetComponent<PassController>();
 		pawnController = GetComponent<PawnController>();
 		playerController = GetComponent<PlayerController>();
+
+		currentDunkReadyPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/DunkReadyPanel"));
+		currentDunkReadyPanel.transform.SetParent(GameManager.mainCanvas.transform);
 	}
 
 	private void Update ()
 	{
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			jumpCoroutine = StartCoroutine(Dunk_C());
+			pawnController.ChangeState("Dunking", Dunk_C());
 		}
 		if (currentCD >= 0)
 		{
@@ -82,6 +96,24 @@ public class DunkController : MonoBehaviour
 		}
 	}
 
+	private void LateUpdate ()
+	{
+		UpdateDunkReadyPanel();
+	}
+
+	private void UpdateDunkReadyPanel ()
+	{
+		if (CanDunk() && currentDunkReadyPanel != null)
+		{
+			if (!currentDunkReadyPanel.activeSelf) { currentDunkReadyPanel.SetActive(true); }
+			if (currentDunkReadyFX == null) { currentDunkReadyFX = FeedbackManager.SendFeedback("event.DunkReady", this, playerController.GetCenterPosition(), Vector3.up, Vector3.up).GetVFX(); }
+			currentDunkReadyPanel.transform.position = GameManager.mainCamera.WorldToScreenPoint(playerController.GetHeadPosition());
+		} else
+		{
+			if (currentDunkReadyFX != null) { Destroy(currentDunkReadyFX); }
+			if (currentDunkReadyPanel.activeSelf) { currentDunkReadyPanel.SetActive(false); }
+		}
+	}
 	public void Explode ()
 	{
 		Analytics.CustomEvent("SuccessfulDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
@@ -118,13 +150,32 @@ public class DunkController : MonoBehaviour
 	}
 	public bool CanDunk ()
 	{
-		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null && GameManager.deadPlayers.Count <= 0 && currentCD <= 0)
+		if (EnergyManager.GetEnergy() >= 1f && dunkState == DunkState.None && passController.GetBall() == null && GameManager.deadPlayers.Count <= 0 && currentCD <= 0 && playerController.GetOtherPlayer().passController.GetBall() != null)
 		{
 			return true;
 		}
 		else
 		{
 			return false;
+		}
+	}
+
+	private void AttractEnemies()
+	{
+		if (playerController == null) { return; }
+		GameObject attractionFX = FeedbackManager.SendFeedback("event.DunkAttraction", this, transform.position, Vector3.up, Vector3.up).GetVFX();
+		attractionFX.transform.localScale = Vector3.one * dunkAspirationRadius;
+		foreach (Collider c in Physics.OverlapSphere(transform.position, dunkAspirationRadius))
+		{
+			if (c.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+			{
+				EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
+				Vector3 pushDirectionFlat = transform.position - enemy.transform.position;
+				pushDirectionFlat.y = 0;
+				float pushDistance = Vector3.Distance(transform.position, c.gameObject.transform.position) - aspirationMinDistanceToPlayer;
+				pushDistance = Mathf.Clamp(pushDistance, 0, Mathf.Infinity);
+				enemy.PushLightCustom(pushDirectionFlat, pushDistance, 0.5f, 1f);
+			}
 		}
 	}
 
@@ -155,6 +206,10 @@ public class DunkController : MonoBehaviour
 		ChangeState(DunkState.Jumping);
 		rb.isKinematic = true;
 		rb.useGravity = false;
+		if (enableDunkAspiration)
+		{
+			AttractEnemies();
+		}
 
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = i_startPosition + Vector3.up * dunkJumpHeight + transform.forward * dunkJumpLength;
@@ -173,8 +228,25 @@ public class DunkController : MonoBehaviour
 		passController.EnableBallReception();
 		ChangeState(DunkState.Waiting);
 		SnapController.SetSnappable(SnapType.Pass, this.gameObject, dunkSnapTreshold, dunkJumpFreezeDuration);
+		float forwardDistanceTravelled = 0;
 		for (float i = 0; i < dunkJumpFreezeDuration; i += Time.deltaTime)
 		{
+			if (playerController)
+			{
+				Vector3 camForwardNormalized = GameManager.mainCamera.transform.forward;
+				camForwardNormalized.y = 0;
+				camForwardNormalized = camForwardNormalized.normalized;
+				Vector3 camRightNormalized = GameManager.mainCamera.transform.right;
+				camRightNormalized.y = 0;
+				camRightNormalized = camRightNormalized.normalized;
+				GamePadState state = GamePad.GetState(playerController.playerIndex);
+				Vector3 moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
+				if (moveInput.magnitude > 0.5f && forwardDistanceTravelled < dunkMaxForwardDistance && Vector3.SignedAngle(playerController.transform.forward, moveInput, Vector3.up) < dunkForwardAngleTreshold)
+				{
+					playerController.transform.position += playerController.transform.forward * Time.deltaTime * dunkForwardSpeed * moveInput.magnitude;
+					forwardDistanceTravelled += Time.deltaTime * dunkForwardSpeed * moveInput.magnitude;
+				}
+			}
 			yield return new WaitForEndOfFrame();
 		}
 	}
@@ -182,7 +254,7 @@ public class DunkController : MonoBehaviour
 	public void StopDunk()
 	{
 		StopAllCoroutines();
-		ChangeState(DunkState.Canceling);
+		ChangeState(DunkState.None);
 	}
 	IEnumerator DunkCancel_C ()
 	{

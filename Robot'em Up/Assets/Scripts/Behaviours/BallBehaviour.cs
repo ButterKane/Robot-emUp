@@ -19,7 +19,7 @@ public class BallBehaviour : MonoBehaviour
 	[ReadOnly] [SerializeField] private float currentDistanceTravelled;
 	[ReadOnly] [SerializeField] private float currentSpeed;
 	[ReadOnly] [SerializeField] private BallState currentState;
-	[ReadOnly] [SerializeField] private BallDatas currentBallDatas;
+	[ReadOnly] [SerializeField] public BallDatas currentBallDatas;
 	[ReadOnly] [SerializeField] private int currentBounceCount;
 	[ReadOnly] [SerializeField] private PawnController currentThrower;
 	[ReadOnly] public bool canBounce;

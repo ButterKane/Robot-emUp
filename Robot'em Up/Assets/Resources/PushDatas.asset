@@ -1,0 +1,225 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cabd02d96f985b45999a66ec9b54310, type: 3}
+  m_Name: PushDatas
+  m_EditorClassIdentifier: 
+  lightPushSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  lightPushAircontrolSpeed: 10
+  heavyPushSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  heavyPushAirControlSpeed: 3
+  bumpRestDuration: 0.8
+  bumpPlayerRestDuration: 0.1
+  bumpRandomRangeModifier: {x: -0.1, y: 0.1}
+  bumpRandomDurationModifier: {x: -0.1, y: 0.1}
+  bumpRandomRestModifier: {x: -0.1, y: 0.1}
+  lightPushForce1Distance: 2.5
+  lightPushForce1Height: 1
+  lightPushForce1Duration: 0.3
+  lightPushForce2Distance: 5.5
+  lightPushForce2Height: 1
+  lightPushForce2Duration: 0.5
+  lightPushForce3Distance: 10
+  lightPushForce3Height: 1
+  lightPushForce3Duration: 0.75
+  lightPushPlayerForce1Distance: 3
+  lightPushPlayerForce1Height: 1
+  lightPushPlayerForce1Duration: 0.15
+  lightPushPlayerForce2Distance: 5.5
+  lightPushPlayerForce2Height: 1
+  lightPushPlayerForce2Duration: 0.25
+  lightPushPlayerForce3Distance: 13
+  lightPushPlayerForce3Height: 1
+  lightPushPlayerForce3Duration: 0.5
+  heavyPushForce1Distance: 4
+  heavyPushForce1Height: 1
+  heavyPushForce1Duration: 0.4
+  heavyPushForce2Distance: 7.5
+  heavyPushForce2Height: 1
+  heavyPushForce2Duration: 0.7
+  heavyPushForce3Distance: 12
+  heavyPushForce3Height: 1
+  heavyPushForce3Duration: 1
+  heavyPushPlayerForce1Distance: 4
+  heavyPushPlayerForce1Height: 1
+  heavyPushPlayerForce1Duration: 0.3
+  heavyPushPlayerForce2Distance: 7
+  heavyPushPlayerForce2Height: 1
+  heavyPushPlayerForce2Duration: 0.45
+  heavyPushPlayerForce3Distance: 13
+  heavyPushPlayerForce3Height: 1
+  heavyPushPlayerForce3Duration: 0.82
+  BumpForce1Distance: 5
+  BumpForce1Duration: 0.7
+  BumpForce2Distance: 10
+  BumpForce2Duration: 0.8
+  BumpForce3Distance: 17
+  BumpForce3Duration: 0.95
+  BumpPlayerForce1Distance: 4.5
+  BumpPlayerForce1Duration: 0.4
+  BumpPlayerForce2Distance: 7.5
+  BumpPlayerForce2Duration: 0.5
+  BumpPlayerForce3Distance: 17
+  BumpPlayerForce3Duration: 0.8
+  wallSplatHeavyForwardPush: 1
+  wallSplatLightRecoverTime: 0.5
+  wallSplatHeavyRecoverTime: 1
+  wallSplatHeavyFallSpeed: 1
+  wallSplatHeavyHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -3.3021917
+      outSlope: -3.3021917
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.03993064
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  wallSplatHeavySpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  randomWallSplatHeavyRecoverTimeAddition: {x: 0, y: 0}
+  randomWallSplatLightRecoverTimeAddition: {x: 0, y: 0}
+  wallSplatDamages: 20
+  wallSplatPlayerDamages: 1
+  wallSplatPlayerHeavyForwardPush: 1
+  wallSplatPlayerLightRecoverTime: 0.2
+  wallSplatPlayerHeavyRecoverTime: 0.3
+  wallSplatPlayerHeavyFallSpeed: 1.5
+  wallSplatPlayerHeavyHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.105450235
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -2.8885546
+      outSlope: -2.8885546
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.026066363
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  wallSplatPlayerHeavySpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

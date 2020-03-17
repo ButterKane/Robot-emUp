@@ -9,8 +9,11 @@ public class MainMenu : MonoBehaviour
 {
 	private List<Button> buttons = new List<Button>();
 
-	public List<Button> menuButtons = new List<Button>();
-	private Button selectedButton;
+    public bool isMainMenuActive = true;
+    public List<Button> menuButtons = new List<Button>();
+    [SerializeField] private GameObject optionMenuPrefab;
+    private GameObject optionMenu;
+    private Button selectedButton;
 	public Image selectorArrow;
 	public Image selectorOutline;
 	private int selectedButtonIndex;
@@ -22,7 +25,15 @@ public class MainMenu : MonoBehaviour
 	public ScrollRect sceneList;
 	private bool enableRBandRTButtons;
 
-	void SelectButton(Button _button)
+    private void Start()
+    {
+        optionMenu = Instantiate(optionMenuPrefab);
+        optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
+        optionMenu.SetActive(false);
+        SelectButton(menuButtons[0]);
+    }
+
+    void SelectButton(Button _button)
 	{
 		selectedButton = _button;
 		RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
@@ -47,6 +58,7 @@ public class MainMenu : MonoBehaviour
 	{
 		GameManager.LoadSceneByIndex(0);
 	}
+
 	public void OpenLevelSelector()
 	{
 		sceneList.gameObject.SetActive(true);
@@ -68,6 +80,13 @@ public class MainMenu : MonoBehaviour
 		Time.timeScale = 1f;
 	}
 
+    public void GoToSettings()
+    {
+        optionMenu.SetActive(true);
+        //SceneManager.LoadScene("OptionMenu", LoadSceneMode.Additive);
+        isMainMenuActive = false;
+    }
+
 	private void Awake ()
 	{
 		buttons = menuButtons;
@@ -81,97 +100,104 @@ public class MainMenu : MonoBehaviour
 	private void Update ()
 	{
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
-		for (int i = 0; i < 2; i++)
-		{
-			if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
-			if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
-			if (i_state.ThumbSticks.Left.Y > 0)
-			{
-				if (i == 0 )
-				{
-					if (!waitForJoystickResetOne)
-					{
-						SelectPreviousButton();
-						waitForJoystickResetOne = true;
-					}
-				} else if (i == 1)
-				{
-					if (!waitForJoystickResetTwo)
-					{
-						SelectPreviousButton();
-						waitForJoystickResetTwo = true;
-					}
-				}
-			}
-			else if (i_state.ThumbSticks.Left.Y < 0)
-			{
-				if (i == 0)
-				{
-					if (!waitForJoystickResetOne)
-					{
-						SelectNextButton();
-						waitForJoystickResetOne = true;
-					}
-				}
-				else if (i == 1)
-				{
-					if (!waitForJoystickResetTwo)
-					{
-						SelectNextButton();
-						waitForJoystickResetTwo = true;
-					}
-				}
-			}
-			else
-			{
-				if (i == 0)
-				{
-					waitForJoystickResetOne = false;
-				} else if (i == 1)
-				{
-					waitForJoystickResetTwo = false;
-				}
-			}
-			if (i_state.Buttons.A == ButtonState.Pressed)
-			{
-				if (i == 0) { if (waitForAResetOne) { return; } else { selectedButton.onClick.Invoke(); waitForAResetOne = true; } }
-				if (i == 1) { if (waitForAResetTwo) { return; } else { selectedButton.onClick.Invoke(); waitForAResetTwo = true; } }
-			} else
-			{
-				if (i ==0) { waitForAResetOne = false; }
-				if (i == 1) { waitForAResetTwo = false; }
-			}
-			if (i_state.Buttons.B == ButtonState.Pressed)
-			{
-				CloseLevelSelector();
-			}
-			if (enableRBandRTButtons)
-			{
-				if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
-				{
-					if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
-					{
-						GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
-					}
-				}
-				if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
-				{
-					if (SceneManager.GetActiveScene().buildIndex > 0)
-					{
-						GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
-					}
-				}
-			}
-		}
+        if (isMainMenuActive)
+        {
 
-		if (Input.GetKeyDown(KeyCode.DownArrow))
-		{
-			SelectNextButton();
-		}
-		if (Input.GetKeyDown(KeyCode.UpArrow))
-		{
-			SelectPreviousButton();
-		}
+            for (int i = 0; i < 2; i++)
+            {
+                if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
+                if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
+                if (i_state.ThumbSticks.Left.Y > 0)
+                {
+                    if (i == 0)
+                    {
+                        if (!waitForJoystickResetOne)
+                        {
+                            SelectPreviousButton();
+                            waitForJoystickResetOne = true;
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (!waitForJoystickResetTwo)
+                        {
+                            SelectPreviousButton();
+                            waitForJoystickResetTwo = true;
+                        }
+                    }
+                }
+                else if (i_state.ThumbSticks.Left.Y < 0)
+                {
+                    if (i == 0)
+                    {
+                        if (!waitForJoystickResetOne)
+                        {
+                            SelectNextButton();
+                            waitForJoystickResetOne = true;
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (!waitForJoystickResetTwo)
+                        {
+                            SelectNextButton();
+                            waitForJoystickResetTwo = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (i == 0)
+                    {
+                        waitForJoystickResetOne = false;
+                    }
+                    else if (i == 1)
+                    {
+                        waitForJoystickResetTwo = false;
+                    }
+                }
+                if (i_state.Buttons.A == ButtonState.Pressed)
+                {
+                    if (i == 0) { if (waitForAResetOne) { return; } else { selectedButton.onClick.Invoke(); waitForAResetOne = true; } }
+                    if (i == 1) { if (waitForAResetTwo) { return; } else { selectedButton.onClick.Invoke(); waitForAResetTwo = true; } }
+                }
+                else
+                {
+                    if (i == 0) { waitForAResetOne = false; }
+                    if (i == 1) { waitForAResetTwo = false; }
+                }
+                if (i_state.Buttons.B == ButtonState.Pressed)
+                {
+                    CloseLevelSelector();
+                }
+                if (enableRBandRTButtons)
+                {
+                    if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
+                    {
+                        if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
+                        {
+                            GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
+                        }
+                    }
+                    if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
+                    {
+                        if (SceneManager.GetActiveScene().buildIndex > 0)
+                        {
+                            GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
+                        }
+                    }
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                SelectNextButton();
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                SelectPreviousButton();
+            }
+        }
 	}
 
 	void SelectNextButton()

@@ -288,7 +288,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
     {
         navMeshAgent.enabled = false;
         animator.SetTrigger("BumpTrigger");
-        mustCancelBump = false;
     }
 
     public virtual void EnterPreparingAttackState()
@@ -427,7 +426,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                         i_BumpDurationMod = i_controller.bumpDurationMod;
                         i_BumpRestDurationMod = i_controller.bumpRestDurationMod;
                     }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
+                    BumpMe(i_normalizedImpactVector.normalized,BumpForce.Force2);
                     whatBumps = WhatBumps.Dunk;
                 }
                 else
@@ -449,7 +448,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                         i_BumpDurationMod = _bumpModificators.y;
                         i_BumpRestDurationMod = _bumpModificators.z;
                     }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod); 
+                    BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
@@ -577,12 +576,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                 break;
         }
     }
-
-	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
-	{
-		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
-		ChangeState(EnemyState.Bumped);
-	}
 
     IEnumerator WaitABit_C(float _duration)
     {

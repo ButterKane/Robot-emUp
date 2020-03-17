@@ -19,7 +19,6 @@ public class DashController : MonoBehaviour
 	public int maxStackAmount = 3;
 
 	public bool unstoppableDash;
-	public bool invincibleDuringDash;
 	public float pushForce = 80f;
 	public float pushHeight = 0.2f;
 	public float dashHitboxSize = 0.7f;
@@ -101,10 +100,7 @@ public class DashController : MonoBehaviour
 		}
 		i_endPosition.y = i_startPosition.y;
 
-		currentStackAmount--;
-		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
-		StartCoroutine(Dash_C(i_startPosition, i_endPosition));
-		currentUseCooldown = useCooldown;
+		linkedPawn.ChangeState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
 	}
 	void ChangeState(DashState _newState)
 	{
@@ -181,9 +177,12 @@ public class DashController : MonoBehaviour
 
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )
 	{
+		currentUseCooldown = useCooldown;
+		currentStackAmount--;
+		currentDashFX = FeedbackManager.SendFeedback("event.Dash", this).GetVFX();
+
 		Vector3 i_dashDirection = _endPosition - _startPosition;
 		ChangeState(DashState.Dashing);
-		if (invincibleDuringDash) { linkedPawn.SetInvincible(true); }
 		float i_cloneCounter = 0;
 		for (float i = 0; i <= duration; i += Time.deltaTime)
 		{
@@ -206,9 +205,9 @@ public class DashController : MonoBehaviour
 						{
 							dashController.StopAllCoroutines();
 							dashController.ChangeState(DashState.None);
-							linkedPawn.Push(-i_dashDirection, pushForce / 2f, pushHeight);
+							linkedPawn.Push(PushType.Light, -i_dashDirection,PushForce.Force2);
 						}
-						hitPawn.Push(i_dashDirection, pushForce, pushHeight);
+						hitPawn.Push(PushType.Light, i_dashDirection, PushForce.Force2);
 						if (!unstoppableDash)
 						{
 							ChangeState(DashState.None);
@@ -218,8 +217,7 @@ public class DashController : MonoBehaviour
 				}
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{
-					ChangeState(DashState.None);
-					StopAllCoroutines();
+					StartCoroutine(StopDash_C());
 				}
 			}
 			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashDistanceCurve.Evaluate(i/duration));
@@ -229,7 +227,14 @@ public class DashController : MonoBehaviour
 		GenerateClone();
 		ChangeState(DashState.None);
 		StartCoroutine(FadePlayerSpeed());
-		linkedPawn.SetInvincible(false);
+		yield return null;
+	}
+
+	IEnumerator StopDash_C()
+	{
+		GenerateClone();
+		ChangeState(DashState.None);
+		yield return null;
 	}
 
 	IEnumerator FadePlayerSpeed()
