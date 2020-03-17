@@ -54,6 +54,13 @@ public class ExtendingArmsController : MonoBehaviour
 	public float dashHitboxRadius = 10f;
 	public float dashCollisionPushForce = 5f;
 
+	[Header("Snap settings")]
+	public float snapMinAngle = 10f;
+	public AnimationCurve distancePriorityScore;
+	public AnimationCurve anglePriorityScore;
+
+	public static List<Collider> grabableObjects = new List<Collider>();
+
 	private void Awake ()
 	{
 		linkedPlayer = GetComponent<PlayerController>();
@@ -135,8 +142,38 @@ public class ExtendingArmsController : MonoBehaviour
 	private void ShowPreview ()
 	{
 		if (!previewShown) { return; }
-		previewLineRenderer.positionCount = 2;
 
+		Collider snappedCollider = null;
+		float bestPriorityScore = 0;
+		foreach (Collider c in grabableObjects)
+		{
+			if (c == linkedPlayer.mainCollider || c == null) { continue; }
+			Vector3 closestPoint = c.ClosestPointOnBounds(armTransform.position);
+			Vector3 closestDirectionFlat = closestPoint - armTransform.position;
+			closestDirectionFlat.y = 0;
+			float angle = Vector3.SignedAngle(closestDirectionFlat.normalized, armTransform.forward, Vector3.up);
+			if (Mathf.Abs(angle) < snapMinAngle)
+			{
+				float scoreValue = distancePriorityScore.Evaluate(closestDirectionFlat.magnitude) + anglePriorityScore.Evaluate(angle);
+				if (scoreValue > bestPriorityScore)
+				{
+					bestPriorityScore = scoreValue;
+					snappedCollider = c;
+				}
+			}
+		}
+
+		if (snappedCollider != null)
+		{
+			previewLineRenderer.transform.forward = snappedCollider.transform.position - previewLineRenderer.transform.position;
+		}
+		else
+		{
+			previewLineRenderer.transform.forward = transform.forward;
+		}
+
+
+		previewLineRenderer.positionCount = 2;
 		Vector3 hitPosition = previewLineRenderer.transform.position;
 		RaycastHit hit;
 		if (Physics.Raycast(previewLineRenderer.transform.position, previewLineRenderer.transform.forward, out hit, maxRange, LayerMask.GetMask("PlayerPart")))
@@ -155,8 +192,9 @@ public class ExtendingArmsController : MonoBehaviour
 			currentHitDecal.transform.forward = hit.normal;
 			previewHitObject = hit.collider.transform;
 		}
-		else {
-			currentHitDecal.gameObject.SetActive(false);
+		else
+		{
+			hitPosition = previewLineRenderer.transform.position + previewLineRenderer.transform.forward * maxRange;
 			previewHitObject = null;
 		}
 		previewLineRenderer.SetPosition(0, previewLineRenderer.transform.position);
@@ -348,6 +386,7 @@ public class ExtendingArmsController : MonoBehaviour
 	IEnumerator ExtendArm_C ()
 	{
 		ChangeState(ArmState.Extending);
+		directionSet = previewLineRenderer.transform.forward;
 		grabHand.gameObject.SetActive(true);
 		FeedbackManager.SendFeedback("event.GrabExtensionStart", grabHand);
 		grabHand.transform.SetParent(null, true);

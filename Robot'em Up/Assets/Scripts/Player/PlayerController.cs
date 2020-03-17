@@ -26,6 +26,9 @@ public class PlayerController : PawnController, IHitable
     public bool enableDunk;
     public bool enableMagnet;
 
+	[Separator("Dash while revive available settings")]
+	public float delayBeforeDash = 0.2f;
+
 	[Separator("Revive settings")]
 	public string eventOnResurrecting = "event.PlayerResurrecting";
 
@@ -49,14 +52,20 @@ public class PlayerController : PawnController, IHitable
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
+	private bool leftTriggerWaitForRelease;
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
+	public Collider mainCollider;
 	private Vector3 previousPosition;
 	private bool rbPressed;
+	private float dashBuffer;
+	private bool reviving;
 
 	public void Start ()
 	{
 		base.Awake();
+		mainCollider = GetComponent<Collider>();
+		ExtendingArmsController.grabableObjects.Add(mainCollider);
 		GameManager.alivePlayers.Add(this);
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
@@ -166,8 +175,15 @@ public class PlayerController : PawnController, IHitable
 
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
-			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
-			rightTriggerWaitForRelease = true;
+			if (revivablePlayers.Count <= 0)
+			{
+				if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
+				rightTriggerWaitForRelease = true;
+			} else
+			{
+				dashBuffer = 0;
+				rightTriggerWaitForRelease = true;
+			}
 		}
 		if (state.Triggers.Right < triggerTreshold)
 		{
@@ -207,22 +223,54 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (state.Triggers.Left > triggerTreshold)
 		{
+			leftTriggerWaitForRelease = true;
 			//extendingArmsController.ExtendArm();
-			if (enableDash && revivablePlayers.Count <= 0 && dashPressed == false)
+			if (enableDash && dashPressed == false && !reviving)
 			{
-				Vector3 dashDirection = moveInput;
-				if (moveInput.magnitude <= 0)
+				if (revivablePlayers.Count <= 0)
 				{
-					dashDirection = transform.forward;
+					Vector3 dashDirection = moveInput;
+					if (moveInput.magnitude <= 0)
+					{
+						dashDirection = transform.forward;
+					}
+					dashController.Dash(dashDirection);
+					dashPressed = true;
 				}
-				dashController.Dash(dashDirection);
-				//Push(PushForce.Heavy, Vector3.forward, 10f, 0.5f, 5f);
-				//BumpMe(transform.forward, 10f, 1f, 1f);
+				else if (!rightTriggerWaitForRelease)
+				{
+					Debug.Log("DashBuffer++");
+					dashBuffer += Time.deltaTime;
+					if (dashBuffer >= delayBeforeDash)
+					{
+						Vector3 dashDirection = moveInput;
+						if (moveInput.magnitude <= 0)
+						{
+							dashDirection = transform.forward;
+						}
+						dashController.Dash(dashDirection);
+						dashPressed = true;
+					}
+				}
 			}
-			dashPressed = true;
-		} else
+		}
+		else
 		{
-			dashPressed = false;
+			if (leftTriggerWaitForRelease)
+			{
+				if (revivablePlayers.Count > 0 && dashBuffer < delayBeforeDash && !reviving)
+				{
+					Vector3 dashDirection = moveInput;
+					if (moveInput.magnitude <= 0)
+					{
+						dashDirection = transform.forward;
+					}
+					dashController.Dash(dashDirection);
+				}
+				dashBuffer = 0;
+				dashPressed = false;
+				leftTriggerWaitForRelease = false;
+			}
 		}
 		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
 		{
@@ -236,15 +284,26 @@ public class PlayerController : PawnController, IHitable
 		{
 			if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
 			{
+				reviving = true;
 				AddSpeedCoef(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
 				foreach (ReviveInformations p in revivablePlayers)
 				{
 					p.linkedPanel.FillAssemblingSlider();
 				}
-			} else
+			} else if (state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
+			{
+				reviving = false;
+			}
+			else
 			{
 				UnFreeze();
 				SetTargetable();
+			}
+		} else
+		{
+			if (reviving && state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
+			{
+				reviving = false;
 			}
 		}
 	}
