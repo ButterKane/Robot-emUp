@@ -19,6 +19,7 @@ public enum EnemyState
     PauseAfterAttack,
     Dying,
     Spawning,
+    Deploying
 }
 public enum WhatBumps
 {
@@ -68,6 +69,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
     public bool arenaRobot;
+    public bool isDeploymentFast = true;
 
     [Space(3)]
     [Header("Focus")]
@@ -77,6 +79,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [HideInInspector] public float timeBetweenCheck = 0;
     public float distanceBeforeChangingPriority = 3;
     public float maxTimeBetweenCheck = 0.25f;
+    public float closestDistanceToplayer = 2; // The closest a following enemy can go to a player without touching it
 
     [Space(3)]
     [Header("Movement")]
@@ -131,6 +134,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     protected virtual void Start()
     {
+        animator.SetBool("isFastDeployment", isDeploymentFast);
         timeBetweenCheck = maxTimeBetweenCheck;
         playerOneTransform = GameManager.playerOne.transform;
         playerTwoTransform = GameManager.playerTwo.transform;
@@ -212,43 +216,54 @@ public class EnemyBehaviour : PawnController, IHitable
                     timeBetweenCheck = maxTimeBetweenCheck;
                 }
 
-                if (focusedPawnController != null)
+                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
                 {
-					Quaternion _targetRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - transform.position) ;
-                    _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
-
-                    if (closestSurroundPoint != null)
+                    if (distanceWithFocusedPlayer < closestDistanceToplayer)
                     {
-                        float i_distanceToPointRatio = (1 + (transform.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
-
-                        Vector3 i_p0 = transform.position;    // The starting point
-
-                        Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
-
-                        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
-
-                        int i_moveSens = i_angle > 1 ? 1 : -1;
-
-                        Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
-
-                        // Calculating position on bezier curve, following start point, end point and avancement
-                        // In this version, the avancement has been replaced by a constant because it's recalculated every frame
-                        Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-                        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position)); }
+                        navMeshAgent.isStopped = true;
                     }
                     else
                     {
-                        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
+                        navMeshAgent.isStopped = false;
+                        if (focusedPawnController != null)
                         {
-                            navMeshAgent.SetDestination(focusedPawnController.transform.position);
+                            Quaternion _targetRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - transform.position);
+                            _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
+                            transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+
+                            if (closestSurroundPoint != null)
+                            {
+                                float i_distanceToPointRatio = (1 + (transform.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+
+                                Vector3 i_p0 = transform.position;    // The starting point
+
+                                Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
+
+                                float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
+
+                                int i_moveSens = i_angle > 1 ? 1 : -1;
+
+                                Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
+
+                                // Calculating position on bezier curve, following start point, end point and avancement
+                                // In this version, the avancement has been replaced by a constant because it's recalculated every frame
+                                Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
+                                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position)); }
+                            }
+                            else
+                            {
+                                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
+                                {
+                                    navMeshAgent.SetDestination(focusedPawnController.transform.position);
+                                }
+                            }
                         }
                     }
-                    cooldownDuration -= Time.deltaTime;
-                    if (distanceWithFocusedPlayer <= distanceToAttack && cooldownDuration < 0)
-                    {
-                        ChangeState(EnemyState.PreparingAttack);
-                    }
+                }
+                cooldownDuration -= Time.deltaTime;
+                if (distanceWithFocusedPlayer <= distanceToAttack && cooldownDuration < 0)
+                {
+                    ChangeState(EnemyState.PreparingAttack);
                 }
                 break;
             case EnemyState.ChangingFocus:
@@ -331,6 +346,12 @@ public class EnemyBehaviour : PawnController, IHitable
                 
                 break;
             case EnemyState.Spawning:
+                break;
+            case EnemyState.Deploying:
+                foreach (AnimatorControllerParameter param in animator.parameters)
+                {
+                    if (param.name == "DeployTrigger") { animator.SetTrigger("DeployTrigger");}
+                }
                 break;
         }
     }
