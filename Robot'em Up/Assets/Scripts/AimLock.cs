@@ -1,21 +1,43 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class AimLock : MonoBehaviour
 {
 	public Transform linkedTarget;
 	private Animator animator;
-	private SphereCollider extendedCollider;
+	private Collider extendedCollider;
 
-	public void Init(Transform _linkedTarget, float _radius, Color _color, Color _iconColor)
+	public void Init(Transform _linkedTarget, float _radius, Color _color, Color _iconColor, Vector3 sizeModifier = default)
 	{
 		linkedTarget = _linkedTarget;
 		animator = GetComponent<Animator>();
-		extendedCollider = _linkedTarget.gameObject.AddComponent<SphereCollider>();
-		extendedCollider.isTrigger = true;
-		extendedCollider.radius = _radius;
+		Collider existingCollider = _linkedTarget.GetComponent<Collider>();
+		if (existingCollider != null)
+		{
+			switch (existingCollider.GetType().ToString())
+			{
+				case "BoxCollider":
+					if (sizeModifier == default) { sizeModifier = Vector3.one; }
+					extendedCollider = _linkedTarget.gameObject.AddComponent<BoxCollider>();
+					extendedCollider.isTrigger = true;
+					BoxCollider boxCollider = (BoxCollider)extendedCollider;
+					boxCollider.size = new Vector3(_radius * sizeModifier.x, _radius * sizeModifier.y, _radius * sizeModifier.z);
+					break;
+				default:
+					extendedCollider = _linkedTarget.gameObject.AddComponent<SphereCollider>();
+					extendedCollider.isTrigger = true;
+					SphereCollider sphereCollider = (SphereCollider)extendedCollider;
+					sphereCollider.radius = _radius;
+					break;
+			}
+		}
+		else
+		{
+			extendedCollider = _linkedTarget.gameObject.AddComponent<SphereCollider>();
+			extendedCollider.isTrigger = true;
+			SphereCollider sphereCollider = (SphereCollider)extendedCollider;
+			sphereCollider.radius = _radius;
+		}
 		SetColor(_color, _iconColor) ;
 	}
 

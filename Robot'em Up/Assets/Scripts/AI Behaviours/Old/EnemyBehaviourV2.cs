@@ -56,7 +56,8 @@ public class EnemyBehaviourV2 : PawnController, IHitable
 	public float powerLevel = 1;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
-	public bool arenaRobot;
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
+    public bool arenaRobot;
 
 	[Space(3)]
     [Header("Focus")]

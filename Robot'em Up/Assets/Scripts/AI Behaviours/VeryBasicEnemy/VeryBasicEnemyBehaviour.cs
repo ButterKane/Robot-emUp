@@ -48,7 +48,9 @@ public class VeryBasicEnemyBehaviour : MonoBehaviour,IHitable
 	[SerializeField] private bool _lockable; public bool lockable_access { get { return _lockable; } set { _lockable = value; } }
 	[SerializeField] private float _lockHitboxSize; public float lockHitboxSize_access { get { return _lockHitboxSize; } set { _lockHitboxSize = value; } }
 
-	[Space(2)]
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
+
+    [Space(2)]
     [Header("Focus")]
     public float focusDistance;
     public float unfocusDistance;
