@@ -109,9 +109,9 @@ public class PushDatas : ScriptableObject
 	public Vector2 randomWallSplatHeavyRecoverTimeAddition;
 	public Vector2 randomWallSplatLightRecoverTimeAddition;
 	public float wallSplatDamages;
-	public float wallSplatPlayerDamages;
 
 	[Header("WallSplat Player")]
+	public float wallSplatPlayerDamages;
 	public float wallSplatPlayerHeavyForwardPush = 3f;
 	public float wallSplatPlayerLightRecoverTime = 0.5f;
 	public float wallSplatPlayerHeavyRecoverTime = 1f;

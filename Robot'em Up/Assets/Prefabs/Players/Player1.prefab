@@ -154,6 +154,7 @@ MonoBehaviour:
   enableJump: 0
   enableDunk: 1
   enableMagnet: 1
+  delayBeforeDash: 0.2
   eventOnResurrecting: event.PlayerResurrecting
   deathExplosionRadius: 0
   deathExplosionDamage: 0
@@ -167,6 +168,7 @@ MonoBehaviour:
   minMaxProjectionForce: {x: 12, y: 16}
   reviveHoldDuration: 0.85
   reviveFreezeDuration: 0.1
+  mainCollider: {fileID: 5419603750946610382}
 --- !u!114 &514769572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,6 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb5ac05d469d05d4e8a7102a3795d22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableDunkAspiration: 1
   dunkJumpHeight: 5
   dunkJumpLength: 0.4
   dunkJumpDuration: 0.17
@@ -219,6 +222,8 @@ MonoBehaviour:
   dunkHitlagForce: 0.117
   dunkDashSpeed: 40
   dunkExplosionRadius: 10
+  dunkAspirationRadius: 15
+  aspirationMinDistanceToPlayer: 4
   dunkDamages: 25
   dunkProjectionForce: 30
   dunkCancelledFallSpeed: 20
@@ -226,6 +231,9 @@ MonoBehaviour:
   dunkSnapTreshold: 30
   dunkCooldown: 1
   dunkCancelFreezeDuration: 0.4
+  dunkForwardAngleTreshold: 7.5
+  dunkMaxForwardDistance: 5
+  dunkForwardSpeed: 5
   bumpDistanceMod: 1
   bumpDurationMod: 0.5
   bumpRestDurationMod: 0.7
@@ -638,6 +646,55 @@ MonoBehaviour:
   frameCountBetweenCollisionRecalculationDuringDash: 1
   dashHitboxRadius: 3
   dashCollisionPushForce: 5
+  snapMinAngle: 10
+  distancePriorityScore:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 20
+      inSlope: 52.95694
+      outSlope: 52.95694
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.010663509
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  anglePriorityScore:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 10
+      inSlope: 20.543613
+      outSlope: 20.543613
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.03436017
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &6803351105506393549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1665,16 +1722,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5825664154814933021}
     m_Modifications:
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_Name
-      value: FX_Magnet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1739,6 +1786,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}
