@@ -7,6 +7,7 @@ public class PuzzleDoor : PuzzleActivable
     public bool open;
     public GameObject destroyWhenOpened;
     public List<PuzzleActivator> activatorsToShutDown;
+    public List<PuzzleActivable> activableToShutDown;
 
     override public void WhenActivate()
     {
@@ -15,8 +16,11 @@ public class PuzzleDoor : PuzzleActivable
         UpdateLights();
         foreach (var item in activatorsToShutDown)
         {
-            Debug.Log("Try to shut down");
             item.shutDownPuzzleActivator();
+        }
+        foreach (var item in activableToShutDown)
+        {
+            item.shutDownPuzzle();
         }
         DestroyTheDoor();
     }
