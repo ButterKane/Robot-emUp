@@ -18,6 +18,7 @@ public enum DunkState
 public class DunkController : MonoBehaviour
 {
 	[Separator("General settings")]
+	public static bool enableDunkReadyPanel = true;
 	public bool enableDunkAspiration;
 	public float dunkJumpHeight = 5f;
 	public float dunkJumpLength = 1f;
@@ -105,10 +106,11 @@ public class DunkController : MonoBehaviour
 	{
 		if (CanDunk() && currentDunkReadyPanel != null)
 		{
-			if (!currentDunkReadyPanel.activeSelf) { currentDunkReadyPanel.SetActive(true); }
+			if (!currentDunkReadyPanel.activeSelf) { if (enableDunkReadyPanel) { currentDunkReadyPanel.SetActive(true); } }
 			if (currentDunkReadyFX == null) { currentDunkReadyFX = FeedbackManager.SendFeedback("event.DunkReady", this, playerController.GetCenterPosition(), Vector3.up, Vector3.up).GetVFX(); }
 			currentDunkReadyPanel.transform.position = GameManager.mainCamera.WorldToScreenPoint(playerController.GetHeadPosition());
-		} else
+		}
+		else
 		{
 			if (currentDunkReadyFX != null) { Destroy(currentDunkReadyFX); }
 			if (currentDunkReadyPanel.activeSelf) { currentDunkReadyPanel.SetActive(false); }
