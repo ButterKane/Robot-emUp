@@ -343,7 +343,7 @@ public class EnemyBehaviour : PawnController, IHitable
                         animator.SetTrigger("DeathTrigger");
                         i_thereIsAnAnimation = true;
                         Freeze();
-                        if (navMeshAgent != null) { navMeshAgent.isStopped = true; }
+                        if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
                     }
                 }
                 
