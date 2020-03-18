@@ -104,14 +104,14 @@ public class Retriever : MonoBehaviour
 			{
 				i_partsFound = true;
 				parts.amount++;
-				parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
-				parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
 				if (parts.amount >= parts.maxAmount)
 				{
 					AllowPlayerRevive(parts);
 				}
 				else
 				{
+					parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
+					parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
 					FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, i_corePart.transform.position, i_corePart.transform.position - transform.position, i_corePart.transform.position - transform.position);
 					newList.Add(parts);
 				}
