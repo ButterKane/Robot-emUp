@@ -29,11 +29,11 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         {
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
-                manager.ToxicValue_P1 += Time.deltaTime * multiplicator;
+                manager.toxicValue_P1 += Time.deltaTime * multiplicator;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
-                manager.ToxicValue_P2 += Time.deltaTime * multiplicator;
+                manager.toxicValue_P2 += Time.deltaTime * multiplicator;
             }
         }
   }
