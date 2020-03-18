@@ -57,4 +57,9 @@ public class TurretAnimationEvent : MonoBehaviour
     {
         myScript.ResetValuesAtEndOfAttack();
     }
+
+    public void Die()
+    {
+        myScript.Kill();
+    }
 }
