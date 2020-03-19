@@ -127,7 +127,7 @@ public class PawnController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	protected float currentSpeed;
-    [System.NonSerialized] public float currentHealth;
+    public float currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;

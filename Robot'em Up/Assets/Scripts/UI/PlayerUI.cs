@@ -34,6 +34,7 @@ public class PlayerUI : MonoBehaviour
 	public float healthGainLerpSpeed = 1f;
 	public float healthLossLerpSpeed = 1f;
 	public Gradient healthColorGradient;
+	public Color overHealColor;
 	[Range(0f, 1f)] public float healthGradientInterpolationRate = 0.1f;
 
 	public GameObject healthBarPrefab;
@@ -105,11 +106,18 @@ public class PlayerUI : MonoBehaviour
 			i_healthLerpSpeed = healthGainLerpSpeed;
 		}
 		displayedHealth = Mathf.Lerp(displayedHealth, currentHealth, Time.deltaTime * i_healthLerpSpeed);
-		displayedHealth = Mathf.Clamp(displayedHealth, 0f, 1f);
+		displayedHealth = Mathf.Clamp(displayedHealth, 0f, Mathf.Infinity);
 		healthText.text = "" + Mathf.RoundToInt((displayedHealth * 100f)).ToString() + "%";
 
 		float i_evaluateTime = 1f - Mathf.Clamp(displayedHealth - (displayedHealth % healthGradientInterpolationRate), 0f, 1f);
-		healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
+		if (currentHealth > 1)
+		{
+			healthText.color = overHealColor;
+		}
+		else
+		{
+			healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
+		}
 
 		float i_HealthNormalized = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
 		if (i_HealthNormalized < healthAlwaysDisplayedTreshold && i_HealthNormalized > 0)
