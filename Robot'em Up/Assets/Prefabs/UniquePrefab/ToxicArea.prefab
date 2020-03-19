@@ -42,8 +42,8 @@ ParticleSystem:
   serializedVersion: 6
   lengthInSec: 2
   simulationSpeed: 1
-  stopAction: 0
-  cullingMode: 3
+  stopAction: 1
+  cullingMode: 2
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
@@ -4730,8 +4730,8 @@ ParticleSystem:
   serializedVersion: 6
   lengthInSec: 3
   simulationSpeed: 1
-  stopAction: 0
-  cullingMode: 3
+  stopAction: 1
+  cullingMode: 2
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
@@ -9383,7 +9383,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 3.31
+  m_Radius: 2.92
   m_Height: 7.1
   m_Direction: 1
   m_Center: {x: 0.05066085, y: 0.085082315, z: 0.06098558}
@@ -9404,3 +9404,4 @@ MonoBehaviour:
   multiplicator: 0.2
   lockable: 0
   lockHitboxSize: 0
+  lockSize3DModifier: {x: 1, y: 1, z: 1}

@@ -5,7 +5,7 @@ using UnityEngine;
 public class ToxicAreaCollider : MonoBehaviour, IHitable
 {
     public ToxicAreaManager manager;
-    public ParticleSystem particleSystem;
+    public new ParticleSystem particleSystem;
     public float multiplicator = 1f;
 
 	[SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
@@ -16,7 +16,6 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     // Start is called before the first frame update
     void Start()
     {
-        particleSystem.Stop();
     }
 
     // Update is called once per frame
@@ -25,11 +24,9 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     }
     void OnBecameVisible()
     {
-        particleSystem.Play();
     }
     void OnBecameInvisible()
     {
-        particleSystem.Stop();
 
     }
 
