@@ -60,7 +60,7 @@ public class IndianaExplosion : MonoBehaviour
                 item.Push(PushType.Light, item.transform.position - transform.position, PushForce.Force2);
             }
         }
-        if (waitingForExplosion < -2)
+        if (waitingForExplosion < -0.45f)
         {
             Destroy(gameObject);
         }

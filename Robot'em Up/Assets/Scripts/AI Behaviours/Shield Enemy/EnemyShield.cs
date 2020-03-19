@@ -179,10 +179,7 @@ public class EnemyShield : EnemyBehaviour
 
 	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
-        if(Vector3.Angle(_impactVector, -transform.forward) < angleRangeForRebound)
-        {
-            StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
-            base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
-        }
+        StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
+        base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
 }

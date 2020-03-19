@@ -46,7 +46,8 @@ public class MainMenu : MonoBehaviour
 
 	public void Close()
 	{
-		GameManager.CloseLevelMenu();
+        FeedbackManager.SendFeedback("event.ClosePauseMenu", this);
+        GameManager.CloseLevelMenu();
 	}
 
 	public void QuitGame ()
@@ -56,7 +57,8 @@ public class MainMenu : MonoBehaviour
 
 	public void OpenMenu()
 	{
-		GameManager.LoadSceneByIndex(0);
+        FeedbackManager.SendFeedback("event.OpenPauseMenu", this);
+        GameManager.LoadSceneByIndex(0);
 	}
 
 	public void OpenLevelSelector()
@@ -69,19 +71,22 @@ public class MainMenu : MonoBehaviour
 
 	public void CloseLevelSelector()
 	{
-		sceneList.gameObject.SetActive(false);
+        FeedbackManager.SendFeedback("event.PressExit", this);
+        sceneList.gameObject.SetActive(false);
 		buttons = menuButtons;
 		SelectButton(buttons[0]);
 	}
 
 	public void StartGame()
 	{
-		SceneManager.LoadScene(1);
+        FeedbackManager.SendFeedback("event.PressPlay", this);
+        SceneManager.LoadScene(1);
 		Time.timeScale = 1f;
 	}
 
     public void GoToSettings()
     {
+        FeedbackManager.SendFeedback("event.PressSettings", this);
         optionMenu.SetActive(true);
         //SceneManager.LoadScene("OptionMenu", LoadSceneMode.Additive);
         isMainMenuActive = false;
@@ -202,14 +207,16 @@ public class MainMenu : MonoBehaviour
 
 	void SelectNextButton()
 	{
-		selectedButtonIndex++;
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
+        selectedButtonIndex++;
 		selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count-1);
 		SelectButton(buttons[selectedButtonIndex]);
 	}
 
 	void SelectPreviousButton()
 	{
-		selectedButtonIndex--;
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
+        selectedButtonIndex--;
 		selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count-1);
 		SelectButton(buttons[selectedButtonIndex]);
 	}

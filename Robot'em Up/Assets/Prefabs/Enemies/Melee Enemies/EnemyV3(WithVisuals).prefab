@@ -1805,7 +1805,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minWalkSpeed: 0.1
-  moveSpeed: 4
+  moveSpeed: 7
   acceleration: 60
   movingDrag: 0.4
   idleDrag: 0.4
@@ -1859,6 +1859,7 @@ MonoBehaviour:
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
+  selfCollider: {fileID: 0}
   enemyType: 0
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
@@ -1866,13 +1867,16 @@ MonoBehaviour:
   powerLevel: 1
   lockable: 1
   lockHitboxSize: 2
+  lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
+  isDeploymentFast: 1
   focusDistance: 50
   maxHeightOfDetection: 3
   unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 3
   maxTimeBetweenCheck: 0.25
+  closestDistanceToplayer: 2
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0.5
@@ -1893,6 +1897,7 @@ MonoBehaviour:
   coreDropChances: 0.1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
+  waitTimeBeforeDisappear: 1
   attackHitBoxPrefab: {fileID: 3204598243110983843, guid: 34976ce2e8641614f9791ea7f5d31244,
     type: 3}
   attackHitBoxCenterPoint: {fileID: 4446576434074462058}

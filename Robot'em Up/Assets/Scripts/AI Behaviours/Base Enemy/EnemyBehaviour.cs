@@ -51,6 +51,7 @@ public class EnemyBehaviour : PawnController, IHitable
     protected PawnController playerOnePawnController;
     [SerializeField] protected Transform playerTwoTransform;
     protected PawnController playerTwoPawnController;
+    [ReadOnly] public Collider selfCollider;
 
     [Space(2)]
     [Separator("Tweakable variables")]
@@ -68,6 +69,8 @@ public class EnemyBehaviour : PawnController, IHitable
     public float powerLevel = 1;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
     public bool arenaRobot;
     public bool isDeploymentFast = true;
 
@@ -144,7 +147,7 @@ public class EnemyBehaviour : PawnController, IHitable
         if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
-
+        selfCollider = GetComponent<Collider>();
         if (arenaRobot)
         {
             ChangeState(EnemyState.WaitForCombatStart);
@@ -332,11 +335,18 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
+                selfCollider.enabled = false;
                 currentDeathWaitTime = waitTimeBeforeDisappear;
                 bool i_thereIsAnAnimation = false;
                 foreach (AnimatorControllerParameter param in animator.parameters)
                 {
-                    if (param.name == "DeathTrigger") { animator.SetTrigger("DeathTrigger"); i_thereIsAnAnimation = true; Freeze(); navMeshAgent.isStopped = true; }
+                    if (param.name == "DeathTrigger")
+                    {
+                        animator.SetTrigger("DeathTrigger");
+                        i_thereIsAnAnimation = true;
+                        Freeze();
+                        if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
+                    }
                 }
                 
                 if(!i_thereIsAnAnimation)
@@ -470,12 +480,14 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
+        damageAfterBump = 0;
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
         if (!CanDamage()) { return; }
         switch (_source)
         {
             case DamageSource.Dunk:
+                
                 if (isBumpable)
                 {
                     if (enemyType == EnemyTypes.RedBarrel)
@@ -486,7 +498,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
 					Analytics.CustomEvent("DamageWithDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 					damageAfterBump = _damages;
-                    damageAfterBump = _damages;
 
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_thrower.GetComponent<DunkController>() != null)
@@ -520,7 +531,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 				animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
-                damageAfterBump = 0;
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
                 whatBumps = WhatBumps.Pass;
                 //Staggered(whatBumps);
@@ -532,7 +542,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
 				BallDatas bd = _ball.currentBallDatas;
 				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
-				Debug.Log(ballChargePercent);
+				//Debug.Log(ballChargePercent);
 				if (ballChargePercent >= bd.minimalChargeForBump)
 				{
 					BumpMe(_impactVector.normalized, BumpForce.Force1);
