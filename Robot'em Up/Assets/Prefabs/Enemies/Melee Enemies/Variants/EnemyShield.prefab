@@ -1,5 +1,31 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!135 &1252226478884237496
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298832957505478513}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &663349091308229719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298832957505478513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f47615bad1b54e48b9a9cb666e56403, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: -107054244876289124}
 --- !u!114 &-107054244876289124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16,6 +42,14 @@ MonoBehaviour:
   totalHeight: 2.25
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
+  currentState:
+    name: New state
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
   canMove: 1
   jumpForce: 0
   accelerationCurve:
@@ -32,7 +66,7 @@ MonoBehaviour:
   onGroundGravityMultiplyer: 0
   deadzone: 0.2
   turnSpeed: 0.25
-  canClimb: 1
+  canClimb: 0
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
   climbDuration: 0.5
@@ -72,6 +106,7 @@ MonoBehaviour:
   eventOnDeath: event.EnemyShieldDeath
   eventOnHealing: 
   moveInput: {x: 0, y: 0, z: 0}
+  climbingHoldTime: 0
   passController: {fileID: 0}
   healthBarRef: {fileID: 4697345455816352529}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
@@ -90,20 +125,21 @@ MonoBehaviour:
   maxHeightOfDetection: 3
   unfocusDistance: 55
   timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 6
+  distanceBeforeChangingPriority: 25
   maxTimeBetweenCheck: 0.25
+  closestDistanceToplayer: 10
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0.5
   speedMultiplierFromDunkHit: 0
   timeToRecoverSlowFromDunk: 0
   maxAnticipationTime: 0.5
-  maxTimePauseAfterAttack: 1
+  maxTimePauseAfterAttack: 1.5
   hitBoxOffset: {x: 0.5, y: 1, z: 0}
   rotationSpeedPreparingAttack: 0.2
   distanceToAttack: 12
   portionOfAnticipationWithRotation: 0.3
-  cooldownAfterAttackTime: 4
+  cooldownAfterAttackTime: 5
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
@@ -112,13 +148,19 @@ MonoBehaviour:
   coreDropChances: 1
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
+  waitTimeBeforeDisappear: 1
   shield: {fileID: 907304710442746487}
   deactivateShieldWhenAttacking: 0
   angleRangeForRebound: 75
-  timeShieldDisappearAfterHit: 0.6
-  renderers: []
+  timeShieldDisappearAfterHit: 1.2
+  renderers:
+  - {fileID: 6181108246780876594}
+  - {fileID: 6181108247639220607}
+  - {fileID: 6181108248183470284}
+  - {fileID: 352164078734171204}
+  - {fileID: 3042645366878775819}
   normalColor: {r: 0, g: 0, b: 1, a: 1}
-  attackingColor: {r: 1, g: 0, b: 0, a: 1}
+  attackingColor: {r: 0.5535369, g: 0, b: 1, a: 1}
   attackHitBox: {fileID: 663349091308229719}
   minMaxAttackSpeed: {x: 5, y: 30}
   attackSpeedVariation:
@@ -146,38 +188,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   attackChargeDuration: 1.2
-  whenToTriggerEndOfAttackAnim: 0.9
+  whenToTriggerEndOfAttackAnim: 0.85
   attackRaycastDistance: 2
   maxRotationSpeed: 360
-  BumpOtherDistanceMod: 0.5
-  BumpOtherDurationMod: 0.2
-  BumpOtherRestDurationMod: 0.3
---- !u!135 &1252226478884237496
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1298832957505478513}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &663349091308229719
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1298832957505478513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f47615bad1b54e48b9a9cb666e56403, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parent: {fileID: -107054244876289124}
 --- !u!1001 &5830630883478141552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -432,6 +445,36 @@ GameObject:
 --- !u!4 &6181108247738804001 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6181108246780876594 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6181108247639220607 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6181108248183470284 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 373019034979260866, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &352164078734171204 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6055561084390735178, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5830630885209383182}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3042645366878775819 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8850464090290621189, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
     type: 3}
   m_PrefabInstance: {fileID: 5830630885209383182}
   m_PrefabAsset: {fileID: 0}

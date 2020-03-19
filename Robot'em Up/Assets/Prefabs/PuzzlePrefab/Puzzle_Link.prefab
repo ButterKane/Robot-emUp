@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 826081212846633650}
   m_Layer: 16
   m_Name: Puzzle_Link
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -64,6 +64,7 @@ MonoBehaviour:
   puzzleData: {fileID: 11400000, guid: e9f432b5da852ac4b93510aa9c804d6d, type: 2}
   indictatorLight: {fileID: 6177554630888201700}
   wire: {fileID: 0}
+  shutDown: 0
   nbSecondsLinkMaintained: 8
   CompletionShader: {fileID: 2398796866163843749}
   lockable: 1
@@ -252,6 +253,10 @@ PrefabInstance:
     - target: {fileID: 1990082954663360, guid: 800458afd8edd8347948cf025aeebfa6, type: 3}
       propertyPath: m_Layer
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1990082954663360, guid: 800458afd8edd8347948cf025aeebfa6, type: 3}
+      propertyPath: m_TagString
+      value: Environment
       objectReference: {fileID: 0}
     - target: {fileID: 4908851891503912, guid: 800458afd8edd8347948cf025aeebfa6, type: 3}
       propertyPath: m_LocalPosition.x

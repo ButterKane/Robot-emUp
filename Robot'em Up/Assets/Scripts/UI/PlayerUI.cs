@@ -13,11 +13,6 @@ public class PlayerUI : MonoBehaviour
 	public bool displayHealth;
 	public bool displayDashes;
 
-	public float panelWidth;
-	public float panelHeight;
-
-	public float panelDistanceToPlayer;
-
 	//Health settings
 	public float healthGainFadeInSpeed;
 	public float healthGainFadeOutSpeed;
@@ -39,6 +34,7 @@ public class PlayerUI : MonoBehaviour
 	public float healthGainLerpSpeed = 1f;
 	public float healthLossLerpSpeed = 1f;
 	public Gradient healthColorGradient;
+	public Color overHealColor;
 	[Range(0f, 1f)] public float healthGradientInterpolationRate = 0.1f;
 
 	public GameObject healthBarPrefab;
@@ -72,8 +68,10 @@ public class PlayerUI : MonoBehaviour
 	private List<GameObject> panelShowedPermanently;
 	private float currentHealth;
 	private float displayedHealth;
+	public RectTransform playerCanvasRectTransform;
+	public RectTransform playerCanvasLateralRectTransform;
 
-	private void Start ()
+	private void Awake ()
 	{
 		pawnController = GetComponent<PawnController>();
 		dashController = GetComponent<DashController>();
@@ -108,11 +106,18 @@ public class PlayerUI : MonoBehaviour
 			i_healthLerpSpeed = healthGainLerpSpeed;
 		}
 		displayedHealth = Mathf.Lerp(displayedHealth, currentHealth, Time.deltaTime * i_healthLerpSpeed);
-		displayedHealth = Mathf.Clamp(displayedHealth, 0f, 1f);
+		displayedHealth = Mathf.Clamp(displayedHealth, 0f, Mathf.Infinity);
 		healthText.text = "" + Mathf.RoundToInt((displayedHealth * 100f)).ToString() + "%";
 
 		float i_evaluateTime = 1f - Mathf.Clamp(displayedHealth - (displayedHealth % healthGradientInterpolationRate), 0f, 1f);
-		healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
+		if (currentHealth > 1)
+		{
+			healthText.color = overHealColor;
+		}
+		else
+		{
+			healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
+		}
 
 		float i_HealthNormalized = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
 		if (i_HealthNormalized < healthAlwaysDisplayedTreshold && i_HealthNormalized > 0)
@@ -140,22 +145,9 @@ public class PlayerUI : MonoBehaviour
 
 	void GenerateCanvas()
 	{
-		playerCanvas = new GameObject().AddComponent<Canvas>();
-		playerCanvas.transform.SetParent(this.transform);
-		playerCanvas.renderMode = RenderMode.WorldSpace;
-		playerCanvas.name = "PlayerCanvas";
-		RectTransform i_canvasRT = playerCanvas.GetComponent<RectTransform>();
-		i_canvasRT.sizeDelta = new Vector2(panelWidth, panelHeight);
-		i_canvasRT.pivot = new Vector2(0.5f, 0f);
-		playerCanvas.transform.localPosition = new Vector3(0, pawnController.GetHeight() + panelDistanceToPlayer, 0);
-		playerCanvas.gameObject.AddComponent<Billboard>();
-		VerticalLayoutGroup i_vlg = playerCanvas.gameObject.AddComponent<VerticalLayoutGroup>();
-		i_vlg.childAlignment = TextAnchor.LowerCenter;
-		i_vlg.childForceExpandHeight = false;
-		i_vlg.childForceExpandWidth = false;
-		i_vlg.childScaleHeight = true;
-		i_vlg.childControlHeight = false;
-		i_vlg.childControlWidth = false;
+		playerCanvas = transform.Find("PlayerUIMain").GetComponent<Canvas>();
+		playerCanvasRectTransform = playerCanvas.GetComponent<RectTransform>();
+		playerCanvasLateralRectTransform = transform.Find("PlayerUILateral").GetComponentInChildren<RectTransform>();
 	}
 
 	void GenerateHealthPanel()
@@ -167,7 +159,7 @@ public class PlayerUI : MonoBehaviour
 		healthPanel.transform.SetParent(playerCanvas.transform);
 		healthPanel.transform.localRotation = Quaternion.identity;
 		healthPanel.transform.localPosition = Vector3.zero;
-		i_healthRT.sizeDelta = new Vector2(panelWidth, panelWidth / 2f);
+		i_healthRT.sizeDelta = new Vector2(playerCanvasRectTransform.sizeDelta.x, playerCanvasRectTransform.sizeDelta.x / 2f);
 		i_healthRT.localScale = new Vector3(1f, 1f, 1f) * healthFontSize;
 		healthText.fontSize = (int)healthFontSize;
 		healthText.font = healthFont;
@@ -192,7 +184,7 @@ public class PlayerUI : MonoBehaviour
 		dashPanel.transform.SetParent(playerCanvas.transform);
 		dashPanel.transform.localRotation = Quaternion.identity;
 		dashPanel.transform.localPosition = Vector3.zero;
-		i_dashRT.sizeDelta = new Vector2(panelWidth, 0.4f);
+		i_dashRT.sizeDelta = new Vector2(playerCanvasRectTransform.sizeDelta.x, 0.4f);
 		HorizontalLayoutGroup i_hlg = dashPanel.AddComponent<HorizontalLayoutGroup>();
 		i_hlg.childAlignment = TextAnchor.MiddleCenter;
 		i_hlg.childForceExpandHeight = false;

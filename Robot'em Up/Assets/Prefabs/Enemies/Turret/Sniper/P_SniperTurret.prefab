@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8459352972653461936}
   m_Layer: 0
-  m_Name: ModelPivot
+  m_Name: AimingCubePivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,8 +27,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 12803743301825545}
   - {fileID: 2214899143935897769}
+  - {fileID: 6954835678050591056}
   m_Father: {fileID: 2227829331840288604}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -153,7 +153,7 @@ Transform:
   m_Children:
   - {fileID: 6678318211773809441}
   m_Father: {fileID: 8459352972653461936}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2023857370193921742
 GameObject:
@@ -183,6 +183,37 @@ Transform:
   m_LocalScale: {x: 0.110020496, y: 0.12498075, z: 0.38924348}
   m_Children: []
   m_Father: {fileID: 12803743301825545}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2278087610148782713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6954835678050591056}
+  m_Layer: 0
+  m_Name: ModelPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6954835678050591056
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2278087610148782713}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.7, y: 1.7, z: 1.7}
+  m_Children:
+  - {fileID: 12803743301825545}
+  m_Father: {fileID: 8459352972653461936}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2903341099659750164
@@ -321,13 +352,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3565533733829296298}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1483620478162168980}
   - {fileID: 1311322156898505201}
-  m_Father: {fileID: 8459352972653461936}
+  m_Father: {fileID: 6954835678050591056}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5694835169447551075
@@ -756,6 +787,14 @@ MonoBehaviour:
   totalHeight: 1.5
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
+  currentState:
+    name: New state
+    stateOverriden: []
+    invincibleDuringState: 0
+    damagesCancelState: 0
+    allowBallReception: 0
+    allowBallThrow: 0
+    preventMoving: 0
   canMove: 0
   jumpForce: 0
   accelerationCurve:
@@ -794,6 +833,7 @@ MonoBehaviour:
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
   moveInput: {x: 0, y: 0, z: 0}
+  climbingHoldTime: 0
   passController: {fileID: 0}
   healthBarRef: {fileID: 1237326659969052972}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
@@ -801,6 +841,7 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   enemyType: 4
+  focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
   damage: 100
   powerLevel: 3
@@ -824,6 +865,7 @@ MonoBehaviour:
   rotationSpeedPreparingAttack: 0.2
   distanceToAttack: 5
   portionOfAnticipationWithRotation: 0.3
+  cooldownAfterAttackTime: 1
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
@@ -871,11 +913,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3365667076966562391}
     m_Modifications:
-    - target: {fileID: 2630881796360466225, guid: 4cccfb20e48f9184099401344ea3c902,
-        type: 3}
-      propertyPath: m_Name
-      value: Visuals
-      objectReference: {fileID: 0}
     - target: {fileID: 2630881796360466224, guid: 4cccfb20e48f9184099401344ea3c902,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -945,6 +982,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630881796360466225, guid: 4cccfb20e48f9184099401344ea3c902,
+        type: 3}
+      propertyPath: m_Name
+      value: Visuals
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cccfb20e48f9184099401344ea3c902, type: 3}

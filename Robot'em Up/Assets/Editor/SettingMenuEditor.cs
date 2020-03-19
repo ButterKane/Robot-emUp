@@ -35,7 +35,7 @@ public class SettingMenuEditor : Editor
 
         if (GUILayout.Button("Assign saved settings values"))
         {
-            myScript.AssignSavedValues();
+            myScript.AssignSavedValuesInSettings();
         }
     }
 }

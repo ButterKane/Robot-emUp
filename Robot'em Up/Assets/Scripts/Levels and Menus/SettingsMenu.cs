@@ -28,11 +28,21 @@ public class SettingsMenu : MonoBehaviour
     private UIBehaviour selectedSetting;
     [ReadOnly] public int selectedSettingIndex;
     [ReadOnly] public string selectedSettingName;
+    public float normalRestTimeOfJoystick = 0.5f;
+    public MainMenu scriptLinkedToThisOne;
+
+    [Separator("Slider variables")]
+    public Vector2 minMaxTimeBeforeReset = new Vector2(0.2f, 0.5f);
+    public float timeToReachMinTimeBeforeReset;
+    public AnimationCurve timeBeforeResetEvolution;
+    private float currentSliderTimeRatioBeforeReset;
+    private float timeJoystickHeldDown;
+    private float sliderSpecificRestTime;
+
 
     private bool waitForResetReset;
     private bool waitForJoystickYReset;
     private bool waitForJoystickXReset;
-    public float normalRestTimeOfJoystick = 0.5f;
     private float restTimeOfJoystickX;
     private float currentRestTimeOfJoystickX;
     private bool waitForRightShoulderReset;
@@ -40,7 +50,7 @@ public class SettingsMenu : MonoBehaviour
     private bool waitForAReset;
     private int categoryNumber;
     private bool isInputChangingOpen;
-    public MainMenu scriptLinkedToThisOne;
+    
 
     void Awake()
     {
@@ -80,6 +90,7 @@ public class SettingsMenu : MonoBehaviour
 
         if (selectedCategoryIndex + i_addition >= 0 && selectedCategoryIndex + i_addition < menuCategories.Count)
         {
+            FeedbackManager.SendFeedback("event.SwitchSettingsPage", this);
             selectedCategoryIndex += i_addition;
             settingsParentScript = menuCategories[selectedCategoryIndex].GetComponent<SettingsMenuOrganizer>();
 
@@ -89,6 +100,10 @@ public class SettingsMenu : MonoBehaviour
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);    // Always reset to the first setting of the new category
             SetDescriptionTexts(selectedSetting);
 
+        }
+        else
+        {
+            FeedbackManager.SendFeedback("event.MenuImpossibleAction", this);
         }
 
         if (selectedCategoryIndex > 0)
@@ -137,7 +152,6 @@ public class SettingsMenu : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("bidouille");
         currentCategory = selectedCategory.name;
         selectedSettingName = selectedSetting.gameObject.name;
 
@@ -169,37 +183,51 @@ public class SettingsMenu : MonoBehaviour
         // Managing Left and Right
         if (i_state.ThumbSticks.Left.X > joystickTreshold || i_state.DPad.Right == ButtonState.Pressed)
         {
+            timeJoystickHeldDown += Time.unscaledDeltaTime;
             if (!waitForJoystickXReset)
             {
                 IncreaseValue();
                 waitForJoystickXReset = true;
                 currentRestTimeOfJoystickX = restTimeOfJoystickX;
+                sliderSpecificRestTime = 0;
             }
         }
         else if (i_state.ThumbSticks.Left.X < -joystickTreshold || i_state.DPad.Left == ButtonState.Pressed)
         {
+            timeJoystickHeldDown += Time.unscaledDeltaTime;
             if (!waitForJoystickXReset)
             {
                 DecreaseValue();
                 waitForJoystickXReset = true;
                 currentRestTimeOfJoystickX = restTimeOfJoystickX;
+                sliderSpecificRestTime = 0;
             }
         }
         else
         {
             waitForJoystickXReset = false;
             restTimeOfJoystickX = normalRestTimeOfJoystick;
+            timeJoystickHeldDown = 0;
         }
-        currentRestTimeOfJoystickX -= Time.deltaTime;
+
         if (currentRestTimeOfJoystickX <= 0)
         {
             waitForJoystickXReset = false;
-            if (selectedSetting is SliderUI)
+        }
+
+        if (selectedSetting is SliderUI)
+        {
+            currentSliderTimeRatioBeforeReset = timeBeforeResetEvolution.Evaluate(timeJoystickHeldDown / timeToReachMinTimeBeforeReset); //from 1 to 0
+            sliderSpecificRestTime += Time.unscaledDeltaTime;
+
+            if (sliderSpecificRestTime >= Mathf.Lerp(minMaxTimeBeforeReset.x, minMaxTimeBeforeReset.y, currentSliderTimeRatioBeforeReset)) // from max to min
             {
-                restTimeOfJoystickX -= 0.05f;
+                waitForJoystickXReset = false;
             }
         }
 
+        currentRestTimeOfJoystickX -= Time.unscaledDeltaTime;
+        
 
         // Managing Buttons
         if (i_state.Buttons.A == ButtonState.Pressed)
@@ -276,11 +304,13 @@ public class SettingsMenu : MonoBehaviour
 
     void IncreaseValue()
     {
+        FeedbackManager.SendFeedback("event.TweakValuesLeftAndRight", this);
         selectedSetting.IncreaseValue();
     }
 
     void DecreaseValue()
     {
+        FeedbackManager.SendFeedback("event.TweakValuesLeftAndRight", this);
         selectedSetting.DecreaseValue();
     }
 
@@ -291,6 +321,7 @@ public class SettingsMenu : MonoBehaviour
 
     void SelectNextSettings()
     {
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         if (selectedSettingIndex + 1 < settingsParentScript.childrenObjects.Length)
         {
             selectedSettingIndex++;
@@ -302,6 +333,7 @@ public class SettingsMenu : MonoBehaviour
 
     void SelectPreviousSettings()
     {
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         if (selectedSettingIndex - 1 >= 0)
         {
             selectedSettingIndex--;
@@ -318,11 +350,13 @@ public class SettingsMenu : MonoBehaviour
 
     void ResetToDefault()
     {
+        FeedbackManager.SendFeedback("event.SettingsResetToDefault", this);
         selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
     }
 
     void ReturnToMainMenu()
     {
+       FeedbackManager.SendFeedback("event.MenuBack", this);
        scriptLinkedToThisOne.isMainMenuActive = true;
        gameObject.SetActive(false);
        //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
@@ -396,7 +430,7 @@ public class SettingsMenu : MonoBehaviour
     }
 
     // Assign saved salues to settings
-    public void AssignSavedValues()
+    public void AssignSavedValuesInSettings()
     {
         for (int i = 0; i < menuCategories.Count; i++)
         {
@@ -444,5 +478,10 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void ModifyActualGameValues()
+    {
+
     }
 }

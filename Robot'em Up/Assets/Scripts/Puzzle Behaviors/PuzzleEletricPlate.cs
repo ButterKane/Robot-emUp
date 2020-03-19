@@ -43,7 +43,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         waitTimeBeforeNextDamage -= Time.deltaTime;
         //waitTimeBeforeNextFx -= Time.deltaTime;
 
-        if (waitTimeBeforeNextDamage < 0 && !isActivated)
+        if (waitTimeBeforeNextDamage < 0 && !isActivated && !shutDown)
         {
             waitTimeBeforeNextDamage = puzzleData.timeCheckingDamageEletricPlate;
             foreach (PawnController item in PawnTrapped)
@@ -122,46 +122,66 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     override public void WhenActivate()
     {
-        isActivated = true;
-
-        UpdateLights();
-        meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
-
-
-        if (myFx != null)
+        if (!shutDown)
         {
-            Destroy(myFx);
+
+            StopAllCoroutines();
+            isActivated = true;
+
+            UpdateLights();
+            meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
+
+            if (myFx != null)
+            {
+                Destroy(myFx);
+            }
         }
 
     }
 
     override public void WhenDesactivate()
     {
-        bool i_checkAllConditionsCustom = true;
-        
-        foreach (var item in puzzleActivators)
+        if (!shutDown)
         {
-            if (item.isActivated)
+            bool i_checkAllConditionsCustom = true;
+
+            foreach (var item in puzzleActivators)
             {
-                i_checkAllConditionsCustom = false;
+                if (item.isActivated)
+                {
+                    i_checkAllConditionsCustom = false;
+                }
+            }
+
+            if (i_checkAllConditionsCustom)
+            {
+                meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Orange;
+                StartCoroutine(GettingEletrified());
             }
         }
-        
-        if (i_checkAllConditionsCustom)
+    }
+
+    public IEnumerator GettingEletrified ()
+    {
+        yield return new WaitForSeconds(puzzleData.timeOrangePressurePlate);
+
+        isActivated = false;
+        UpdateLights();
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
+
+        Destroy(myFx);
+
+        if (myFx != null)
         {
-
-            isActivated = false;
-            UpdateLights();
-            meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
-
             Destroy(myFx);
-
-            if (myFx != null)
-            {
-                Destroy(myFx);
-            }
-			myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
-            myFx.transform.parent = transform;
         }
+        myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
+        myFx.transform.parent = transform;
+    }
+
+
+    public override void customShutDown()
+    {
+        meshRenderer.material = puzzleData.m_puzzleElectreticPlate_ShutDown;
     }
 }

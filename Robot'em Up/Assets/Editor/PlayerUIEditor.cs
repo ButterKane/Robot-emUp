@@ -49,32 +49,6 @@ public class PlayerUIEditor : Editor
 				GUILayout.FlexibleSpace();
 			}
 			GUILayout.EndHorizontal();
-
-			GUILayout.Space(20);
-
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.FlexibleSpace();
-				SerializedProperty m_panelWidth = serializedObject.FindProperty("panelWidth");
-				GUILayout.Label("Panel size", GUILayout.Width(100));
-				EditorGUILayout.PropertyField(m_panelWidth, GUIContent.none, GUILayout.Width(70));
-
-				SerializedProperty m_panelHeight = serializedObject.FindProperty("panelHeight");
-				EditorGUILayout.PropertyField(m_panelHeight, GUIContent.none, GUILayout.Width(70));
-				GUILayout.FlexibleSpace();
-			}
-			GUILayout.EndHorizontal();
-
-			GUILayout.BeginHorizontal();
-			{
-				GUILayout.FlexibleSpace();
-				SerializedProperty m_panelDistanceToPlayer = serializedObject.FindProperty("panelDistanceToPlayer");
-				GUILayout.Label("Distance to player", GUILayout.Width(100));
-				EditorGUILayout.PropertyField(m_panelDistanceToPlayer, GUIContent.none, GUILayout.Width(70));
-				GUILayout.FlexibleSpace();
-			}
-			GUILayout.EndHorizontal();
-
 			GUILayout.Space(10);
 		}
 		GUILayout.EndVertical();
@@ -226,6 +200,14 @@ public class PlayerUIEditor : Editor
 				SerializedProperty m_healthGradientInterpolationRate = serializedObject.FindProperty("healthGradientInterpolationRate");
 				GUILayout.Label("Gradient interpolation rate", GUILayout.Width(200));
 				EditorGUILayout.PropertyField(m_healthGradientInterpolationRate, GUIContent.none, GUILayout.Width(50));
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			{
+				SerializedProperty m_overHealColor = serializedObject.FindProperty("overHealColor");
+				GUILayout.Label("OverHeal color", GUILayout.Width(100));
+				EditorGUILayout.PropertyField(m_overHealColor, GUIContent.none, GUILayout.Width(200));
 			}
 			GUILayout.EndHorizontal();
 

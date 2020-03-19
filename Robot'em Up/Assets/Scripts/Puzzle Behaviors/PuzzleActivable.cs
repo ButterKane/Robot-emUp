@@ -13,6 +13,7 @@ public class PuzzleActivable : MonoBehaviour
 
     public List<Light> indictatorLightsList;
     public bool isActivated = true;
+    public bool shutDown = false;
 
 
     public virtual void Start()
@@ -176,5 +177,24 @@ public class PuzzleActivable : MonoBehaviour
                 puzzleActivationsBool.Add(true);
             }
         }
+    }
+
+
+    public virtual void shutDownPuzzle()
+    {
+        if (!shutDown)
+        {
+            foreach (var item in indictatorLightsList)
+            {
+                item.intensity = 0;
+            }
+            shutDown = true;
+            customShutDown();
+        }
+    }
+
+
+    public virtual void customShutDown()
+    {
     }
 }

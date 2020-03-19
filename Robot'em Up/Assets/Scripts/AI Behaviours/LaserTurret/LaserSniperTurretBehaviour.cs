@@ -106,7 +106,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     protected override void Update()
     {
         base.Update();
-        //UpdateAimingRedDotState();
+        UpdateAimingRedDotState();
     }
 
     public override void ExitTurretState()
@@ -340,7 +340,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     public override void ResetValuesAtEndOfAttack() 
     {
-        Debug.Log("reseting values");
         aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
         animator.ResetTrigger("StartLaserTrigger");
         animator.ResetTrigger("AnticipationTrigger");

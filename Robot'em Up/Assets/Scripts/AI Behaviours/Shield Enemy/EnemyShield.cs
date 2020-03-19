@@ -136,12 +136,17 @@ public class EnemyShield : EnemyBehaviour
     // Ususally called when hitting player
     public void StopAttack()
     {
-        navMeshAgent.SetDestination(transform.position);
+        //navMeshAgent.SetDestination(transform.position);
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
         mustCancelAttack = true;
         animator.SetTrigger("AttackTouchedTrigger");
-
+        attackHitBox.ToggleCollider(false);
         navMeshAgent.enabled = false;
+    }
+
+    public override void DestroySpawnedAttackUtilities()
+    {
+        attackHitBox.ToggleCollider(false); // well, it's not destroying it, more like deactivating it. But that's the same point
     }
 
     // BUMPED
@@ -174,7 +179,7 @@ public class EnemyShield : EnemyBehaviour
 
 	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
-		StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
-		base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+        StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
+        base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
 }
