@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 5758942379895806514}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8.1, y: 6.1, z: -2.26}
-  m_LocalScale: {x: 12.3, y: 8, z: 98.59}
+  m_LocalScale: {x: 12.3, y: 27.41, z: 98.59}
   m_Children: []
   m_Father: {fileID: 5758942380384998997}
   m_RootOrder: 0
@@ -88,7 +88,7 @@ BoxCollider:
   m_GameObject: {fileID: 5758942379895806514}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -120,7 +120,7 @@ Transform:
   m_GameObject: {fileID: 5758942380060433396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8.1, y: 6.1, z: -2.26}
-  m_LocalScale: {x: 12.3, y: 8, z: 98.59}
+  m_LocalScale: {x: 12.3, y: 27.41, z: 98.59}
   m_Children: []
   m_Father: {fileID: 5758942380384998997}
   m_RootOrder: 1
@@ -180,7 +180,7 @@ BoxCollider:
   m_GameObject: {fileID: 5758942380060433396}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -230,10 +230,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c5ef2d8ad7a264384cf924c1d30df4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalLenght: 31
-  DamageToPawn: 25
-  directionIndiania: {x: 17, y: 0, z: 0}
-  startposition: {x: -8.5, y: 1, z: -66}
+  totalLenght: 35
+  damageToPawn: 15
+  directionIndiania: {x: 0, y: 0, z: 15}
+  startposition: {x: 504.424, y: 10, z: 2050}
   activated: 0
   currentTimer: 0
   currentTimerExplosion: 0
@@ -241,18 +241,18 @@ MonoBehaviour:
   currentPositionMultiplier: 0
   minSizeExplosion: 0.6
   maxSizeExplosion: 2.5
-  maxDistancePlayer: 18
+  maxDistancePlayer: 20
   explosionWaitingTime: 1.6
-  nbExplosionBySec: 3.5
+  nbExplosionBySec: 3
   timeBarrage: 1.5
   nbExplosionByBarrage: 5
   nbBarrage: 4
-  directionBarrage: {x: 0, y: 0, z: -20}
+  directionBarrage: {x: 15, y: 0, z: 0}
   indianaCamera: {fileID: 0}
   prefabIndianaExplosion: {fileID: 8970592547997499449, guid: 8d3891c09165d8546bd0a8ff45673d46,
     type: 3}
-  InvisibleColliderForward: {fileID: 5758942379895806514}
-  InvisibleColliderBackward: {fileID: 5758942380060433396}
+  invisibleColliderForward: {fileID: 5758942379895806514}
+  invisibleColliderBackward: {fileID: 5758942380060433396}
 --- !u!65 &5758942380384998996
 BoxCollider:
   m_ObjectHideFlags: 0

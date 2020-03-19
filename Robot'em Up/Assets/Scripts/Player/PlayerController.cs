@@ -28,6 +28,12 @@ public class PlayerController : PawnController, IHitable
     public bool enableDunk;
     public bool enableMagnet;
 
+	[Separator("Over heal settings")]
+	public float overHealValue = 20f;
+	public float delayBeforeOverhealDecay = 5f;
+	public float overHealDecaySpeed = 5f;
+	public AnimationCurve overHealDecaySpeedCurve;
+
 	[Separator("Dash while revive available settings")]
 	public float delayBeforeDash = 0.2f;
 
@@ -61,6 +67,7 @@ public class PlayerController : PawnController, IHitable
 	private Vector3 previousPosition;
 	private bool rbPressed;
 	private float dashBuffer;
+	private float timeSinceLastHeal;
 	private bool reviving;
 
 	public void Start ()
@@ -104,6 +111,7 @@ public class PlayerController : PawnController, IHitable
 		{
 			GetInput();
 		}
+		UpdateOverHeal();
     }
 	private void LateUpdate ()
 	{
@@ -241,7 +249,7 @@ public class PlayerController : PawnController, IHitable
 				}
 				else if (!rightTriggerWaitForRelease)
 				{
-					Debug.Log("DashBuffer++");
+//					Debug.Log("DashBuffer++");
 					dashBuffer += Time.deltaTime;
 					if (dashBuffer >= delayBeforeDash)
 					{
@@ -310,12 +318,25 @@ public class PlayerController : PawnController, IHitable
 		}
 	}
 
+	void UpdateOverHeal ()
+	{
+		if (currentHealth > GetMaxHealth())
+		{
+			timeSinceLastHeal += Time.deltaTime;
+		}
+		if (currentHealth > GetMaxHealth() && timeSinceLastHeal >= delayBeforeOverhealDecay)
+		{
+			float lerpValue = (currentHealth - GetMaxHealth()) / overHealValue;
+			currentHealth -= Time.deltaTime * (overHealDecaySpeedCurve.Evaluate(lerpValue) / overHealDecaySpeed);
+		}
+	}
+
 	IEnumerator PushEverything_C ()
 	{
 		foreach (PawnController p in FindObjectsOfType<PawnController>())
 		{
 			p.BumpMe(-p.transform.forward, BumpForce.Force2);
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForEndOfFrame();
 		}
 	}
 
@@ -400,7 +421,16 @@ public class PlayerController : PawnController, IHitable
 
 	public override void Heal ( int _amount )
 	{
-		base.Heal(_amount);
+		timeSinceLastHeal = 0;
+		if (currentHealth < GetMaxHealth())
+		{
+			base.Heal(_amount);
+		} else
+		{
+			Debug.Log("Overheal");
+			currentHealth += _amount;
+			currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth() + overHealValue);
+		}
 		PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 		if (i_potentialPlayerUI != null)
 		{
