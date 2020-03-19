@@ -39,9 +39,13 @@ public class ToxicAreaManager : MonoBehaviour
 
         playerOneToxicBar.gameObject.SetActive(false);
         playerTwoToxicBar.gameObject.SetActive(false);
+        NewMethod();
+    }
 
-        poisonedSprite_P1.gameObject.SetActive(false);
-        poisonedSprite_P2.gameObject.SetActive(false);
+    private void NewMethod()
+    {
+       // poisonedSprite_P1.gameObject.SetActive(false);
+       // poisonedSprite_P2.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -82,7 +86,7 @@ public class ToxicAreaManager : MonoBehaviour
 
         if (isPoisened_P1)
         {
-            poisonedSprite_P1.gameObject.SetActive(true);
+           // poisonedSprite_P1.gameObject.SetActive(true);
 
             GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
             if (accelerateDepoisened)
@@ -92,13 +96,13 @@ public class ToxicAreaManager : MonoBehaviour
         }
         else
         {
-            poisonedSprite_P1.gameObject.SetActive(false);
+           // poisonedSprite_P1.gameObject.SetActive(false);
         }
 
 
         if (isPoisened_P2)
         {
-            poisonedSprite_P2.gameObject.SetActive(true);
+          //  poisonedSprite_P2.gameObject.SetActive(true);
 
             GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
             if (accelerateDepoisened)
@@ -108,7 +112,7 @@ public class ToxicAreaManager : MonoBehaviour
         }
         else
         {
-            poisonedSprite_P2.gameObject.SetActive(false);
+         //   poisonedSprite_P2.gameObject.SetActive(false);
         }
     }
 
