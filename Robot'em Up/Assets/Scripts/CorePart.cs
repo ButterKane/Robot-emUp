@@ -14,6 +14,7 @@ public class CorePart : MonoBehaviour
 	public int totalPartCount;
 	PlayerController picker = null;
 	private Collider col;
+
 	public void Init(PawnController _linkedPawn, Vector3 _throwVector, int _totalPartCount, int _healthValue)
 	{
 		linkedPawn = _linkedPawn;
