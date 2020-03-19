@@ -241,7 +241,7 @@ public class PlayerController : PawnController, IHitable
 				}
 				else if (!rightTriggerWaitForRelease)
 				{
-					Debug.Log("DashBuffer++");
+//					Debug.Log("DashBuffer++");
 					dashBuffer += Time.deltaTime;
 					if (dashBuffer >= delayBeforeDash)
 					{
