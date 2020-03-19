@@ -480,6 +480,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
+        damageAfterBump = 0;
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
         if (!CanDamage()) { return; }
@@ -530,7 +531,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 				animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
-                damageAfterBump = 0;
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
                 whatBumps = WhatBumps.Pass;
                 //Staggered(whatBumps);
@@ -542,7 +542,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
 				BallDatas bd = _ball.currentBallDatas;
 				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
-				Debug.Log(ballChargePercent);
+				//Debug.Log(ballChargePercent);
 				if (ballChargePercent >= bd.minimalChargeForBump)
 				{
 					BumpMe(_impactVector.normalized, BumpForce.Force1);
