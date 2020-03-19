@@ -51,6 +51,7 @@ public class EnemyBehaviour : PawnController, IHitable
     protected PawnController playerOnePawnController;
     [SerializeField] protected Transform playerTwoTransform;
     protected PawnController playerTwoPawnController;
+    [ReadOnly] public Collider selfCollider;
 
     [Space(2)]
     [Separator("Tweakable variables")]
@@ -68,6 +69,8 @@ public class EnemyBehaviour : PawnController, IHitable
     public float powerLevel = 1;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
     public bool arenaRobot;
     public bool isDeploymentFast = true;
 
@@ -144,7 +147,7 @@ public class EnemyBehaviour : PawnController, IHitable
         if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
-
+        selfCollider = GetComponent<Collider>();
         if (arenaRobot)
         {
             ChangeState(EnemyState.WaitForCombatStart);
@@ -332,11 +335,18 @@ public class EnemyBehaviour : PawnController, IHitable
                 timePauseAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
+                selfCollider.enabled = false;
                 currentDeathWaitTime = waitTimeBeforeDisappear;
                 bool i_thereIsAnAnimation = false;
                 foreach (AnimatorControllerParameter param in animator.parameters)
                 {
-                    if (param.name == "DeathTrigger") { animator.SetTrigger("DeathTrigger"); i_thereIsAnAnimation = true; Freeze(); navMeshAgent.isStopped = true; }
+                    if (param.name == "DeathTrigger")
+                    {
+                        animator.SetTrigger("DeathTrigger");
+                        i_thereIsAnAnimation = true;
+                        Freeze();
+                        if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
+                    }
                 }
                 
                 if(!i_thereIsAnAnimation)

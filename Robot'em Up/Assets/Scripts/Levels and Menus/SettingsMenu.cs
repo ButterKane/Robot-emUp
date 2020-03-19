@@ -90,6 +90,7 @@ public class SettingsMenu : MonoBehaviour
 
         if (selectedCategoryIndex + i_addition >= 0 && selectedCategoryIndex + i_addition < menuCategories.Count)
         {
+            FeedbackManager.SendFeedback("event.SwitchSettingsPage", this);
             selectedCategoryIndex += i_addition;
             settingsParentScript = menuCategories[selectedCategoryIndex].GetComponent<SettingsMenuOrganizer>();
 
@@ -99,6 +100,10 @@ public class SettingsMenu : MonoBehaviour
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);    // Always reset to the first setting of the new category
             SetDescriptionTexts(selectedSetting);
 
+        }
+        else
+        {
+            FeedbackManager.SendFeedback("event.MenuImpossibleAction", this);
         }
 
         if (selectedCategoryIndex > 0)
@@ -299,11 +304,13 @@ public class SettingsMenu : MonoBehaviour
 
     void IncreaseValue()
     {
+        FeedbackManager.SendFeedback("event.TweakValuesLeftAndRight", this);
         selectedSetting.IncreaseValue();
     }
 
     void DecreaseValue()
     {
+        FeedbackManager.SendFeedback("event.TweakValuesLeftAndRight", this);
         selectedSetting.DecreaseValue();
     }
 
@@ -314,6 +321,7 @@ public class SettingsMenu : MonoBehaviour
 
     void SelectNextSettings()
     {
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         if (selectedSettingIndex + 1 < settingsParentScript.childrenObjects.Length)
         {
             selectedSettingIndex++;
@@ -325,6 +333,7 @@ public class SettingsMenu : MonoBehaviour
 
     void SelectPreviousSettings()
     {
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         if (selectedSettingIndex - 1 >= 0)
         {
             selectedSettingIndex--;
@@ -341,11 +350,13 @@ public class SettingsMenu : MonoBehaviour
 
     void ResetToDefault()
     {
+        FeedbackManager.SendFeedback("event.SettingsResetToDefault", this);
         selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
     }
 
     void ReturnToMainMenu()
     {
+       FeedbackManager.SendFeedback("event.MenuBack", this);
        scriptLinkedToThisOne.isMainMenuActive = true;
        gameObject.SetActive(false);
        //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
@@ -419,7 +430,7 @@ public class SettingsMenu : MonoBehaviour
     }
 
     // Assign saved salues to settings
-    public void AssignSavedValues()
+    public void AssignSavedValuesInSettings()
     {
         for (int i = 0; i < menuCategories.Count; i++)
         {
@@ -467,5 +478,10 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void ModifyActualGameValues()
+    {
+
     }
 }

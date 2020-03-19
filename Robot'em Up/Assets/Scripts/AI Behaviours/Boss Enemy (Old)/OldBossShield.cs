@@ -8,6 +8,8 @@ public class OldBossShield : MonoBehaviour, IHitable
     [SerializeField] private bool lockable = false; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
+
     private void Update()
     {
         transform.position = enemy.transform.position + enemy.transform.forward * 2  + Vector3.up;

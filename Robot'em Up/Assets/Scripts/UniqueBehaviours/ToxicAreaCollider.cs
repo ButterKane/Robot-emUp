@@ -11,8 +11,10 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
 	[SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 
-	// Start is called before the first frame update
-	void Start()
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
+
+    // Start is called before the first frame update
+    void Start()
     {
         particleSystem.Stop();
     }
@@ -38,11 +40,11 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         {
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
-                manager.ToxicValue_P1 += Time.deltaTime * multiplicator;
+                manager.toxicValue_P1 += Time.deltaTime * multiplicator;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
-                manager.ToxicValue_P2 += Time.deltaTime * multiplicator;
+                manager.toxicValue_P2 += Time.deltaTime * multiplicator;
             }
         }
   }

@@ -48,6 +48,7 @@ public class PuzzleDatas : ScriptableObject
     public Material m_puzzleElectreticPlate;
     public Material m_puzzleElectreticPlate_Orange;
     public Material m_puzzleElectreticPlate_Activated;
+    public Material m_puzzleElectreticPlate_ShutDown;
 
 
 }
