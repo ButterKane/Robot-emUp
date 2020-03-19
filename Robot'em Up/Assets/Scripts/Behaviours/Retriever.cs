@@ -63,11 +63,8 @@ public class Retriever : MonoBehaviour
 				RetrieveCorePart(i_corePart);
 			} else
 			{
-				if (playerController.GetHealth() < playerController.GetMaxHealth())
-				{
-					i_corePart.Pick(playerController);
-									playerController.Heal(i_corePart.healthValue);
-				}
+				i_corePart.Pick(playerController);
+				playerController.Heal(i_corePart.healthValue);
 			}
 		}
     }

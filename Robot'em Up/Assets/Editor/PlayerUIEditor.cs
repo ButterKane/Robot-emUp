@@ -205,6 +205,14 @@ public class PlayerUIEditor : Editor
 
 			GUILayout.BeginHorizontal();
 			{
+				SerializedProperty m_overHealColor = serializedObject.FindProperty("overHealColor");
+				GUILayout.Label("OverHeal color", GUILayout.Width(100));
+				EditorGUILayout.PropertyField(m_overHealColor, GUIContent.none, GUILayout.Width(200));
+			}
+			GUILayout.EndHorizontal();
+
+			GUILayout.BeginHorizontal();
+			{
 				SerializedProperty m_healthAlwaysDisplayedTreshold = serializedObject.FindProperty("healthAlwaysDisplayedTreshold");
 				GUILayout.Label("Always display health below x%", GUILayout.Width(200));
 				EditorGUILayout.PropertyField(m_healthAlwaysDisplayedTreshold, GUIContent.none, GUILayout.Width(175));

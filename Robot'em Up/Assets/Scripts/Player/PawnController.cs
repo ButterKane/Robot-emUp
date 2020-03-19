@@ -127,7 +127,7 @@ public class PawnController : MonoBehaviour
 	private float customDrag;
 	private float customGravity;
 	protected float currentSpeed;
-    [System.NonSerialized] public float currentHealth;
+    public float currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
@@ -1058,12 +1058,12 @@ public class PawnController : MonoBehaviour
 
 		transform.rotation = Quaternion.LookRotation(-bumpDirection);
 		float gettingUpDuration = maxGettingUpDuration;
-		//fallingTriggerLaunched = false;
 
 		EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
         if (enemy != null) { enemy.ChangeState(EnemyState.Bumped); }
 
         float i_bumpTimeProgression = 0;
+        bool playedEndOfFall = false;
 
         while (i_bumpTimeProgression < 1)
         {
@@ -1084,15 +1084,19 @@ public class PawnController : MonoBehaviour
 			rb.MovePosition(newPosition);
 
 			//trigger end anim
-			if (i_bumpTimeProgression >= whenToTriggerFallingAnim )
+			if (i_bumpTimeProgression >= whenToTriggerFallingAnim && playedEndOfFall == false)
             {
-               // fallingTriggerLaunched = true;
                 animator.SetTrigger("FallingTrigger");
 				if (damageAfterBump > 0)
 				{
                     Damage(damageAfterBump);
+                    if (currentHealth <=0)
+                    {
+                        Kill();
+                    }
 				}
-			}
+                playedEndOfFall = true;
+            }
             yield return null;
         }
 

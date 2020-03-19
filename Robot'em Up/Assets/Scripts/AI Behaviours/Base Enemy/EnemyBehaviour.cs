@@ -486,6 +486,7 @@ public class EnemyBehaviour : PawnController, IHitable
         switch (_source)
         {
             case DamageSource.Dunk:
+                
                 if (isBumpable)
                 {
                     if (enemyType == EnemyTypes.RedBarrel)
@@ -496,7 +497,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
 					Analytics.CustomEvent("DamageWithDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 					damageAfterBump = _damages;
-                    damageAfterBump = _damages;
 
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     if (_thrower.GetComponent<DunkController>() != null)

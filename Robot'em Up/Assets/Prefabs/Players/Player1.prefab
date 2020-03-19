@@ -144,6 +144,7 @@ MonoBehaviour:
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
   moveInput: {x: 0, y: 0, z: 0}
+  currentHealth: 0
   climbingHoldTime: 0
   passController: {fileID: 514769572}
   playerIndex: 0
@@ -152,10 +153,38 @@ MonoBehaviour:
   highlightedSecondColor: {r: 1, g: 0.60341835, b: 0, a: 1}
   lockable: 0
   lockHitboxSize: 0
+  lockSize3DModifier: {x: 1, y: 1, z: 1}
   enableDash: 1
   enableJump: 0
   enableDunk: 1
   enableMagnet: 1
+  overHealValue: 20
+  delayBeforeOverhealDecay: 5
+  overHealDecaySpeed: 20
+  overHealDecaySpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   delayBeforeDash: 0.2
   eventOnResurrecting: event.PlayerResurrecting
   deathExplosionRadius: 0
@@ -803,6 +832,7 @@ MonoBehaviour:
     m_Mode: 1
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
+  overHealColor: {r: 0.26330543, g: 0.9150943, b: 0.7437363, a: 1}
   healthGradientInterpolationRate: 0.1
   healthBarPrefab: {fileID: 6345541632243073559, guid: 9645029cf8e0a3642b943a03efed65a7,
     type: 3}
@@ -1946,16 +1976,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5825664154814933021}
     m_Modifications:
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_Name
-      value: FX_Magnet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2020,6 +2040,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}
