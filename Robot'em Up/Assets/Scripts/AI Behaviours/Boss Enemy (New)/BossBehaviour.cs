@@ -451,7 +451,10 @@ public class BossBehaviour : MonoBehaviour, IHitable
 				lookPosition = zoneCenter.position;
 				break;
 			case BossRotationType.LookNearestPlayer:
-				lookPosition = PlayerController.GetNearestPlayer(transform.position).transform.position;
+				if (GameManager.alivePlayers.Count > 0)
+				{
+					lookPosition = PlayerController.GetNearestPlayer(transform.position).transform.position;
+				}
 				break;
 			case BossRotationType.None:
 				enableRotation = false;
