@@ -147,13 +147,15 @@ public class PassController : MonoBehaviour
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, perfectReceptionExplosionRadius);
 		PawnController i_pawnController = GetComponent<PawnController>();
+		List<IHitable> hitTargets = new List<IHitable>();
 		int i = 0;
 		while (i < i_hitColliders.Length)
 		{
 			IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
-			if (i_potentialHitableObject != null)
+			if (i_potentialHitableObject != null && !hitTargets.Contains(i_potentialHitableObject))
 			{
 				i_potentialHitableObject.OnHit(_ball, (i_hitColliders[i].transform.position - transform.position).normalized, i_pawnController, perfectReceptionExplosionDamages, DamageSource.PerfectReceptionExplosion);
+				hitTargets.Add(i_potentialHitableObject);
 			}
 			i++;
 		}
