@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,7 +23,8 @@ public class MainMenu : MonoBehaviour
 
 	private bool waitForAResetOne;
 	private bool waitForAResetTwo;
-	public ScrollRect sceneList;
+    [ReadOnly] public bool waitForBResetOne;
+    public ScrollRect sceneList;
 	private bool enableRBandRTButtons;
 
     private void Start()
@@ -107,7 +109,6 @@ public class MainMenu : MonoBehaviour
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isMainMenuActive)
         {
-
             for (int i = 0; i < 2; i++)
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
@@ -171,9 +172,13 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed)
+                if (i_state.Buttons.B == ButtonState.Pressed && waitForBResetOne == false)
                 {
                     CloseLevelSelector();
+                }
+                else
+                {
+                    waitForBResetOne = true;
                 }
                 if (enableRBandRTButtons)
                 {
