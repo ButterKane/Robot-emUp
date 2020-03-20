@@ -357,6 +357,7 @@ public class SettingsMenu : MonoBehaviour
     void ReturnToMainMenu()
     {
        FeedbackManager.SendFeedback("event.MenuBack", this);
+       scriptLinkedToThisOne.waitForBResetOne = true;
        scriptLinkedToThisOne.isMainMenuActive = true;
        gameObject.SetActive(false);
        //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));

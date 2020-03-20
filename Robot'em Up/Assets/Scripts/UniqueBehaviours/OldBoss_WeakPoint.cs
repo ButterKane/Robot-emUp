@@ -25,14 +25,17 @@ public class OldBoss_WeakPoint : PuzzleActivable
         life--;
         if (life > -1)
         {
-            Debug.Log("Explosion");
-            FXManager.InstantiateFX(explosionFx, transform.position + Vector3.up *1.5f, true, Vector3.zero, Vector3.one * 3);
             if (life == 0)
             {
-                FXManager.InstantiateFX(explosionFx, transform.position, true, Vector3.zero, Vector3.one * 5);
+                FeedbackManager.SendFeedback("event.WeakPointDestroyed", this);
+                //FXManager.InstantiateFX(explosionFx, transform.position, true, Vector3.zero, Vector3.one * 5);
                 mainTurret.InverseLaser();
                 DestroyWeakPoint();
 				OldBoss_Manager.i.DestroyAWeakPoint();
+                foreach (var item in puzzleActivators)
+                {
+                    item.shutDownPuzzleActivator();
+                }
             }
             else
             {

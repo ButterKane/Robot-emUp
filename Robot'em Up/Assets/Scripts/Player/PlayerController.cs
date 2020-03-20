@@ -74,14 +74,14 @@ public class PlayerController : PawnController, IHitable
 	{
 		base.Awake();
 		mainCollider = GetComponent<Collider>();
-		ExtendingArmsController.grabableObjects.Add(mainCollider);
-		GameManager.alivePlayers.Add(this);
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
 		if (Application.isPlaying)
 		{
+			ExtendingArmsController.grabableObjects.Add(mainCollider);
+			GameManager.alivePlayers.Add(this);
 			if (middlePoint == null)
 			{
 				middlePoint = new GameObject().transform;
@@ -335,7 +335,8 @@ public class PlayerController : PawnController, IHitable
 	{
 		foreach (PawnController p in FindObjectsOfType<PawnController>())
 		{
-			p.BumpMe(-p.transform.forward, BumpForce.Force2);
+			//p.BumpMe(-p.transform.forward, BumpForce.Force2);
+			p.Push(PushType.Heavy, -p.transform.forward, PushForce.Force2);
 			yield return new WaitForEndOfFrame();
 		}
 	}
