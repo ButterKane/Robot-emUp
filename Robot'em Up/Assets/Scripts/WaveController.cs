@@ -111,6 +111,10 @@ public class WaveController : MonoBehaviour
 	public void StartNextWave()
 	{
 		if (waveStarted) { return; }
+		if (currentWaveIndex >= 0)
+		{
+			waveList[currentWaveIndex].onEndEvents.Invoke();
+		}
 		currentWaveIndex++;
 		if (currentWaveIndex >= waveList.Count) { EndArena(); return; }
 		if (exitDoor != null) { exitDoor.OnWaveStart(); }
@@ -133,7 +137,6 @@ public class WaveController : MonoBehaviour
 	{
 		delayBeforeNextWave = waveList[currentWaveIndex].pauseBeforeNextWave;
 		waveStarted = false;
-		waveList[currentWaveIndex].onEndEvents.Invoke();
 	}
 
 	IEnumerator StartWave_C (int _waveIndex)
