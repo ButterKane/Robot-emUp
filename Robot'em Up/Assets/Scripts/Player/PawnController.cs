@@ -143,7 +143,8 @@ public class PawnController : MonoBehaviour
     private float accumulatedDamage;    // Stores the damage that is not an integer. Useful for things like continuous damage
 	private PawnStates pawnStates;
 	private Coroutine pawnStateCoroutine;
-	private Coroutine currentStateCoroutine;
+	private Coroutine currentStateStartCoroutine;
+	private StoppableCoroutine currentStateCoroutine;
 	private IEnumerator currentStateStopCoroutine;
 	private PushDatas pushDatas;
 	private bool rotationForced;
@@ -390,14 +391,13 @@ public class PawnController : MonoBehaviour
 				currentStateStopCoroutine = _coroutineToCancel;
 			}
 			//Debug.Log("Starting new state coroutine");
-			currentStateCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, newState));
+			currentStateStartCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, newState));
 			PawnState newStateInstance = new PawnState();
 			newStateInstance.allowBallReception = newState.allowBallReception;
 			newStateInstance.allowBallThrow = newState.allowBallThrow;
 			currentState = newState;
 		}
 	}
-
 	void StopCurrentState()
 	{
 		if (currentState == null) { return; }
@@ -407,7 +407,12 @@ public class PawnController : MonoBehaviour
 		}
 		if (currentStateCoroutine != null)
 		{
-			StopCoroutine(currentStateCoroutine);
+			currentStateCoroutine.Stop();
+			if (currentStateStartCoroutine != null)
+			{
+				StopCoroutine(currentStateStartCoroutine);
+			}
+			Debug.Log("Stopped current state coroutine");
 		}
 
 		if (currentStateCoroutine != null)
@@ -419,11 +424,13 @@ public class PawnController : MonoBehaviour
 
 	IEnumerator StartStateCoroutine(IEnumerator coroutine, PawnState state)
 	{
+		Debug.Log("Start New state coroutine");
 		if (state.invincibleDuringState)
 		{
 			SetInvincible(true);
 		}
-		yield return coroutine;
+		currentStateCoroutine = MonoBehaviourExtension.StartCoroutineEx(this, coroutine);
+		yield return currentStateCoroutine.WaitFor();
 		currentState = null;
 		yield return null;
 		if (state.invincibleDuringState)
@@ -431,6 +438,7 @@ public class PawnController : MonoBehaviour
 			SetInvincible(false);
 		}
 		currentStateCoroutine = null;
+		Debug.Log("End New state coroutine");
 	}
 
 	public float GetHealth()
@@ -645,10 +653,16 @@ public class PawnController : MonoBehaviour
 	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
 	{
 		if (!isBumpable) { return; }
+		RaycastHit hit;
+		if (Physics.Raycast(GetCenterPosition(), _pushDirectionFlat, out hit, 1f, LayerMask.GetMask("Environment")))
+		{
+			Debug.Log("Stopped push");
+			return;
+		}
 		switch (_forceType)
 		{
 			case PushType.Light:
-				ChangeState("PushedLight", PushLight_C(_pushDirectionFlat, _force), CancelPush_C());
+				PushLight(_pushDirectionFlat, _force);
 				break;
 			case PushType.Heavy:
 				Vector3 forwardDirection = _pushDirectionFlat.normalized;
@@ -696,33 +710,14 @@ public class PawnController : MonoBehaviour
 		invincibilityCooldown = invincibilityTime;
     }
 
-	private void OnCollisionEnter ( Collision collision )
-	{
-		//Check for wallsplat (For players)
-		if (collision.gameObject.layer == LayerMask.NameToLayer("Environment"))
-		{
-			if (moveState == MoveState.Pushed)
-			{
-				Debug.Log("WallSplat");
-				if (currentState.name == "Bumped")
-				{
-					WallSplat(WallSplatForce.Heavy, collision);
-				} else
-				{
-					WallSplat(WallSplatForce.Light, collision);
-				}
-			}
-		}
-	}
-
 	private Collider CheckForCollision()
 	{
 		Collider closestCollider = null;
 		float closestDistance = 50;
-		foreach (Collider c in Physics.OverlapSphere(transform.position, 0.5f, LayerMask.GetMask("Environment")))
+		foreach (Collider c in Physics.OverlapSphere(GetCenterPosition(), GetHeight() / 2f, LayerMask.GetMask("Environment")))
 		{
-			Vector3 collisionPoint = c.ClosestPoint(transform.position);
-			float distance = Vector3.Distance(collisionPoint, transform.position);
+			Vector3 collisionPoint = c.ClosestPoint(GetCenterPosition());
+			float distance = Vector3.Distance(collisionPoint, GetCenterPosition());
 			if (distance < closestDistance)
 			{
 				closestCollider = c;
@@ -786,12 +781,27 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Pushed;
 			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
-			transform.position = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
+			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
+			Vector3 newDirection = newPosition - transform.position;
+
+			//check of collision
+			Collider hitCollider = CheckForCollision();
+			if (hitCollider != null)
+			{
+				if (isPlayer)
+				{
+					StopCurrentState();
+				} else
+				{
+					StopCurrentState();
+				}
+			}
+			transform.position = newPosition;
 			yield return null;
 		}
 		moveState = MoveState.Idle;
 	}
-	private IEnumerator PushLight_C ( Vector3 _pushFlatDirection, PushForce _force )
+	private void PushLight ( Vector3 _pushFlatDirection, PushForce _force )
 	{
 		float _pushDistance = 0;
 		float _pushDuration = 0;
@@ -839,7 +849,7 @@ public class PawnController : MonoBehaviour
 				}
 				break;
 		}
-		yield return StartCoroutine(CustomLightPush_C(_pushFlatDirection, _pushDistance, _pushDuration, _pushHeight));
+		ChangeState("PushedLight", CustomLightPush_C(_pushFlatDirection, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 	}
 
 	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, PushForce _force )
@@ -904,14 +914,20 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Pushed;
 			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.heavyPushAirControlSpeed;
-			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
-
+			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.heavyPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
 
 			//check of collision
 			Collider hitCollider = CheckForCollision();
-			if (hitCollider != null && !isPlayer)
+			if (hitCollider != null)
 			{
-				WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position));
+				if (isPlayer)
+				{
+					WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position));
+				}
+				else
+				{
+					WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position));
+				}
 			}
 
 			transform.position = newPosition;
@@ -923,6 +939,7 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator CancelPush_C()
 	{
+		animator.SetBool("PushedBool", false);
 		moveState = MoveState.Idle;
 		yield return null;
 	}
@@ -1076,9 +1093,16 @@ public class PawnController : MonoBehaviour
 
 			//check of collision
 			Collider hitCollider = CheckForCollision();
-			if (hitCollider != null && !isPlayer)
+			if (hitCollider != null)
 			{
-				WallSplat(WallSplatForce.Heavy, transform.position - hitCollider.ClosestPoint(transform.position));
+				if (isPlayer)
+				{
+					WallSplat(WallSplatForce.Heavy, transform.position - hitCollider.ClosestPoint(transform.position));
+				}
+				else
+				{
+					WallSplat(WallSplatForce.Heavy, transform.position - hitCollider.ClosestPoint(transform.position));
+				}
 			}
 
 			rb.MovePosition(newPosition);
@@ -1166,5 +1190,5 @@ public class PawnController : MonoBehaviour
 		}
 		moveState = MoveState.Idle;
 	}
-    #endregion
+	#endregion
 }
