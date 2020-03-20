@@ -70,7 +70,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         {
             Explosion_C = ExplosionSequence_C(isExplosionSafe);
             Debug.Log("Changing state");
-            ChangeState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
+            ChangePawnState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
             //StartCoroutine(Explosion_C);
         }
     }

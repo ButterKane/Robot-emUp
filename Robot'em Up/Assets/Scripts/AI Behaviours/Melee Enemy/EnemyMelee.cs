@@ -26,9 +26,7 @@ public class EnemyMelee : EnemyBehaviour
 
     public override void EnterPreparingAttackState()
     {
-        base.EnterPreparingAttackState();
-        attackPreviewPlane = null;
-        InititateMeleeHitBox();
+        ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
     }
 
     public void InititateMeleeHitBox()
@@ -40,6 +38,10 @@ public class EnemyMelee : EnemyBehaviour
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
             attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
             attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
+        }
+        else
+        {
+            attackHitBoxInstance.SetActive(true);
         }
     }
 
@@ -84,8 +86,23 @@ public class EnemyMelee : EnemyBehaviour
     {
         if (attackHitBoxInstance != null)
         {
-            Destroy(attackHitBoxInstance);
-            attackHitBoxInstance = null;
+            attackHitBoxInstance.SetActive(false);
         }
+    }
+
+    public IEnumerator StartAttackState_C()
+    {
+        Debug.Log("starting attack");
+        base.EnterPreparingAttackState();
+        attackPreviewPlane = null;
+        InititateMeleeHitBox();
+        yield return null;
+    }
+
+    public IEnumerator StopAttackState_C()
+    {
+        Debug.Log("stopping attack");
+        DestroySpawnedAttackUtilities();
+        yield return null;
     }
 }

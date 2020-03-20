@@ -101,7 +101,7 @@ public class ExtendingArmsController : MonoBehaviour
 	public void ExtendArm()
 	{
 		if (directionSet != Vector3.zero && currentState == ArmState.Retracted) {
-			linkedPlayer.ChangeState("GrabThrowing", ExtendArm_C(), RetractArm_C());
+			linkedPlayer.ChangePawnState("GrabThrowing", ExtendArm_C(), RetractArm_C());
 		}
 	}
 
@@ -455,19 +455,19 @@ public class ExtendingArmsController : MonoBehaviour
 		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
 		{
 			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			linkedPlayer.ChangeState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
+			linkedPlayer.ChangePawnState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
 		}
 		//If player: dash player toward me
 		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("Player"))
 		{
 			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			linkedPlayer.ChangeState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
+			linkedPlayer.ChangePawnState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
 		}
 		//If other player part: dash part toward me and collect it
 		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("PlayerPart"))
 		{
 			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			linkedPlayer.ChangeState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
+			linkedPlayer.ChangePawnState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
 		}
 		//If enemy shield: wait for other grab //SCOPE ++
 

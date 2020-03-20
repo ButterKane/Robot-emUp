@@ -326,7 +326,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
             case EnemyState.PreparingAttack:
 				EnterPreparingAttackState();
-                //ChangeState("MeleeEnemyAnticipating",EnterPreparingAttackState(), ResetPreparingAttackState());
                 break;
             case EnemyState.Attacking:
                 EnterAttackingState();
