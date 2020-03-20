@@ -24,6 +24,8 @@ public class OldBoss_Manager : MonoBehaviour
     public Text inversionMessage;
     public Slider pyramidHealth;
 
+    public GameObject cameraZone;
+
     private void Awake()
     {
         if (i == null)
@@ -51,6 +53,7 @@ public class OldBoss_Manager : MonoBehaviour
         PyramidActivation = false;
         PyramidBehaviorGameObject.SetActive(false);
         doorExit.OpenDoor();
+        cameraZone.SetActive(false);
     }
     
 

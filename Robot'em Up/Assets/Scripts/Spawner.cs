@@ -115,9 +115,12 @@ public class Spawner : MonoBehaviour
 
 	public void SpawnEnemy()
 	{
-		EnemyData newEnemyData = new EnemyData();
-		newEnemyData.prefab = enemyToSpawn;
-		SpawnEnemy(newEnemyData, false);
+        if (IsFree() | type != SpawnerType.Ground)
+        {
+            EnemyData newEnemyData = new EnemyData();
+            newEnemyData.prefab = enemyToSpawn;
+            SpawnEnemy(newEnemyData, false);
+        }
 	}
 
 	public void RetractEnemy(EnemyBehaviour _enemy)
