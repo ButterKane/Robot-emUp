@@ -73,7 +73,6 @@ public class DunkController : MonoBehaviour
 
 	private void Awake ()
 	{
-		EnergyManager.IncreaseEnergy(1f);
         dunkState = DunkState.None;
 
         rb = GetComponent<Rigidbody>();
@@ -176,7 +175,7 @@ public class DunkController : MonoBehaviour
 				pushDirectionFlat.y = 0;
 				float pushDistance = Vector3.Distance(transform.position, c.gameObject.transform.position) - aspirationMinDistanceToPlayer;
 				pushDistance = Mathf.Clamp(pushDistance, 0, Mathf.Infinity);
-				enemy.PushLightCustom(pushDirectionFlat, pushDistance, 0.5f, 1f);
+				enemy.PushLightCustom(pushDirectionFlat, pushDistance, 0.5f, 0f);
 			}
 		}
 	}
