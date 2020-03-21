@@ -431,6 +431,13 @@ public class PawnController : MonoBehaviour
 		}
 		currentStateCoroutine = MonoBehaviourExtension.StartCoroutineEx(this, coroutine);
 		yield return currentStateCoroutine.WaitFor();
+		if (currentStateCoroutine != null)
+		{
+			if (currentStateStopCoroutine != null)
+			{
+				currentStateStopCoroutine.StartCoroutine();
+			}
+		}
 		currentState = null;
 		yield return null;
 		if (state.invincibleDuringState)
@@ -656,7 +663,6 @@ public class PawnController : MonoBehaviour
 		RaycastHit hit;
 		if (Physics.Raycast(GetCenterPosition(), _pushDirectionFlat, out hit, 1f, LayerMask.GetMask("Environment")))
 		{
-			Debug.Log("Stopped push");
 			return;
 		}
 		switch (_forceType)
@@ -939,6 +945,7 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator CancelPush_C()
 	{
+		Debug.Log("Cancel push");
 		animator.SetBool("PushedBool", false);
 		moveState = MoveState.Idle;
 		yield return null;
