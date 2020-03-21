@@ -46,24 +46,31 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     public override void PreparingAttackState()
     {
-        ChangeState(EnemyState.Dying);
         bodyRenderer.material = materialOnExplosion;
+        LaunchExplosion();
     }
 
-    public override void Kill()
+    public override void EnterPreparingAttackState()
+    {
+        navMeshAgent.enabled = false;
+        anticipationTime = maxAnticipationTime;
+    }
+    
+
+    public void LaunchExplosion()
     {
         if (currentHealth <= 0)
         {
             if (willExplodeWhenKilled) { isExplosionSafe = true; }
             else { base.Kill(); return; }
         }
-        else {isExplosionSafe = false;}
+        else { isExplosionSafe = false; }
 
         if (Explosion_C == null)
         {
             Explosion_C = ExplosionSequence_C(isExplosionSafe);
-			Debug.Log("Changing state");
-            ChangeState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
+            Debug.Log("Changing state");
+            ChangePawnState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
             //StartCoroutine(Explosion_C);
         }
     }
@@ -147,7 +154,7 @@ public class EnemyRedBarrel : EnemyBehaviour
             {
                 Explode();
             }
-            base.Kill();
+            Kill();
         }
     }
 

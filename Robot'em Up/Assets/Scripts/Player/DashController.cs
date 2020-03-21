@@ -100,7 +100,7 @@ public class DashController : MonoBehaviour
 		}
 		i_endPosition.y = i_startPosition.y;
 
-		linkedPawn.ChangeState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
+		linkedPawn.ChangePawnState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
 	}
 	void ChangeState(DashState _newState)
 	{
