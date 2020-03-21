@@ -183,5 +183,6 @@ public class PuzzleEletricPlate : PuzzleActivable
     public override void customShutDown()
     {
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate_ShutDown;
+        Destroy(myFx);
     }
 }
