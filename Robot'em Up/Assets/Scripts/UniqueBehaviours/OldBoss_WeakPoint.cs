@@ -11,9 +11,16 @@ public class OldBoss_WeakPoint : PuzzleActivable
     public OldBoss_MainTurret mainTurret;
     public GameObject explosionFx;
 
+    public Renderer weakPointIndicator;
+    public float timeToFillUpIndicator;
+    float indicatorFilling;
+    public Transform minHeight;
+    public Transform maxHeight;
+
     public void Awake()
     {
-
+        weakPointIndicator.material.SetFloat("_MinHeight", minHeight.position.y);
+        weakPointIndicator.material.SetFloat("_MaxHeight", maxHeight.position.y);
     }
 
 
@@ -30,8 +37,10 @@ public class OldBoss_WeakPoint : PuzzleActivable
                 FeedbackManager.SendFeedback("event.WeakPointDestroyed", this);
                 //FXManager.InstantiateFX(explosionFx, transform.position, true, Vector3.zero, Vector3.one * 5);
                 mainTurret.InverseLaser();
-                DestroyWeakPoint();
-				OldBoss_Manager.i.DestroyAWeakPoint();
+                //DestroyWeakPoint();
+                StartCoroutine(FillIndicator());
+                print("hey");
+                OldBoss_Manager.i.DestroyAWeakPoint();
                 foreach (var item in puzzleActivators)
                 {
                     item.shutDownPuzzleActivator();
@@ -46,6 +55,17 @@ public class OldBoss_WeakPoint : PuzzleActivable
                 }
             }
             
+        }
+    }
+
+    public IEnumerator FillIndicator()
+    {
+        indicatorFilling += Time.deltaTime/timeToFillUpIndicator;
+        weakPointIndicator.material.SetFloat("_ProgressionSlider", indicatorFilling);
+        yield return new WaitForEndOfFrame();
+        if (indicatorFilling < 1)
+        {
+            StartCoroutine(FillIndicator());
         }
     }
 
