@@ -48,16 +48,6 @@ public class EnemyShield : EnemyBehaviour
     }
 
     // ATTACK
-    public override void EnterPreparingAttackState()
-    {
-        initialSpeed = navMeshAgent.speed;
-        acceleration = navMeshAgent.acceleration;
-        anticipationTime = maxAnticipationTime;
-        animator.SetTrigger("AnticipateAttackTrigger");
-
-        navMeshAgent.enabled = false;
-    }
-
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
@@ -67,6 +57,33 @@ public class EnemyShield : EnemyBehaviour
         }
     }
 
+    public override void EnterPreparingAttackState()
+    {
+        ChangePawnState("ShieldEnemyCharging", StartAttackState_C(), StopAttackState_C());
+    }
+
+    public IEnumerator StartAttackState_C()
+    {
+        Debug.Log("start attackshield");
+
+        initialSpeed = navMeshAgent.speed;
+        acceleration = navMeshAgent.acceleration;
+        anticipationTime = maxAnticipationTime;
+        animator.SetTrigger("AnticipateAttackTrigger");
+
+        navMeshAgent.enabled = false;
+        yield return null;
+    }
+
+    public IEnumerator StopAttackState_C()
+    {
+        Debug.Log("stop attackshield");
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
+        attackHitBox.ToggleCollider(false);
+        navMeshAgent.enabled = false;
+        yield return null;
+    }
 
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
     {
