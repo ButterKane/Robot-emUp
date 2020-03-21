@@ -82,7 +82,7 @@ public class LaserSniper : MonoBehaviour
                         Debug.DrawRay(touched.transform.position, Vector3.up * 4, Color.green);
                         IHitable i_potentialHitableObject = touched.collider.GetComponent<IHitable>();
 
-                        if (i_potentialHitableObject != null && touched.transform != transform.root) 
+                        if (i_potentialHitableObject != null && touched.transform != enemyScript.transform) 
                         {
                             i_potentialHitableObject.OnHit(null, (touched.transform.position - touched.point).normalized, null, enemyScript.damagePerSecond * Time.deltaTime, DamageSource.Laser, Vector3.zero);
 

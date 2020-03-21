@@ -305,6 +305,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 break;
             //-------------------------------------------------------
             case TurretAttackState.Attack:
+                aimingRedDotTransform.localScale = Vector3.zero;
                 //ROTATE TOWARDS PLAYER-------------------------------------
                 if (focusedPawnController != null)
                 {
@@ -393,7 +394,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
                         if (Vector3.Dot(i_redDotsLoaders[i].transform.forward, aimingRedDotTransform.forward) <= 1 && Vector3.Dot(i_redDotsLoaders[i].transform.forward, aimingRedDotTransform.forward) > 0.99)
                         {
-                            Debug.Log("growing the main red Dot");
                             i_indexesToRemove.Add(i);
                             aimingRedDotTransform.localScale += loadingRedDotGrowth;
                         }
