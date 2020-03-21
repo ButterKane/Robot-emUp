@@ -293,7 +293,7 @@ public class PawnController : MonoBehaviour
 		{
 			moveState = MoveState.Climbing;
 			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-            ChangeState("Climbing", ClimbLedge_C(i_foundLedge));
+            ChangePawnState("Climbing", ClimbLedge_C(i_foundLedge));
             //StartCoroutine(ClimbLedge_C(i_foundLedge));
 		}
 	}
@@ -360,7 +360,7 @@ public class PawnController : MonoBehaviour
     #endregion
     #region Public functions
 
-	public void ChangeState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null)
+	public void ChangePawnState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null)
 	{
 		//Debug.Log("Changing state: previous state: " + currentState + " New state: " + _newStateName);
 		PawnState newState = pawnStates.GetPawnStateByName(_newStateName);
@@ -642,13 +642,13 @@ public class PawnController : MonoBehaviour
 	public virtual void BumpMe( Vector3 _bumpDirectionFlat, BumpForce _force)
     {
 		if (!isBumpable) { return; }
-		ChangeState("Bumped", Bump_C(_bumpDirectionFlat, _force), CancelBump_C());
+		ChangePawnState("Bumped", Bump_C(_bumpDirectionFlat, _force), CancelBump_C());
     }
 
 	public void PushLightCustom( Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight )
 	{
-		if (!isBumpable) { return; }
-		ChangeState("PushedLight", CustomLightPush_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+        if (!isBumpable) { return; }
+		ChangePawnState("PushedLight", CustomLightPush_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 	}
 	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
 	{
@@ -667,7 +667,7 @@ public class PawnController : MonoBehaviour
 			case PushType.Heavy:
 				Vector3 forwardDirection = _pushDirectionFlat.normalized;
 				transform.forward = forwardDirection;
-				ChangeState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _force), CancelPush_C());
+				ChangePawnState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _force), CancelPush_C());
 				break;
 		}
 	}
@@ -741,7 +741,7 @@ public class PawnController : MonoBehaviour
 		{
 			Debug.Log("Tried wallsplat on ground: Return"); return;
 		}
-		ChangeState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
+		ChangePawnState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
 	}
 
 	private IEnumerator ClimbLedge_C(Collider _ledge)
@@ -769,7 +769,7 @@ public class PawnController : MonoBehaviour
 
 	private IEnumerator CustomLightPush_C( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight)
 	{
-		moveState = MoveState.Pushed;
+        moveState = MoveState.Pushed;
 		_pushFlatDirection.y = 0;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
@@ -849,12 +849,12 @@ public class PawnController : MonoBehaviour
 				}
 				break;
 		}
-		ChangeState("PushedLight", CustomLightPush_C(_pushFlatDirection, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+		ChangePawnState("PushedLight", CustomLightPush_C(_pushFlatDirection, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 	}
 
 	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, PushForce _force )
 	{
-		float _pushDistance = 0;
+        float _pushDistance = 0;
 		float _pushDuration = 0;
 		float _pushHeight = 0;
 		switch (_force)
