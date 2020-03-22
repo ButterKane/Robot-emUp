@@ -917,10 +917,7 @@ public class PawnController : MonoBehaviour
 				break;
 		}
 		animator.SetBool("PushedBool", true);
-
-        //----Custom code in child script---------
-        HeavyPushAction();
-
+        
         FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
 		_pushFlatDirection.y = 0;
@@ -956,7 +953,11 @@ public class PawnController : MonoBehaviour
 		}
 		moveState = MoveState.Idle;
 		animator.SetBool("PushedBool", false);
-	}
+
+
+        //----Custom code in child script---------
+        HeavyPushAction();
+    }
 
     public virtual void HeavyPushAction()
     {

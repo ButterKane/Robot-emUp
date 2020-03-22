@@ -48,13 +48,14 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     public override void PreparingAttackState()
     {
-        bodyRenderer.material = materialOnExplosion;
-        LaunchExplosion();
+        
     }
 
     public override void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
+        bodyRenderer.material = materialOnExplosion;
+        LaunchExplosion();
         anticipationTime = maxAnticipationTime;
     }
     
@@ -71,10 +72,13 @@ public class EnemyRedBarrel : EnemyBehaviour
         if (Explosion_C == null)
         {
             Explosion_C = ExplosionSequence_C(isExplosionSafe);
-            Debug.Log("Changing state");
-            ChangePawnState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
-            //StartCoroutine(Explosion_C);
         }
+        else
+        {
+            StopCoroutine(Explosion_C);
+            Explosion_C = ExplosionSequence_C(isExplosionSafe);
+        }
+        ChangePawnState("RedBarrelAnticipating", Explosion_C, CancelExplosionSequence_C());
     }
 
     public void Explode()
@@ -162,6 +166,7 @@ public class EnemyRedBarrel : EnemyBehaviour
 
 	private IEnumerator CancelExplosionSequence_C ()
 	{
+        StopCoroutine(Explosion_C);
 		Explosion_C = null;
 		willExplode = false;
 		explosionRadiusTransform.gameObject.SetActive(false);

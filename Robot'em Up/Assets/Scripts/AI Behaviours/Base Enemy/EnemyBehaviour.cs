@@ -39,7 +39,7 @@ public enum EnemyTypes
 
 public class EnemyBehaviour : PawnController, IHitable
 {
-    [System.NonSerialized] public EnemyState enemyState = EnemyState.Idle;
+    [ReadOnly] public EnemyState enemyState = EnemyState.Idle;
 
     [Separator("References")]
     public Transform healthBarRef;
