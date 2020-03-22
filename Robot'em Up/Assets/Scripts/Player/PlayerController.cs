@@ -162,7 +162,7 @@ public class PlayerController : PawnController, IHitable
 		Vector3 camRightNormalized = cam.transform.right;
 		camRightNormalized.y = 0;
 		camRightNormalized = camRightNormalized.normalized;
-		if ((currentState != null && !currentState.preventMoving) || currentState == null)
+		if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
 		{
 			moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
 			moveInput.y = 0;

@@ -73,7 +73,7 @@ public class PawnController : MonoBehaviour
     private bool isInvincibleWithCheat;
     public bool ignoreEletricPlates = false;
     private Coroutine invincibilityCoroutine;
-	public PawnState currentState = null;
+	public PawnState currentPawnState = null;
 
     [Space(2)]
     [Separator("Movement settings")]
@@ -179,7 +179,7 @@ public class PawnController : MonoBehaviour
         moveState = MoveState.Idle;
         accumulatedDamage = 0;
 		pawnStates = Resources.Load<PawnStates>("PawnStateDatas");
-		currentState = null;
+		currentPawnState = null;
 	}
 
 	protected virtual void FixedUpdate()
@@ -383,10 +383,10 @@ public class PawnController : MonoBehaviour
 		//Debug.Log("Changing state: previous state: " + currentState + " New state: " + _newStateName);
 		PawnState newState = pawnStates.GetPawnStateByName(_newStateName);
 		bool canOverrideState;
-		if (currentState != null)
+		if (currentPawnState != null)
 		{
 			//Debug.Log("Current state not null");
-			if (pawnStates.IsStateOverriden(currentState, newState) || currentStateCoroutine == null)
+			if (pawnStates.IsStateOverriden(currentPawnState, newState) || currentStateCoroutine == null)
 			{
 				//Must cancel current state and replace by new state
 				StopCurrentState();
@@ -413,13 +413,13 @@ public class PawnController : MonoBehaviour
 			PawnState newStateInstance = new PawnState();
 			newStateInstance.allowBallReception = newState.allowBallReception;
 			newStateInstance.allowBallThrow = newState.allowBallThrow;
-			currentState = newState;
+			currentPawnState = newState;
 		}
 	}
 	void StopCurrentState()
 	{
-		if (currentState == null) { return; }
-		if (currentState.invincibleDuringState)
+		if (currentPawnState == null) { return; }
+		if (currentPawnState.invincibleDuringState)
 		{
 			SetInvincible(false);
 		}
@@ -437,7 +437,7 @@ public class PawnController : MonoBehaviour
 		{
 			currentStateStopCoroutine.StartCoroutine();
 		}
-		currentState = null;
+		currentPawnState = null;
 	}
 
 	IEnumerator StartStateCoroutine(IEnumerator coroutine, PawnState state)
@@ -449,7 +449,7 @@ public class PawnController : MonoBehaviour
 		}
 		currentStateCoroutine = MonoBehaviourExtension.StartCoroutineEx(this, coroutine);
 		yield return currentStateCoroutine.WaitFor();
-		currentState = null;
+		currentPawnState = null;
 		yield return null;
 		if (state.invincibleDuringState)
 		{
@@ -534,7 +534,7 @@ public class PawnController : MonoBehaviour
 	public bool CanDamage()
 	{
 		if (invincibilityCoroutine != null || isInvincible_access) { return false; }
-		if (currentState != null && currentState.invincibleDuringState) { return false; }
+		if (currentPawnState != null && currentPawnState.invincibleDuringState) { return false; }
 		return true;
 	}
 	public virtual void Damage(float _amount)
@@ -745,14 +745,14 @@ public class PawnController : MonoBehaviour
 	}
 
 	private void WallSplat( WallSplatForce _force, Collision _collision ) {
-		if (currentState != null && currentState.name == "WallSplatted") { return; }
+		if (currentPawnState != null && currentPawnState.name == "WallSplatted") { return; }
 		Vector3 _normalDirection = _collision.GetContact(0).normal;
 		WallSplat(_force, _normalDirection);
 	}
 
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
-		if (currentState != null && currentState.name == "WallSplatted") { return; }
+		if (currentPawnState != null && currentPawnState.name == "WallSplatted") { return; }
 		Vector3 _normalDirectinoNormalized = _normalDirection.normalized;
 		if (Mathf.Abs(_normalDirectinoNormalized.y )> (Mathf.Abs(_normalDirectinoNormalized.x) + Mathf.Abs(_normalDirectinoNormalized.z)))
 		{
