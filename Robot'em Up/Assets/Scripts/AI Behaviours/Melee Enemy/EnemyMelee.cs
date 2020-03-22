@@ -114,6 +114,7 @@ public class EnemyMelee : EnemyBehaviour
 
     public override void HeavyPushAction()
     {
+        cooldownDuration = cooldownAfterAttackTime;
         anticipationTime = 0;
         DestroySpawnedAttackUtilities();
         ChangeState(EnemyState.Idle);

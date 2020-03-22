@@ -168,4 +168,10 @@ public class EnemyRedBarrel : EnemyBehaviour
 		explosionGrowingRenderer.localScale = Vector3.zero;
 		yield return null;
 	}
+
+    public override void HeavyPushAction()
+    {
+        anticipationTime = 0;
+        ChangeState(EnemyState.Idle);
+    }
 }
