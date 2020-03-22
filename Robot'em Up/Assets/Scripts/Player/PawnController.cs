@@ -347,7 +347,6 @@ public class PawnController : MonoBehaviour
 	{
 		if (!grounded)
 		{
-            Debug.Log("bidouille: " + gameObject.name);
 			timeInAir += Time.deltaTime;
 			if (timeInAir >= 0.2f)
 			{

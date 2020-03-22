@@ -7,7 +7,6 @@ using System;
 
 public enum TurretState
 {
-    WaitForCombatStart,
     Hidden,
     Hiding,
     GettingOutOfGround,
@@ -40,10 +39,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     [NonSerialized] public TurretAttackState attackState;
     [NonSerialized] public AimingRedDotState aimingRedDotState;
     public Transform modelPivot;
-
-    //[Space(2)]
-    //[Header("Global")]
-    public bool arenaTurret;
 
     [Space(2)]
     [Header("Attack")]
@@ -85,14 +80,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         base.Start();
         eventOnDeath = "event.TurretBasicDeath";
         isBumpable = false;
-        if (arenaTurret)
-        {
-            ChangingTurretState(TurretState.WaitForCombatStart);
-        }
-        else
-        {
-            ChangingTurretState(TurretState.Hidden);
-        }
+
+        ChangingTurretState(TurretState.Hidden);
     }
 
     new protected virtual void Update()
