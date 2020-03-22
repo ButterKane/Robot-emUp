@@ -30,6 +30,7 @@ public class ExtendingArmsController : MonoBehaviour
 	private float timeBetweenLastDirectionSet;
 	private Transform grabHand;
 	private Transform previewHitObject;
+	private Animator animator;
 
 	public Transform armTransform;
 	[Header("Preview settings")]
@@ -67,6 +68,7 @@ public class ExtendingArmsController : MonoBehaviour
 	{
 		linkedPlayer = GetComponent<PlayerController>();
 		GeneratePreviewDecal();
+		animator = linkedPlayer.GetComponentInChildren<Animator>();
 		GenerateGrabHand();
 		TogglePreview(false);
 		ChangeState(ArmState.Retracted);
@@ -332,7 +334,7 @@ public class ExtendingArmsController : MonoBehaviour
 	}
 	IEnumerator DashTowardHand_C()
 	{
-		linkedPlayer.animator.SetTrigger("GrabDashTrigger");
+		linkedPlayer.animator.SetBool("GrapplePulled", true);
 		linkedPlayer.Freeze();
 		linkedPlayer.moveState = MoveState.Blocked;
 		Vector3 startPosition = armTransform.transform.position;
@@ -363,7 +365,7 @@ public class ExtendingArmsController : MonoBehaviour
 		}
 		linkedPlayer.UnFreeze();
 		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		linkedPlayer.animator.SetBool("GrapplePulled", false);
 		RetractArm();
 	}
 
@@ -372,7 +374,7 @@ public class ExtendingArmsController : MonoBehaviour
 		yield return null;
 		linkedPlayer.UnFreeze();
 		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		linkedPlayer.animator.SetBool("GrapplePulled", false);
 		RetractArm();
 	}
 
@@ -381,14 +383,12 @@ public class ExtendingArmsController : MonoBehaviour
 		yield return null;
 		linkedPlayer.UnFreeze();
 		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetTrigger("GrabDashRecover");
 		PlayerController grabbedPlayer;
 		grabbedPlayer = grabbedObject.GetComponent<PlayerController>();
 		if (grabbedPlayer != null)
 		{
 			grabbedPlayer.UnFreeze();
 			grabbedPlayer.moveState = MoveState.Idle;
-			grabbedPlayer.animator.SetTrigger("GrabDashRecover");
 		}
 		RetractArm();
 	}
@@ -396,6 +396,8 @@ public class ExtendingArmsController : MonoBehaviour
 	IEnumerator ExtendArm_C ()
 	{
 		ChangeState(ArmState.Extending);
+		if (animator == null) { Debug.Log("Animator null"); }
+		animator.SetTrigger("GrappleLaunchTrigger");
 		directionSet = previewLineRenderer.transform.forward;
 		grabHand.gameObject.SetActive(true);
 		FeedbackManager.SendFeedback("event.GrabExtensionStart", grabHand);
@@ -462,6 +464,7 @@ public class ExtendingArmsController : MonoBehaviour
 		{
 			Debug.Log("Check found no object");
 			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
+			animator.SetTrigger("GrappleFail");
 			RetractArm();
 		}
 		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
@@ -491,6 +494,7 @@ public class ExtendingArmsController : MonoBehaviour
 			Debug.Log("Check fail");
 			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
 			grabbedObject = null;
+			animator.SetTrigger("GrappleFail");
 			RetractArm();
 		}
 	}
