@@ -112,5 +112,10 @@ public class EnemyMelee : EnemyBehaviour
         yield return null;
     }
 
-    
+    public override void HeavyPushAction()
+    {
+        anticipationTime = 0;
+        DestroySpawnedAttackUtilities();
+        ChangeState(EnemyState.Idle);
+    }
 }
