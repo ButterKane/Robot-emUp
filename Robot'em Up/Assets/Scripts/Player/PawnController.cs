@@ -186,7 +186,6 @@ public class PawnController : MonoBehaviour
     {
 		if (frozen) { return; }
         CheckMoveState();
-        Rotate();
 		UpdateAcceleration();
         Move();
         ApplyDrag();
@@ -200,8 +199,14 @@ public class PawnController : MonoBehaviour
         }
 	}
 
-    #region Movement
-    void CheckMoveState()
+	protected virtual void LateUpdate ()
+	{
+		if (frozen) { return; }
+		Rotate();
+	}
+
+	#region Movement
+	void CheckMoveState()
     {
         if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
 
@@ -215,6 +220,13 @@ public class PawnController : MonoBehaviour
             moveState = MoveState.Idle;
         }
     }
+
+	public void ForceLookAt(Vector3 point)
+	{
+		Vector3 direction = point - GetCenterPosition();
+		turnRotation = Quaternion.Euler(0, Mathf.Atan2(direction.x, direction.z) * 180 / Mathf.PI, 0);
+		rotationForced = true;
+	}
 
 	public void ForceRotate()
 	{
@@ -238,8 +250,14 @@ public class PawnController : MonoBehaviour
 				turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
 		}
 
+		if (rotationForced)
+		{
+			transform.rotation = turnRotation;
+		} else
+		{
+			transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
+		}
 		rotationForced = false;
-		transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
 	}
 
     void UpdateAcceleration()
@@ -431,13 +449,6 @@ public class PawnController : MonoBehaviour
 		}
 		currentStateCoroutine = MonoBehaviourExtension.StartCoroutineEx(this, coroutine);
 		yield return currentStateCoroutine.WaitFor();
-		if (currentStateCoroutine != null)
-		{
-			if (currentStateStopCoroutine != null)
-			{
-				currentStateStopCoroutine.StartCoroutine();
-			}
-		}
 		currentState = null;
 		yield return null;
 		if (state.invincibleDuringState)

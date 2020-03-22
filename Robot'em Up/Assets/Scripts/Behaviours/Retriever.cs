@@ -33,6 +33,22 @@ public class Retriever : MonoBehaviour
 		{
 			FeedbackManager.SendFeedback("event.PlayerAttractingBall", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
 		}
+		if (other.tag == "GrabbableTrigger")
+		{
+			GrabbableInformation grabbableInformation = other.GetComponent<GrabbableInformation>();
+			grabbableInformation.EnablePreviewForPlayer(playerController);
+			playerController.targetedGrabbable.Add(grabbableInformation);
+		}
+	}
+
+	private void OnTriggerExit ( Collider other )
+	{
+		if (other.tag == "GrabbableTrigger")
+		{
+			GrabbableInformation grabbableInformation = other.GetComponent<GrabbableInformation>();
+			grabbableInformation.DisablePreviewForPlayer(playerController);
+			playerController.targetedGrabbable.Remove(grabbableInformation);
+		}
 	}
 	private void OnTriggerStay(Collider other)
     {

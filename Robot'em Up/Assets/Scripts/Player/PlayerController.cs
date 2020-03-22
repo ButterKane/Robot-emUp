@@ -18,6 +18,8 @@ public class PlayerController : PawnController, IHitable
 	private bool inputDisabled;
 	public Color highlightedColor;
 	public Color highlightedSecondColor;
+	[HideInInspector] public List<GrabbableInformation> targetedGrabbable = new List<GrabbableInformation>();
+	[HideInInspector] private GrabbableInformation prioritaryGrabInformation;
 
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
@@ -56,7 +58,7 @@ public class PlayerController : PawnController, IHitable
 
 	private DunkController dunkController;
 	private DashController dashController;
-	private ExtendingArmsController extendingArmsController;
+	[HideInInspector] public ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
@@ -68,6 +70,7 @@ public class PlayerController : PawnController, IHitable
 	private bool rbPressed;
 	private float dashBuffer;
 	private float timeSinceLastHeal;
+	private float rbPressDuration;
 	private bool reviving;
 
 	public void Start ()
@@ -114,8 +117,9 @@ public class PlayerController : PawnController, IHitable
 		}
 		UpdateOverHeal();
     }
-	private void LateUpdate ()
+	protected override void LateUpdate ()
 	{
+		base.LateUpdate();
 		if (Application.isPlaying)
 		{
 			CheckIfOutOfCamera();
@@ -217,20 +221,47 @@ public class PlayerController : PawnController, IHitable
 		if (state.Buttons.RightShoulder == ButtonState.Pressed)
 		{
 			rbPressed = true;
-			ForceRotate(); //Player will rotate toward look input
-			if (extendingArmsController != null)
+			rbPressDuration += Time.deltaTime;
+			if (extendingArmsController != null && targetedGrabbable.Count > 0)
 			{
-				passController.StopAim();
-				extendingArmsController.TogglePreview(true);
+				float pressPercent = rbPressDuration / extendingArmsController.minGrabHoldDuration;
+				pressPercent = Mathf.Clamp(pressPercent, 0f, 1f);
+				extendingArmsController.UpdateDecalSize(pressPercent);
+				GrabbableInformation prioritaryInf = targetedGrabbable[0];
+				Vector3 prioritaryDirection = prioritaryInf.targetedPosition.position - GetCenterPosition();
+				prioritaryDirection.y = 0;
+				float prioritaryAngle = Vector3.SignedAngle(lookInput, prioritaryDirection, Vector3.up);
+				foreach (GrabbableInformation gi in targetedGrabbable)
+				{
+					Vector3 giDirection = gi.targetedPosition.position - GetCenterPosition();
+					giDirection.y = 0;
+					float newAngle = Vector3.SignedAngle(lookInput, giDirection, Vector3.up);
+					if (Mathf.Abs(newAngle) < Mathf.Abs(prioritaryAngle))
+					{
+						prioritaryInf = gi;
+						prioritaryAngle = newAngle;
+					}
+				}
+				prioritaryGrabInformation = prioritaryInf;
+				if (prioritaryGrabInformation != null)
+				{
+					passController.StopAim();
+					extendingArmsController.TogglePreview(true);
+					ForceLookAt(prioritaryGrabInformation.targetedPosition.position); //Player will rotate toward look input
+				}
 			}
-		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed )
+		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed)
 		{
 			rbPressed = false;
 			if (extendingArmsController != null)
 			{
-				extendingArmsController.ExtendArm();
 				extendingArmsController.TogglePreview(false);
+				if (rbPressDuration >= extendingArmsController.minGrabHoldDuration && targetedGrabbable.Count > 0)
+				{
+					extendingArmsController.ExtendArm();
+				}
 			}
+			rbPressDuration = 0;
 		}
 		if (state.Triggers.Left > triggerTreshold)
 		{
