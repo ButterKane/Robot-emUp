@@ -217,7 +217,7 @@ public class EnemyShield : EnemyBehaviour
         {
             isShieldActivated_accesss = false; // It is bumped, so it will reactivate at the end of it
         }
-        else
+        else if (_source == DamageSource.Ball)
         {
             if (currentShieldDeactiveCoroutine != null)
             {
@@ -227,6 +227,7 @@ public class EnemyShield : EnemyBehaviour
             currentShieldDeactiveCoroutine = DeactivateShieldForGivenTime(timeShieldDisappearAfterHit);
             StartCoroutine(currentShieldDeactiveCoroutine);
         }
+
         base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
 
