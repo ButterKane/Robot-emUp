@@ -73,7 +73,8 @@ public class PlayerController : PawnController, IHitable
 	public void Start ()
 	{
 		base.Awake();
-		mainCollider = GetComponent<Collider>();
+        eventOnBeingHit = "event.PlayerBeingHit";
+        mainCollider = GetComponent<Collider>();
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
@@ -606,21 +607,25 @@ public class PlayerController : PawnController, IHitable
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
+                FeedbackManager.SendFeedback("event.PlayerBeingBumpedAway", this);
                 BumpMe(i_normalizedImpactVector, BumpForce.Force2);
 				Damage(_damages);
 				break;
 
             case DamageSource.EnemyContact:
+                FeedbackManager.SendFeedback(eventOnBeingHit, this);
                 Damage(_damages);
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
 
             case DamageSource.Laser:
+                FeedbackManager.SendFeedback(eventOnBeingHit, this);
                 DamageFromLaser(_damages);
                 break;
 
 			case DamageSource.SpawnImpact:
-				Damage(_damages);
+                FeedbackManager.SendFeedback(eventOnBeingHit, this);
+                Damage(_damages);
 				Push(PushType.Light, _impactVector, PushForce.Force1);
 				break;
 		}

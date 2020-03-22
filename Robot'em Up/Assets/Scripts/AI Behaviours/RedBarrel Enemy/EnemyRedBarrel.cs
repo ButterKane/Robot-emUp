@@ -39,6 +39,8 @@ public class EnemyRedBarrel : EnemyBehaviour
     new void Start()
     {
         base.Start();
+        eventOnBeingHit = "event.EnemyRedBarrelHit";
+        eventOnDeath = "event.EnemyRedBarrelDeathPart2";
         bumpValues = new Vector3(bumpDistanceMod, bumpDurationMod, bumpRestDurationMod);
         explosionRadiusTransform.localScale = new Vector3(explosionRadius * 2, explosionRadius * 2, explosionRadius * 2);
         Explosion_C = null;

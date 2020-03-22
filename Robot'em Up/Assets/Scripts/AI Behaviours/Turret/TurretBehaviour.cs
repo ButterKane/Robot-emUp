@@ -83,6 +83,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     new void Start()
     {
         base.Start();
+        eventOnDeath = "event.TurretBasicDeath";
         isBumpable = false;
         if (arenaTurret)
         {
@@ -359,6 +360,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void Shoot()
     {
+        FeedbackManager.SendFeedback("event.TurretBasicAttack", this);
         Vector3 i_spawnPosition;
         i_spawnPosition = bulletSpawn.position;
         spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward));

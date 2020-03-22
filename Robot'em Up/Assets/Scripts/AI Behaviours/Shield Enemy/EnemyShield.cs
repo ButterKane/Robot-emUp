@@ -44,6 +44,8 @@ public class EnemyShield : EnemyBehaviour
     private new void Start()
     {
         base.Start();
+        eventOnBeingHit = "event.EnemyShieldHit";
+        eventOnDeath = "event.EnemyShieldDeath";
         enemyType = EnemyTypes.Shield;
     }
 
