@@ -93,7 +93,8 @@ public class Retriever : MonoBehaviour
 	public void RetrieveCorePart(CorePart i_corePart)
 	{
 		i_corePart.Pick(playerController);
-		bool i_partsFound = false;
+        FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, i_corePart.transform.position, i_corePart.transform.position - transform.position, i_corePart.transform.position - transform.position);
+        bool i_partsFound = false;
 		List<ReviveInformations> newList = new List<ReviveInformations>();
 		foreach (ReviveInformations parts in retrievedParts)
 		{
@@ -109,7 +110,6 @@ public class Retriever : MonoBehaviour
 				{
 					parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
 					parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
-					FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, i_corePart.transform.position, i_corePart.transform.position - transform.position, i_corePart.transform.position - transform.position);
 					newList.Add(parts);
 				}
 			}
