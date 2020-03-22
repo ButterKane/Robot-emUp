@@ -347,6 +347,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (!grounded)
 		{
+            Debug.Log("bidouille: " + gameObject.name);
 			timeInAir += Time.deltaTime;
 			if (timeInAir >= 0.2f)
 			{
@@ -917,7 +918,11 @@ public class PawnController : MonoBehaviour
 				break;
 		}
 		animator.SetBool("PushedBool", true);
-		FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
+
+        //----Custom code in child script---------
+        HeavyPushAction();
+
+        FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
 		_pushFlatDirection.y = 0;
 		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
@@ -954,7 +959,13 @@ public class PawnController : MonoBehaviour
 		animator.SetBool("PushedBool", false);
 	}
 
-	private IEnumerator CancelPush_C()
+    public virtual void HeavyPushAction()
+    {
+        // Filled in each of the children behaviour;
+    }
+
+
+    private IEnumerator CancelPush_C()
 	{
 		Debug.Log("Cancel push");
 		animator.SetBool("PushedBool", false);
@@ -1159,7 +1170,7 @@ public class PawnController : MonoBehaviour
 			gettingUpDuration -= Time.deltaTime;
             if (gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
 			{
-				enemy.ChangeState(EnemyState.Following);
+                enemy.ChangeState(EnemyState.Following);
 			}
 			yield return null;
 		}

@@ -311,7 +311,7 @@ public class EnemyBehaviour : PawnController, IHitable
         switch (_newState)
         {
             case EnemyState.Idle:
-                timeBetweenCheck = 0;
+                timeBetweenCheck = maxTimeBetweenCheck;
                 //StartCoroutine(WaitABit(1));
                 break;
             case EnemyState.Following:

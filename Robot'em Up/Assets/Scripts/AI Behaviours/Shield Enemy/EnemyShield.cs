@@ -22,6 +22,7 @@ public class EnemyShield : EnemyBehaviour
         }
     }
     bool isShieldActivated;
+    private IEnumerator currentShieldDeactiveCoroutine;
 
     [Space(2)]
     [Header("Aspect Variables")]
@@ -61,7 +62,13 @@ public class EnemyShield : EnemyBehaviour
 
     public override void EnterPreparingAttackState()
     {
-        ChangePawnState("ShieldEnemyCharging", StartAttackState_C(), StopAttackState_C());
+        //ChangePawnState("ShieldEnemyCharging", StartAttackState_C(), StopAttackState_C());
+        initialSpeed = navMeshAgent.speed;
+        acceleration = navMeshAgent.acceleration;
+        anticipationTime = maxAnticipationTime;
+        animator.SetTrigger("AnticipateAttackTrigger");
+
+        navMeshAgent.enabled = false;
     }
 
     public IEnumerator StartAttackState_C()
@@ -181,7 +188,14 @@ public class EnemyShield : EnemyBehaviour
 
     public override void ExitBumpedState()
     {
-        isShieldActivated_accesss = true;
+        //Debug.Log("exit bump state");
+        if (currentShieldDeactiveCoroutine != null)
+        {
+            StopCoroutine(currentShieldDeactiveCoroutine);
+            currentShieldDeactiveCoroutine = null;
+        }
+        currentShieldDeactiveCoroutine = DeactivateShieldForGivenTime(timeShieldDisappearAfterHit);
+        StartCoroutine(currentShieldDeactiveCoroutine);
     }
 
     public override void Kill()
@@ -189,16 +203,39 @@ public class EnemyShield : EnemyBehaviour
         base.Kill();   // Override the death sound with the right one 
     }
 
-    public IEnumerator DeactivateShieldForGivenTime( float timeToDeactivate)
+    public IEnumerator DeactivateShieldForGivenTime( float _timeToDeactivate)
     {
         isShieldActivated_accesss = false;
-        yield return new WaitForSeconds(timeToDeactivate);
+        yield return new WaitForSeconds(_timeToDeactivate);
         isShieldActivated_accesss = true;
+        Debug.Log("bidouille");
     }
 
 	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
-        StartCoroutine(DeactivateShieldForGivenTime(timeShieldDisappearAfterHit));
+        if (_source == DamageSource.Dunk)
+        {
+            isShieldActivated_accesss = false; // It is bumped, so it will reactivate at the end of it
+        }
+        else if (_source == DamageSource.Ball)
+        {
+            if (currentShieldDeactiveCoroutine != null)
+            {
+                StopCoroutine(currentShieldDeactiveCoroutine);
+                currentShieldDeactiveCoroutine = null;
+            }
+            currentShieldDeactiveCoroutine = DeactivateShieldForGivenTime(timeShieldDisappearAfterHit);
+            StartCoroutine(currentShieldDeactiveCoroutine);
+        }
+
         base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
 	}
+
+    public override void HeavyPushAction()
+    {
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
+        attackHitBox.ToggleCollider(false);
+        navMeshAgent.enabled = false;
+    }
 }
