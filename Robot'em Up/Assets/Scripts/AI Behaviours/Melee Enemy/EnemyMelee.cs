@@ -21,12 +21,16 @@ public class EnemyMelee : EnemyBehaviour
     protected override void Start()
     {
         base.Start();
+        eventOnBeingHit = "event.EnemyMeleeHit";
+        eventOnDeath = "event.EnemyDeath";
         armScript = GetComponentInChildren<EnemyArmAttack>();
     }
 
     public override void EnterPreparingAttackState()
     {
-        ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
+        //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
+        base.EnterPreparingAttackState();
+        InititateMeleeHitBox();
     }
 
     public void InititateMeleeHitBox()
@@ -47,6 +51,7 @@ public class EnemyMelee : EnemyBehaviour
 
     public void MeleeAttackPreview(float _anticipationTime)
     {
+        Debug.Log("anticipation with melee preview");
         if (attackPreviewPlane != null)
         {
             // Make attack zone appear progressively
@@ -76,6 +81,7 @@ public class EnemyMelee : EnemyBehaviour
 
     public void ActivateAttackHitBox()
     {
+        FeedbackManager.SendFeedback("event.EnemyMeleeAttack", this);
         if (attackHitBoxInstance != null)
         {
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
@@ -105,4 +111,6 @@ public class EnemyMelee : EnemyBehaviour
         DestroySpawnedAttackUtilities();
         yield return null;
     }
+
+    
 }
