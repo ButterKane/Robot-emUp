@@ -60,11 +60,13 @@ public class ArenaDoor : MonoBehaviour
 	{
 		yield return new WaitForSeconds(delayBeforeOpening);
 		animator.SetBool("Opened", true);
+		collider.isTrigger = true;
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
 	}
 
 	public void OpenDoor()
 	{
+		Debug.Log("DOOR OPENING");
 		collider.isTrigger = true;
 		animator.SetBool("Opened", true);
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
