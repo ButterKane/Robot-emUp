@@ -430,7 +430,6 @@ public class PawnController : MonoBehaviour
 			{
 				StopCoroutine(currentStateStartCoroutine);
 			}
-			Debug.Log("Stopped current state coroutine");
 		}
 
 		if (currentStateCoroutine != null)
@@ -442,7 +441,6 @@ public class PawnController : MonoBehaviour
 
 	IEnumerator StartStateCoroutine(IEnumerator coroutine, PawnState state)
 	{
-		Debug.Log("Start New state coroutine");
 		if (state.invincibleDuringState)
 		{
 			SetInvincible(true);
@@ -456,7 +454,6 @@ public class PawnController : MonoBehaviour
 			SetInvincible(false);
 		}
 		currentStateCoroutine = null;
-		Debug.Log("End New state coroutine");
 	}
 
 	public float GetHealth()

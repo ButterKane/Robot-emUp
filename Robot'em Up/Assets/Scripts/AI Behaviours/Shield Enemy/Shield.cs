@@ -19,13 +19,14 @@ public class Shield : MonoBehaviour, IHitable
     {
         if (_ball != null) // Check if it's the ball that touched
         {
+            Debug.Log("Shield hit");
             if ((_impactVector.normalized + transform.forward.normalized).magnitude < (enemy.angleRangeForRebound / 63.5)) // This division makes it usable as a dot product
             {
                 FeedbackManager.SendFeedback("event.ShieldHitByBall", null);
                 Vector3 i_newDirection = Vector3.Reflect(_impactVector, transform.forward);
                 //Debug.DrawRay(transform.position, i_newDirection, Color.magenta, 10f);
                 i_newDirection.y = _impactVector.y;
-                _ball.Bounce(i_newDirection, 1f);
+               // _ball.Bounce(i_newDirection, 1f);
             }
         }
     }
