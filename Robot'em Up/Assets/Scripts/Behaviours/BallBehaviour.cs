@@ -74,7 +74,7 @@ public class BallBehaviour : MonoBehaviour
 		CheckIfOutOfScreen();
 	}
 
-    public void CurveShoot(PassController _passController, PawnController _thrower, Transform _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
+    public void CurveShoot(PassController _passController, PawnController _thrower, PawnController _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
     {
 		if (ballCoroutine != null) { StopCoroutine(ballCoroutine); }
 		startPosition = _passController.GetHandTransform().position;
@@ -421,7 +421,7 @@ public class BallBehaviour : MonoBehaviour
 					float i_curveLength;
 					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
 					if (i_currentPassController == null) { return; }
-					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget().transform, initialLookDirection);
+					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget(), initialLookDirection);
 					ConvertCoordinatesToCurve(i_pathCoordinates, out i_curveX, out i_curveY, out i_curveZ, out i_curveLength);
 					currentMaxDistance = i_curveLength;
 					float i_positionOnCurve = currentDistanceTravelled / currentMaxDistance;
@@ -435,7 +435,7 @@ public class BallBehaviour : MonoBehaviour
 					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
 					if (i_currentPassController != null)
 					{
-						currentDirection = (i_currentPassController.GetTarget().transform.position-transform.position).normalized;
+						currentDirection = (i_currentPassController.GetTarget().GetCenterPosition()-transform.position).normalized;
 					}
 				}
 
@@ -448,10 +448,9 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
-					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f * GetCurrentSpeedModifier());
+					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.5f * GetCurrentSpeedModifier());
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
-						if (raycast.collider.tag == "Enemy") { continue; }
                         EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
                         if (i_selfRef != null)
                         {

@@ -39,7 +39,7 @@ public enum EnemyTypes
 
 public class EnemyBehaviour : PawnController, IHitable
 {
-    [System.NonSerialized] public EnemyState enemyState = EnemyState.Idle;
+    [ReadOnly] public EnemyState enemyState = EnemyState.Idle;
 
     [Separator("References")]
     public Transform healthBarRef;
@@ -311,7 +311,7 @@ public class EnemyBehaviour : PawnController, IHitable
         switch (_newState)
         {
             case EnemyState.Idle:
-                timeBetweenCheck = 0;
+                timeBetweenCheck = maxTimeBetweenCheck;
                 //StartCoroutine(WaitABit(1));
                 break;
             case EnemyState.Following:

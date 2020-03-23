@@ -42,7 +42,7 @@ MonoBehaviour:
   totalHeight: 2.25
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
-  currentState:
+  currentPawnState:
     name: New state
     stateOverriden: []
     invincibleDuringState: 0
@@ -59,7 +59,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minWalkSpeed: 0.1
-  moveSpeed: 7
+  moveSpeed: 5.5
   acceleration: 200
   movingDrag: 0.4
   idleDrag: 0.4
@@ -106,13 +106,16 @@ MonoBehaviour:
   eventOnDeath: event.EnemyShieldDeath
   eventOnHealing: 
   moveInput: {x: 0, y: 0, z: 0}
+  currentHealth: 0
   climbingHoldTime: 0
   passController: {fileID: 0}
+  enemyState: 1
   healthBarRef: {fileID: 4697345455816352529}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
+  selfCollider: {fileID: 0}
   enemyType: 1
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
@@ -120,7 +123,9 @@ MonoBehaviour:
   powerLevel: 4
   lockable: 1
   lockHitboxSize: 1.7
+  lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
+  isDeploymentFast: 1
   focusDistance: 50
   maxHeightOfDetection: 3
   unfocusDistance: 55
@@ -151,7 +156,7 @@ MonoBehaviour:
   waitTimeBeforeDisappear: 1
   shield: {fileID: 907304710442746487}
   deactivateShieldWhenAttacking: 0
-  angleRangeForRebound: 75
+  angleRangeForRebound: 90
   timeShieldDisappearAfterHit: 1.2
   renderers:
   - {fileID: 6181108246780876594}
@@ -357,21 +362,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Name
-      value: AttackHitBox
-      objectReference: {fileID: 0}
-    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Radius
-      value: 0.8
-      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Radius
@@ -382,11 +372,11 @@ PrefabInstance:
       propertyPath: m_Speed
       value: 5.5
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
+      propertyPath: m_Radius
+      value: 0.8
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035912214703, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -402,6 +392,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.2147
       objectReference: {fileID: 0}
+    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.842
+      objectReference: {fileID: 0}
     - target: {fileID: 1173559632710181653, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -412,16 +407,21 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1286583807845663263, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.842
+      propertyPath: m_Name
+      value: AttackHitBox
       objectReference: {fileID: 0}
-    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
-      propertyPath: m_Controller
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
+      objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
     - target: {fileID: 373019035536081009, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -432,6 +432,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: dbd8926b90c54c34ab526dd91ef6208b, type: 2}
+    - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8cd982f095439f34d83362f7302f2e7b, type: 2}
     m_RemovedComponents:
     - {fileID: 1682654848667235717, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}
     - {fileID: 4726416416103560745, guid: 0c341f61e1daa3540b3df4a21b4aafa6, type: 3}

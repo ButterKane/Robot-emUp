@@ -38,6 +38,12 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     public GameObject redDotPrefab;
 
 
+    protected override void Start()
+    {
+        base.Start();
+        eventOnDeath = "event.TurretLaserDeath";
+    }
+
     new public void Shoot()
     {
         if (laserShootingCoroutine == null)

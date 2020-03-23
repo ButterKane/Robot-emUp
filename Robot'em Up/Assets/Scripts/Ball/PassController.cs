@@ -106,7 +106,7 @@ public class PassController : MonoBehaviour
 					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out i_snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
-					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer.transform, linkedPlayer.GetLookInput());
+					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer, linkedPlayer.GetLookInput());
 					break;
 			}
 			if (i_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
@@ -194,11 +194,11 @@ public class PassController : MonoBehaviour
 		return i_pathCoordinates;
 	}
 
-	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, Transform _target, Vector3 _lookDirection)
+	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, PawnController _target, Vector3 _lookDirection)
 	{
 		//Get the middle position for the curve
 		Vector3 i_startPosition = _startPosition;
-		Vector3 i_endPosition = _target.transform.position + Vector3.up;
+		Vector3 i_endPosition = _target.GetCenterPosition();
 		Vector3 i_direction = i_endPosition - i_startPosition;
 		float i_lookDirectionAngle = Vector3.SignedAngle(new Vector3(i_direction.x, 0, i_direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
 		List<Vector3> i_coordinates = new List<Vector3>();
@@ -304,7 +304,7 @@ public class PassController : MonoBehaviour
             {
 				if (passPreview)
 				{
-					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
+					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer, ballDatas, linkedPlayer.GetLookInput());
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
@@ -360,7 +360,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanReceive()
 	{
-		if (linkedPlayer.currentState != null && !linkedPlayer.currentState.allowBallReception)
+		if (linkedPlayer.currentPawnState != null && !linkedPlayer.currentPawnState.allowBallReception)
 		{
 			return false;
 		}
@@ -399,9 +399,9 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (linkedPlayer.currentState != null && !linkedPlayer.currentState.allowBallThrow)
+		if (linkedPlayer.currentPawnState != null && !linkedPlayer.currentPawnState.allowBallThrow)
 		{
-			Debug.Log(linkedPlayer.currentState.name);
+			Debug.Log(linkedPlayer.currentPawnState.name);
 			return false;
 		}
 		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)

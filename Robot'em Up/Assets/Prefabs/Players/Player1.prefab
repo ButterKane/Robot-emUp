@@ -151,6 +151,7 @@ MonoBehaviour:
   triggerTreshold: 0.1
   highlightedColor: {r: 1, g: 0.99777603, b: 0, a: 1}
   highlightedSecondColor: {r: 1, g: 0.60341835, b: 0, a: 1}
+  targetedGrabbable: []
   lockable: 0
   lockHitboxSize: 0
   lockSize3DModifier: {x: 1, y: 1, z: 1}
@@ -199,6 +200,7 @@ MonoBehaviour:
   minMaxProjectionForce: {x: 12, y: 16}
   reviveHoldDuration: 0.85
   reviveFreezeDuration: 0.1
+  extendingArmsController: {fileID: 4824538873194744163}
   mainCollider: {fileID: 5419603750946610382}
 --- !u!114 &514769572
 MonoBehaviour:
@@ -578,6 +580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55f159eef03d1448acab6d2ae2628d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  previewShown: 0
   armTransform: {fileID: 4655006219135653576}
   previewLineRenderer: {fileID: 6973500642818528687}
   previewHitDecal: {fileID: 6222336146766914991, guid: 8db3a83f4ae7e5b45af2ddfc63d352a4,
@@ -677,6 +680,7 @@ MonoBehaviour:
   frameCountBetweenCollisionRecalculationDuringDash: 1
   dashHitboxRadius: 3
   dashCollisionPushForce: 5
+  minGrabHoldDuration: 0.5
   snapMinAngle: 10
   distancePriorityScore:
     serializedVersion: 2
@@ -952,7 +956,7 @@ SphereCollider:
   m_GameObject: {fileID: 195533169622842252}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
@@ -1872,7 +1876,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 2.8
+  m_Radius: 2
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -1976,6 +1980,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5825664154814933021}
     m_Modifications:
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2040,16 +2054,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_Name
-      value: FX_Magnet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}

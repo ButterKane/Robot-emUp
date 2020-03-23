@@ -21,14 +21,16 @@ public class ExtendingArmsController : MonoBehaviour
 {
 	private ArmState currentState;
 	private PlayerController linkedPlayer;
-	private bool previewShown;
+	[HideInInspector] public bool previewShown;
 	private Transform grabbedObject;
 	private Transform currentHitDecal;
 	private Decal currentHitDecalScript;
+	private Vector3 hitDecalMaxScale;
 	private Vector3 directionSet;
 	private float timeBetweenLastDirectionSet;
 	private Transform grabHand;
 	private Transform previewHitObject;
+	private Animator animator;
 
 	public Transform armTransform;
 	[Header("Preview settings")]
@@ -53,6 +55,7 @@ public class ExtendingArmsController : MonoBehaviour
 	public int frameCountBetweenCollisionRecalculationDuringDash = 1;
 	public float dashHitboxRadius = 10f;
 	public float dashCollisionPushForce = 5f;
+	public float minGrabHoldDuration = 1f;
 
 	[Header("Snap settings")]
 	public float snapMinAngle = 10f;
@@ -65,6 +68,7 @@ public class ExtendingArmsController : MonoBehaviour
 	{
 		linkedPlayer = GetComponent<PlayerController>();
 		GeneratePreviewDecal();
+		animator = linkedPlayer.GetComponentInChildren<Animator>();
 		GenerateGrabHand();
 		TogglePreview(false);
 		ChangeState(ArmState.Retracted);
@@ -100,9 +104,7 @@ public class ExtendingArmsController : MonoBehaviour
 
 	public void ExtendArm()
 	{
-		if (directionSet != Vector3.zero && currentState == ArmState.Retracted) {
-			linkedPlayer.ChangePawnState("GrabThrowing", ExtendArm_C(), RetractArm_C());
-		}
+		linkedPlayer.ChangePawnState("GrabThrowing", ExtendArm_C(), RetractArm_C());
 	}
 
 	public void RetractArm()
@@ -176,6 +178,7 @@ public class ExtendingArmsController : MonoBehaviour
 		previewLineRenderer.positionCount = 2;
 		Vector3 hitPosition = previewLineRenderer.transform.position;
 		RaycastHit hit;
+		/*
 		if (Physics.Raycast(previewLineRenderer.transform.position, previewLineRenderer.transform.forward, out hit, maxRange, LayerMask.GetMask("PlayerPart")))
 		{
 			hitPosition = hit.point;
@@ -184,11 +187,12 @@ public class ExtendingArmsController : MonoBehaviour
 			currentHitDecal.transform.forward = hit.normal;
 			previewHitObject = hit.collider.transform;
 		}
-		else if (Physics.Raycast(previewLineRenderer.transform.position, previewLineRenderer.transform.forward, out hit, maxRange, ~0, QueryTriggerInteraction.Ignore))
+		*/
+		if (Physics.Raycast(previewLineRenderer.transform.position, previewLineRenderer.transform.forward, out hit, maxRange, ~0, QueryTriggerInteraction.Ignore))
 		{
 			hitPosition = hit.point;
 			currentHitDecal.gameObject.SetActive(true);
-			currentHitDecal.transform.position = hit.point;
+			currentHitDecal.transform.position = hit.point - (previewLineRenderer.transform.forward * 0.5f);
 			currentHitDecal.transform.forward = hit.normal;
 			previewHitObject = hit.collider.transform;
 		}
@@ -215,10 +219,18 @@ public class ExtendingArmsController : MonoBehaviour
 		}
 	}
 
+	public void UpdateDecalSize(float percent)
+	{
+		if (currentHitDecal != null)
+		{
+			currentHitDecalScript.transform.localScale = Vector3.Lerp(Vector3.zero, hitDecalMaxScale, percent);
+		}
+	}
 	private void GeneratePreviewDecal ()
 	{
 		currentHitDecal = Instantiate(previewHitDecal).transform;
-		currentHitDecalScript = currentHitDecal.GetComponentInChildren<Decal>();
+		currentHitDecalScript = currentHitDecal.transform.Find("DecalMin").GetComponent<Decal>();
+		hitDecalMaxScale = currentHitDecal.transform.Find("DecalMax").localScale;
 		currentHitDecal.gameObject.SetActive(false);
 	}
 
@@ -322,7 +334,7 @@ public class ExtendingArmsController : MonoBehaviour
 	}
 	IEnumerator DashTowardHand_C()
 	{
-		linkedPlayer.animator.SetTrigger("GrabDashTrigger");
+		linkedPlayer.animator.SetBool("GrapplePulled", true);
 		linkedPlayer.Freeze();
 		linkedPlayer.moveState = MoveState.Blocked;
 		Vector3 startPosition = armTransform.transform.position;
@@ -353,7 +365,7 @@ public class ExtendingArmsController : MonoBehaviour
 		}
 		linkedPlayer.UnFreeze();
 		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		linkedPlayer.animator.SetBool("GrapplePulled", false);
 		RetractArm();
 	}
 
@@ -362,7 +374,7 @@ public class ExtendingArmsController : MonoBehaviour
 		yield return null;
 		linkedPlayer.UnFreeze();
 		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetTrigger("GrabDashRecover");
+		linkedPlayer.animator.SetBool("GrapplePulled", false);
 		RetractArm();
 	}
 
@@ -371,14 +383,12 @@ public class ExtendingArmsController : MonoBehaviour
 		yield return null;
 		linkedPlayer.UnFreeze();
 		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetTrigger("GrabDashRecover");
 		PlayerController grabbedPlayer;
 		grabbedPlayer = grabbedObject.GetComponent<PlayerController>();
 		if (grabbedPlayer != null)
 		{
 			grabbedPlayer.UnFreeze();
 			grabbedPlayer.moveState = MoveState.Idle;
-			grabbedPlayer.animator.SetTrigger("GrabDashRecover");
 		}
 		RetractArm();
 	}
@@ -386,6 +396,8 @@ public class ExtendingArmsController : MonoBehaviour
 	IEnumerator ExtendArm_C ()
 	{
 		ChangeState(ArmState.Extending);
+		if (animator == null) { Debug.Log("Animator null"); }
+		animator.SetTrigger("GrappleLaunchTrigger");
 		directionSet = previewLineRenderer.transform.forward;
 		grabHand.gameObject.SetActive(true);
 		FeedbackManager.SendFeedback("event.GrabExtensionStart", grabHand);
@@ -403,6 +415,7 @@ public class ExtendingArmsController : MonoBehaviour
 		{
 			hitPosition = hit.point;
 			grabbedObject = hit.collider.transform;
+			Debug.Log("Grabbed object: ");
 		}
 		float totalDistance = Vector3.Distance(startPosition, hitPosition);
 		for (float i = 0; i < totalDistance; i += Time.deltaTime * grabExtentionSpeed)
@@ -449,7 +462,9 @@ public class ExtendingArmsController : MonoBehaviour
 		//If grabbable wall: dash
 		if (grabbedObject == null)
 		{
+			Debug.Log("Check found no object");
 			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
+			animator.SetTrigger("GrappleFail");
 			RetractArm();
 		}
 		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
@@ -458,6 +473,7 @@ public class ExtendingArmsController : MonoBehaviour
 			linkedPlayer.ChangePawnState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
 		}
 		//If player: dash player toward me
+		/*
 		else if (grabbedObject.gameObject.layer == LayerMask.NameToLayer("Player"))
 		{
 			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
@@ -469,13 +485,16 @@ public class ExtendingArmsController : MonoBehaviour
 			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
 			linkedPlayer.ChangePawnState("GrabPulling", RetractWithObject_C(), CancelGrabObjectRetraction_C());
 		}
+		*/
 		//If enemy shield: wait for other grab //SCOPE ++
 
 		//Else: Retract without anything
 		else
 		{
+			Debug.Log("Check fail");
 			FeedbackManager.SendFeedback("event.GrabHitFail", grabHand);
 			grabbedObject = null;
+			animator.SetTrigger("GrappleFail");
 			RetractArm();
 		}
 	}
