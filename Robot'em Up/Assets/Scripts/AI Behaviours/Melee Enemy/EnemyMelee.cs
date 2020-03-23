@@ -30,6 +30,7 @@ public class EnemyMelee : EnemyBehaviour
     {
         //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
         base.EnterPreparingAttackState();
+        Debug.Log("anticipation Time is" + anticipationTime);
         InititateMeleeHitBox();
     }
 
@@ -116,6 +117,7 @@ public class EnemyMelee : EnemyBehaviour
     {
         cooldownDuration = cooldownAfterAttackTime;
         anticipationTime = 0;
+        animator.ResetTrigger("AttackTrigger");
         DestroySpawnedAttackUtilities();
         ChangeState(EnemyState.Idle);
     }
