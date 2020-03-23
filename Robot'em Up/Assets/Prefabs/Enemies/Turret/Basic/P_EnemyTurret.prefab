@@ -173,7 +173,7 @@ MonoBehaviour:
   totalHeight: 1.5
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
-  currentState:
+  currentPawnState:
     name: New state
     stateOverriden: []
     invincibleDuringState: 0
@@ -213,18 +213,22 @@ MonoBehaviour:
     m_RotationOrder: 4
   bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0
-  eventOnBeingHit: event.PlayerBeingHit
+  eventOnBeingHit: event.TurretBasicHit
   eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
   eventOnBeingGrounded: event.PlayerGrounded
-  eventOnDeath: event.Player1Death
+  eventOnDeath: event.TurretBasicDeath
   eventOnHealing: event.PlayerHealing
   moveInput: {x: 0, y: 0, z: 0}
+  currentHealth: 0
+  climbingHoldTime: 0
   passController: {fileID: 0}
+  enemyState: 1
   healthBarRef: {fileID: 3348403758328978162}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
     type: 3}
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
+  selfCollider: {fileID: 0}
   enemyType: 3
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
@@ -232,13 +236,16 @@ MonoBehaviour:
   powerLevel: 1
   lockable: 1
   lockHitboxSize: 2
+  lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
+  isDeploymentFast: 1
   focusDistance: 50
   maxHeightOfDetection: 3
   unfocusDistance: 55
   timeBetweenCheck: 0
   distanceBeforeChangingPriority: 2
   maxTimeBetweenCheck: 0.25
+  closestDistanceToplayer: 2
   randomSpeedMod: 0
   speedMultiplierFromPassHit: 0
   timeToRecoverSlowFromPass: 0
@@ -259,10 +266,10 @@ MonoBehaviour:
   coreDropChances: 0.15
   minMaxDropForce: {x: 0, y: 0}
   minMaxCoreHealthValue: {x: 10, y: 10}
+  waitTimeBeforeDisappear: 1
   baseAnimator: {fileID: 0}
   turretState: 0
   modelPivot: {fileID: 6442596981544871290}
-  arenaTurret: 0
   defaultForwardPredictionRatio: 0.95
   minMaxRandomRangePredictionRatio: {x: 0, y: 0.2}
   maxRotationSpeed: 5

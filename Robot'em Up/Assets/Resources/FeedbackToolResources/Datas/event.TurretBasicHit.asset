@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 826eac420e2c8b94fb654bfcf49dfcd5, type: 3}
-  m_Name: event.TurretBasicDeath
+  m_Name: event.TurretBasicHit
   m_EditorClassIdentifier: 
-  eventName: event.TurretBasicDeath
+  eventName: event.TurretBasicHit
   shakeData:
     duration: 0
     intensity: 0
@@ -79,10 +79,11 @@ MonoBehaviour:
     displayName: Enemy
     displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
   soundData:
-    soundName: TurretBasicDeath
+    soundName: TurretHit
     attachToTarget: 0
   vfxData:
-    vfxPrefab: {fileID: 158308, guid: 0984428228e9ef2498042396f95d50f6, type: 3}
+    vfxPrefab: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
+      type: 3}
     offset: {x: 0, y: 0, z: 0}
     scaleMultiplier: {x: 1, y: 1, z: 1}
     direction: 0
