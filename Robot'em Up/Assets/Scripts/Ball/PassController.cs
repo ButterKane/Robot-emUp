@@ -231,10 +231,11 @@ public class PassController : MonoBehaviour
 					EnemyShield potentialEnemyShield = hito.collider.gameObject.GetComponentInParent<EnemyShield>();
 					if (potentialEnemyShield != null && potentialEnemyShield.shield != null && hito.collider.gameObject.tag != "Enemy")
 					{
+						//if (hito.collider.GetComponent<EnemyShield>() == null)
 						Vector3 impactVector = (i_coordinates[i] - i_coordinates[i - 1]);
-						if (potentialEnemyShield.shield.transform.InverseTransformPoint(i_coordinates[i]).z < 0.0)
+						if (hito.collider.GetComponent<EnemyShield>() == null && potentialEnemyShield.shield.transform.InverseTransformPoint(hito.point).z > 0.0)
 						{
-							i_coordinates.Add(hito.point);
+							i_coordinates.Add(hito.collider.ClosestPointOnBounds(i_coordinates[i]));
 							Vector3 _direction = Vector3.Reflect(i_coordinates[i] - i_coordinates[i - 1], hito.normal);
 							_direction = _direction.normalized * 10;
 							i_coordinates.Add(hito.point + _direction);

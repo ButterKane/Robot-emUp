@@ -208,11 +208,11 @@ public class EnemyShield : EnemyBehaviour
         isShieldActivated_accesss = false;
         yield return new WaitForSeconds(_timeToDeactivate);
         isShieldActivated_accesss = true;
-        Debug.Log("bidouille");
     }
 
 	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
 	{
+        Debug.Log("Shield hit by ball directly");
         if (_source == DamageSource.Dunk)
         {
             isShieldActivated_accesss = false; // It is bumped, so it will reactivate at the end of it

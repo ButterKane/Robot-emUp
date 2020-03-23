@@ -448,7 +448,7 @@ public class BallBehaviour : MonoBehaviour
 				{
 					//Ball is going to it's destination, checking for collisions
 					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
-					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.5f * GetCurrentSpeedModifier());
+					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime);
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
                         EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
@@ -457,12 +457,8 @@ public class BallBehaviour : MonoBehaviour
 							if (i_selfRef.shield.transform.InverseTransformPoint(transform.position).z > 0.0)
                             {
                                 FeedbackManager.SendFeedback("event.ShieldHitByBall", this);
-								Vector3 i_hitNormal = raycast.normal;
-								i_hitNormal.y = 0;
-								Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
-								i_newDirection.y = -currentDirection.y;
-								Bounce(i_newDirection, 1f);
-								return;
+								Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_selfRef.shield.transform.forward);
+								Bounce(i_newDirection, 1);
                             }
                         }
 
@@ -493,6 +489,7 @@ public class BallBehaviour : MonoBehaviour
 							return;
 						}
 					}
+					/*
 					RaycastHit[] i_previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
 					foreach (RaycastHit raycast in i_previousColliders)
 					{
@@ -507,6 +504,7 @@ public class BallBehaviour : MonoBehaviour
 							}
 						}
 					}
+					*/
 				}
 				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
 				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();

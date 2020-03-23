@@ -59,24 +59,29 @@ public class LockManager : MonoBehaviour
 		i_startPoint = Mathf.Clamp(i_startPoint, 0, _pathCoordinates.Count - 1);
 		for (int i = i_startPoint; i < _pathCoordinates.Count - 1; i++)
 		{
-			Vector3 i_direction = _pathCoordinates[i + 1] - _pathCoordinates[i];
-			RaycastHit[] i_hitObjects = Physics.RaycastAll(_pathCoordinates[i], i_direction, i_direction.magnitude);
-			List<RaycastHit> i_hitObjectsList = new List<RaycastHit>(i_hitObjects);
-			if (i > 1)
+			if (i > 0)
 			{
-				RaycastHit[] i_reverseHitObjects = Physics.RaycastAll(_pathCoordinates[i], -i_direction, i_direction.magnitude);
-				foreach (RaycastHit hit in i_reverseHitObjects)
+				Vector3 i_direction = _pathCoordinates[i+1] - _pathCoordinates[i];
+				RaycastHit[] i_hitObjects = Physics.RaycastAll(_pathCoordinates[i], i_direction, i_direction.magnitude);
+				Debug.DrawRay(_pathCoordinates[i], i_direction, Color.red);
+				List<RaycastHit> i_hitObjectsList = new List<RaycastHit>(i_hitObjects);
+				if (i > 1)
 				{
-					i_hitObjectsList.Add(hit);
+					//RaycastHit[] i_reverseHitObjects = Physics.RaycastAll(_pathCoordinates[i], -i_direction, i_direction.magnitude);
+					//foreach (RaycastHit hit in i_reverseHitObjects)
+					//{
+					//	i_hitObjectsList.Add(hit);
+					//}
 				}
-			}
-			foreach (RaycastHit hit in i_hitObjectsList)
-			{
-				IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
-				if (potentialTarget != null && potentialTarget.lockable_access)
+				foreach (RaycastHit hit in i_hitObjectsList)
 				{
-					i_foundTargets.Add(hit.transform);
-					LockTarget(hit.transform, potentialTarget.lockHitboxSize_access, potentialTarget.lockSize3DModifier_access);
+					//Debug.Log("Hit found: " + hit.transform.name)
+					IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
+					if (potentialTarget != null && potentialTarget.lockable_access)
+					{
+						i_foundTargets.Add(hit.transform);
+						LockTarget(hit.transform, potentialTarget.lockHitboxSize_access, potentialTarget.lockSize3DModifier_access);
+					}
 				}
 			}
 		}
