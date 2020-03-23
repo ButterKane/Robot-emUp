@@ -441,10 +441,6 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    public virtual void DestroySpawnedAttackUtilities()
-    {
-        // Usually filled within the inherited scripts
-    }
 
     public virtual void ExitBumpedState()
     {
