@@ -917,7 +917,9 @@ public class PawnController : MonoBehaviour
 				break;
 		}
 		animator.SetBool("PushedBool", true);
-        
+
+        DestroySpawnedAttackUtilities();
+
         FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
 		_pushFlatDirection.y = 0;
@@ -964,6 +966,10 @@ public class PawnController : MonoBehaviour
         // Filled in each of the children behaviour;
     }
 
+    public virtual void DestroySpawnedAttackUtilities()
+    {
+        // Usually filled within the inherited scripts
+    }
 
     private IEnumerator CancelPush_C()
 	{

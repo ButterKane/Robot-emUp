@@ -24,14 +24,15 @@ public class EnemyMelee : EnemyBehaviour
         eventOnBeingHit = "event.EnemyMeleeHit";
         eventOnDeath = "event.EnemyDeath";
         armScript = GetComponentInChildren<EnemyArmAttack>();
+
+        InititateMeleeHitBox();
     }
 
     public override void EnterPreparingAttackState()
     {
         //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
         base.EnterPreparingAttackState();
-        Debug.Log("anticipation Time is" + anticipationTime);
-        InititateMeleeHitBox();
+        ActivateMeleeHitBox();
     }
 
     public void InititateMeleeHitBox()
@@ -43,16 +44,17 @@ public class EnemyMelee : EnemyBehaviour
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
             attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
             attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
+            attackHitBoxInstance.SetActive(false);
         }
-        else
-        {
-            attackHitBoxInstance.SetActive(true);
-        }
+    }
+
+    public void ActivateMeleeHitBox()
+    {
+        attackHitBoxInstance.SetActive(true);
     }
 
     public void MeleeAttackPreview(float _anticipationTime)
     {
-        Debug.Log("anticipation with melee preview");
         if (attackPreviewPlane != null)
         {
             // Make attack zone appear progressively
@@ -117,8 +119,8 @@ public class EnemyMelee : EnemyBehaviour
     {
         cooldownDuration = cooldownAfterAttackTime;
         anticipationTime = 0;
+        animator.ResetTrigger("AnticipateAttackTrigger");
         animator.ResetTrigger("AttackTrigger");
-        DestroySpawnedAttackUtilities();
         ChangeState(EnemyState.Idle);
     }
 }
