@@ -361,7 +361,7 @@ public class PassController : MonoBehaviour
 
 	public bool CanReceive()
 	{
-		if (linkedPlayer.currentPawnState != null && !linkedPlayer.currentPawnState.allowBallReception)
+		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallReception)
 		{
 			return false;
 		}
@@ -400,9 +400,9 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
-		if (linkedPlayer.currentPawnState != null && !linkedPlayer.currentPawnState.allowBallThrow)
+		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallThrow)
 		{
-			Debug.Log(linkedPlayer.currentPawnState.name);
+			Debug.Log(linkedPlayer.GetCurrentPawnState().name);
 			return false;
 		}
 		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)

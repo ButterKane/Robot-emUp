@@ -118,7 +118,7 @@ public class LaserSniper : MonoBehaviour
 
                         if (touched.collider.tag == "Player")
                         {
-                            touched.collider.gameObject.GetComponent<PlayerController>().AddSpeedCoef(new SpeedCoef(enemyScript.playerSpeedReductionCoef, Time.deltaTime, SpeedMultiplierReason.Environment, true));
+                            touched.collider.gameObject.GetComponent<PlayerController>().AddSpeedModifier(new SpeedCoef(enemyScript.playerSpeedReductionCoef, Time.deltaTime, SpeedMultiplierReason.Environment, true));
                         }
                     }
                 }
