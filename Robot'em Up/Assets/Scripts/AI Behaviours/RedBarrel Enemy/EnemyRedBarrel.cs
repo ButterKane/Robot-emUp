@@ -62,7 +62,7 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     public void LaunchExplosion()
     {
-        if (currentHealth <= 0)
+        if (GetHealth() <= 0)
         {
             if (willExplodeWhenKilled) { isExplosionSafe = true; }
             else { base.Kill(); return; }

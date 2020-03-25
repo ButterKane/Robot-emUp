@@ -54,7 +54,7 @@ public class HealthBar : MonoBehaviour
         {
             if (!customHealthBar)
             {
-                fillRect.sizeDelta = new Vector2(((float)target.currentHealth / target.maxHealth) * _initialWidth, _rect.height);
+                fillRect.sizeDelta = new Vector2(((float)target.GetHealth() / target.GetMaxHealth()) * _initialWidth, _rect.height);
             }
             else
             {
@@ -66,7 +66,7 @@ public class HealthBar : MonoBehaviour
 			barFill.color = newColor;
 
 			_self.position = _mainCamera.WorldToScreenPoint(target.GetHeadPosition() + new Vector3(0f, heightOffset + customDeltaPosition, 0f));
-            if (target.currentHealth <= 0)
+            if (target.GetHealth() <= 0)
             {
 				ToggleHealthBar(false);
 			}

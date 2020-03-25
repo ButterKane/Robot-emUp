@@ -262,7 +262,7 @@ public class PlayerUI : MonoBehaviour
 
 	void ShowHealthBar ()
 	{
-		if (healthBar != null && pawnController.currentHealth < pawnController.GetMaxHealth())
+		if (healthBar != null && pawnController.GetHealth() < pawnController.GetMaxHealth())
 		{
 			healthBar.ToggleHealthBar(true);
 		}

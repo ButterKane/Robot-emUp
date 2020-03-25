@@ -145,12 +145,12 @@ public class LinkController : MonoBehaviour
 					//Slow player 1
 					float FcDirectionAngle = Vector3.Angle(firstPawn.transform.forward, secondPawn.transform.position - firstPawn.transform.position);
 					float FcSlowValue = Mathf.Lerp(1f, slowValue, FcDirectionAngle / 180f);
-					firstPawn.AddSpeedCoef(new SpeedCoef(FcSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
+					firstPawn.AddSpeedModifier(new SpeedCoef(FcSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
 
 					//Slow player 2
 					float FsDirectionAngle = Vector3.Angle(secondPawn.transform.forward, firstPawn.transform.position - secondPawn.transform.position);
 					float FsSlowValue = Mathf.Lerp(1f, slowValue, FsDirectionAngle / 180f);
-					secondPawn.AddSpeedCoef(new SpeedCoef(FsSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
+					secondPawn.AddSpeedModifier(new SpeedCoef(FsSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
 					ChangeLinkState(LinkState.Slowing);
 				}
 				if (i_linkLength >= maxDistanceBeforeBreaking)

@@ -62,16 +62,7 @@ MonoBehaviour:
   totalHeight: 2
   invincibilityTime: 0.15
   ignoreEletricPlates: 0
-  currentPawnState:
-    name: New state
-    stateOverriden: []
-    invincibleDuringState: 0
-    damagesCancelState: 0
-    allowBallReception: 0
-    allowBallThrow: 0
-    preventMoving: 0
   canMove: 1
-  jumpForce: 800
   accelerationCurve:
     serializedVersion: 2
     m_Curve:
@@ -101,7 +92,7 @@ MonoBehaviour:
   acceleration: 200
   movingDrag: 0.08
   idleDrag: 0.05
-  onGroundGravityMultiplyer: 4
+  onGroundGravityMultiplier: 2
   deadzone: 0.2
   turnSpeed: 0.25
   canClimb: 1
@@ -112,41 +103,16 @@ MonoBehaviour:
   climbUpwardPushForce: 450
   isBumpable: 1
   maxGettingUpDuration: 0.15
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0.302
   eventOnBeingHit: event.PlayerBeingHit
   eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.Player1Death
   eventOnHealing: event.PlayerHealing
-  moveInput: {x: 0, y: 0, z: 0}
-  currentHealth: 100
-  climbingHoldTime: 0
+  climbingDelay: 0
   passController: {fileID: 514769572}
+  rb: {fileID: 8666635390815151469}
+  animator: {fileID: 1184472623027629320}
   playerIndex: 0
   triggerTreshold: 0.1
   highlightedColor: {r: 1, g: 0.99777603, b: 0, a: 1}
@@ -1315,7 +1281,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2706315366338409406}
-  m_LocalRotation: {x: 0.17834812, y: -0.030989652, z: 0.005619881, w: 0.9834633}
+  m_LocalRotation: {x: 0.14339912, y: -0.7486677, z: 0.17205893, w: 0.6239624}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1764,7 +1730,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7361189692522563101}
-  m_LocalRotation: {x: 0.17834812, y: -0.030989652, z: 0.005619881, w: 0.9834633}
+  m_LocalRotation: {x: 0.14339912, y: -0.7486677, z: 0.17205893, w: 0.6239624}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1980,16 +1946,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5825664154814933021}
     m_Modifications:
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_Name
-      value: FX_Magnet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2054,6 +2010,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}

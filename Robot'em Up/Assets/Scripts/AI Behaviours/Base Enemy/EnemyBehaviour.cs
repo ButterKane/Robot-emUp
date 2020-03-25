@@ -167,7 +167,7 @@ public class EnemyBehaviour : PawnController, IHitable
     }
     protected void UpdateHealthBar()
     {
-        if (currentHealth < maxHealth && healthBar != null)
+        if (GetHealth() < GetMaxHealth() && healthBar != null)
         {
             healthBar.ToggleHealthBar(true);
         }
@@ -569,7 +569,7 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    public override void Damage(float _amount)
+    public override void Damage(float _amount, bool _enableInvincibilityFrame = false)
     {
         if (!CanDamage()) { return; }
         FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
