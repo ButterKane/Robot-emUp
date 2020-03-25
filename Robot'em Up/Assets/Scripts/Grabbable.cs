@@ -23,4 +23,5 @@ public class PlayerGrabPreview : MonoBehaviour
 {
 	public PlayerController player;
 	public LineRenderer lr;
+	public GameObject uiPreview;
 }

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: New Material
-  m_Shader: {fileID: 4800000, guid: a7ccb28075db25d45b1fd7f2d83d0d4d, type: 3}
+  m_Name: M_EnemyMelee
+  m_Shader: {fileID: 4800000, guid: be19015c6671fba41b07e3c7e4d28e5f, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6667ad87fed4dde4a95c105ce0529c0f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -63,40 +63,48 @@ Material:
         m_Texture: {fileID: 2800000, guid: 4980db732e661d240845afb74dd2d240, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _qMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _ASEOutlineWidth: 0.015
+    - _ASEOutlineWidth: 0.06
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OffsetRamp: 1
     - _Parallax: 0.02
-    - _RimOffset: -0.32
-    - _Rimpower: 0
+    - _RimOffset: 0
+    - _Rimpower: 1
     - _SmoothnessTextureChannel: 0
+    - _SpecCoverage: 0.1
+    - _SpecTransition: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
     m_Colors:
-    - _ASEOutlineColor: {r: 0.11320752, g: 0.091313615, b: 0.091313615, a: 0}
+    - _ASEOutlineColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DirtColor: {r: 0.082760446, g: 0.2924528, b: 0, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _EmissiveCOlor: {r: 0, g: 0, b: 0, a: 0}
-    - _MetalTint01: {r: 0, g: 0.075618744, b: 1, a: 0}
-    - _MetalTint02: {r: 1, g: 0, b: 0.29354286, a: 0}
-    - _MetalTint03: {r: 1, g: 0.46006632, b: 0, a: 0}
-    - _RimColor: {r: 1, g: 1, b: 1, a: 0}
+    - _DirtColor: {r: 0.74509805, g: 0.53333336, b: 0.40392157, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissiveCOlor: {r: 0, g: 0, b: 0, a: 1}
+    - _MetalTint01: {r: 1, g: 1, b: 1, a: 0}
+    - _MetalTint02: {r: 0.44313726, g: 0.03529412, b: 0.4, a: 0}
+    - _MetalTint03: {r: 0.34901962, g: 0.09411765, b: 0.14901961, a: 0}
+    - _RimColor: {r: 0, g: 0, b: 0, a: 0}
     - _RustColor: {r: 1, g: 1, b: 1, a: 0}
     - _ShadowColor: {r: 1, g: 1, b: 1, a: 0}
+    - _SpecCOlor: {r: 0.3113827, g: 0.6792453, b: 0.2146671, a: 0}

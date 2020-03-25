@@ -19,21 +19,11 @@ public class GrabbableInformation : MonoBehaviour
 		previewLine.material = datas.ingameLineRendererMaterial;
 		previewLine.startWidth = datas.ingameLineRendererWidth;
 		previewLine.endWidth = datas.ingameLineRendererWidth;
-		previewUI = Instantiate(datas.grabAvailableUIPreview).transform;
-		previewUI.transform.SetParent(this.transform);
 		previewEnabled = false;
-		if (previewUI != null)
-		{
-			previewLine.enabled = false;
-			previewUI.gameObject.SetActive(false);
-		}
+		previewLine.enabled = false;
 	}
 	private void Update ()
 	{
-		if (previewUI != null && previewEnabled)
-		{
-			previewUI.transform.position = GameManager.mainCamera.WorldToScreenPoint(targetedPosition.position);
-		}
 		foreach (PlayerGrabPreview p in playerGrabPreview)
 		{
 			if (!p.player.extendingArmsController.previewShown)
@@ -41,6 +31,7 @@ public class GrabbableInformation : MonoBehaviour
 				p.lr.positionCount = 2;
 				p.lr.SetPosition(0, p.player.GetCenterPosition());
 				p.lr.SetPosition(1, targetedPosition.position);
+				p.uiPreview.transform.position = GameManager.mainCamera.WorldToScreenPoint(p.player.GetCenterPosition());
 			}
 			else
 			{
@@ -67,6 +58,8 @@ public class GrabbableInformation : MonoBehaviour
 		pgp.lr.material = datas.ingameLineRendererMaterial;
 		pgp.lr.startWidth = datas.ingameLineRendererWidth;
 		pgp.lr.endWidth = datas.ingameLineRendererWidth;
+		pgp.uiPreview = Instantiate(datas.grabAvailableUIPreview);
+		pgp.uiPreview.transform.SetParent(GameManager.mainCanvas.transform);
 		playerGrabPreview.Add(pgp);
 	}
 
@@ -91,6 +84,7 @@ public class GrabbableInformation : MonoBehaviour
 		if (foundPreview != null)
 		{
 			playerGrabPreview.Remove(foundPreview);
+			Destroy(foundPreview.uiPreview.gameObject);
 			Destroy(foundPreview.gameObject);
 		}
 	}
