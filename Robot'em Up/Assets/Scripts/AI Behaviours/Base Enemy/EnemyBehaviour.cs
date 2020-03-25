@@ -143,8 +143,8 @@ public class EnemyBehaviour : PawnController, IHitable
         playerTwoTransform = GameManager.playerTwo.transform;
         playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
         playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
-        GameManager.i.enemyManager.enemies.Add(this);
-        if (canSurroundPlayer) { GameManager.i.enemyManager.enemiesThatSurround.Add(this); }
+        EnemyManager.i.enemies.Add(this);
+        if (canSurroundPlayer) { EnemyManager.i.enemiesThatSurround.Add(this); }
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
@@ -587,7 +587,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (healthBar != null) { Destroy(healthBar.gameObject); }
         onDeath.Invoke();
-        GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+        EnemyManager.i.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
         if (Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();

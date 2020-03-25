@@ -44,7 +44,7 @@ public class EnemyManager : MonoBehaviour
     {
         for (int i = 0; i < enemies.Count; i++)
         {
-            if (enemies[i] != null && enemies[i].currentHealth <= 0)
+            if (enemies[i] != null && enemies[i].GetHealth() <= 0)
             {
                 enemies[i].Kill();
                 i--; // because it removes this enemy from the lists, so the counting would be wronged
