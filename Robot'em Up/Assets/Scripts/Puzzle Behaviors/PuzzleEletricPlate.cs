@@ -35,7 +35,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         for (int i = 0; i < PawnTrapped.Count; i++)
         {
             PawnController item = PawnTrapped[i];
-            if (item.currentHealth <1)
+            if (item.GetHealth() < 1)
             {
                 PawnTrapped.Remove(item);
             }
@@ -58,7 +58,7 @@ public class PuzzleEletricPlate : PuzzleActivable
                     item.Damage(puzzleData.DamageEletricPlate);
                 }
 				Analytics.CustomEvent("ElectricalPlateDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
-				item.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+				item.AddSpeedModifier(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
 
 				FeedbackManager.SendFeedback("event.PuzzleElectricPlateDamage", item);
             }
@@ -94,7 +94,7 @@ public class PuzzleEletricPlate : PuzzleActivable
 
             if (!isActivated)
             {
-                _pawn.AddSpeedCoef(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+                _pawn.AddSpeedModifier(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
             }
         }
 
