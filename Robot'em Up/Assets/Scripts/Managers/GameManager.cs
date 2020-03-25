@@ -58,7 +58,6 @@ public class GameManager : MonoBehaviour
 
     [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
-    [NonSerialized] public EnemyManager enemyManager;
 
     [NonSerialized] public static PlayerController playerOne;
     [NonSerialized] public static PlayerController playerTwo;
@@ -100,7 +99,6 @@ public class GameManager : MonoBehaviour
         }
         if (levelManager == null) { levelManager = FindObjectOfType<LevelManager>(); }
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
-        if (enemyManager == null) { enemyManager = FindObjectOfType<EnemyManager>(); }
         if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
         FindMainCanvas();

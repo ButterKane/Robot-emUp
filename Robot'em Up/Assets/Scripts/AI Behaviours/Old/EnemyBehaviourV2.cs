@@ -479,7 +479,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
 
 	public override void Kill ()
 	{
-		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+        EnemyManager.i.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
