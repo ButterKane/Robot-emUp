@@ -46,10 +46,6 @@ Preset:
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: jumpForce
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
     propertyPath: accelerationCurve.m_Curve.Array.size
     value: 0
     objectReference: {fileID: 0}
@@ -86,7 +82,7 @@ Preset:
     value: 0.4
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: onGroundGravityMultiplyer
+    propertyPath: onGroundGravityMultiplier
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
@@ -130,26 +126,6 @@ Preset:
     value: 0.6
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: bumpDistanceCurve.m_Curve.Array.size
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: bumpDistanceCurve.m_PreInfinity
-    value: 2
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: bumpDistanceCurve.m_PostInfinity
-    value: 2
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: bumpDistanceCurve.m_RotationOrder
-    value: 4
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: bumpRaycastDistance
-    value: 1
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
     propertyPath: whenToTriggerFallingAnim
     value: 0.302
     objectReference: {fileID: 0}
@@ -174,20 +150,24 @@ Preset:
     value: event.PlayerHealing
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: moveInput.x
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: moveInput.y
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: moveInput.z
+    propertyPath: climbingDelay
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: passController
     value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: rb
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: animator
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: enemyState
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: healthBarRef
@@ -207,8 +187,16 @@ Preset:
     value: 
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: selfCollider
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: enemyType
     value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: focusedPawnController
+    value: 
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: energyGainedOnHit
@@ -231,12 +219,32 @@ Preset:
     value: 2
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: lockSize3DModifier.x
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: lockSize3DModifier.y
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: lockSize3DModifier.z
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: arenaRobot
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: isDeploymentFast
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: focusDistance
     value: 60
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: maxHeightOfDetection
+    value: 3
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: unfocusDistance
@@ -253,6 +261,10 @@ Preset:
   - target: {fileID: 0}
     propertyPath: maxTimeBetweenCheck
     value: 0.25
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: closestDistanceToplayer
+    value: 2
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: randomSpeedMod
@@ -307,6 +319,10 @@ Preset:
     value: 0.3
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: cooldownAfterAttackTime
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: canSurroundPlayer
     value: 0
     objectReference: {fileID: 0}
@@ -347,6 +363,10 @@ Preset:
     value: 10
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: waitTimeBeforeDisappear
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: baseAnimator
     value: 
     objectReference: {fileID: 0}
@@ -357,10 +377,6 @@ Preset:
   - target: {fileID: 0}
     propertyPath: modelPivot
     value: 
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
-    propertyPath: arenaTurret
-    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: defaultForwardPredictionRatio
