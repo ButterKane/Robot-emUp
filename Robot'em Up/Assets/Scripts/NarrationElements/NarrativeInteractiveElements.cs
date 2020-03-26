@@ -12,10 +12,12 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     [HideInInspector] public bool possessed;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
     public string breakEventName;
     
     //Possession variables
     public float possessionAnimationMaxTime;
+    public Color possessionColor;
     public AnimationCurve possessionAnimationCurve;
     [HideInInspector] public float possessionAnimationTimer;
     public Renderer[] possessionEmissives;
@@ -24,7 +26,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
 
     public AudioMixerGroup myAudioMixer;
 
-    public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default)
+    public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
         if (!broken)
         {
@@ -80,7 +82,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             possessionAnimationTimer += Time.deltaTime;
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionEmissives[i].material.SetColor("_EmissionColor", new Color(12, 0, 191) * Mathf.Lerp(0, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(0, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -97,7 +99,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
             possessionAnimationTimer += Time.deltaTime;
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionEmissives[i].material.SetColor("_EmissionColor", new Color(12, 0, 191) * Mathf.Lerp(normalEmissiveIntensity, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * Mathf.Lerp(normalEmissiveIntensity, maxEmissiveIntensity, possessionAnimationCurve.Evaluate(possessionAnimationTimer / possessionAnimationMaxTime)));
             }
             yield return new WaitForEndOfFrame();
             if (possessionAnimationTimer < possessionAnimationMaxTime)
@@ -117,7 +119,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         {
             for (int i = 0; i < possessionEmissives.Length; i++)
             {
-                possessionEmissives[i].material.SetColor("_EmissionColor", new Color(12, 0, 191)* normalEmissiveIntensity);
+                possessionEmissives[i].material.SetColor("_EmissionColor", possessionColor * normalEmissiveIntensity);
             }
             NarrationManager.narrationManager.ChangeActivatedNarrationElement(this);
         }

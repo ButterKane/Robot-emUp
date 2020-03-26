@@ -51,6 +51,9 @@ public class WaveEditor : Editor
 			GUI.color = Color.white;
 			SerializedProperty m_startOnTriggerEnter = serializedObject.FindProperty("startOnTriggerEnter");
 			EditorGUILayout.PropertyField(m_startOnTriggerEnter, new GUIContent("Start automatically when players enters zone ?"));
+
+			SerializedProperty m_skipArena = serializedObject.FindProperty("skipArena");
+			EditorGUILayout.PropertyField(m_skipArena, new GUIContent("Skip arena ?"));
 			this.serializedObject.ApplyModifiedProperties();
 
 			EditorGUI.BeginChangeCheck();
@@ -206,7 +209,10 @@ public class WaveEditor : Editor
 					spawnEventInformation.enemyType = enemyDatas.enemyDatas[enemyTypeIndex];
 
 					int spawnTypeIndex = EditorGUILayout.Popup(GetSpawnerIndex(spawnEventInformation.spawner), GetAvailableSpawnerNames().ToArray(), GUILayout.Width(120));
-					spawnEventInformation.spawner = availableSpawners[spawnTypeIndex];
+					if (availableSpawners != null && availableSpawners.Count > spawnTypeIndex && spawnEventInformation != null)
+					{
+						spawnEventInformation.spawner = availableSpawners[spawnTypeIndex];
+					}
 
 					this.serializedObject.ApplyModifiedProperties();
 
@@ -464,10 +470,13 @@ public class WaveEditor : Editor
 		List<Spawner> spawnerList = new List<Spawner>();
 		foreach (SpawnInformation t in waveEditor.spawnList)
 		{
-			Spawner potentialSpawn = t.transform.GetComponent<Spawner>();
-			if (potentialSpawn != null)
+			if (t.transform != null)
 			{
-				spawnerList.Add(potentialSpawn);
+				Spawner potentialSpawn = t.transform.GetComponent<Spawner>();
+				if (potentialSpawn != null)
+				{
+					spawnerList.Add(potentialSpawn);
+				}
 			}
 		}
 		return spawnerList;

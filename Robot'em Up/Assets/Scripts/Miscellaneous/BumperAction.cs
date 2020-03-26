@@ -9,11 +9,8 @@ public class BumperAction : MonoBehaviour
     public AnimationCurve bumpDistanceCurve;
     public float bumpDistance;
     public float bumpDuration;
-    public float restDuration;
+    public float bumpHeight;
     public float gettingUpDuration;
-    public float randomDistanceMod;
-    public float randomDurationMod;
-    public float randomRestDurationMod;
 
     private void OnTriggerEnter(Collider _other)
     {
@@ -23,7 +20,7 @@ public class BumperAction : MonoBehaviour
             if (i_enemy)
             {
                 Vector3 i_bumpDirection = SwissArmyKnife.GetFlattedDownDirection( i_enemy.transform.position - transform.position);
-                i_enemy.BumpMe(bumpDistance, bumpDuration, restDuration, i_bumpDirection, randomDistanceMod, randomDurationMod, randomRestDurationMod);
+                i_enemy.BumpMe(i_bumpDirection, BumpForce.Force3);
             }
         }
         if (_other.gameObject.tag == " Player")
@@ -32,7 +29,7 @@ public class BumperAction : MonoBehaviour
             if (i_player)
             {
                 Vector3 bumpDirection = SwissArmyKnife.GetFlattedDownDirection(i_player.transform.position - transform.position);
-                i_player.BumpMe(bumpDistance, bumpDuration, restDuration, bumpDirection, randomDistanceMod, randomDurationMod, randomRestDurationMod);
+                i_player.BumpMe(bumpDirection, BumpForce.Force3);
             }
         }
     }

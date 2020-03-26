@@ -7,6 +7,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 {
 	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
     public typeForceField type = typeForceField.blockTheBall;
     public enum typeForceField { blockTheBall, blockBallAndPlayer, Flipper }
     private MeshRenderer meshRenderer;
@@ -19,7 +20,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
         ChangeState();
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         if (isActivated && ( type == typeForceField.blockTheBall | type == typeForceField.blockBallAndPlayer ))
         {

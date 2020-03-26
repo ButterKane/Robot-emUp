@@ -13,12 +13,14 @@ public class PuzzleDatas : ScriptableObject
     public float nbMomentumNeededToLink;
     [Range(0, 1)]
     public float nbMomentumLooseWhenLink;
-    [Range(0, 20)]
-    public float nbSecondsLinkMaintained;
     [Range(0, 100)]
     public int DamageEletricPlate;
+    [Range(0, 100)]
+    public int DamageEletricPlateEnnemies;
     [Range(0.01f, 0.5f)]
     public float timeCheckingDamageEletricPlate;
+    [Range(0f, 1f)]
+    public float timeOrangePressurePlate;
 
     [Header("FX")]
 	public GameObject charging;
@@ -44,7 +46,9 @@ public class PuzzleDatas : ScriptableObject
     public Material m_switchActivate;
     public Material m_switchDesactivate;
     public Material m_puzzleElectreticPlate;
+    public Material m_puzzleElectreticPlate_Orange;
     public Material m_puzzleElectreticPlate_Activated;
+    public Material m_puzzleElectreticPlate_ShutDown;
 
 
 }

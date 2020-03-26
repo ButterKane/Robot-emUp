@@ -20,7 +20,7 @@ public class Counter : MonoBehaviour
 	public List<GameObject> counterList;
 	private int currentActivatedIndex = 0;
 	private bool counterEnd = false;
-	private void Awake ()
+	private void Start ()
 	{
 		if (counterList == null) { return; }
 		foreach (GameObject counter in counterList)
@@ -28,7 +28,6 @@ public class Counter : MonoBehaviour
 			counter.GetComponent<MeshRenderer>().sharedMaterial = new Material(counter.GetComponent<MeshRenderer>().sharedMaterial);
 			Material matInstance = counter.GetComponent<MeshRenderer>().material;
 			matInstance.SetColor("_EmissionColor", desactivatedColor * desactivatedColorIntensity);
-			matInstance.EnableKeyword("_EMISSION");
 		}
 	}
 

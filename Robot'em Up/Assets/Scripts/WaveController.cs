@@ -19,6 +19,7 @@ public class WaveController : MonoBehaviour
 	public List<WaveData> waveList = new List<WaveData>(); 
 	public List<SpawnInformation> spawnList = new List<SpawnInformation>();
 	public ArenaDoor exitDoor;
+	public bool skipArena = false;
 
 	private bool waveStarted = false;
 	private int currentWaveIndex = -1;
@@ -75,6 +76,7 @@ public class WaveController : MonoBehaviour
 
 	public void StartArena()
 	{
+		if (skipArena) { EndArena(); return; }
 		if (currentWaveIndex >= 0) { return; } else
 		{
 			StartNextWave();
@@ -109,6 +111,10 @@ public class WaveController : MonoBehaviour
 	public void StartNextWave()
 	{
 		if (waveStarted) { return; }
+		if (currentWaveIndex >= 0)
+		{
+			waveList[currentWaveIndex].onEndEvents.Invoke();
+		}
 		currentWaveIndex++;
 		if (currentWaveIndex >= waveList.Count) { EndArena(); return; }
 		if (exitDoor != null) { exitDoor.OnWaveStart(); }
@@ -131,7 +137,6 @@ public class WaveController : MonoBehaviour
 	{
 		delayBeforeNextWave = waveList[currentWaveIndex].pauseBeforeNextWave;
 		waveStarted = false;
-		waveList[currentWaveIndex].onEndEvents.Invoke();
 	}
 
 	IEnumerator StartWave_C (int _waveIndex)

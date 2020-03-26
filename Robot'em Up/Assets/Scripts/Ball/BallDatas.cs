@@ -17,6 +17,12 @@ public class BallDatas : ScriptableObject
 	public float maxDamageModifierOnPerfectReception;
 	public int damages;
 	public float maxFXSizeMultiplierOnPerfectReception;
+	public float maxTimeOutOfScreen = 3f;
+	public float comingBackToScreenSpeed = 5f;
+	public float timescaleOnHit = 0.1f;
+	public float timescaleDurationOnHit = 0.1f;
 	public Gradient colorOverDamage;
-	public Texture2D hitDecal;
+	public float minimalChargeForHeavyPush;
+	public float minimalChargeForBump;
+	public float minimalChargeForLightPush;
 }

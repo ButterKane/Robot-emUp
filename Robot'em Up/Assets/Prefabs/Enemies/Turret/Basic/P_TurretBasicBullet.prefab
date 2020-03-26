@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7771328276034546981}
   - component: {fileID: 6561459608439898454}
   - component: {fileID: 8991668823125711432}
-  - component: {fileID: 3271394819718229627}
+  - component: {fileID: 9153718026061776966}
   m_Layer: 0
   m_Name: P_TurretBasicBullet
   m_TagString: Untagged
@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 6561459608439898454}
+  launcher: {fileID: 0}
   speed: 100
   deathParticle: {fileID: 3758249355753035628, guid: 2f949488fbe4dc947b2d0a6ffb6ffa8b,
     type: 3}
@@ -118,8 +119,8 @@ MonoBehaviour:
   target: {fileID: 0}
   canHitEnemies: 0
   damageModificator: 0
---- !u!135 &3271394819718229627
-SphereCollider:
+--- !u!136 &9153718026061776966
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -128,6 +129,7 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.94
+  m_Radius: 1.7
+  m_Height: 1
+  m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}

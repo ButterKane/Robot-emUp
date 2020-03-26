@@ -20,18 +20,19 @@ public class LaserSniper : MonoBehaviour
     [HideInInspector] public MeshRenderer laserRenderer;
     [HideInInspector] public bool isAimingPlayer;
     [HideInInspector] public float distanceAoEDamage;
+    private float accumulatedDamage;
 
     private void Awake()
     {
         isLaserActive = true;
         initialPosition = transform.position;
         laserRenderer = GetComponentInChildren<MeshRenderer>();
+        accumulatedDamage = 0;
     }
 
     void Update()
     {
         transform.localScale = new Vector3(laserWidth, laserWidth, transform.localScale.z);
-        enemyScript.laserActualLength = (laserLength == null? 0 : (float) laserLength);
         RaycastToHitWithLaser();
         UpdateLaserLength(laserLength);
     }
@@ -48,6 +49,7 @@ public class LaserSniper : MonoBehaviour
             i_laserLength = (float)givenLength;
         }
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, i_laserLength);
+
     }
 
     public void RaycastToHitWithLaser()
@@ -80,9 +82,9 @@ public class LaserSniper : MonoBehaviour
                         Debug.DrawRay(touched.transform.position, Vector3.up * 4, Color.green);
                         IHitable i_potentialHitableObject = touched.collider.GetComponent<IHitable>();
 
-                        if (i_potentialHitableObject != null && touched.transform != transform.root) 
+                        if (i_potentialHitableObject != null && touched.transform != enemyScript.transform) 
                         {
-                            i_potentialHitableObject.OnHit(null, (touched.transform.position - touched.point).normalized, null, enemyScript.damagePerSecond / 60, DamageSource.Laser, Vector3.zero);
+                            i_potentialHitableObject.OnHit(null, (touched.transform.position - touched.point).normalized, null, enemyScript.damagePerSecond * Time.deltaTime, DamageSource.Laser, Vector3.zero);
 
                             LaserRepulsion(touched.point);
 
@@ -98,7 +100,7 @@ public class LaserSniper : MonoBehaviour
 
     void LaserRepulsion(Vector3 _centerRepulsionPoint)
     {
-        RaycastHit[] i_hitObjects = Physics.SphereCastAll(_centerRepulsionPoint, laserRepulsionRadius, Vector3.forward);
+        RaycastHit[] i_hitObjects = Physics.SphereCastAll(_centerRepulsionPoint, enemyScript.repulseCircleRadius, Vector3.forward);
         if (i_hitObjects.Length > 0)
         {
             foreach (var touched in i_hitObjects)
@@ -112,11 +114,17 @@ public class LaserSniper : MonoBehaviour
                     Rigidbody touchedRb = touched.transform.GetComponent<Rigidbody>();
                     if (touchedRb!= null)
                     {
-                        touchedRb.AddForce(i_repulsionDirection * laserRepulsionForce + Vector3.up*0.5f, ForceMode.Impulse);
+                        touchedRb.AddForce(i_repulsionDirection * enemyScript.repulseCircleStrength, ForceMode.Impulse);
+
+                        if (touched.collider.tag == "Player")
+                        {
+                            touched.collider.gameObject.GetComponent<PlayerController>().AddSpeedModifier(new SpeedCoef(enemyScript.playerSpeedReductionCoef, Time.deltaTime, SpeedMultiplierReason.Environment, true));
+                        }
                     }
                 }
             }
         }
     }
+
 
 }

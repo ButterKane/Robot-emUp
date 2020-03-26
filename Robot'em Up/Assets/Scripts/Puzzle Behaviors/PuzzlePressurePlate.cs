@@ -27,7 +27,7 @@ public class PuzzlePressurePlate : PuzzleActivator
 
     private void OnTriggerEnter(Collider _other)
     {
-        if (_other.gameObject.GetComponent<PawnController>())
+        if (_other.gameObject.GetComponent<PawnController>() && !shutDown)
         {
             pawnHere = true;
             transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
@@ -36,7 +36,7 @@ public class PuzzlePressurePlate : PuzzleActivator
             listPawnsHere.Add(pawn);
 			if (!isActivated)
 			{
-				FeedbackManager.SendFeedback("event.PuzzlePresurePlateActivation", this);
+				FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
 			}
             isActivated = true;
             ActivateLinkedObjects();
@@ -68,5 +68,13 @@ public class PuzzlePressurePlate : PuzzleActivator
         UpdateLight();
 
     }
-    
+
+
+    override public void customShutDown()
+    {
+        transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
+        isActivated = false;
+    }
+
+
 }

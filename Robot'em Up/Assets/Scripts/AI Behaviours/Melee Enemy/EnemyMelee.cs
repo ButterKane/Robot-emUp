@@ -21,14 +21,18 @@ public class EnemyMelee : EnemyBehaviour
     protected override void Start()
     {
         base.Start();
+        eventOnBeingHit = "event.EnemyMeleeHit";
+        eventOnDeath = "event.EnemyDeath";
         armScript = GetComponentInChildren<EnemyArmAttack>();
+
+        InititateMeleeHitBox();
     }
 
     public override void EnterPreparingAttackState()
     {
+        //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
         base.EnterPreparingAttackState();
-        attackPreviewPlane = null;
-        InititateMeleeHitBox();
+        ActivateMeleeHitBox();
     }
 
     public void InititateMeleeHitBox()
@@ -40,7 +44,13 @@ public class EnemyMelee : EnemyBehaviour
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
             attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
             attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
+            attackHitBoxInstance.SetActive(false);
         }
+    }
+
+    public void ActivateMeleeHitBox()
+    {
+        attackHitBoxInstance.SetActive(true);
     }
 
     public void MeleeAttackPreview(float _anticipationTime)
@@ -74,6 +84,7 @@ public class EnemyMelee : EnemyBehaviour
 
     public void ActivateAttackHitBox()
     {
+        FeedbackManager.SendFeedback("event.EnemyMeleeAttack", this);
         if (attackHitBoxInstance != null)
         {
             attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
@@ -84,8 +95,32 @@ public class EnemyMelee : EnemyBehaviour
     {
         if (attackHitBoxInstance != null)
         {
-            Destroy(attackHitBoxInstance);
-            attackHitBoxInstance = null;
+            attackHitBoxInstance.SetActive(false);
         }
+    }
+
+    public IEnumerator StartAttackState_C()
+    {
+        Debug.Log("starting attack");
+        base.EnterPreparingAttackState();
+        attackPreviewPlane = null;
+        InititateMeleeHitBox();
+        yield return null;
+    }
+
+    public IEnumerator StopAttackState_C()
+    {
+        Debug.Log("stopping attack");
+        DestroySpawnedAttackUtilities();
+        yield return null;
+    }
+
+    public override void HeavyPushAction()
+    {
+        cooldownDuration = cooldownAfterAttackTime;
+        anticipationTime = 0;
+        animator.ResetTrigger("AnticipateAttackTrigger");
+        animator.ResetTrigger("AttackTrigger");
+        ChangeState(EnemyState.Idle);
     }
 }

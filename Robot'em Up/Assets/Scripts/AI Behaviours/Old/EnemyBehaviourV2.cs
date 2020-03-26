@@ -56,7 +56,8 @@ public class EnemyBehaviourV2 : PawnController, IHitable
 	public float powerLevel = 1;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
-	public bool arenaRobot;
+    [SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
+    public bool arenaRobot;
 
 	[Space(3)]
     [Header("Focus")]
@@ -288,7 +289,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
     {
         navMeshAgent.enabled = false;
         animator.SetTrigger("BumpTrigger");
-        mustCancelBump = false;
     }
 
     public virtual void EnterPreparingAttackState()
@@ -405,7 +405,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
         }
     }
 
-    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
+    public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
 		Vector3 i_normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
@@ -427,7 +427,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                         i_BumpDurationMod = i_controller.bumpDurationMod;
                         i_BumpRestDurationMod = i_controller.bumpRestDurationMod;
                     }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod);
+                    BumpMe(i_normalizedImpactVector.normalized,BumpForce.Force2);
                     whatBumps = WhatBumps.Dunk;
                 }
                 else
@@ -449,7 +449,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                         i_BumpDurationMod = _bumpModificators.y;
                         i_BumpRestDurationMod = _bumpModificators.z;
                     }
-                    BumpMe(10, 1, 1, i_normalizedImpactVector.normalized, i_BumpDistanceMod, i_BumpDurationMod, i_BumpRestDurationMod); 
+                    BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                     whatBumps = WhatBumps.RedBarrel;
                 }
                 else
@@ -479,7 +479,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
 
 	public override void Kill ()
 	{
-		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+        EnemyManager.i.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
@@ -556,7 +556,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
-		AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
+		AddSpeedModifier(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
     }
 
     public void Staggered(WhatBumps? cause = default)
@@ -564,25 +564,19 @@ public class EnemyBehaviourV2 : PawnController, IHitable
         switch (cause)
         {
             case WhatBumps.Pass:
-				AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
+				AddSpeedModifier(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
                 break;
             case WhatBumps.Dunk:
-				AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
+				AddSpeedModifier(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
                 break;
             case WhatBumps.Environment:
-				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
+				AddSpeedModifier(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
                 break;
             default:
-				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
+				AddSpeedModifier(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
                 break;
         }
     }
-
-	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
-	{
-		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
-		ChangeState(EnemyState.Bumped);
-	}
 
     IEnumerator WaitABit_C(float _duration)
     {

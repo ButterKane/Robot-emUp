@@ -7,18 +7,24 @@ public class TutoHelper : MonoBehaviour
 
     public PuzzleDatas puzzleData;
     public GameObject myText;
+    public GameObject mySprite;
+    public bool GivePlayerEnergy = false;
     private List<PawnController> listPawnsHere;
     // Start is called before the first frame update
     void Start()
     {
         myText.gameObject.SetActive(false);
+        mySprite.gameObject.SetActive(false);
         listPawnsHere = new List<PawnController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (GivePlayerEnergy && listPawnsHere.Count > 0)
+        {
+            EnergyManager.IncreaseEnergy(Time.deltaTime);
+        }
     }
 
 
@@ -31,6 +37,7 @@ public class TutoHelper : MonoBehaviour
             if (puzzleData.showTuto)
             {
                 myText.SetActive(true);
+                mySprite.SetActive(true);
             }
         }
     }
@@ -44,6 +51,7 @@ public class TutoHelper : MonoBehaviour
             if (listPawnsHere.Count < 1)
             {
                 myText.SetActive(false);
+                mySprite.SetActive(false);
             }
         }
     }

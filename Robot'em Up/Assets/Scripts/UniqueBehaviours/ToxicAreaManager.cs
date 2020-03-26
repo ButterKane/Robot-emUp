@@ -1,0 +1,136 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ToxicAreaManager : MonoBehaviour
+{
+    public bool areaActivated = false;
+    public bool accelerateDepoisened = false;
+    public float decay_multiplier;
+    public float damageWhenPoisened_multiplier;
+    public float toxicValue_P1;
+    public float toxicValue_P2;
+    public bool isPoisened_P1;
+    public bool isPoisened_P2;
+    public Image poisonedSprite_P1;
+    public Image poisonedSprite_P2;
+    private Transform playerOneToxicBar;
+    private Transform playerTwoToxicBar;
+    private Slider playerOneToxicBarSlider;
+    private Slider playerTwoToxicBarSlider;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        playerOneToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
+        playerTwoToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
+
+        playerOneToxicBar.SetParent(GameManager.playerOne.GetComponent<PlayerUI>().playerCanvasLateralRectTransform.transform);
+        playerTwoToxicBar.SetParent(GameManager.playerTwo.GetComponent<PlayerUI>().playerCanvasLateralRectTransform.transform);
+
+        playerOneToxicBar.transform.localScale = Vector3.one;
+        playerTwoToxicBar.transform.localScale = Vector3.one;
+        playerOneToxicBar.transform.localPosition = Vector3.zero;
+        playerTwoToxicBar.transform.localPosition = Vector3.zero;
+
+        playerOneToxicBarSlider = playerOneToxicBar.GetComponentInChildren<Slider>();
+        playerTwoToxicBarSlider = playerTwoToxicBar.GetComponentInChildren<Slider>();
+
+        playerOneToxicBar.gameObject.SetActive(false);
+        playerTwoToxicBar.gameObject.SetActive(false);
+        NewMethod();
+    }
+
+    private void NewMethod()
+    {
+       // poisonedSprite_P1.gameObject.SetActive(false);
+       // poisonedSprite_P2.gameObject.SetActive(false);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        //Update slider values
+        playerOneToxicBarSlider.value = toxicValue_P1;
+        playerTwoToxicBarSlider.value = toxicValue_P2;
+        if (toxicValue_P1 >= 1)
+        {
+            isPoisened_P1 = true;
+            toxicValue_P1 = 1;
+        }
+
+        if (toxicValue_P1 <= 0)
+        {
+            toxicValue_P1 = 0;
+            isPoisened_P1 = false;
+        }
+
+
+        if (toxicValue_P2 >= 1)
+        {
+            toxicValue_P2 = 1;
+            isPoisened_P2 = true;
+        }
+
+        if (toxicValue_P2 <= 0)
+        {
+            toxicValue_P2 = 0;
+            isPoisened_P2 = false;
+        }
+
+        toxicValue_P1 -= Time.deltaTime * decay_multiplier;
+        toxicValue_P2 -= Time.deltaTime * decay_multiplier;
+
+
+        if (isPoisened_P1)
+        {
+           // poisonedSprite_P1.gameObject.SetActive(true);
+
+            GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
+            if (accelerateDepoisened)
+            {
+                toxicValue_P1 -= Time.deltaTime * decay_multiplier * 3;
+            }
+        }
+        else
+        {
+           // poisonedSprite_P1.gameObject.SetActive(false);
+        }
+
+
+        if (isPoisened_P2)
+        {
+          //  poisonedSprite_P2.gameObject.SetActive(true);
+
+            GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
+            if (accelerateDepoisened)
+            {
+                toxicValue_P2 -= Time.deltaTime * decay_multiplier * 3;
+            }
+        }
+        else
+        {
+         //   poisonedSprite_P2.gameObject.SetActive(false);
+        }
+    }
+
+    public void ToxicAreaEntry()
+    {
+        Debug.Log("ToxicAreaEntry");
+        areaActivated = true;
+        playerOneToxicBar.gameObject.SetActive(true);
+        playerTwoToxicBar.gameObject.SetActive(true);
+    }
+
+
+    public void ToxicAreaLeaving()
+    {
+        Debug.Log("ToxicAreaLeaving");
+        areaActivated = false;
+        playerOneToxicBar.gameObject.SetActive(false);
+        playerTwoToxicBar.gameObject.SetActive(false);
+    }
+
+}

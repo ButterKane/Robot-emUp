@@ -8,14 +8,24 @@ public class LevelSelector : MonoBehaviour
 {
 	public Font buttonFont;
 	public List<Button> buttons;
+	public List<string> scenesToHide;
 	private void Awake ()
 	{
 		GenerateSceneList();
 	}
 	void GenerateSceneList()
 	{
-		for (int i = 1; i <= SceneManager.sceneCountInBuildSettings-1; i++)
+		for (int i = 1; i < SceneManager.sceneCountInBuildSettings; i++)
 		{
+			bool skip = false;
+			foreach (string s in scenesToHide)
+			{
+				if (GameManager.GetSceneIndexFromName(s) == i)
+				{
+					skip = true;
+				}
+			}
+			if (skip) { continue; }
 			int x = i;
 			GameObject i_newButton = new GameObject();
 			i_newButton.name = "Button[" + SceneManager.GetSceneByBuildIndex(x).name + "]";

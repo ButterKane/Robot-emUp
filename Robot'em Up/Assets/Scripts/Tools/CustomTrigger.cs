@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public enum TriggerCondition { OnePlayer, TwoPlayer, Middlepoint }
 [RequireComponent(typeof(Collider))]
@@ -9,11 +12,12 @@ public class CustomTrigger : MonoBehaviour
 {
 	public bool onExit;
 	public bool singleUse;
+	public bool useDirection = true;
 	public TriggerCondition triggerCondition;
 	public UnityEvent onTriggerEnterAction;
 	public UnityEvent onTriggerComebackAction;
 
-	private List<PlayerController> playerGoneThroughDoor;
+    private List<PlayerController> playerGoneThroughDoor;
 	private Collider col;
 	private bool used;
 	private int direction;
@@ -23,7 +27,7 @@ public class CustomTrigger : MonoBehaviour
 		col = GetComponent<Collider>();
 		playerGoneThroughDoor = new List<PlayerController>();
 		direction = 1;
-	}
+    }
 
 	void CheckTrigger( Collider other )
 	{
@@ -32,12 +36,12 @@ public class CustomTrigger : MonoBehaviour
 			TriggerEvent();
 			return;
 		}
-		if (other.transform.gameObject.tag == "Player")
+		if (other.gameObject.tag == "Player")
 		{
 			PlayerController potentialPlayer = other.transform.gameObject.GetComponent<PlayerController>();
 			if (potentialPlayer != null)
 			{
-				if (transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
+				if (useDirection == false || transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
 				{
 					if (!playerGoneThroughDoor.Contains(potentialPlayer))
 					{
@@ -96,13 +100,12 @@ public class CustomTrigger : MonoBehaviour
 			if (direction == 1)
 			{
 				onTriggerEnterAction.Invoke();
-				Debug.Log("Trigger enter");
 			} else
 			{
 				onTriggerComebackAction.Invoke();
-				Debug.Log("Trigger comeback");
 			}
 			direction = -direction;
 		}
 	}
+
 }

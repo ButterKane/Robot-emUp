@@ -7,7 +7,7 @@ using UnityEngine.Analytics;
 public class AnalyticsManager
 {
 	static AnalyticsDatas datas;
-
+	/*
 	public static AnalyticsDatas GetDatas()
 	{
 		return Resources.Load<AnalyticsDatas>("AnalyticsDatas");
@@ -138,4 +138,5 @@ public class AnalyticsManager
 			SendData(data);
 		}
 	}
+	*/
 }

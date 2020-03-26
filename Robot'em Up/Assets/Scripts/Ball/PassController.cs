@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
-
+using UnityEngine.Analytics;
 
 public enum PassMode
 {
@@ -65,6 +65,7 @@ public class PassController : MonoBehaviour
 	private PassState previousState;
 	private float perfectReceptionBuffer;
 	private bool keepPerfectReceptionModifiers;
+	private bool perfectReceptionShoot;
 	[ReadOnly] public PassState passState;
 
     private void Awake ()
@@ -105,7 +106,7 @@ public class PassController : MonoBehaviour
 					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out i_snapped), ballDatas.maxPreviewDistance);
 					break;
 				case PassMode.Curve:
-					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer.transform, linkedPlayer.GetLookInput());
+					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer, linkedPlayer.GetLookInput());
 					break;
 			}
 			if (i_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
@@ -132,7 +133,6 @@ public class PassController : MonoBehaviour
 
 	public void ExecutePerfectReception(BallBehaviour _ball)
 	{
-		AnalyticsManager.IncrementData("PerfectReception");
 		Receive(_ball);
 		keepPerfectReceptionModifiers = true;
 		ChangePassState(PassState.Aiming);
@@ -147,13 +147,15 @@ public class PassController : MonoBehaviour
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, perfectReceptionExplosionRadius);
 		PawnController i_pawnController = GetComponent<PawnController>();
+		List<IHitable> hitTargets = new List<IHitable>();
 		int i = 0;
 		while (i < i_hitColliders.Length)
 		{
 			IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
-			if (i_potentialHitableObject != null)
+			if (i_potentialHitableObject != null && !hitTargets.Contains(i_potentialHitableObject))
 			{
 				i_potentialHitableObject.OnHit(_ball, (i_hitColliders[i].transform.position - transform.position).normalized, i_pawnController, perfectReceptionExplosionDamages, DamageSource.PerfectReceptionExplosion);
+				hitTargets.Add(i_potentialHitableObject);
 			}
 			i++;
 		}
@@ -192,11 +194,11 @@ public class PassController : MonoBehaviour
 		return i_pathCoordinates;
 	}
 
-	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, Transform _target, Vector3 _lookDirection)
+	public List<Vector3> GetCurvedPathCoordinates(Vector3 _startPosition, PawnController _target, Vector3 _lookDirection)
 	{
 		//Get the middle position for the curve
 		Vector3 i_startPosition = _startPosition;
-		Vector3 i_endPosition = _target.transform.position + Vector3.up;
+		Vector3 i_endPosition = _target.GetCenterPosition();
 		Vector3 i_direction = i_endPosition - i_startPosition;
 		float i_lookDirectionAngle = Vector3.SignedAngle(new Vector3(i_direction.x, 0, i_direction.z), new Vector3(_lookDirection.x, 0, _lookDirection.z), Vector3.up);
 		List<Vector3> i_coordinates = new List<Vector3>();
@@ -229,10 +231,11 @@ public class PassController : MonoBehaviour
 					EnemyShield potentialEnemyShield = hito.collider.gameObject.GetComponentInParent<EnemyShield>();
 					if (potentialEnemyShield != null && potentialEnemyShield.shield != null && hito.collider.gameObject.tag != "Enemy")
 					{
+						//if (hito.collider.GetComponent<EnemyShield>() == null)
 						Vector3 impactVector = (i_coordinates[i] - i_coordinates[i - 1]);
-						if (potentialEnemyShield.shield.transform.InverseTransformPoint(i_coordinates[i]).z < 0.0)
+						if (hito.collider.GetComponent<EnemyShield>() == null && potentialEnemyShield.shield.transform.InverseTransformPoint(hito.point).z > 0.0)
 						{
-							i_coordinates.Add(hito.point);
+							i_coordinates.Add(hito.collider.ClosestPointOnBounds(i_coordinates[i]));
 							Vector3 _direction = Vector3.Reflect(i_coordinates[i] - i_coordinates[i - 1], hito.normal);
 							_direction = _direction.normalized * 10;
 							i_coordinates.Add(hito.point + _direction);
@@ -272,7 +275,9 @@ public class PassController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
+		Analytics.CustomEvent("PerfectReception", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
+		perfectReceptionShoot = true;
 		Shoot();
 	}
 	public void Shoot()
@@ -280,7 +285,7 @@ public class PassController : MonoBehaviour
 		if (!CanShoot()) { return; }
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
-		AnalyticsManager.IncrementData("PlayerPass");
+		Analytics.CustomEvent("PlayerPass", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
 		if (!keepPerfectReceptionModifiers)
 		{
@@ -300,7 +305,7 @@ public class PassController : MonoBehaviour
             {
 				if (passPreview)
 				{
-					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, linkedPlayer.GetLookInput());
+					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer, ballDatas, linkedPlayer.GetLookInput());
 				} else
 				{
 					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
@@ -322,6 +327,7 @@ public class PassController : MonoBehaviour
 				i_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
 			}
 		}
+		perfectReceptionShoot = false;
 		ChangePassState(PassState.None);
 	}
 
@@ -355,6 +361,10 @@ public class PassController : MonoBehaviour
 
 	public bool CanReceive()
 	{
+		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallReception)
+		{
+			return false;
+		}
 		return canReceive;
 	}
 
@@ -390,6 +400,11 @@ public class PassController : MonoBehaviour
 
 	public bool CanShoot()
 	{
+		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallThrow)
+		{
+			Debug.Log(linkedPlayer.GetCurrentPawnState().name);
+			return false;
+		}
 		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
 		{
 			return false;
@@ -467,19 +482,29 @@ public class PassController : MonoBehaviour
 
 	public void ChangePassState ( PassState _newState )
 	{
-		//if (_newState == passState) { return; }
+		if (_newState == passState) { return; }
 		previousState = passState;
-		passState = _newState;
 		switch (_newState)
 		{
 			case PassState.Aiming:
 				if (!CanShoot()) { return; }
 				EnablePassPreview();
+				animator.ResetTrigger("ShootingMissedTrigger");
 				animator.SetTrigger("PrepareShootingTrigger");
 				break;
 			case PassState.Shooting:
 				if (!CanShoot()) { return; }
-				animator.SetTrigger("ShootingTrigger");
+				if (perfectReceptionShoot)
+				{
+					animator.ResetTrigger("ShootingMissedTrigger");
+					animator.SetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("ShootingTrigger");
+				} else
+				{
+					animator.ResetTrigger("ShootingMissedTrigger");
+					animator.ResetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("HandoffTrigger");
+				}
 				return;
 			case PassState.None:
 				DisablePassPreview();
@@ -487,5 +512,6 @@ public class PassController : MonoBehaviour
 				animator.SetTrigger("ShootingMissedTrigger");
 				break;
 		}
+		passState = _newState;
 	}
 }

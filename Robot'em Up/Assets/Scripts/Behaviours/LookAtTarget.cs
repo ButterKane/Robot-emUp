@@ -9,6 +9,6 @@ public class LookAtTarget : MonoBehaviour
     
     void Update()
     {
-        head.transform.LookAt(parentScript.focusedPlayer);
+        head.transform.LookAt(parentScript.focusedPawnController.GetCenterPosition());
     }
 }

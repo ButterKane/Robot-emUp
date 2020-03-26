@@ -64,9 +64,9 @@ namespace MyBox.Internal
 
 		private static void DeleteEmptyDirectory(DirectoryInfo emptyDirectory)
 		{
-			var relativePath = GetRelativePath(emptyDirectory.FullName, Directory.GetCurrentDirectory());
-			AssetDatabase.MoveAssetToTrash(relativePath);
-			Debug.Log("Empty directory removed at: " + emptyDirectory.FullName);
+		//	var relativePath = GetRelativePath(emptyDirectory.FullName, Directory.GetCurrentDirectory());
+		//	AssetDatabase.MoveAssetToTrash(relativePath);
+		//	Debug.Log("Empty directory removed at: " + emptyDirectory.FullName);
 		}
 
 

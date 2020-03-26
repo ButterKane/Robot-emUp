@@ -18,13 +18,26 @@ public class PlayerController : PawnController, IHitable
 	private bool inputDisabled;
 	public Color highlightedColor;
 	public Color highlightedSecondColor;
+	[HideInInspector] public List<GrabbableInformation> targetedGrabbable = new List<GrabbableInformation>();
+	[HideInInspector] private GrabbableInformation prioritaryGrabInformation;
 
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
+
+	[SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
 	public bool enableDash;
     public bool enableJump;
     public bool enableDunk;
     public bool enableMagnet;
+
+	[Separator("Over heal settings")]
+	public float overHealValue = 20f;
+	public float delayBeforeOverhealDecay = 5f;
+	public float overHealDecaySpeed = 5f;
+	public AnimationCurve overHealDecaySpeedCurve;
+
+	[Separator("Dash while revive available settings")]
+	public float delayBeforeDash = 0.2f;
 
 	[Separator("Revive settings")]
 	public string eventOnResurrecting = "event.PlayerResurrecting";
@@ -45,32 +58,52 @@ public class PlayerController : PawnController, IHitable
 
 	private DunkController dunkController;
 	private DashController dashController;
-	private ExtendingArmsController extendingArmsController;
+	[HideInInspector] public ExtendingArmsController extendingArmsController;
 	private List<ReviveInformations> revivablePlayers = new List<ReviveInformations>(); //List of the players that can be revived
 	private bool dashPressed = false;
 	private bool rightTriggerWaitForRelease;
+	private bool leftTriggerWaitForRelease;
 	private bool leftShouldWaitForRelease;
 	public static Transform middlePoint;
+	public Collider mainCollider;
+	private Vector3 previousPosition;
+	private bool rbPressed;
+	private float dashBuffer;
+	private float timeSinceLastHeal;
+	private float rbPressDuration;
+	private bool reviving;
 
 	public void Start ()
 	{
 		base.Awake();
+        eventOnBeingHit = "event.PlayerBeingHit";
+        mainCollider = GetComponent<Collider>();
 		cam = Camera.main;
 		dunkController = GetComponent<DunkController>();
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
 		if (Application.isPlaying)
 		{
+			ExtendingArmsController.grabableObjects.Add(mainCollider);
+			GameManager.alivePlayers.Add(this);
 			if (middlePoint == null)
 			{
 				middlePoint = new GameObject().transform;
 				middlePoint.name = "MiddlePoint";
 				middlePoint.tag = "MiddlePoint";
 				middlePoint.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+				DontDestroyOnLoad(middlePoint.gameObject);
+				GameManager.DDOL.Add(middlePoint.gameObject);
 				SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
 				col.isTrigger = true;
 			}
 		}
+	}
+
+	protected override void FixedUpdate ()
+	{
+		previousPosition = transform.position;
+		base.FixedUpdate();
 	}
 	private void Update ()
 	{
@@ -82,13 +115,17 @@ public class PlayerController : PawnController, IHitable
 		{
 			GetInput();
 		}
-#if !UNITY_EDITOR
-			if (!inputDisabled) { GetInput(); }
-#endif
-
-
-
+		UpdateOverHeal();
     }
+	protected override void LateUpdate ()
+	{
+		base.LateUpdate();
+		if (Application.isPlaying)
+		{
+			CheckIfOutOfCamera();
+		}
+	}
+
 	void GetInput ()
 	{
 		if (HasGamepad())
@@ -101,6 +138,21 @@ public class PlayerController : PawnController, IHitable
 		}
 	}
 
+	void CheckIfOutOfCamera ()
+	{
+		if (GameManager.timeInZone < 1f) { return; }
+		Vector3 viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
+		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
+		if (viewPortPosition.x > 1 + extents || viewPortPosition.x < -extents || viewPortPosition.y > 1 + extents || viewPortPosition.y < -extents) {
+			rb.velocity = Vector3.zero;
+			Vector3 centerPos = GameManager.mainCamera.ViewportToWorldPoint(new Vector3(0.5f,0.5f,Vector3.Distance(transform.position, GameManager.mainCamera.transform.position)));
+			centerPos.y = transform.position.y;
+			Vector3 direction = centerPos - transform.position;
+			direction = direction.normalized;
+			float intensity = Vector3.Distance(centerPos, transform.position);
+			rb.AddForce(direction * intensity, ForceMode.Impulse);
+		}
+	}
 	void GamepadInput ()
 	{
 		state = GamePad.GetState(playerIndex);
@@ -110,32 +162,43 @@ public class PlayerController : PawnController, IHitable
 		Vector3 camRightNormalized = cam.transform.right;
 		camRightNormalized.y = 0;
 		camRightNormalized = camRightNormalized.normalized;
-		moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
-		moveInput.y = 0;
-		moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
-		lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+		if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+		{
+			moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
+			moveInput.y = 0;
+			moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
+			lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
+		} else
+		{
+			moveInput = Vector3.zero;
+		}
 		if (lookInput.magnitude > 0.1f)
 		{
-			passController.Aim();
+			if (!rbPressed)
+			{
+				passController.Aim();
+			}
+			extendingArmsController.SetDirection(lookInput);
 		} else
 		{
 			passController.StopAim();
 		}
-
-		if (extendingArmsController != null)
+		if (state.Buttons.B == ButtonState.Pressed)
 		{
-			if (lookInput.magnitude > 0.1f)
-			{
-				extendingArmsController.SetThrowDirection(lookInput);
-			} else
-			{
-				extendingArmsController.DisableThrowDirectionIndicator();
-			}
+			StartCoroutine(PushEverything_C());
 		}
+
 		if (state.Triggers.Right > triggerTreshold && revivablePlayers.Count <= 0)
 		{
-			if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
-			rightTriggerWaitForRelease = true;
+			if (revivablePlayers.Count <= 0)
+			{
+				if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
+				rightTriggerWaitForRelease = true;
+			} else
+			{
+				dashBuffer = 0;
+				rightTriggerWaitForRelease = true;
+			}
 		}
 		if (state.Triggers.Right < triggerTreshold)
 		{
@@ -155,26 +218,101 @@ public class PlayerController : PawnController, IHitable
 		{
 			dunkController.Dunk();
 		}
+		if (state.Buttons.RightShoulder == ButtonState.Pressed)
+		{
+			rbPressed = true;
+			rbPressDuration += Time.deltaTime;
+			if (extendingArmsController != null && targetedGrabbable.Count > 0)
+			{
+				float pressPercent = rbPressDuration / extendingArmsController.minGrabHoldDuration;
+				pressPercent = Mathf.Clamp(pressPercent, 0f, 1f);
+				extendingArmsController.UpdateDecalSize(pressPercent);
+				GrabbableInformation prioritaryInf = targetedGrabbable[0];
+				Vector3 prioritaryDirection = prioritaryInf.targetedPosition.position - GetCenterPosition();
+				prioritaryDirection.y = 0;
+				float prioritaryAngle = Vector3.SignedAngle(lookInput, prioritaryDirection, Vector3.up);
+				foreach (GrabbableInformation gi in targetedGrabbable)
+				{
+					Vector3 giDirection = gi.targetedPosition.position - GetCenterPosition();
+					giDirection.y = 0;
+					float newAngle = Vector3.SignedAngle(lookInput, giDirection, Vector3.up);
+					if (Mathf.Abs(newAngle) < Mathf.Abs(prioritaryAngle))
+					{
+						prioritaryInf = gi;
+						prioritaryAngle = newAngle;
+					}
+				}
+				prioritaryGrabInformation = prioritaryInf;
+				if (prioritaryGrabInformation != null)
+				{
+					passController.StopAim();
+					extendingArmsController.TogglePreview(true);
+					ForceLookAt(prioritaryGrabInformation.targetedPosition.position); //Player will rotate toward look input
+				}
+			}
+		} else if (state.Buttons.RightShoulder == ButtonState.Released && rbPressed)
+		{
+			rbPressed = false;
+			if (extendingArmsController != null)
+			{
+				extendingArmsController.TogglePreview(false);
+				if (rbPressDuration >= extendingArmsController.minGrabHoldDuration && targetedGrabbable.Count > 0)
+				{
+					extendingArmsController.ExtendArm();
+				}
+			}
+			rbPressDuration = 0;
+		}
 		if (state.Triggers.Left > triggerTreshold)
 		{
+			leftTriggerWaitForRelease = true;
 			//extendingArmsController.ExtendArm();
-			if (enableDash && revivablePlayers.Count <= 0 && dashPressed == false)
+			if (enableDash && dashPressed == false && !reviving)
 			{
-				Vector3 dashDirection = moveInput;
-				if (moveInput.magnitude <= 0)
+				if (revivablePlayers.Count <= 0)
 				{
-					dashDirection = transform.forward;
+					Vector3 dashDirection = moveInput;
+					if (moveInput.magnitude <= 0)
+					{
+						dashDirection = transform.forward;
+					}
+					dashController.Dash(dashDirection);
+					dashPressed = true;
 				}
-				dashController.Dash(dashDirection);
+				else if (!rightTriggerWaitForRelease)
+				{
+//					Debug.Log("DashBuffer++");
+					dashBuffer += Time.deltaTime;
+					if (dashBuffer >= delayBeforeDash)
+					{
+						Vector3 dashDirection = moveInput;
+						if (moveInput.magnitude <= 0)
+						{
+							dashDirection = transform.forward;
+						}
+						dashController.Dash(dashDirection);
+						dashPressed = true;
+					}
+				}
 			}
-			dashPressed = true;
-		} else
-		{
-			dashPressed = false;
 		}
-		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
+		else
 		{
-			Jump();
+			if (leftTriggerWaitForRelease)
+			{
+				if (revivablePlayers.Count > 0 && dashBuffer < delayBeforeDash && !reviving)
+				{
+					Vector3 dashDirection = moveInput;
+					if (moveInput.magnitude <= 0)
+					{
+						dashDirection = transform.forward;
+					}
+					dashController.Dash(dashDirection);
+				}
+				dashBuffer = 0;
+				dashPressed = false;
+				leftTriggerWaitForRelease = false;
+			}
 		}
 		if (Mathf.Abs(state.ThumbSticks.Left.X) > 0.5f || Mathf.Abs(state.ThumbSticks.Left.Y) > 0.5f)
 		{
@@ -184,16 +322,50 @@ public class PlayerController : PawnController, IHitable
 		{
 			if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
 			{
-				AddSpeedCoef(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
+				reviving = true;
+				AddSpeedModifier(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
 				foreach (ReviveInformations p in revivablePlayers)
 				{
 					p.linkedPanel.FillAssemblingSlider();
 				}
-			} else
+			} else if (state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
+			{
+				reviving = false;
+			}
+			else
 			{
 				UnFreeze();
 				SetTargetable();
 			}
+		} else
+		{
+			if (reviving && state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
+			{
+				reviving = false;
+			}
+		}
+	}
+
+	void UpdateOverHeal ()
+	{
+		if (currentHealth > GetMaxHealth())
+		{
+			timeSinceLastHeal += Time.deltaTime;
+		}
+		if (currentHealth > GetMaxHealth() && timeSinceLastHeal >= delayBeforeOverhealDecay)
+		{
+			float lerpValue = (currentHealth - GetMaxHealth()) / overHealValue;
+			currentHealth -= Time.deltaTime * (overHealDecaySpeedCurve.Evaluate(lerpValue) / overHealDecaySpeed);
+		}
+	}
+
+	IEnumerator PushEverything_C ()
+	{
+		foreach (PawnController p in FindObjectsOfType<PawnController>())
+		{
+			//p.BumpMe(-p.transform.forward, BumpForce.Force2);
+			p.Push(PushType.Heavy, -p.transform.forward, PushForce.Force2);
+			yield return new WaitForEndOfFrame();
 		}
 	}
 
@@ -206,16 +378,6 @@ public class PlayerController : PawnController, IHitable
 		moveInput.y = 0;
 		moveInput.Normalize();
 		lookInput = SwissArmyKnife.GetMouseDirection(cam, transform.position);
-		if (extendingArmsController != null)
-		{
-			if (lookInput.magnitude > 0.1f)
-			{
-				extendingArmsController.SetThrowDirection(lookInput);
-			} else
-			{
-				extendingArmsController.DisableThrowDirectionIndicator();
-			}
-		}
 		if (Input.GetMouseButton(1))
 		{
 			passController.Aim();
@@ -235,7 +397,7 @@ public class PlayerController : PawnController, IHitable
 		}
 		if (Input.GetKeyDown(KeyCode.Space) && enableDunk)
 		{
-			dunkController.Dunk();
+			//dunkController.Dunk();
 		}
 		if (Input.GetKeyDown(KeyCode.E) && enableDash)
 		{
@@ -246,10 +408,6 @@ public class PlayerController : PawnController, IHitable
 				dashDirection = transform.forward;
 			}
 			dashController.Dash(dashDirection);
-		}
-		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
-		{
-			Jump();
 		}
 		if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.5f || Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0.5f)
 		{
@@ -288,7 +446,16 @@ public class PlayerController : PawnController, IHitable
 
 	public override void Heal ( int _amount )
 	{
-		base.Heal(_amount);
+		timeSinceLastHeal = 0;
+		if (currentHealth < GetMaxHealth())
+		{
+			base.Heal(_amount);
+		} else
+		{
+			Debug.Log("Overheal");
+			currentHealth += _amount;
+			currentHealth = Mathf.Clamp(currentHealth, 0, GetMaxHealth() + overHealValue);
+		}
 		PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 		if (i_potentialPlayerUI != null)
 		{
@@ -301,44 +468,50 @@ public class PlayerController : PawnController, IHitable
 		base.UpdateAnimatorBlendTree();
 		animator.SetFloat("IdleRunningBlend", currentSpeed / moveSpeed);
 	}
-	public override void Damage ( int _amount )
+	public override void Damage ( float _amount, bool _enableInvincibilityFrame = false )
 	{
-        if (!isInvincible_access)
+        if (!IsInvincible())
         {
-			AnalyticsManager.IncrementData("DamageTaken", _amount);
+			animator.SetTrigger("HitTrigger");
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
 			if (i_potentialPlayerUI != null)
 			{
 				i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
-            base.Damage(_amount);   // manages the recovery time as well
+            base.Damage(_amount, _enableInvincibilityFrame);   // manages the recovery time as well
         }
 	}
 
-	public override void Kill ()
+    public void KillWithoutCorePart()
 	{
 		if (moveState == MoveState.Dead) { return; }
-		AnalyticsManager.IncrementData("PlayerDeath", playerIndex);
-		if (GameManager.deadPlayers.Count > 0)
-		{
-			AnalyticsManager.IncrementData("PlayerSimultaneousDeath", playerIndex);
-		}
+		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		dunkController.StopDunk();
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
-		DropBall();
+		passController.DropBall();
 		SetUntargetable();
 		Freeze();
 		DisableInput();
 		StartCoroutine(HideAfterDelay(0.5f));
-		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, deathExplosionRadius, deathExplosionForce, deathExplosionDamage, DamageSource.DeathExplosion));
-		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionDamage, DamageSource.DeathExplosion));
 		GameManager.deadPlayers.Add(this);
+		if (GameManager.deadPlayers.Count > 1)
+		{
+			Analytics.CustomEvent("PlayerSimultaneousDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		}
+		GameManager.alivePlayers.Remove(this);
+	}
+	public override void Kill ()
+	{
+		KillWithoutCorePart();
+		StartCoroutine(GenerateRevivePartsAfterDelay(0.4f));
 	}
 
 	public void Revive(PlayerController _player)
 	{
+		Analytics.CustomEvent("PlayerRevive", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback(eventOnResurrecting, this);
-		AnalyticsManager.IncrementData("PlayerRevive");
 		moveState = MoveState.Idle;
 		_player.moveState = MoveState.Idle;
 		_player.animator.SetTrigger("Revive");
@@ -352,7 +525,7 @@ public class PlayerController : PawnController, IHitable
 		FreezeTemporarly(reviveFreezeDuration);
 		SetTargetable();
 		List<ReviveInformations> i_newRevivablePlayers = new List<ReviveInformations>();
-		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f, reviveExplosionRadius, reviveExplosionForce, reviveExplosionDamage, DamageSource.ReviveExplosion));
+		StartCoroutine(ProjectEnemiesInRadiusAfterDelay(0.4f,reviveExplosionRadius, reviveExplosionDamage, DamageSource.ReviveExplosion));
 		foreach (ReviveInformations inf in revivablePlayers)
 		{
 			if (inf.linkedPlayer != _player)
@@ -362,6 +535,7 @@ public class PlayerController : PawnController, IHitable
 		}
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
+		GameManager.alivePlayers.Add(_player);
 	}
 
 	void GenerateReviveParts()
@@ -397,13 +571,13 @@ public class PlayerController : PawnController, IHitable
 		Hide();
 	}
 
-	IEnumerator ProjectEnemiesInRadiusAfterDelay(float _delay, float _radius, float _force, int _damages, DamageSource _damageSource)
+	IEnumerator ProjectEnemiesInRadiusAfterDelay(float _delay, float _radius, int _damages, DamageSource _damageSource)
 	{
 		yield return new WaitForSeconds(_delay);
 		foreach (Collider hit in Physics.OverlapSphere(transform.position, _radius))
 		{
 			IHitable potentialHitableObject = hit.transform.GetComponent<IHitable>();
-			if (potentialHitableObject != null) { potentialHitableObject.OnHit(null, (hit.transform.position - transform.position).normalized * _force, this, _damages, _damageSource); }
+			if (potentialHitableObject != null) { potentialHitableObject.OnHit(null, (hit.transform.position - transform.position).normalized, this, _damages, _damageSource); }
 		}
 	}
 
@@ -433,35 +607,62 @@ public class PlayerController : PawnController, IHitable
 		UnFreeze();
 	}
 
-	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, int _damages, DamageSource _source, Vector3 _bumpModificators)
+	void IHitable.OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators)
 	{
-        Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
+		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, { "Source", _source } } ) ;
+		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
         if (_source == DamageSource.Ball) { return; }
 		switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
-                BumpMe(10, 1, 0.4f, i_normalizedImpactVector, _bumpModificators.x, _bumpModificators.y, _bumpModificators.z);
+                FeedbackManager.SendFeedback("event.PlayerBeingBumpedAway", this);
+                BumpMe(i_normalizedImpactVector, BumpForce.Force2);
 				Damage(_damages);
 				break;
 
             case DamageSource.EnemyContact:
+                FeedbackManager.SendFeedback(eventOnBeingHit, this);
                 Damage(_damages);
-                //Push(_impactVector, 30, 2f);
+                Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
 
             case DamageSource.Laser:
-                Damage(_damages);
+                FeedbackManager.SendFeedback(eventOnBeingHit, this);
+                Damage(_damages, false);
                 break;
 
 			case DamageSource.SpawnImpact:
-				Damage(_damages);
-				//Push(-_impactVector, _damages * 10f, 1f);
+                FeedbackManager.SendFeedback(eventOnBeingHit, this);
+                Damage(_damages);
+				Push(PushType.Light, _impactVector, PushForce.Force1);
 				break;
 		}
 	}
 
-	public override void BumpMe ( float _bumpDistance, float _bumpDuration, float _restDuration, Vector3 _bumpDirection, float _randomDistanceMod, float _randomDurationMod, float _randomRestDurationMod )
+	public static PlayerController GetNearestPlayer(Vector3 _point)
 	{
-		base.BumpMe(_bumpDistance, _bumpDuration, _restDuration, _bumpDirection, _randomDistanceMod, _randomDurationMod, _randomRestDurationMod);
+		if (GameManager.alivePlayers.Count <= 0) { return null; }
+		PlayerController nearestPlayer = GameManager.alivePlayers[0];
+		float closestDistance = Vector3.Distance(nearestPlayer.transform.position, _point);
+		foreach (PlayerController p in GameManager.alivePlayers)
+		{
+			float distance = Vector3.Distance(p.transform.position, _point);
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				nearestPlayer = p;
+			}
+		}
+		return nearestPlayer;
+	}
+
+	public PlayerController GetOtherPlayer()
+	{
+		List<PlayerController> players = GameManager.alivePlayers;
+		foreach (PlayerController p in players)
+		{
+			if (p != this) { return p; }
+		}
+		return null;
 	}
 }

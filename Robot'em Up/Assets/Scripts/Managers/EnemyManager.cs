@@ -7,19 +7,13 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager i;
-
-    [Separator("References")]
-    public GameObject enemyPrefab;
-    public List<Transform> enemySpawnPoints;
-
-    // Auto-Assigned References
+    
     [NonSerialized] public PlayerController playerOne;
     [NonSerialized] public PlayerController playerTwo;
 
     [ReadOnly] public List<EnemyBehaviour> enemies;
     [ReadOnly] public List<EnemyBehaviour> enemiesThatSurround;
     
-
     [NonSerialized] public List<EnemyBehaviour> enemyGroupOne;
     [NonSerialized] public List<EnemyBehaviour> enemyGroupTwo;
     [NonSerialized] public Vector3 groupOneMiddlePoint;
@@ -30,24 +24,40 @@ public class EnemyManager : MonoBehaviour
         if (i != null) { Destroy(i); }
         i = this;
     }
-    public void Start()
+
+    private void Start()
     {
         playerOne = GameManager.playerOne;
         playerTwo = GameManager.playerTwo;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            SpawnEnemies();
-        }
-
         GetMiddleOfEnemies();
     }
 
-    public void GetMiddleOfEnemies()
+    #region Public functions
+    /// <summary>
+    /// Checks if some enemies should be dead and aren't, and kills them
+    /// </summary>
+    public void KillDeadEnemies()
+    {
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (enemies[i] != null && enemies[i].GetHealth() <= 0)
+            {
+                enemies[i].Kill();
+                i--; // because it removes this enemy from the lists, so the counting would be wronged
+            }
+        }
+    }
+    #endregion
+
+    #region Private functions
+    /// <summary>
+    /// Get the median point of each enemy group
+    /// </summary>
+    private void GetMiddleOfEnemies()
     {
         List<EnemyBehaviour> i_groupOne;
         List<EnemyBehaviour> i_groupTwo;
@@ -74,20 +84,26 @@ public class EnemyManager : MonoBehaviour
         groupTwoMiddlePoint = new Vector3(groupTwoMiddlePoint.x / i_groupTwo.Count, groupTwoMiddlePoint.y / i_groupTwo.Count, groupTwoMiddlePoint.z / i_groupTwo.Count);
     }
 
-    public void SetGroupsOfEnemies(out List<EnemyBehaviour> i_groupOne, out List<EnemyBehaviour> i_groupTwo)
+    /// <summary>
+    /// Sets which enemies are in group 1 and group 2, to surround corresponding player
+    /// </summary>
+    /// <param name="i_groupOne"></param>
+    /// <param name="i_groupTwo"></param>
+    private void SetGroupsOfEnemies(out List<EnemyBehaviour> i_groupOne, out List<EnemyBehaviour> i_groupTwo)
     {
         i_groupOne = new List<EnemyBehaviour>();
         i_groupTwo = new List<EnemyBehaviour>();
 
+        // Foreach enemy, check if he's focused on player1 or player 2, and make groups with that
         foreach (var enemy in enemiesThatSurround)
         {
-            if (enemy.focusedPlayer != null)
+            if (enemy.focusedPawnController != null)
             {
-                if (enemy.focusedPlayer.gameObject == playerOne.gameObject)
+                if (enemy.focusedPawnController.gameObject == playerOne.gameObject)
                 {
                     i_groupOne.Add(enemy);
                 }
-                else if (enemy.focusedPlayer.gameObject == playerTwo.gameObject)
+                else if (enemy.focusedPawnController.gameObject == playerTwo.gameObject)
                 {
                     i_groupTwo.Add(enemy);
                 }
@@ -95,23 +111,30 @@ public class EnemyManager : MonoBehaviour
             }
         }
 
+        // Determine the closest enemies in the made groups
         i_groupOne = GetClosestEnemies(i_groupOne);
         i_groupTwo = GetClosestEnemies(i_groupTwo);
     }
 
-    public List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> _enemies)
+    /// <summary>
+    /// Creates a list of the closest enemies in the group
+    /// </summary>
+    /// <param name="_enemies"></param>
+    /// <returns></returns>
+    private List<EnemyBehaviour> GetClosestEnemies(List<EnemyBehaviour> _enemies)
     {
         List<EnemyBehaviour> i_closeEnemies = new List<EnemyBehaviour>();
 
         if (_enemies.Count < 0)
         {
-            Debug.LogWarning("The groupe of enemy is empty");
+            Debug.LogWarning("The group of enemy is empty");
             return null;
         }
 
+        // Sort the group
         _enemies.Sort((a, b) =>
         {
-            var i_target = a.focusedPlayer;
+            var i_target = a.focusedPawnController;
             var i_dstToA = (i_target.transform.position - a.transform.position).magnitude;
             var i_dstToB = (i_target.transform.position - b.transform.position).magnitude;
 
@@ -120,24 +143,16 @@ public class EnemyManager : MonoBehaviour
             else return 0;
         });
 
-        for (int i = 0; i < Mathf.Min(GameManager.i.SurrounderPrefab.transform.childCount, _enemies.Count); i++)
+        for (int i = 0; i < Mathf.Min(GameManager.i.numberOfSurroundSpots, _enemies.Count); i++)
         {
             if (_enemies[i] != null)
             {
-                Debug.DrawRay(_enemies[i].transform.position, Vector3.up * 3, Color.yellow);
                 i_closeEnemies.Add(_enemies[i]);   // Logiquement donc rangés par ordre du plus près au plus loin
             }
         }
 
         return i_closeEnemies;
     }
+    #endregion
 
-    public void SpawnEnemies()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            var i_newEnemy = Instantiate(enemyPrefab, enemySpawnPoints[i].position, Quaternion.identity);
-            enemiesThatSurround.Add(i_newEnemy.GetComponent<EnemyBehaviour>());
-        }
-    }
 }
