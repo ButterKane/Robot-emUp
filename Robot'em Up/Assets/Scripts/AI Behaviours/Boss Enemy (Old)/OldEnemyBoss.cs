@@ -401,7 +401,7 @@ public class OldEnemyBoss : PawnController, IHitable
                 else
                 {
                     //If player are closer but not enough -> walk towards them if alive
-                    if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange && playerOnePawnController.currentHealth > 0)
+                    if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange && playerOnePawnController.GetHealth() > 0)
                     {
                         if (WantToInvokeShield)
                         {
@@ -418,7 +418,7 @@ public class OldEnemyBoss : PawnController, IHitable
 
 
                     //If player are closer but not enough -> walk towards them if alive
-                    if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange && playerTwoPawnController.currentHealth > 0)
+                    if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange && playerTwoPawnController.GetHealth() > 0)
                     {
                         if (WantToInvokeShield)
                         {
@@ -440,7 +440,7 @@ public class OldEnemyBoss : PawnController, IHitable
                     }
 
                     //If a player is very close -> punch attack
-                    if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
+                    if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.GetHealth() > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.GetHealth() > 0))
                     {
                         bossState = BossState.PunchAttack;
                         waitingBeforeNextState = PunchAttack_Anticipation + PunchAttack_AttackingTime + PunchAttack_RecoverTime;
@@ -501,7 +501,7 @@ public class OldEnemyBoss : PawnController, IHitable
             {
 
                 //If player are closer but not enough -> walk towards them if alive
-                if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange && playerOnePawnController.currentHealth > 0)
+                if (distanceWithPlayerOne < distanceWithPlayerTwo && distanceWithPlayerOne > meleeRange && playerOnePawnController.GetHealth() > 0)
                 {
                     bossState = BossState.Moving;
                     waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
@@ -511,7 +511,7 @@ public class OldEnemyBoss : PawnController, IHitable
 
 
                 //If player are closer but not enough -> walk towards them if alive
-                if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange && playerTwoPawnController.currentHealth > 0)
+                if (distanceWithPlayerOne > distanceWithPlayerTwo && distanceWithPlayerTwo > meleeRange && playerTwoPawnController.GetHealth() > 0)
                 {
                     bossState = BossState.Moving;
                     waitingBeforeNextState = 1 + Random.Range(-0.5f, 0.5f);
@@ -522,7 +522,7 @@ public class OldEnemyBoss : PawnController, IHitable
 
 
                 //If a player is very close -> hammer attack
-                if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.currentHealth > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.currentHealth > 0))
+                if ((distanceWithPlayerTwo < meleeRange && playerTwoPawnController.GetHealth() > 0) | (distanceWithPlayerOne < meleeRange && playerOnePawnController.GetHealth() > 0))
                 {
 
                     if (NumberHammerLeft > 0)

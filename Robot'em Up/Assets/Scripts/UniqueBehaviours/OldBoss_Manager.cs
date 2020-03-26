@@ -106,9 +106,9 @@ public class OldBoss_Manager : MonoBehaviour
             }
             pyramidHealth.value = i_temporaryHealth;
 
-            float i_totalHealth = GameManager.playerOne.currentHealth + GameManager.playerTwo.currentHealth;
+            float i_totalHealth = GameManager.playerOne.GetHealth() + GameManager.playerTwo.GetHealth();
             float i_totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
-            if (GameManager.playerOne.currentHealth < 1 | GameManager.playerTwo.currentHealth < 1)
+            if (GameManager.playerOne.GetHealth() < 1 | GameManager.playerTwo.GetHealth() < 1)
             {
                 OnePlayerLeft = true;
             }

@@ -59,36 +59,21 @@ public class PawnController : MonoBehaviour
 	[Separator("General settings")]
 	public float maxHealth;
 	public float totalHeight;
-	public bool isInvincible_access
-    {
-        get { return isInvincible; }
-        set
-        {
-            isInvincible = value;
-        }
-    }
-
-	private bool isInvincible;
     public float invincibilityTime = 1;
-    private bool isInvincibleWithCheat;
     public bool ignoreEletricPlates = false;
-    private Coroutine invincibilityCoroutine;
-	public PawnState currentPawnState = null;
 
     [Space(2)]
     [Separator("Movement settings")]
     public bool canMove;
-    [ConditionalField(nameof(canMove))] public float jumpForce;
     [ConditionalField(nameof(canMove))] public AnimationCurve accelerationCurve;
 
     [ConditionalField(nameof(canMove))]
     [Tooltip("Minimum required speed to go to walking state")] public float minWalkSpeed = 0.1f;
     [ConditionalField(nameof(canMove))] public float moveSpeed = 15;
     [ConditionalField(nameof(canMove))] public float acceleration = 200;
-
     [ConditionalField(nameof(canMove))] public float movingDrag = .4f;
     [ConditionalField(nameof(canMove))] public float idleDrag = .4f;
-    [ConditionalField(nameof(canMove))] public float onGroundGravityMultiplyer;
+    [ConditionalField(nameof(canMove))] public float onGroundGravityMultiplier;
     [ConditionalField(nameof(canMove))] public float deadzone = 0.2f;
     [ConditionalField(nameof(canMove))] [Range(0.01f, 1f)] public float turnSpeed = .25f;
 
@@ -104,8 +89,6 @@ public class PawnController : MonoBehaviour
     [Separator("Bumped Values")]
 	public bool isBumpable = true;
     [ConditionalField(nameof(isBumpable))] public float maxGettingUpDuration = 0.6f;
-    [ConditionalField(nameof(isBumpable))] public AnimationCurve bumpDistanceCurve;
-    [ConditionalField(nameof(isBumpable))] public float bumpRaycastDistance = 1;
     [ConditionalField(nameof(isBumpable))] [Range(0, 1)] public float whenToTriggerFallingAnim = 0.302f;
 
 	[Space(2)]
@@ -116,72 +99,69 @@ public class PawnController : MonoBehaviour
 	public string eventOnDeath = "event.Player1Death";
 	public string eventOnHealing = "event.PlayerHealing";
 
-    [Space(2)]
-    [Separator("Debug (Don't change)")]
-    [System.NonSerialized] public Rigidbody rb;
-    [System.NonSerialized] public MoveState moveState;
-	private float accelerationTimer;
-    public Vector3 moveInput;
+	//Movement variables
+	[System.NonSerialized] public MoveState moveState;
+	protected Vector3 moveInput;
 	protected Vector3 lookInput;
     private Quaternion turnRotation;
 	private float customDrag;
 	private float customGravity;
 	protected float currentSpeed;
-    public float currentHealth;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
 	private bool grounded = false;
 	private float timeInAir;
-	[HideInInspector] public float climbingHoldTime;
-	[System.NonSerialized] public Animator animator;
-	private Vector3 initialScale;
+	private bool rotationForced;
 	protected bool frozen;
+	private PushDatas pushDatas;
+	protected float damageAfterBump;
+
+	//Health variables
+	protected float currentHealth;
+	private bool isInvincible;
+	private bool isInvincibleWithCheat;
+	private float invincibilityCooldown;
+
+	//Other variables
+	[HideInInspector] public float climbingDelay;
 	private bool isPlayer;
 	protected bool targetable;
-	protected float damageAfterBump;
 	protected NavMeshAgent navMeshAgent;
-	private float invincibilityCooldown;
-    private float accumulatedDamage;    // Stores the damage that is not an integer. Useful for things like continuous damage
+
+	//State system variables
+	protected PawnState currentPawnState = null;
 	private PawnStates pawnStates;
-	private Coroutine pawnStateCoroutine;
 	private Coroutine currentStateStartCoroutine;
 	private StoppableCoroutine currentStateCoroutine;
 	private IEnumerator currentStateStopCoroutine;
-	private PushDatas pushDatas;
-	private bool rotationForced;
 
-
+	//References
     [HideInInspector] public PassController passController;
-
-	//Events
-	private static System.Action onShootEnd;
+	[HideInInspector] public Rigidbody rb;
+	[HideInInspector] public Animator animator;
 
 	public virtual void Awake()
     {
-		initialScale = transform.localScale;
-        isInvincible_access = false;
-        customGravity = onGroundGravityMultiplyer;
-        customDrag = idleDrag;
+		//Retrieve references
 		rb = GetComponent<Rigidbody>();
 		animator = GetComponentInChildren<Animator>();
 		passController = GetComponent<PassController>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
-		if( navMeshAgent == null)
-		{
-			navMeshAgent = GetComponentInChildren<NavMeshAgent>();
-		}
+		pawnStates = Resources.Load<PawnStates>("PawnStateDatas");
+		if (navMeshAgent == null) { navMeshAgent = GetComponentInChildren<NavMeshAgent>(); }
+		if (navMeshAgent == null) { navMeshAgent = GetComponent<NavMeshAgent>(); }
+		pushDatas = PushDatas.GetDatas();
+
+		//Init variables
+		isInvincible = false;
+		customGravity = onGroundGravityMultiplier * -9.81f;
+        customDrag = idleDrag;
 		currentHealth = maxHealth;
 		targetable = true;
-		pushDatas = PushDatas.GetDatas();
-		if (GetComponent<PlayerController>() != null)
-		{
-			isPlayer = true;
-		}
-        moveState = MoveState.Idle;
-        accumulatedDamage = 0;
-		pawnStates = Resources.Load<PawnStates>("PawnStateDatas");
+		if (GetComponent<PlayerController>() != null) { isPlayer = true; }
+		UpdateNavMeshAgent(navMeshAgent);
+		moveState = MoveState.Idle;
 		currentPawnState = null;
 	}
-
 	protected virtual void FixedUpdate()
     {
 		if (frozen) { return; }
@@ -193,42 +173,23 @@ public class PawnController : MonoBehaviour
         UpdateAnimatorBlendTree();
 		UpdateSpeedCoef();
 		CheckIfGrounded();
-        if (!isInvincibleWithCheat)
-        {
-            UpdateInvincibilityCooldown();
-        }
+		UpdateNavMeshAgent(navMeshAgent);
+        UpdateInvincibilityCooldown();
 	}
-
 	protected virtual void LateUpdate ()
 	{
 		if (frozen) { return; }
 		Rotate();
 	}
 
-	#region Movement
-	void CheckMoveState()
-    {
-        if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
-
-        if (rb.velocity.magnitude <= minWalkSpeed)
-        {
-            if (moveState != MoveState.Idle)
-            {
-                rb.velocity = new Vector3(0, rb.velocity.y, 0);
-            }
-            customDrag = idleDrag;
-            moveState = MoveState.Idle;
-        }
-    }
-
-	public void ForceLookAt(Vector3 point)
+	#region Public functions
+	public void ForceLookAt ( Vector3 _point ) //Forces the pawn to look at a specific point, must be called at each frame
 	{
-		Vector3 direction = point - GetCenterPosition();
-		turnRotation = Quaternion.Euler(0, Mathf.Atan2(direction.x, direction.z) * 180 / Mathf.PI, 0);
+		Vector3 i_direction = _point - GetCenterPosition();
+		turnRotation = Quaternion.Euler(0, Mathf.Atan2(i_direction.x, i_direction.z) * 180 / Mathf.PI, 0);
 		rotationForced = true;
 	}
-
-	public void ForceRotate()
+	public void ForceRotate () //Forces the pawn to rotate toward looked direction, must be called at each frame
 	{
 		if (lookInput.magnitude >= 0.1f)
 		{
@@ -236,157 +197,30 @@ public class PawnController : MonoBehaviour
 			rotationForced = true;
 		}
 	}
-    void Rotate()
-    {
-		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
-		//Rotation while moving
-		if (moveInput.magnitude >= 0.5f && !rotationForced)
-            turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
-
-		//Rotation while aiming or shooting
-		if (passController != null)
-		{
-			if (lookInput.magnitude >= 0.1f && passController.passState == PassState.Aiming || passController.passState == PassState.Shooting)
-				turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
-		}
-
-		if (rotationForced)
-		{
-			transform.rotation = turnRotation;
-		} else
-		{
-			transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
-		}
-		rotationForced = false;
-	}
-
-    void UpdateAcceleration()
-    {
-		if (moveInput.magnitude != 0)
-		{
-			accelerationTimer += Time.fixedDeltaTime;
-			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed * GetSpeedCoef()) * acceleration), ForceMode.Acceleration);
-			customDrag = movingDrag;
-		} else
-		{
-			accelerationTimer = 0;
-		}
-    }
-
-
-    void Move()
-    {
-        if (moveState == MoveState.Blocked) { currentSpeed = 0; return; }
-		if (moveState == MoveState.Pushed) { return; }
-        Vector3 myVel = rb.velocity;
-        myVel.y = 0;
-        myVel = Vector3.ClampMagnitude(myVel, moveSpeed * GetSpeedCoef());
-        myVel.y = rb.velocity.y;
-        rb.velocity = myVel;
-        currentSpeed = rb.velocity.magnitude;
-    }
-
-	public void SetLookInput(Vector3 _direction)
+	public void SetLookInput ( Vector3 _direction ) //Set the pawn looked direction
 	{
 		lookInput = _direction;
-	}
-
-	public NavMeshAgent GetNavMesh()
+	} 
+	public NavMeshAgent GetNavMesh ()
 	{
 		return navMeshAgent;
 	}
-
-	public void Climb()
-	{
-		Collider i_foundLedge = CheckForLedge();
-		if (i_foundLedge != null)
-		{
-			climbingHoldTime += Time.deltaTime;
-		} else
-		{
-			climbingHoldTime = 0;
-		}
-		if (climbingHoldTime >= timeBeforeClimb && i_foundLedge != null)
-		{
-			moveState = MoveState.Climbing;
-			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
-            ChangePawnState("Climbing", ClimbLedge_C(i_foundLedge));
-            //StartCoroutine(ClimbLedge_C(i_foundLedge));
-		}
-	}
-
 	public bool IsTargetable ()
 	{
 		return targetable;
 	}
-
-	public bool CanJump()
+	public void ChangePawnState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null) //Check "Pawn state: manual" on google drive for more informations
 	{
-		if (grounded && moveState != MoveState.Blocked) { return true; }
-		return false;
-	}
-
-	public bool CanClimb()
-	{
-		if (moveState == MoveState.Blocked || moveState == MoveState.Climbing)
+		if (GetCurrentPawnState() != null)
 		{
-			return false;
+			Debug.Log("Changing state: previous state: " + GetCurrentPawnState().name + " New state: " + _newStateName);
 		}
-		return true;
-	}
-
-	public void Jump()
-	{
-		rb.AddForce(Vector3.up * jumpForce);
-		moveState = MoveState.Jumping;
-		grounded = false;
-	}
-
-	void CheckIfGrounded()
-	{
-		if (!grounded)
-		{
-			timeInAir += Time.deltaTime;
-			if (timeInAir >= 0.2f)
-			{
-				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
-				{
-					FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
-					grounded = true;
-					timeInAir = 0;
-					if (moveState == MoveState.Jumping) { 
-						moveState = MoveState.Idle; 
-					}
-				}
-			}
-		}
-	}
-
-    void ApplyDrag()
-    {
-        Vector3 myVel = rb.velocity;
-        myVel.x *= 1 - customDrag;
-        myVel.z *= 1 - customDrag;
-        rb.velocity = myVel;
-    }
-
-    void ApplyCustomGravity()
-    {
-        rb.AddForce(new Vector3(0, -9.81f* customGravity, 0));
-    }
-    #endregion
-    #region Public functions
-
-	public void ChangePawnState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null)
-	{
-		//Debug.Log("Changing state: previous state: " + currentState + " New state: " + _newStateName);
-		PawnState newState = pawnStates.GetPawnStateByName(_newStateName);
+		PawnState i_newState = pawnStates.GetPawnStateByName(_newStateName);
 		bool canOverrideState;
 		if (currentPawnState != null)
 		{
 			//Debug.Log("Current state not null");
-			if (pawnStates.IsStateOverriden(currentPawnState, newState) || currentStateCoroutine == null)
+			if (pawnStates.IsStateOverriden(currentPawnState, i_newState) || currentStateCoroutine == null)
 			{
 				//Must cancel current state and replace by new state
 				StopCurrentState();
@@ -409,14 +243,397 @@ public class PawnController : MonoBehaviour
 				currentStateStopCoroutine = _coroutineToCancel;
 			}
 			//Debug.Log("Starting new state coroutine");
-			currentStateStartCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, newState));
-			PawnState newStateInstance = new PawnState();
-			newStateInstance.allowBallReception = newState.allowBallReception;
-			newStateInstance.allowBallThrow = newState.allowBallThrow;
-			currentPawnState = newState;
+			currentStateStartCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, i_newState));
+			PawnState i_newStateInstance = new PawnState();
+			i_newStateInstance.allowBallReception = i_newState.allowBallReception;
+			i_newStateInstance.allowBallThrow = i_newState.allowBallThrow;
+			currentPawnState = i_newState;
 		}
 	}
-	void StopCurrentState()
+	public bool IsInvincible()
+	{
+		return isInvincible;
+	}
+	public void SetInvincible ( bool _state )
+	{
+		isInvincible = _state;
+		isInvincibleWithCheat = _state;
+	}
+	public PawnState GetCurrentPawnState()
+	{
+		return currentPawnState;
+	}
+	public float GetHealth()
+	{
+		return currentHealth;
+	}
+	public float GetMaxHealth()
+	{
+		return maxHealth;
+	}
+    public float GetSpeedCoef()
+    {
+        float i_speedCoef = 1;
+        foreach (SpeedCoef i_coef in speedCoefs)
+        {
+            i_speedCoef *= i_coef.speedCoef;
+        }
+        if (isPlayer)
+        {
+            i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.playerSpeedMultiplier);
+        }
+        else
+        {
+            i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.enemySpeedMultiplier);
+        }
+        return i_speedCoef;
+    }
+    public void AddSpeedModifier(SpeedCoef _speedCoef )
+	{
+		if (!_speedCoef.stackable)
+		{
+			foreach (SpeedCoef i_coef in speedCoefs)
+			{
+				if (i_coef.reason == _speedCoef.reason)
+				{
+					return;
+				}
+			}
+		}
+		speedCoefs.Add(_speedCoef);
+	}
+    public virtual void Kill()
+    {
+		LockManager.UnlockTarget(transform);
+		FeedbackManager.SendFeedback(eventOnDeath, this);
+		Destroy(this.gameObject);
+    }
+	public virtual void Heal(int _amount)
+	{
+		float i_newHealth = currentHealth + _amount;
+		currentHealth = Mathf.Clamp(i_newHealth, 0, GetMaxHealth());
+		FeedbackManager.SendFeedback(eventOnHealing, this);
+	}
+	public bool CanDamage()
+	{
+		if (isInvincible) { return false; }
+		if (currentPawnState != null && currentPawnState.invincibleDuringState) { return false; }
+		return true;
+	}
+	public virtual void Damage(float _amount, bool enableInvincibilityFrame = false)
+	{
+		if (!CanDamage()){ return; }
+		if (enableInvincibilityFrame) { SetInvincible(); }
+		FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
+
+        currentHealth -= _amount;
+
+        if (currentHealth <= 0)
+        {
+            Kill();
+        }
+		if (GetComponent<PlayerController>() != null)
+        {
+            MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
+        }
+	}
+	public Animator GetAnimator ()
+	{
+		return animator;
+	}
+	public void Freeze()
+	{
+		rb.isKinematic = true;
+		rb.useGravity = false;
+		frozen = true;
+	}
+	public void UnFreeze()
+	{
+		rb.isKinematic = false;
+		rb.useGravity = true;
+		frozen = false;
+	}
+	public void Hide ()
+	{
+		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		{
+			renderer.enabled = false;
+		}
+	}
+	public void UnHide()
+	{
+		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		{
+			renderer.enabled = true;
+		}
+	}
+	public void SetUntargetable ()
+	{
+		foreach (Collider i_collider in GetComponentsInChildren<Collider>())
+		{
+			i_collider.enabled = false;
+		}
+		targetable = false;
+	}
+	public void SetTargetable ()
+	{
+		foreach (Collider i_collider in GetComponentsInChildren<Collider>())
+		{
+			i_collider.enabled = true;
+		}
+		targetable = true;
+	}
+	public Vector3 GetCenterPosition ()
+	{
+		return transform.position + Vector3.up * (totalHeight / 2f);
+	}
+	public Vector3 GetHeadPosition ()
+	{
+		return transform.position + Vector3.up * totalHeight;
+	}
+	public float GetHeight ()
+	{
+		return totalHeight;
+	}
+	public virtual void BumpMe( Vector3 _bumpDirectionFlat, BumpForce _force)
+    {
+		if (!isBumpable) { return; }
+		ChangePawnState("Bumped", Bump_C(_bumpDirectionFlat, _force), CancelBump_C());
+    }
+	public void PushLightCustom( Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight )
+	{
+        if (!isBumpable) { return; }
+		ChangePawnState("PushedLight", CustomLightPush_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
+	}
+	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
+	{
+		if (!isBumpable) { return; }
+		RaycastHit i_hit;
+		if (Physics.Raycast(GetCenterPosition(), _pushDirectionFlat, out i_hit, 1f, LayerMask.GetMask("Environment")))
+		{
+			return;
+		}
+		switch (_forceType)
+		{
+			case PushType.Light:
+				PushLight(_pushDirectionFlat, _force);
+				break;
+			case PushType.Heavy:
+				Vector3 forwardDirection = _pushDirectionFlat.normalized;
+				transform.forward = forwardDirection;
+				ChangePawnState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _force), CancelPush_C());
+				break;
+		}
+	}
+	#endregion
+
+	#region Private OR protected OR herited functions
+	private void CheckMoveState ()
+	{
+		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
+
+		if (rb.velocity.magnitude <= minWalkSpeed)
+		{
+			if (moveState != MoveState.Idle)
+			{
+				rb.velocity = new Vector3(0, rb.velocity.y, 0);
+			}
+			customDrag = idleDrag;
+			moveState = MoveState.Idle;
+		}
+	}
+	private void Rotate ()
+	{
+		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
+		//Rotation while moving
+		if (moveInput.magnitude >= 0.5f && !rotationForced)
+			turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
+
+		//Rotation while aiming or shooting
+		if (passController != null)
+		{
+			if (lookInput.magnitude >= 0.1f && passController.passState == PassState.Aiming || passController.passState == PassState.Shooting)
+				turnRotation = Quaternion.Euler(0, Mathf.Atan2(lookInput.x, lookInput.z) * 180 / Mathf.PI, 0);
+		}
+
+		if (rotationForced)
+		{
+			transform.rotation = turnRotation;
+		}
+		else
+		{
+			transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
+		}
+		rotationForced = false;
+	}
+	private void UpdateAcceleration ()
+	{
+		if (moveInput.magnitude != 0)
+		{
+			if (moveState == MoveState.Blocked) { return; }
+			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed * GetSpeedCoef()) * acceleration), ForceMode.Acceleration);
+			customDrag = movingDrag;
+		}
+	}
+	private void UpdateNavMeshAgent ( NavMeshAgent _agent )
+	{
+		if (_agent == null) { return; }
+		_agent.speed = currentSpeed;
+		_agent.angularSpeed = turnSpeed;
+	}
+	private void Move ()
+	{
+		if (moveState == MoveState.Blocked) { currentSpeed = 0; return; }
+		if (moveState == MoveState.Pushed) { return; }
+		if (navMeshAgent != null)
+		{
+			currentSpeed = moveSpeed * GetSpeedCoef();
+		}
+		else
+		{
+			Vector3 i_myVel = rb.velocity;
+			i_myVel.y = 0;
+			i_myVel = Vector3.ClampMagnitude(i_myVel, moveSpeed * GetSpeedCoef());
+			i_myVel.y = rb.velocity.y;
+			rb.velocity = i_myVel;
+			currentSpeed = rb.velocity.magnitude;
+		}
+	}
+	protected void Climb ()
+	{
+		Collider i_foundLedge = CheckForLedge();
+		if (i_foundLedge != null)
+		{
+			climbingDelay += Time.deltaTime;
+		}
+		else
+		{
+			climbingDelay = 0;
+		}
+		if (climbingDelay >= timeBeforeClimb && i_foundLedge != null)
+		{
+			moveState = MoveState.Climbing;
+			if (animator != null) { animator.SetTrigger("ClimbTrigger"); }
+			ChangePawnState("Climbing", ClimbLedge_C(i_foundLedge));
+		}
+	}
+	private bool CanClimb ()
+	{
+		if (moveState == MoveState.Blocked || moveState == MoveState.Climbing)
+		{
+			return false;
+		}
+		return true;
+	}
+	private void CheckIfGrounded ()
+	{
+		if (!grounded)
+		{
+			timeInAir += Time.deltaTime;
+			if (timeInAir >= 0.2f)
+			{
+				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
+				{
+					FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
+					grounded = true;
+					timeInAir = 0;
+					if (moveState == MoveState.Jumping)
+					{
+						moveState = MoveState.Idle;
+					}
+				}
+			}
+		}
+	}
+	private void ApplyDrag ()
+	{
+		if (navMeshAgent != null) { return; }
+		Vector3 i_myVel = rb.velocity;
+		i_myVel.x *= 1 - customDrag;
+		i_myVel.z *= 1 - customDrag;
+		rb.velocity = i_myVel;
+	}
+	private void ApplyCustomGravity ()
+	{
+		rb.AddForce(new Vector3(0, customGravity, 0));
+	}
+	private void UpdateSpeedCoef ()
+	{
+		List<SpeedCoef> i_newCoefList = new List<SpeedCoef>();
+		foreach (SpeedCoef coef in speedCoefs)
+		{
+			coef.duration -= Time.deltaTime;
+			if (coef.duration > 0)
+			{
+				i_newCoefList.Add(coef);
+			}
+		}
+		speedCoefs = i_newCoefList;
+	}
+	public virtual void UpdateAnimatorBlendTree ()
+	{
+		if (animator == null) { return; }
+	}
+	public virtual void HeavyPushAction () //Will be removed ASAP
+	{
+		// Filled in each of the children behaviour;
+	}
+	public virtual void DestroySpawnedAttackUtilities () //Will be removed ASAP
+	{
+		// Usually filled within the inherited scripts
+	}
+	private Collider CheckForLedge()
+	{
+		if (!CanClimb()) { return null; }
+		RaycastHit hit;
+		if (Physics.SphereCast(GetCenterPosition() - transform.forward * 2f, 0.5f, transform.forward, out hit, minDistanceToClimb + 2f, LayerMask.GetMask("Environment")))
+		{
+			if (hit.transform.tag == "Ledge")
+			{
+				return hit.collider;
+			}
+		}
+		return null;
+	}
+	private void UpdateInvincibilityCooldown()
+	{
+		if (isInvincibleWithCheat)
+		{
+			isInvincible = true; return;
+		}
+		if (invincibilityCooldown > 0)
+		{
+			invincibilityCooldown -= Time.deltaTime;
+		}
+        else
+		{
+			isInvincible = false;
+			gameObject.layer = 8; // 8 = Player Layer
+		}
+	}
+	private void SetInvincible()
+    {
+		isInvincible = true;
+        gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
+		invincibilityCooldown = invincibilityTime;
+    }
+	private Collider CheckForCollision()
+	{
+		Collider i_closestCollider = null;
+		float closestDistance = 50;
+		foreach (Collider c in Physics.OverlapSphere(GetCenterPosition(), GetHeight() / 3f, LayerMask.GetMask("Environment")))
+		{
+			Vector3 i_collisionPoint = c.ClosestPoint(GetCenterPosition());
+			float distance = Vector3.Distance(i_collisionPoint, GetCenterPosition());
+			if (distance < closestDistance)
+			{
+				i_closestCollider = c;
+				closestDistance = distance;
+			}
+		}
+		return i_closestCollider;
+	}
+	private void StopCurrentState ()
 	{
 		if (currentPawnState == null) { return; }
 		if (currentPawnState.invincibleDuringState)
@@ -438,382 +655,15 @@ public class PawnController : MonoBehaviour
 		}
 		currentPawnState = null;
 	}
-
-	IEnumerator StartStateCoroutine(IEnumerator coroutine, PawnState state)
-	{
-		if (state.invincibleDuringState)
-		{
-			SetInvincible(true);
-		}
-		currentStateCoroutine = MonoBehaviourExtension.StartCoroutineEx(this, coroutine);
-		yield return currentStateCoroutine.WaitFor();
-		currentPawnState = null;
-		yield return null;
-		if (state.invincibleDuringState)
-		{
-			SetInvincible(false);
-		}
-		currentStateCoroutine = null;
-	}
-
-	public float GetHealth()
-	{
-		return currentHealth;
-	}
-
-	public float GetMaxHealth()
-	{
-		return maxHealth;
-	}
-
-    public float GetSpeedCoef()
-    {
-        float i_speedCoef = 1;
-        foreach (SpeedCoef coef in speedCoefs)
-        {
-            i_speedCoef *= coef.speedCoef;
-        }
-        if (isPlayer)
-        {
-            i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.playerSpeedMultiplier);
-        }
-        else
-        {
-            i_speedCoef *= MomentumManager.GetValue(MomentumManager.datas.enemySpeedMultiplier);
-        }
-        return i_speedCoef;
-    }
-
-    public void AddSpeedCoef(SpeedCoef _speedCoef )
-	{
-		if (!_speedCoef.stackable)
-		{
-			foreach (SpeedCoef coef in speedCoefs)
-			{
-				if (coef.reason == _speedCoef.reason)
-				{
-					return;
-				}
-			}
-		}
-		speedCoefs.Add(_speedCoef);
-	}
-
-    void UpdateSpeedCoef()
-    {
-        List<SpeedCoef> i_newCoefList = new List<SpeedCoef>();
-        foreach (SpeedCoef coef in speedCoefs)
-        {
-            coef.duration -= Time.deltaTime;
-            if (coef.duration > 0)
-            {
-                i_newCoefList.Add(coef);
-            }
-        }
-        speedCoefs = i_newCoefList;
-    }
-
-
-    public virtual void Kill()
-    {
-		LockManager.UnlockTarget(transform);
-		FeedbackManager.SendFeedback(eventOnDeath, this);
-		Destroy(this.gameObject);
-    }
-
-	public virtual void Heal(int _amount)
-	{
-		float i_newHealth = currentHealth + _amount;
-		currentHealth = Mathf.Clamp(i_newHealth, 0, GetMaxHealth());
-		FeedbackManager.SendFeedback(eventOnHealing, this);
-	}
-
-	public bool CanDamage()
-	{
-		if (invincibilityCoroutine != null || isInvincible_access) { return false; }
-		if (currentPawnState != null && currentPawnState.invincibleDuringState) { return false; }
-		return true;
-	}
-	public virtual void Damage(float _amount)
-	{
-		if (!CanDamage()){ return; }
-		SetInvincible();
-		FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
-
-        currentHealth -= _amount;
-
-        if (currentHealth <= 0)
-        {
-            Kill();
-        }
-		if (GetComponent<PlayerController>() != null)
-        {
-            MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
-        }
-	}
-
-    public virtual void DamageFromLaser(float _amount)
-    {
-        if (!CanDamage()) { return; }
-        FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
-
-        currentHealth -= _amount;
-
-        if (currentHealth <= 0)
-        {
-            Kill();
-        }
-        if (GetComponent<PlayerController>() != null)
-        {
-            MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
-        }
-    }
-	public Animator GetAnimator ()
-	{
-		return animator;
-	}
-
-	public void Freeze()
-	{
-		rb.isKinematic = true;
-		rb.useGravity = false;
-		frozen = true;
-	}
-
-	public void UnFreeze()
-	{
-		rb.isKinematic = false;
-		rb.useGravity = true;
-		frozen = false;
-	}
-
-	public void Hide ()
-	{
-		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-		{
-			renderer.enabled = false;
-		}
-	}
-
-	public void UnHide()
-	{
-		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-		{
-			renderer.enabled = true;
-		}
-	}
-
-	public void DropBall()
-	{
-		PassController i_potentialPassController = GetComponentInChildren<PassController>();
-		if (i_potentialPassController != null)
-		{
-			i_potentialPassController.DropBall();
-		}
-	}
-	public void SetUntargetable ()
-	{
-		foreach (Collider collider in GetComponentsInChildren<Collider>())
-		{
-			collider.enabled = false;
-		}
-		targetable = false;
-	}
-	public void SetTargetable ()
-	{
-		foreach (Collider collider in GetComponentsInChildren<Collider>())
-		{
-			collider.enabled = true;
-		}
-		targetable = true;
-	}
-
-	public Vector3 GetCenterPosition ()
-	{
-		return transform.position + Vector3.up * (totalHeight / 2f);
-	}
-
-	public Vector3 GetHeadPosition ()
-	{
-		return transform.position + Vector3.up * totalHeight;
-	}
-
-	public float GetHeight ()
-	{
-		return totalHeight;
-	}
-
-	public void SetInvincible(bool _state)
-    {
-        isInvincible_access = _state;
-        isInvincibleWithCheat = _state;
-    }
-
-	public virtual void UpdateAnimatorBlendTree ()
-	{
-		if (animator == null) { return; }
-	}
-
-	public virtual void BumpMe( Vector3 _bumpDirectionFlat, BumpForce _force)
-    {
-		if (!isBumpable) { return; }
-		ChangePawnState("Bumped", Bump_C(_bumpDirectionFlat, _force), CancelBump_C());
-    }
-
-	public void PushLightCustom( Vector3 _pushDirectionFlat, float _pushDistance, float _pushDuration, float _pushHeight )
-	{
-        if (!isBumpable) { return; }
-		ChangePawnState("PushedLight", CustomLightPush_C(_pushDirectionFlat, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
-	}
-	public virtual void Push ( PushType _forceType, Vector3 _pushDirectionFlat, PushForce _force)
-	{
-		if (!isBumpable) { return; }
-		RaycastHit hit;
-		if (Physics.Raycast(GetCenterPosition(), _pushDirectionFlat, out hit, 1f, LayerMask.GetMask("Environment")))
-		{
-			return;
-		}
-		switch (_forceType)
-		{
-			case PushType.Light:
-				PushLight(_pushDirectionFlat, _force);
-				break;
-			case PushType.Heavy:
-				Vector3 forwardDirection = _pushDirectionFlat.normalized;
-				transform.forward = forwardDirection;
-				ChangePawnState("PushedHeavy", PushHeavy_C(_pushDirectionFlat, _force), CancelPush_C());
-				break;
-		}
-	}
-    #endregion
-
-    #region Private functions
-
-
-	Collider CheckForLedge()
-	{
-		if (!CanClimb()) { return null; }
-		RaycastHit hit;
-		if (Physics.SphereCast(GetCenterPosition() - transform.forward * 2f, 0.5f, transform.forward, out hit, minDistanceToClimb + 2f, LayerMask.GetMask("Environment")))
-		{
-			if (hit.transform.tag == "Ledge")
-			{
-				return hit.collider;
-			}
-		}
-		return null;
-	}
-
-
-	private void UpdateInvincibilityCooldown()
-	{
-		if (invincibilityCooldown > 0)
-		{
-			invincibilityCooldown -= Time.deltaTime;
-		}
-        else
-		{
-			isInvincible_access = false;
-			gameObject.layer = 8; // 8 = Player Layer
-		}
-	}
-	private void SetInvincible()
-    {
-        isInvincible_access = true;
-        gameObject.layer = 0; // 0 = Default, which matrix doesn't interact with ennemies
-		invincibilityCooldown = invincibilityTime;
-    }
-
-	private Collider CheckForCollision()
-	{
-		Collider closestCollider = null;
-		float closestDistance = 50;
-		foreach (Collider c in Physics.OverlapSphere(GetCenterPosition(), GetHeight() / 2f, LayerMask.GetMask("Environment")))
-		{
-			Vector3 collisionPoint = c.ClosestPoint(GetCenterPosition());
-			float distance = Vector3.Distance(collisionPoint, GetCenterPosition());
-			if (distance < closestDistance)
-			{
-				closestCollider = c;
-				closestDistance = distance;
-			}
-		}
-		return closestCollider;
-	}
-
-	private void WallSplat( WallSplatForce _force, Collision _collision ) {
-		if (currentPawnState != null && currentPawnState.name == "WallSplatted") { return; }
-		Vector3 _normalDirection = _collision.GetContact(0).normal;
-		WallSplat(_force, _normalDirection);
-	}
-
 	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
 		if (currentPawnState != null && currentPawnState.name == "WallSplatted") { return; }
-		Vector3 _normalDirectinoNormalized = _normalDirection.normalized;
-		if (Mathf.Abs(_normalDirectinoNormalized.y )> (Mathf.Abs(_normalDirectinoNormalized.x) + Mathf.Abs(_normalDirectinoNormalized.z)))
+		Vector3 i_normalDirectionNormalized = _normalDirection.normalized;
+		if (Mathf.Abs(i_normalDirectionNormalized.y )> (Mathf.Abs(i_normalDirectionNormalized.x) + Mathf.Abs(i_normalDirectionNormalized.z)))
 		{
 			Debug.Log("Tried wallsplat on ground: Return"); return;
 		}
 		ChangePawnState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
-	}
-
-	private IEnumerator ClimbLedge_C(Collider _ledge)
-	{
-		Debug.Log("Climbing");
-		Vector3 i_startPosition = transform.position;
-		Vector3 i_endPosition = i_startPosition;
-		i_endPosition.y = _ledge.transform.position.y + _ledge.bounds.extents.y + 1f;
-		GameObject i_endPosGuizmo = new GameObject();
-		i_endPosGuizmo.transform.position = i_endPosition;
-		//Go to the correct Y position
-		for (float i = 0; i < climbDuration; i+= Time.deltaTime)
-		{
-			transform.position = Vector3.Lerp(i_startPosition, i_endPosition, i / climbDuration);
-			yield return new WaitForEndOfFrame();
-		}
-		transform.position = i_endPosition;
-		rb.AddForce(Vector3.up * climbUpwardPushForce + transform.forward * climbForwardPushForce);
-		moveState = MoveState.Idle;
-		if (animator != null)
-		{
-			animator.ResetTrigger("ClimbTrigger");
-		}
-	}
-
-	private IEnumerator CustomLightPush_C( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight)
-	{
-        moveState = MoveState.Pushed;
-		_pushFlatDirection.y = 0;
-		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
-		Vector3 moveDirection = _pushFlatDirection;
-		moveDirection.y = _pushHeight;
-		Vector3 initialPosition = transform.position;
-		Vector3 endPosition = initialPosition + moveDirection;
-		Vector3 moveOffset = Vector3.zero;
-		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
-		{
-			moveState = MoveState.Pushed;
-			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
-			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
-			Vector3 newDirection = newPosition - transform.position;
-
-			//check of collision
-			Collider hitCollider = CheckForCollision();
-			if (hitCollider != null)
-			{
-				if (isPlayer)
-				{
-					StopCurrentState();
-				} else
-				{
-					StopCurrentState();
-				}
-			}
-			transform.position = newPosition;
-			yield return null;
-		}
-		moveState = MoveState.Idle;
 	}
 	private void PushLight ( Vector3 _pushFlatDirection, PushForce _force )
 	{
@@ -865,51 +715,74 @@ public class PawnController : MonoBehaviour
 		}
 		ChangePawnState("PushedLight", CustomLightPush_C(_pushFlatDirection, _pushDistance, _pushDuration, _pushHeight), CancelPush_C());
 	}
+	#endregion
 
+	#region IEnumerator functions
+	private IEnumerator ClimbLedge_C ( Collider _ledge )
+	{
+		Vector3 i_startPosition = transform.position;
+		Vector3 i_endPosition = i_startPosition;
+		i_endPosition.y = _ledge.transform.position.y + _ledge.bounds.extents.y + 1f;
+		GameObject i_endPosGuizmo = new GameObject();
+		i_endPosGuizmo.transform.position = i_endPosition;
+		//Go to the correct Y position
+		for (float i = 0; i < climbDuration; i += Time.deltaTime)
+		{
+			transform.position = Vector3.Lerp(i_startPosition, i_endPosition, i / climbDuration);
+			yield return new WaitForEndOfFrame();
+		}
+		transform.position = i_endPosition;
+		rb.AddForce(Vector3.up * climbUpwardPushForce + transform.forward * climbForwardPushForce);
+		moveState = MoveState.Idle;
+		if (animator != null)
+		{
+			animator.ResetTrigger("ClimbTrigger");
+		}
+	}
 	private IEnumerator PushHeavy_C ( Vector3 _pushFlatDirection, PushForce _force )
 	{
-        float _pushDistance = 0;
-		float _pushDuration = 0;
-		float _pushHeight = 0;
+        float i_pushDistance = 0;
+		float i_pushDuration = 0;
+		float i_pushHeight = 0;
 		switch (_force)
 		{
 			case PushForce.Force1:
 				if (isPlayer)
 				{
-					_pushDistance = pushDatas.heavyPushPlayerForce1Distance;
-					_pushDuration = pushDatas.heavyPushPlayerForce1Duration;
-					_pushHeight = pushDatas.heavyPushPlayerForce1Height;
+					i_pushDistance = pushDatas.heavyPushPlayerForce1Distance;
+					i_pushDuration = pushDatas.heavyPushPlayerForce1Duration;
+					i_pushHeight = pushDatas.heavyPushPlayerForce1Height;
 				} else
 				{
-					_pushDistance = pushDatas.heavyPushForce1Distance;
-					_pushDuration = pushDatas.heavyPushForce1Duration;
-					_pushHeight = pushDatas.heavyPushForce1Height;
+					i_pushDistance = pushDatas.heavyPushForce1Distance;
+					i_pushDuration = pushDatas.heavyPushForce1Duration;
+					i_pushHeight = pushDatas.heavyPushForce1Height;
 				}
 				break;					  
 			case PushForce.Force2:
 				if (isPlayer)
 				{
-					_pushDistance = pushDatas.heavyPushPlayerForce2Distance;
-					_pushDuration = pushDatas.heavyPushPlayerForce2Duration;
-					_pushHeight = pushDatas.heavyPushPlayerForce2Height;
+					i_pushDistance = pushDatas.heavyPushPlayerForce2Distance;
+					i_pushDuration = pushDatas.heavyPushPlayerForce2Duration;
+					i_pushHeight = pushDatas.heavyPushPlayerForce2Height;
 				} else
 				{
-					_pushDistance = pushDatas.heavyPushForce2Distance;
-					_pushDuration = pushDatas.heavyPushForce2Duration;
-					_pushHeight = pushDatas.heavyPushForce2Height;
+					i_pushDistance = pushDatas.heavyPushForce2Distance;
+					i_pushDuration = pushDatas.heavyPushForce2Duration;
+					i_pushHeight = pushDatas.heavyPushForce2Height;
 				}
 				break;					  
 			case PushForce.Force3:
 				if (isPlayer)
 				{
-					_pushDistance = pushDatas.heavyPushPlayerForce3Distance;
-					_pushDuration = pushDatas.heavyPushPlayerForce3Duration;
-					_pushHeight = pushDatas.heavyPushPlayerForce3Height;
+					i_pushDistance = pushDatas.heavyPushPlayerForce3Distance;
+					i_pushDuration = pushDatas.heavyPushPlayerForce3Duration;
+					i_pushHeight = pushDatas.heavyPushPlayerForce3Height;
 				} else
 				{
-					_pushDistance = pushDatas.heavyPushForce3Distance;
-					_pushDuration = pushDatas.heavyPushForce3Duration;
-					_pushHeight = pushDatas.heavyPushForce3Height;
+					i_pushDistance = pushDatas.heavyPushForce3Distance;
+					i_pushDuration = pushDatas.heavyPushForce3Duration;
+					i_pushHeight = pushDatas.heavyPushForce3Height;
 				}
 				break;
 		}
@@ -920,18 +793,18 @@ public class PawnController : MonoBehaviour
         FeedbackManager.SendFeedback("event.PlayerBeingHit", this, transform.position, transform.up, transform.up);
 		moveState = MoveState.Pushed;
 		_pushFlatDirection.y = 0;
-		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
+		_pushFlatDirection = _pushFlatDirection.normalized * i_pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
-		moveDirection.y = _pushHeight;
+		moveDirection.y = i_pushHeight;
 		transform.forward = moveDirection;
 		Vector3 initialPosition = transform.position;
 		Vector3 endPosition = initialPosition + moveDirection;
 		Vector3 moveOffset = Vector3.zero;
-		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
+		for (float i = 0f; i < i_pushDuration; i += Time.deltaTime)
 		{
 			moveState = MoveState.Pushed;
 			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.heavyPushAirControlSpeed;
-			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.heavyPushSpeedCurve.Evaluate(i / _pushDuration)) + moveOffset;
+			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.heavyPushSpeedCurve.Evaluate(i / i_pushDuration)) + moveOffset;
 
 			//check of collision
 			Collider hitCollider = CheckForCollision();
@@ -953,29 +826,67 @@ public class PawnController : MonoBehaviour
 		moveState = MoveState.Idle;
 		animator.SetBool("PushedBool", false);
 
-
+		yield return null;
         //----Custom code in child script---------
         HeavyPushAction();
     }
-
-    public virtual void HeavyPushAction()
-    {
-        // Filled in each of the children behaviour;
-    }
-
-    public virtual void DestroySpawnedAttackUtilities()
-    {
-        // Usually filled within the inherited scripts
-    }
-
-    private IEnumerator CancelPush_C()
+	private IEnumerator CustomLightPush_C ( Vector3 _pushFlatDirection, float _pushDistance, float _pushDuration, float _pushHeight )
 	{
-		Debug.Log("Cancel push");
+		moveState = MoveState.Pushed;
+		_pushFlatDirection.y = 0;
+		_pushFlatDirection = _pushFlatDirection.normalized * _pushDistance;
+		Vector3 i_moveDirection = _pushFlatDirection;
+		i_moveDirection.y = _pushHeight;
+		Vector3 i_initialPosition = transform.position;
+		Vector3 i_endPosition = i_initialPosition + i_moveDirection;
+		Vector3 i_moveOffset = Vector3.zero;
+		for (float i = 0f; i < _pushDuration; i += Time.deltaTime)
+		{
+			moveState = MoveState.Pushed;
+			i_moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
+			Vector3 i_newPosition = Vector3.Lerp(i_initialPosition, i_endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + i_moveOffset;
+			Vector3 i_newDirection = i_newPosition - transform.position;
+
+			//check of collision
+			Collider i_hitCollider = CheckForCollision();
+			if (i_hitCollider != null)
+			{
+				if (isPlayer)
+				{
+					StopCurrentState();
+				}
+				else
+				{
+					StopCurrentState();
+				}
+			}
+			transform.position = i_newPosition;
+			yield return null;
+		}
+		moveState = MoveState.Idle;
+	}
+	private IEnumerator StartStateCoroutine ( IEnumerator _coroutine, PawnState _state )
+	{
+		if (_state.invincibleDuringState)
+		{
+			SetInvincible(true);
+		}
+		currentStateCoroutine = MonoBehaviourExtension.StartCoroutineEx(this, _coroutine);
+		yield return currentStateCoroutine.WaitFor();
+		currentPawnState = null;
+		yield return null;
+		if (_state.invincibleDuringState)
+		{
+			SetInvincible(false);
+		}
+		currentStateCoroutine = null;
+	}
+	private IEnumerator CancelPush_C()
+	{
 		animator.SetBool("PushedBool", false);
 		moveState = MoveState.Idle;
 		yield return null;
 	}
-
 	private IEnumerator WallSplat_C (WallSplatForce _force, Vector3 _normalDirection)
 	{
 		animator.SetTrigger("FallingTrigger");
@@ -988,51 +899,51 @@ public class PawnController : MonoBehaviour
 			FeedbackManager.SendFeedback("event.EnemyWallSplatHit", this);
 		}
 		transform.forward = _normalDirection;
-		Vector3 initialPosition = transform.position;
-		float damages = pushDatas.wallSplatDamages;
-		if (isPlayer) { damages = pushDatas.wallSplatPlayerDamages; }
-		Damage(damages);
+		Vector3 i_initialPosition = transform.position;
+		float i_damages = pushDatas.wallSplatDamages;
+		if (isPlayer) { i_damages = pushDatas.wallSplatPlayerDamages; }
+		Damage(i_damages);
 		switch (_force)
 		{
 			case WallSplatForce.Light:
 				animator.SetTrigger("WallSplatTrigger");
 				animator.SetTrigger("StandingUpTrigger");
-				float wallSplatLightRecoverTime = pushDatas.wallSplatLightRecoverTime + Random.Range(pushDatas.randomWallSplatLightRecoverTimeAddition.x, pushDatas.randomWallSplatLightRecoverTimeAddition.y) ;
-				if (isPlayer) { wallSplatLightRecoverTime = pushDatas.wallSplatPlayerLightRecoverTime; }
-				yield return new WaitForSeconds(wallSplatLightRecoverTime);
+				float i_wallSplatLightRecoverTime = pushDatas.wallSplatLightRecoverTime + Random.Range(pushDatas.randomWallSplatLightRecoverTimeAddition.x, pushDatas.randomWallSplatLightRecoverTimeAddition.y) ;
+				if (isPlayer) { i_wallSplatLightRecoverTime = pushDatas.wallSplatPlayerLightRecoverTime; }
+				yield return new WaitForSeconds(i_wallSplatLightRecoverTime);
 				break;
 			case WallSplatForce.Heavy:
 				animator.SetTrigger("WallSplatTrigger");
-				float wallSplatForward = pushDatas.wallSplatHeavyForwardPush;
-				float wallSplatFallSpeed = pushDatas.wallSplatHeavyFallSpeed;
-				float wallSplatHeavyRecoverTime = pushDatas.wallSplatHeavyRecoverTime + Random.Range(pushDatas.randomWallSplatHeavyRecoverTimeAddition.x, pushDatas.randomWallSplatHeavyRecoverTimeAddition.y);
-				AnimationCurve wallSplatSpeedCurve = pushDatas.wallSplatHeavySpeedCurve;
-				AnimationCurve wallSplatHeightCurve = pushDatas.wallSplatHeavyHeightCurve;
+				float i_wallSplatForward = pushDatas.wallSplatHeavyForwardPush;
+				float i_wallSplatFallSpeed = pushDatas.wallSplatHeavyFallSpeed;
+				float i_wallSplatHeavyRecoverTime = pushDatas.wallSplatHeavyRecoverTime + Random.Range(pushDatas.randomWallSplatHeavyRecoverTimeAddition.x, pushDatas.randomWallSplatHeavyRecoverTimeAddition.y);
+				AnimationCurve i_wallSplatSpeedCurve = pushDatas.wallSplatHeavySpeedCurve;
+				AnimationCurve i_wallSplatHeightCurve = pushDatas.wallSplatHeavyHeightCurve;
 				if (isPlayer) { 
-					wallSplatForward = pushDatas.wallSplatPlayerHeavyForwardPush;
-					wallSplatFallSpeed = pushDatas.wallSplatPlayerHeavyFallSpeed;
-					wallSplatHeavyRecoverTime = pushDatas.wallSplatPlayerHeavyRecoverTime;
-					wallSplatSpeedCurve = pushDatas.wallSplatPlayerHeavySpeedCurve;
-					wallSplatHeightCurve = pushDatas.wallSplatPlayerHeavyHeightCurve;
+					i_wallSplatForward = pushDatas.wallSplatPlayerHeavyForwardPush;
+					i_wallSplatFallSpeed = pushDatas.wallSplatPlayerHeavyFallSpeed;
+					i_wallSplatHeavyRecoverTime = pushDatas.wallSplatPlayerHeavyRecoverTime;
+					i_wallSplatSpeedCurve = pushDatas.wallSplatPlayerHeavySpeedCurve;
+					i_wallSplatHeightCurve = pushDatas.wallSplatPlayerHeavyHeightCurve;
 				}
-				Vector3 endPosition = transform.position + (_normalDirection * wallSplatForward);
-				RaycastHit hit;
-				if (Physics.Raycast(endPosition, Vector3.down, out hit, 1000, LayerMask.GetMask("Environment")))
+				Vector3 i_endPosition = transform.position + (_normalDirection * i_wallSplatForward);
+				RaycastHit i_hit;
+				if (Physics.Raycast(i_endPosition, Vector3.down, out i_hit, 1000, LayerMask.GetMask("Environment")))
 				{
-					endPosition = hit.point;
+					i_endPosition = i_hit.point;
 				}
-				for (float i = 0; i < 1f; i+= Time.deltaTime * wallSplatFallSpeed)
+				for (float i = 0; i < 1f; i+= Time.deltaTime * i_wallSplatFallSpeed)
 				{
 					moveState = MoveState.Pushed;
-					Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, wallSplatSpeedCurve.Evaluate(i / 1f));
-					newPosition.y = Mathf.Lerp(initialPosition.y, endPosition.y, 1f - wallSplatHeightCurve.Evaluate(i / 1f));
-					transform.position = newPosition;
+					Vector3 i_newPosition = Vector3.Lerp(i_initialPosition, i_endPosition, i_wallSplatSpeedCurve.Evaluate(i / 1f));
+					i_newPosition.y = Mathf.Lerp(i_initialPosition.y, i_endPosition.y, 1f - i_wallSplatHeightCurve.Evaluate(i / 1f));
+					transform.position = i_newPosition;
 					yield return null;
 				}
-				transform.position = endPosition;
+				transform.position = i_endPosition;
 				animator.SetTrigger("StandingUpTrigger");
 				moveState = MoveState.Idle;
-				yield return new WaitForSeconds(wallSplatHeavyRecoverTime);
+				yield return new WaitForSeconds(i_wallSplatHeavyRecoverTime);
 				break;
 		}
 		moveState = MoveState.Idle;
@@ -1040,16 +951,14 @@ public class PawnController : MonoBehaviour
 		animator.ResetTrigger("StandingUpTrigger");
 		yield return null;
 	}
-
 	private IEnumerator CancelWallSplat_C()
 	{
 		moveState = MoveState.Idle;
+		animator.SetTrigger("StandingUpTrigger");
 		animator.ResetTrigger("FallingTrigger");
 		animator.ResetTrigger("StandingUpTrigger");
 		yield return null;
 	}
-
-
 	private IEnumerator Bump_C( Vector3 _bumpDirectionFlat, BumpForce _force )
     {
 		animator.SetTrigger("FallingTrigger");
@@ -1097,22 +1006,22 @@ public class PawnController : MonoBehaviour
 		}
 		bumpDistance = bumpDistance + Random.Range(pushDatas.bumpRandomRangeModifier.x, pushDatas.bumpRandomRangeModifier.y);
 		bumpDuration = bumpDuration + Random.Range(pushDatas.bumpRandomDurationModifier.x, pushDatas.bumpRandomDurationModifier.y);
-		float restDuration = pushDatas.bumpRestDuration;
-		if (isPlayer) { restDuration = pushDatas.bumpPlayerRestDuration; }
-	     restDuration = restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
-		Vector3 bumpDirection = _bumpDirectionFlat;
-		bumpDirection.y = 0;
-		Vector3 bumpInitialPosition = transform.position;
-		Vector3 bumpDestinationPosition = transform.position + bumpDirection * bumpDistance;
+		float i_restDuration = pushDatas.bumpRestDuration;
+		if (isPlayer) { i_restDuration = pushDatas.bumpPlayerRestDuration; }
+	     i_restDuration = i_restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
+		Vector3 i_bumpDuration = _bumpDirectionFlat;
+		i_bumpDuration.y = 0;
+		Vector3 i_bumpInitialPosition = transform.position;
+		Vector3 i_bumpDestinationPosition = transform.position + i_bumpDuration * bumpDistance;
 
-		transform.rotation = Quaternion.LookRotation(-bumpDirection);
-		float gettingUpDuration = maxGettingUpDuration;
+		transform.rotation = Quaternion.LookRotation(-i_bumpDuration);
+		float i_gettingUpDuration = maxGettingUpDuration;
 
-		EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
-        if (enemy != null) { enemy.ChangeState(EnemyState.Bumped); }
+		EnemyBehaviour i_enemy = GetComponent<EnemyBehaviour>();
+        if (i_enemy != null) { i_enemy.ChangeState(EnemyState.Bumped); }
 
         float i_bumpTimeProgression = 0;
-        bool playedEndOfFall = false;
+        bool i_playedEndOfFall = false;
 
         while (i_bumpTimeProgression < 1)
         {
@@ -1121,26 +1030,26 @@ public class PawnController : MonoBehaviour
 			i_bumpTimeProgression += Time.deltaTime / bumpDuration;
 
             //move !
-			Vector3 newPosition = Vector3.Lerp(bumpInitialPosition, bumpDestinationPosition, bumpDistanceCurve.Evaluate(i_bumpTimeProgression));
+			Vector3 i_newPosition = Vector3.Lerp(i_bumpInitialPosition, i_bumpDestinationPosition, pushDatas.bumpSpeedCurve.Evaluate(i_bumpTimeProgression));
 
 			//check of collision
-			Collider hitCollider = CheckForCollision();
-			if (hitCollider != null)
+			Collider i_hitCollider = CheckForCollision();
+			if (i_hitCollider != null)
 			{
 				if (isPlayer)
 				{
-					WallSplat(WallSplatForce.Heavy, transform.position - hitCollider.ClosestPoint(transform.position));
+					WallSplat(WallSplatForce.Heavy, transform.position - i_hitCollider.ClosestPoint(transform.position));
 				}
 				else
 				{
-					WallSplat(WallSplatForce.Heavy, transform.position - hitCollider.ClosestPoint(transform.position));
+					WallSplat(WallSplatForce.Heavy, transform.position - i_hitCollider.ClosestPoint(transform.position));
 				}
 			}
 
-			rb.MovePosition(newPosition);
+			rb.MovePosition(i_newPosition);
 
 			//trigger end anim
-			if (i_bumpTimeProgression >= whenToTriggerFallingAnim && playedEndOfFall == false)
+			if (i_bumpTimeProgression >= whenToTriggerFallingAnim && i_playedEndOfFall == false)
             {
                 animator.SetTrigger("FallingTrigger");
 				if (damageAfterBump > 0)
@@ -1151,16 +1060,16 @@ public class PawnController : MonoBehaviour
                         Kill();
                     }
 				}
-                playedEndOfFall = true;
+                i_playedEndOfFall = true;
             }
             yield return null;
         }
 
 		//when arrived on ground
-		while (restDuration > 0)
+		while (i_restDuration > 0)
 		{
-			restDuration -= Time.deltaTime;
-			if (restDuration <= 0)
+			i_restDuration -= Time.deltaTime;
+			if (i_restDuration <= 0)
 			{
 				animator.SetTrigger("StandingUpTrigger");
 			}
@@ -1168,27 +1077,26 @@ public class PawnController : MonoBehaviour
 		}
 
         //time to get up
-        while (gettingUpDuration > 0)
+        while (i_gettingUpDuration > 0)
         {
-			gettingUpDuration -= Time.deltaTime;
-            if (gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
+			i_gettingUpDuration -= Time.deltaTime;
+            if (i_gettingUpDuration <= 0 && GetComponent<EnemyBehaviour>() != null)
 			{
-                enemy.ChangeState(EnemyState.Following);
+                i_enemy.ChangeState(EnemyState.Following);
 			}
 			yield return null;
 		}
 		moveState = MoveState.Idle;
 	}
-
 	private IEnumerator CancelBump_C()
 	{
 		animator.ResetTrigger("FallingTrigger");
 		animator.ResetTrigger("StandingUpTrigger");
 		moveState = MoveState.Pushed;
-		float restDuration = pushDatas.bumpRestDuration;
-		if (isPlayer) { restDuration = pushDatas.bumpPlayerRestDuration; }
-		restDuration = restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
-		float gettingUpDuration = maxGettingUpDuration;
+		float i_restDuration = pushDatas.bumpRestDuration;
+		if (isPlayer) { i_restDuration = pushDatas.bumpPlayerRestDuration; }
+		i_restDuration = i_restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
+		float i_gettingUpDuration = maxGettingUpDuration;
 
 		//if (animator != null) { animator.SetTrigger("FallingTrigger"); }
 		if (damageAfterBump > 0)
@@ -1196,10 +1104,10 @@ public class PawnController : MonoBehaviour
 			Damage(damageAfterBump);
 		}
 		//when arrived on ground
-		while (restDuration > 0)
+		while (i_restDuration > 0)
 		{
-			restDuration -= Time.deltaTime;
-			if (restDuration <= 0 && animator != null)
+			i_restDuration -= Time.deltaTime;
+			if (i_restDuration <= 0 && animator != null)
 			{
 				//animator.SetTrigger("StandingUpTrigger");
 			}
@@ -1209,13 +1117,13 @@ public class PawnController : MonoBehaviour
 		//time to get up
 		if (transform != null)
 		{
-			EnemyBehaviour enemy = GetComponent<EnemyBehaviour>();
-			while (gettingUpDuration > 0)
+			EnemyBehaviour i_enemy = GetComponent<EnemyBehaviour>();
+			while (i_gettingUpDuration > 0)
 			{
-				gettingUpDuration -= Time.deltaTime;
-				if (gettingUpDuration <= 0 && enemy != null)
+				i_gettingUpDuration -= Time.deltaTime;
+				if (i_gettingUpDuration <= 0 && i_enemy != null)
 				{
-					enemy.ChangeState(EnemyState.Following);
+					i_enemy.ChangeState(EnemyState.Following);
 				}
 				yield return null;
 			}
