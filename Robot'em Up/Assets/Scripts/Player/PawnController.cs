@@ -471,7 +471,7 @@ public class PawnController : MonoBehaviour
 		if (moveInput.magnitude != 0)
 		{
 			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed * GetSpeedCoef()) * acceleration), ForceMode.Acceleration);
+			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed) * acceleration * GetSpeedCoef()), ForceMode.Acceleration);
 			customDrag = movingDrag;
 		}
 	}
