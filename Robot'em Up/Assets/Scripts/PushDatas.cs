@@ -16,6 +16,8 @@ public class PushDatas : ScriptableObject
 	public AnimationCurve heavyPushSpeedCurve;
 	public float heavyPushAirControlSpeed;
 
+	public AnimationCurve bumpSpeedCurve;
+
 	[Header("Bump & push global settings")]
 	public float bumpRestDuration;
 	public float bumpPlayerRestDuration;

@@ -479,7 +479,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
 
 	public override void Kill ()
 	{
-		GameManager.i.enemyManager.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+        EnemyManager.i.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
 		if (Random.Range(0f, 1f) <= coreDropChances)
 		{
 			DropCore();
@@ -556,7 +556,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
     void ChangingFocus(Transform _newFocus)
     {
         focusedPlayer = _newFocus;
-		AddSpeedCoef(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
+		AddSpeedModifier(new SpeedCoef(0.5f, 2f, SpeedMultiplierReason.Dash, false));
     }
 
     public void Staggered(WhatBumps? cause = default)
@@ -564,16 +564,16 @@ public class EnemyBehaviourV2 : PawnController, IHitable
         switch (cause)
         {
             case WhatBumps.Pass:
-				AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
+				AddSpeedModifier(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
                 break;
             case WhatBumps.Dunk:
-				AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
+				AddSpeedModifier(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
                 break;
             case WhatBumps.Environment:
-				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
+				AddSpeedModifier(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
                 break;
             default:
-				AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
+				AddSpeedModifier(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
                 break;
         }
     }

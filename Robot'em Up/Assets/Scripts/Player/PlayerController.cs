@@ -314,10 +314,6 @@ public class PlayerController : PawnController, IHitable
 				leftTriggerWaitForRelease = false;
 			}
 		}
-		if (state.Buttons.A == ButtonState.Pressed && CanJump() && enableJump)
-		{
-			Jump();
-		}
 		if (Mathf.Abs(state.ThumbSticks.Left.X) > 0.5f || Mathf.Abs(state.ThumbSticks.Left.Y) > 0.5f)
 		{
 			Climb();
@@ -327,7 +323,7 @@ public class PlayerController : PawnController, IHitable
 			if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
 			{
 				reviving = true;
-				AddSpeedCoef(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
+				AddSpeedModifier(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
 				foreach (ReviveInformations p in revivablePlayers)
 				{
 					p.linkedPanel.FillAssemblingSlider();
@@ -413,10 +409,6 @@ public class PlayerController : PawnController, IHitable
 			}
 			dashController.Dash(dashDirection);
 		}
-		if (Input.GetKeyDown(KeyCode.Space) && CanJump() && enableJump)
-		{
-			Jump();
-		}
 		if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.5f || Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0.5f)
 		{
 			Climb();
@@ -476,9 +468,9 @@ public class PlayerController : PawnController, IHitable
 		base.UpdateAnimatorBlendTree();
 		animator.SetFloat("IdleRunningBlend", currentSpeed / moveSpeed);
 	}
-	public override void Damage ( float _amount )
+	public override void Damage ( float _amount, bool _enableInvincibilityFrame = false )
 	{
-        if (!isInvincible_access)
+        if (!IsInvincible())
         {
 			animator.SetTrigger("HitTrigger");
 			PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
@@ -486,24 +478,9 @@ public class PlayerController : PawnController, IHitable
 			{
 				i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
 			}
-            base.Damage(_amount);   // manages the recovery time as well
+            base.Damage(_amount, _enableInvincibilityFrame);   // manages the recovery time as well
         }
 	}
-
-    public override void DamageFromLaser(float _amount)
-    {
-        if (!isInvincible_access)
-        {
-            animator.SetTrigger("HitTrigger");
-            PlayerUI i_potentialPlayerUI = GetComponent<PlayerUI>();
-            if (i_potentialPlayerUI != null)
-            {
-                i_potentialPlayerUI.DisplayHealth(HealthAnimationType.Loss);
-            }
-
-            base.DamageFromLaser(_amount);
-        }
-    }
 
     public void KillWithoutCorePart()
 	{
@@ -512,7 +489,7 @@ public class PlayerController : PawnController, IHitable
 		dunkController.StopDunk();
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
-		DropBall();
+		passController.DropBall();
 		SetUntargetable();
 		Freeze();
 		DisableInput();
@@ -651,7 +628,7 @@ public class PlayerController : PawnController, IHitable
 
             case DamageSource.Laser:
                 FeedbackManager.SendFeedback(eventOnBeingHit, this);
-                DamageFromLaser(_damages);
+                Damage(_damages, false);
                 break;
 
 			case DamageSource.SpawnImpact:
