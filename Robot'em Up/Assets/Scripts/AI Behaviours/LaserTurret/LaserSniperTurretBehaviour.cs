@@ -168,7 +168,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             case TurretAttackState.Anticipation:
                 //VARIABLES GAMEPLAY------------------
                 animator.SetTrigger("AnticipationTrigger");
-                anticipationTime = maxAnticipationTime;
+                currentAnticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
                 //VARIABLES FXs--------------------------------------
@@ -280,13 +280,13 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
 
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / maxAnticipationTime));
 
                 // Charging energy ball in front of turret
-                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(maxAnticipationTime / anticipationTime + 0.01f, 1, 6);
+                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(maxAnticipationTime / currentAnticipationTime + 0.01f, 1, 6);
 
-                if (anticipationTime < maxAnticipationTime * 0.2)
+                if (currentAnticipationTime < maxAnticipationTime * 0.2)
                 {
                     ParticleSystem[] i_systems = FXChargingParticlesInstance.GetComponentsInChildren<ParticleSystem>();
                     foreach (var system in i_systems)
@@ -302,9 +302,9 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 }
 
                 //TRANSITION TO OTHER STATE
-                anticipationTime -= Time.deltaTime;
+                currentAnticipationTime -= Time.deltaTime;
 
-                if (anticipationTime <= 0)
+                if (currentAnticipationTime <= 0)
                 {
                     ChangingTurretAttackState(TurretAttackState.Attack);
                 }

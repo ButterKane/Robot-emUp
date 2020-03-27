@@ -79,7 +79,7 @@ public class EnemyMelee : EnemyBehaviour
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
-        MeleeAttackPreview(anticipationTime);
+        MeleeAttackPreview(currentAnticipationTime);
     }
 
     public void ActivateAttackHitBox()
@@ -118,7 +118,7 @@ public class EnemyMelee : EnemyBehaviour
     public override void HeavyPushAction()
     {
         cooldownDuration = cooldownAfterAttackTime;
-        anticipationTime = 0;
+        currentAnticipationTime = 0;
         animator.ResetTrigger("AnticipateAttackTrigger");
         animator.ResetTrigger("AttackTrigger");
         ChangeState(EnemyState.Idle);

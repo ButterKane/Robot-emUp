@@ -56,7 +56,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         navMeshAgent.enabled = false;
         bodyRenderer.material = materialOnExplosion;
         LaunchExplosion();
-        anticipationTime = maxAnticipationTime;
+        currentAnticipationTime = maxAnticipationTime;
     }
     
 
@@ -176,7 +176,7 @@ public class EnemyRedBarrel : EnemyBehaviour
 
     public override void HeavyPushAction()
     {
-        anticipationTime = 0;
+        currentAnticipationTime = 0;
         ChangeState(EnemyState.Idle);
     }
 }

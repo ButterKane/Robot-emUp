@@ -56,7 +56,7 @@ public class EnemyShield : EnemyBehaviour
         base.PreparingAttackState();
         foreach (var renderer in renderers)
         {
-            renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor , anticipationTime));
+            renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor , currentAnticipationTime));
         }
     }
 
@@ -65,7 +65,7 @@ public class EnemyShield : EnemyBehaviour
         //ChangePawnState("ShieldEnemyCharging", StartAttackState_C(), StopAttackState_C());
         initialSpeed = navMeshAgent.speed;
         acceleration = navMeshAgent.acceleration;
-        anticipationTime = maxAnticipationTime;
+        currentAnticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
@@ -77,7 +77,7 @@ public class EnemyShield : EnemyBehaviour
 
         initialSpeed = navMeshAgent.speed;
         acceleration = navMeshAgent.acceleration;
-        anticipationTime = maxAnticipationTime;
+        currentAnticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;

@@ -34,7 +34,8 @@ public enum EnemyTypes
     Shield,
     RedBarrel,
     Turret,
-    Sniper
+    Sniper,
+    Laser
 }
 
 public class EnemyBehaviour : PawnController, IHitable
@@ -104,13 +105,13 @@ public class EnemyBehaviour : PawnController, IHitable
     public float cooldownAfterAttackTime = 1f;
 
 
-    protected float anticipationTime;
+    protected float currentAnticipationTime;
     protected float attackDuration;
     protected float cooldownDuration;
     protected bool endOfAttackTriggerLaunched;
     
 
-    float timePauseAfterAttack;
+    float currentTimePausedAfterAttack;
     protected bool mustCancelAttack;
 
     [Space(3)]
@@ -137,25 +138,26 @@ public class EnemyBehaviour : PawnController, IHitable
 
     protected virtual void Start()
     {
-        animator.SetBool("isFastDeployment", isDeploymentFast);
+        InitializePlayersRefs();
+
+        animator.SetBool("isFastDeployment", isDeploymentFast); 
         timeBetweenCheck = maxTimeBetweenCheck;
-        playerOneTransform = GameManager.playerOne.transform;
-        playerTwoTransform = GameManager.playerTwo.transform;
-        playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
-        playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
+        
         EnemyManager.i.enemies.Add(this);
         if (canSurroundPlayer) { EnemyManager.i.enemiesThatSurround.Add(this); }
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
-        if (arenaRobot)
-        {
-            ChangeState(EnemyState.WaitForCombatStart);
-        }
-        else
-        {
-            ChangeState(EnemyState.Idle);
-        }
+
+        ChangeState(EnemyState.Idle);
+    }
+
+    private void InitializePlayersRefs()
+    {
+        playerOneTransform = GameManager.playerOne.transform;
+        playerTwoTransform = GameManager.playerTwo.transform;
+        playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
+        playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
     }
 
     protected void Update()
@@ -165,6 +167,7 @@ public class EnemyBehaviour : PawnController, IHitable
         UpdateSpeed();
         UpdateHealthBar();
     }
+
     protected void UpdateHealthBar()
     {
         if (GetHealth() < GetMaxHealth() && healthBar != null)
@@ -187,7 +190,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public override void UpdateAnimatorBlendTree()
     {
-        base.UpdateAnimatorBlendTree();
+        base.UpdateAnimatorBlendTree(); // Don't do anything if there is no animator
         if (canMove)
         {
             animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
@@ -230,28 +233,15 @@ public class EnemyBehaviour : PawnController, IHitable
                         navMeshAgent.isStopped = false;
                         if (focusedPawnController != null)
                         {
-                            Quaternion _targetRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - transform.position);
-                            _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
-                            transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+                            // Rotate to face the focused player
+                            Quaternion i_targetRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - transform.position);
+                            i_targetRotation.eulerAngles = new Vector3(0, i_targetRotation.eulerAngles.y, 0);
+                            transform.rotation = Quaternion.Lerp(transform.rotation, i_targetRotation, rotationSpeedPreparingAttack);
 
                             if (closestSurroundPoint != null)
                             {
-                                float i_distanceToPointRatio = (1 + (transform.position - closestSurroundPoint.position).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
-
-                                Vector3 i_p0 = transform.position;    // The starting point
-
-                                Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(closestSurroundPoint.position, transform.position);  // The destination
-
-                                float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
-
-                                int i_moveSens = i_angle > 1 ? 1 : -1;
-
-                                Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
-
-                                // Calculating position on bezier curve, following start point, end point and avancement
-                                // In this version, the avancement has been replaced by a constant because it's recalculated every frame
-                                Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-                                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled) { navMeshAgent.SetDestination(SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position)); }
+                                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && GetNavMesh().enabled)
+                                { navMeshAgent.SetDestination(UpdateNewDestinationAlongBezierCurve(closestSurroundPoint.position)); }
                             }
                             else
                             {
@@ -281,8 +271,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case EnemyState.PauseAfterAttack:
-                timePauseAfterAttack -= Time.deltaTime;
-                if (timePauseAfterAttack <= 0)
+                currentTimePausedAfterAttack -= Time.deltaTime;
+                if (currentTimePausedAfterAttack <= 0)
                 {
                     ChangeState(EnemyState.Idle);
                 }
@@ -296,6 +286,27 @@ public class EnemyBehaviour : PawnController, IHitable
                 }
                 break;
         }
+    }
+
+    protected Vector3 UpdateNewDestinationAlongBezierCurve(Vector3 _endPosition)
+    {
+        float i_distanceToPointRatio = (1 + (transform.position - _endPosition).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+
+        Vector3 i_p0 = transform.position;    // The starting point
+
+        Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(_endPosition, transform.position);  // The destination
+
+        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
+
+        int i_moveSens = i_angle > 1 ? 1 : -1;
+
+        Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
+
+        // Calculating position on bezier curve, following start point, end point and avancement
+        // In this version, the avancement has been replaced by a constant because it's recalculated every frame
+        Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
+        
+        return SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position);
     }
 
     public void ChangeState(EnemyState _newState)
@@ -312,7 +323,6 @@ public class EnemyBehaviour : PawnController, IHitable
         {
             case EnemyState.Idle:
                 timeBetweenCheck = maxTimeBetweenCheck;
-                //StartCoroutine(WaitABit(1));
                 break;
             case EnemyState.Following:
                 navMeshAgent.enabled = true;
@@ -331,7 +341,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 EnterAttackingState();
                 break;
             case EnemyState.PauseAfterAttack:
-                timePauseAfterAttack = maxTimePauseAfterAttack;
+                currentTimePausedAfterAttack = maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
                 selfCollider.enabled = false;
@@ -374,7 +384,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
-        anticipationTime = maxAnticipationTime;
+        currentAnticipationTime = maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
     }
 
@@ -388,23 +398,21 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         endOfAttackTriggerLaunched = false;
         animator.SetTrigger("AttackTrigger");
-        //myAttackHitBox = Instantiate(attackHitBoxPrefab, transform.position + hitBoxOffset.x * transform.right + hitBoxOffset.y * transform.up + hitBoxOffset.z * transform.forward, Quaternion.identity, transform);
         mustCancelAttack = false;
     }
 
     public virtual void PreparingAttackState()
     {
-        if (anticipationTime > portionOfAnticipationWithRotation * maxAnticipationTime)
+        if (currentAnticipationTime > portionOfAnticipationWithRotation * maxAnticipationTime)
         {
-            Quaternion _targetRotation = Quaternion.LookRotation(focusedPawnController.transform.position - transform.position);
-            _targetRotation.eulerAngles = new Vector3(0, _targetRotation.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeedPreparingAttack);
+            Quaternion i_targetRotation = Quaternion.LookRotation(focusedPawnController.transform.position - transform.position);
+            i_targetRotation.eulerAngles = new Vector3(0, i_targetRotation.eulerAngles.y, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, i_targetRotation, rotationSpeedPreparingAttack);
         }
-        anticipationTime -= Time.deltaTime;
+        currentAnticipationTime -= Time.deltaTime;
 
-        if (anticipationTime <= 0)
+        if (currentAnticipationTime <= 0)
         {
-            //if (attackPreviewPlane) { attackPreviewPlane.SetActive(false); } // making preview zone disappear
             ChangeState(EnemyState.Attacking);
         }
     }
@@ -455,23 +463,7 @@ public class EnemyBehaviour : PawnController, IHitable
             distanceWithFocusedPlayer = Vector3.Distance(transform.position, focusedPawnController.transform.position);
     }
 
-    Transform GetClosestAndAvailablePlayer()
-    {
-        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
-            || !playerOnePawnController.IsTargetable())
-        {
-            return playerTwoTransform;
-        }
-        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && playerOnePawnController.IsTargetable())
-            || !playerTwoPawnController.IsTargetable())
-        {
-            return playerOneTransform;
-        }
-        else
-        {
-            return null;
-        }
-    }
+    
 
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
@@ -607,7 +599,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
     void CheckDistanceAndAdaptFocus()
     {
-        //print(focusedPlayer);
         //Checking who is in range
         if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - maxHeightOfDetection && transform.position.y < playerOneTransform.position.y + maxHeightOfDetection)
         {
@@ -672,37 +663,29 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    void ChangingFocus(Transform _newFocus)
+    Transform GetClosestAndAvailablePlayer()
     {
-		if (_newFocus != null)
-		{
-			//Debug.Log(_newFocus);
-			focusedPawnController = _newFocus.GetComponent<PawnController>();
-		} else
-		{
-			focusedPawnController = null;
-		}
-        //AddSpeedCoef(new SpeedCoef(0.5f, 0.2f, SpeedMultiplierReason.ChangingFocus, false));
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
+            || !playerOnePawnController.IsTargetable())
+        {
+            return playerTwoTransform;
+        }
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && playerOnePawnController.IsTargetable())
+            || !playerTwoPawnController.IsTargetable())
+        {
+            return playerOneTransform;
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    //public void Staggered(WhatBumps? cause = default)
-    //{
-    //    switch (cause)
-    //    {
-    //        case WhatBumps.Pass:
-    //            AddSpeedCoef(new SpeedCoef(speedMultiplierFromPassHit, timeToRecoverSlowFromPass, SpeedMultiplierReason.Pass, false));
-    //            break;
-    //        case WhatBumps.Dunk:
-    //            AddSpeedCoef(new SpeedCoef(speedMultiplierFromDunkHit, timeToRecoverSlowFromDunk, SpeedMultiplierReason.Dunk, false));
-    //            break;
-    //        case WhatBumps.Environment:
-    //            AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Environment, false));
-    //            break;
-    //        default:
-    //            AddSpeedCoef(new SpeedCoef(0.5f, 0.5f, SpeedMultiplierReason.Unknown, false));
-    //            break;
-    //    }
-    //}
+    void ChangingFocus(Transform _newFocus)
+    {
+		if (_newFocus != null){focusedPawnController = _newFocus.GetComponent<PawnController>();}
+        else { focusedPawnController = null;}
+    }
 
     IEnumerator WaitABit_C(float _duration)
     {

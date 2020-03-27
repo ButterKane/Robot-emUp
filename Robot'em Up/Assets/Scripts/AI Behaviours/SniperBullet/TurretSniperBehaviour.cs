@@ -83,7 +83,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
                 animator.SetTrigger("AnticipationTrigger");
-                anticipationTime = maxAnticipationTime;
+                currentAnticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 ChangeAimingRedDotState(AimingRedDotState.Following);
                 aimingAtPlayerFXTransform.gameObject.SetActive(true);
@@ -102,7 +102,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             case TurretAttackState.Anticipation:
                 //VARIABLES GAMEPLAY------------------
                 animator.SetTrigger("AnticipationTrigger");
-                anticipationTime = maxAnticipationTime;
+                currentAnticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
                 //VARIABLES FXs--------------------------------------
@@ -196,8 +196,8 @@ public class TurretSniperBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
 
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / maxAnticipationTime));
 
                 //ROTATE TOWARDS PLAYER
                 if (focusedPawnController != null)
@@ -206,9 +206,9 @@ public class TurretSniperBehaviour : TurretBehaviour
                 }
 
                 //TRANSITION TO OTHER STATE
-                anticipationTime -= Time.deltaTime;
+                currentAnticipationTime -= Time.deltaTime;
 
-                if (anticipationTime <= 0)
+                if (currentAnticipationTime <= 0)
                 {
                     ChangingTurretAttackState(TurretAttackState.Attack);
                 }

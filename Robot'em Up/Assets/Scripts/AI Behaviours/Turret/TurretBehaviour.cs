@@ -256,7 +256,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretAttackState.Anticipation:
                 ChangeAimingRedDotState(AimingRedDotState.Following);
                 animator.SetTrigger("AnticipationTrigger");
-                anticipationTime = maxAnticipationTime;
+                currentAnticipationTime = maxAnticipationTime;
                 restTime = maxRestTime + UnityEngine.Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 break;
             case TurretAttackState.Attack:
@@ -298,8 +298,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 {
                     RotateTowardsPlayerAndHisForward();
                 }
-                anticipationTime -= Time.deltaTime;
-                if (anticipationTime <= 0)
+                currentAnticipationTime -= Time.deltaTime;
+                if (currentAnticipationTime <= 0)
                 {
                     ChangingTurretAttackState(TurretAttackState.Attack);
                 }
