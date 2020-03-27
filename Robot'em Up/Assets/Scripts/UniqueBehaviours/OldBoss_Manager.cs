@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 
 public class OldBoss_Manager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class OldBoss_Manager : MonoBehaviour
     public Slider pyramidHealth;
 
     public GameObject cameraZone;
+    public Cinemachine.CinemachineVirtualCamera EndCamera;
 
     private void Awake()
     {
@@ -54,6 +56,7 @@ public class OldBoss_Manager : MonoBehaviour
         PyramidBehaviorGameObject.SetActive(false);
         doorExit.OpenDoor();
         cameraZone.SetActive(false);
+        EndCamera.Priority = 13;
     }
     
 
