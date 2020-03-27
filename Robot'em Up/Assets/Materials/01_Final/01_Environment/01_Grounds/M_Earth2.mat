@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Decal_Text_Pictorial_art_store
-  m_Shader: {fileID: 4800000, guid: df4322f26a7e85a4ab3b10f8acea75d6, type: 3}
+  m_Name: M_Earth2
+  m_Shader: {fileID: 4800000, guid: 767f5279139608d4688d98b60f1cab19, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _51612536_553196668424338_6330084407579246592_n:
+        m_Texture: {fileID: 2800000, guid: eb28d3989a223b04182653641cb4b2de, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -40,11 +44,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: cfbd9a45a30df0a4bb6e0fdb7a2c8e78, type: 3}
+        m_Texture: {fileID: 2800000, guid: 10098b6ab07bb81478f96a9c740c4fec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Marktexture:
+        m_Texture: {fileID: 2800000, guid: 5154740d7dc305944a079290743705b3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseFFloor:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseMark:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -55,40 +71,37 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SpecularMap:
+    - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BlendNormals: 0.5
     - _BumpScale: 1
-    - _ClipNormals: 0.1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NoExclusionMask: 0
-    - _NormalBlendOrClip: 0
-    - _NormalEdgeBlending: 0
-    - _NormalScale: 1
-    - _NormalsMask: 0
+    - _NoiseFloorSharpness: 4
+    - _NoiseFloorTiling: 85.8
+    - _NoiseMarkInt: 0.56
+    - _NoiseMarkSharpness: 1.26
+    - _NoiuseMarkingTiling: 42.93
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TerrainClipHeight: 0.001
-    - _TerrainClipHeightPower: 1
-    - _TerrainDecal: 0
     - _UVSec: 0
     - _ZWrite: 1
+    - __dirty: 0
+    - _noiseFloorint: 0.82
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Tint: {r: 1, g: 1, b: 1, a: 1}
-    - _UV: {r: 1, g: 1, b: 0, a: 0}
+    - _Color: {r: 0.098039225, g: 0.8588236, b: 0.15294118, a: 1}
+    - _DetailMaskCOlor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _FlorCOlor: {r: 0.8509804, g: 0.7968383, b: 0.6627451, a: 0}
+    - _MarkingCOlor: {r: 1, g: 1, b: 1, a: 0}
