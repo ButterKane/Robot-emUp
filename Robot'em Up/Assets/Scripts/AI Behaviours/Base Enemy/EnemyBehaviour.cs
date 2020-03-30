@@ -346,31 +346,13 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.Dying:
                 selfCollider.enabled = false;
                 currentDeathWaitTime = waitTimeBeforeDisappear;
-                bool i_thereIsAnAnimation = false;
-                foreach (AnimatorControllerParameter param in animator.parameters)
-                {
-                    if (param.name == "DeathTrigger")
-                    {
-                        animator.SetTrigger("DeathTrigger");
-                        i_thereIsAnAnimation = true;
-                        Freeze();
-                        if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
-                    }
-                }
-                
-                if(!i_thereIsAnAnimation)
-                {
-                    Kill();
-                }
-                
+                Freeze();
+                if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
                 break;
             case EnemyState.Spawning:
                 break;
             case EnemyState.Deploying:
-                foreach (AnimatorControllerParameter param in animator.parameters)
-                {
-                    if (param.name == "DeployTrigger") { animator.SetTrigger("DeployTrigger");}
-                }
+                // is played automatically in the animator. See "isFastDeployment" bool to manage aniamtions
                 break;
         }
     }
@@ -470,11 +452,12 @@ public class EnemyBehaviour : PawnController, IHitable
         damageAfterBump = 0;
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
-        if (!CanDamage()) { return; }
+        
         switch (_source)
         {
             case DamageSource.Dunk:
-                
+                Analytics.CustomEvent("DamageWithDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+
                 if (isBumpable)
                 {
                     if (enemyType == EnemyTypes.RedBarrel)
@@ -483,16 +466,10 @@ public class EnemyBehaviour : PawnController, IHitable
                         i_selfRef.willExplode = false;
                     }
 
-					Analytics.CustomEvent("DamageWithDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
-					damageAfterBump = _damages;
-
+                    damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                    if (_thrower.GetComponent<DunkController>() != null)
-                    {
-                        DunkController i_controller = _thrower.GetComponent<DunkController>();
-                    }
+
                     BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
-                    whatBumps = WhatBumps.Dunk;
                 }
                 else
                 {
@@ -506,7 +483,6 @@ public class EnemyBehaviour : PawnController, IHitable
                     damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
-                    whatBumps = WhatBumps.RedBarrel;
                 }
                 else
                 {
@@ -516,21 +492,23 @@ public class EnemyBehaviour : PawnController, IHitable
 
             case DamageSource.Ball:
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+
 				animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
-                whatBumps = WhatBumps.Pass;
-                //Staggered(whatBumps);
+
                 Damage(_damages);
                 break;
 
             case DamageSource.PerfectReceptionExplosion:
                 Damage(_damages);
+                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
 
-				BallDatas bd = _ball.currentBallDatas;
+                BallDatas bd = _ball.currentBallDatas;
 				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
-				//Debug.Log(ballChargePercent);
-				if (ballChargePercent >= bd.minimalChargeForBump)
+
+                // Bump or push depending on Ball charge value
+                if (ballChargePercent >= bd.minimalChargeForBump)
 				{
 					BumpMe(_impactVector.normalized, BumpForce.Force1);
 				}
@@ -542,19 +520,20 @@ public class EnemyBehaviour : PawnController, IHitable
 				{
 					Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
 				}
-                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 break;
 
             case DamageSource.Laser:
                 Damage(_damages);
-
                 break;
+
             case DamageSource.ReviveExplosion:
                 Push(PushType.Heavy, _impactVector, PushForce.Force2);
                 break;
+
             case DamageSource.DeathExplosion:
                 Push(PushType.Heavy, _impactVector, PushForce.Force2);
                 break;
+
             case DamageSource.SpawnImpact:
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
@@ -579,13 +558,16 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (healthBar != null) { Destroy(healthBar.gameObject); }
         onDeath.Invoke();
-        EnemyManager.i.enemiesThatSurround.Remove(GetComponent<EnemyBehaviour>());
+        EnemyManager.i.RemoveEnemy(GetComponent<EnemyBehaviour>());
         if (Random.Range(0f, 1f) <= coreDropChances)
         {
             DropCore();
         }
         base.Kill();
     }
+    /// <summary>
+    /// Need cleaning => Create core with enemy and drop it afterward
+    /// </summary>
     protected void DropCore()
     {
         GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
@@ -627,8 +609,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 ChangingFocus(null);
                 playerOneInRange = false;
                 playerTwoInRange = false;
-                ExitState();
-                EnterState(EnemyState.Idle);
+                ChangeState(EnemyState.Idle);
                 return;
             }
             

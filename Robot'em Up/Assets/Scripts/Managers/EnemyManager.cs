@@ -51,6 +51,12 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
+
+    public void RemoveEnemy(EnemyBehaviour _enemyToForget)
+    {
+        enemies.Remove(_enemyToForget);
+        enemiesThatSurround.Remove(_enemyToForget);
+    }
     #endregion
 
     #region Private functions
