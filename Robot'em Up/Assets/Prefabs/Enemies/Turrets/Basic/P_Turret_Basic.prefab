@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 4966143793828746274}
   - component: {fileID: 8142821643506368650}
   m_Layer: 10
-  m_Name: P_EnemyTurret
+  m_Name: P_Turret_Basic
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -173,30 +173,8 @@ MonoBehaviour:
   totalHeight: 1.5
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
-  currentPawnState:
-    name: New state
-    stateOverriden: []
-    invincibleDuringState: 0
-    damagesCancelState: 0
-    allowBallReception: 0
-    allowBallThrow: 0
-    preventMoving: 0
   canMove: 0
-  jumpForce: 0
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minWalkSpeed: 0.1
-  moveSpeed: 15
-  acceleration: 200
-  movingDrag: 0.4
-  idleDrag: 0.4
-  onGroundGravityMultiplyer: 0
-  deadzone: 0.2
-  turnSpeed: 0.25
+  pawnMovementValues: {fileID: 0}
   canClimb: 1
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
@@ -205,23 +183,16 @@ MonoBehaviour:
   climbUpwardPushForce: 450
   isBumpable: 0
   maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0
   eventOnBeingHit: event.TurretBasicHit
   eventOnBeingBumpedAway: event.PlayerBeingBumpedAway
   eventOnBeingGrounded: event.PlayerGrounded
   eventOnDeath: event.TurretBasicDeath
   eventOnHealing: event.PlayerHealing
-  moveInput: {x: 0, y: 0, z: 0}
-  currentHealth: 0
-  climbingHoldTime: 0
+  climbingDelay: 0
   passController: {fileID: 0}
+  rb: {fileID: 0}
+  animator: {fileID: 0}
   enemyState: 1
   healthBarRef: {fileID: 3348403758328978162}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
@@ -239,34 +210,15 @@ MonoBehaviour:
   lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
   isDeploymentFast: 1
-  focusDistance: 50
-  maxHeightOfDetection: 3
-  unfocusDistance: 55
-  timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 2
-  maxTimeBetweenCheck: 0.25
-  closestDistanceToplayer: 2
-  randomSpeedMod: 0
-  speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0
-  speedMultiplierFromDunkHit: 0
-  timeToRecoverSlowFromDunk: 0
-  maxAnticipationTime: 1
-  maxTimePauseAfterAttack: 1
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  rotationSpeedPreparingAttack: 0.2
-  distanceToAttack: 5
-  portionOfAnticipationWithRotation: 0.3
-  cooldownAfterAttackTime: 1
+  focusValues: {fileID: 11400000, guid: c6dfe93400e309b478bb99f43910fcd2, type: 2}
+  moveValues: {fileID: 11400000, guid: 4e5f54de240006d47bf0578ac79c0556, type: 2}
+  attackValues: {fileID: 11400000, guid: 1d9eaf06eeae83f4c9f4cc6eb123fb8a, type: 2}
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   spawnImpactRadius: 2
   spawnImpactDamages: 20
-  coreDropChances: 0.15
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
-  waitTimeBeforeDisappear: 1
+  deathValues: {fileID: 11400000, guid: 8b580f9733deba3489398711a909512f, type: 2}
   baseAnimator: {fileID: 0}
   turretState: 0
   modelPivot: {fileID: 6442596981544871290}

@@ -27,7 +27,7 @@ public class TurretSniperBehaviour : TurretBehaviour
 
     public override void Die()
     {
-        if (Random.Range(0f, 1f) <= coreDropChances)
+        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }
@@ -83,7 +83,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
                 animator.SetTrigger("AnticipationTrigger");
-                currentAnticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 ChangeAimingRedDotState(AimingRedDotState.Following);
                 aimingAtPlayerFXTransform.gameObject.SetActive(true);
@@ -102,7 +102,7 @@ public class TurretSniperBehaviour : TurretBehaviour
             case TurretAttackState.Anticipation:
                 //VARIABLES GAMEPLAY------------------
                 animator.SetTrigger("AnticipationTrigger");
-                currentAnticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
                 //VARIABLES FXs--------------------------------------
@@ -196,8 +196,8 @@ public class TurretSniperBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
 
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime));
 
                 //ROTATE TOWARDS PLAYER
                 if (focusedPawnController != null)

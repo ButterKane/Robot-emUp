@@ -39,7 +39,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
 
     public override void Die()
     {
-        if (Random.Range(0f, 1f) <= coreDropChances)
+        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }
@@ -152,7 +152,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
                 animator.SetTrigger("AnticipationTrigger");
-                currentAnticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
@@ -212,8 +212,8 @@ public class BossTurretSniperBehaviour : TurretBehaviour
 
                 //TRANSITION TO OTHER STATE
                 currentAnticipationTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime));
 
                 if (currentAnticipationTime <= 0)
                 {

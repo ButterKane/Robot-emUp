@@ -101,7 +101,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     public override void Die()
     {
-        if (Random.Range(0f, 1f) <= coreDropChances)
+        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }
@@ -168,7 +168,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             case TurretAttackState.Anticipation:
                 //VARIABLES GAMEPLAY------------------
                 animator.SetTrigger("AnticipationTrigger");
-                currentAnticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
                 //VARIABLES FXs--------------------------------------
@@ -280,13 +280,13 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
 
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime));
 
                 // Charging energy ball in front of turret
-                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(maxAnticipationTime / currentAnticipationTime + 0.01f, 1, 6);
+                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(attackValues.maxAnticipationTime / currentAnticipationTime + 0.01f, 1, 6);
 
-                if (currentAnticipationTime < maxAnticipationTime * 0.2)
+                if (currentAnticipationTime < attackValues.maxAnticipationTime * 0.2)
                 {
                     ParticleSystem[] i_systems = FXChargingParticlesInstance.GetComponentsInChildren<ParticleSystem>();
                     foreach (var system in i_systems)
@@ -362,7 +362,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     {
         List<GameObject> i_redDotsLoaders = new List<GameObject>();
         List<int> i_indexesToRemove = new List<int>();
-        float i_anticipationProgression = maxAnticipationTime;
+        float i_anticipationProgression = attackValues.maxAnticipationTime;
         float i_finalRedDotLength = aimingRedDotTransform.localScale.z;
         Vector3 loadingRedDotGrowth = new Vector3(0.01f, 0.01f, 0);
         float i_timeBetweenLoaderSpawnings = 0.3f;
@@ -371,7 +371,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
         while (i_anticipationProgression > 0)
         {
-            if (i_anticipationProgression > maxAnticipationTime * 0.6f)  // From start to 40% of completion
+            if (i_anticipationProgression > attackValues.maxAnticipationTime * 0.6f)  // From start to 40% of completion
             {
                 //Spawn redDot loader periodically
                 if (i_loaderSpawnCooldown <= 0)
@@ -388,7 +388,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 }
             }
 
-            if (i_anticipationProgression > maxAnticipationTime * 0.2f) // From start to 80% of completion
+            if (i_anticipationProgression > attackValues.maxAnticipationTime * 0.2f) // From start to 80% of completion
             {
                 if (i_redDotsLoaders.Count > 0)
                 {
@@ -409,7 +409,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             else
             {
                 // Reduce redDot size, to "go back" to turret before firing
-                aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Mathf.Lerp(i_finalRedDotLength, 0, i_anticipationProgression / maxAnticipationTime * 0.2f));
+                aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Mathf.Lerp(i_finalRedDotLength, 0, i_anticipationProgression / attackValues.maxAnticipationTime * 0.2f));
             }
 
             // clean the useless redDotsLoaders

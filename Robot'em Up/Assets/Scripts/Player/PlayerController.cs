@@ -166,7 +166,7 @@ public class PlayerController : PawnController, IHitable
 		{
 			moveInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
 			moveInput.y = 0;
-			moveInput = moveInput.normalized * ((moveInput.magnitude - deadzone) / (1 - deadzone));
+			moveInput = moveInput.normalized * ((moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
 			lookInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
 		} else
 		{
@@ -466,7 +466,7 @@ public class PlayerController : PawnController, IHitable
 	public override void UpdateAnimatorBlendTree ()
 	{
 		base.UpdateAnimatorBlendTree();
-		animator.SetFloat("IdleRunningBlend", currentSpeed / moveSpeed);
+		animator.SetFloat("IdleRunningBlend", currentSpeed / pawnMovementValues.moveSpeed);
 	}
 	public override void Damage ( float _amount, bool _enableInvincibilityFrame = false )
 	{

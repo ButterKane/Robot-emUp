@@ -77,34 +77,17 @@ public class EnemyBehaviour : PawnController, IHitable
 
     [Space(3)]
     [Header("Focus")]
-    public float focusDistance = 3;
-    public float maxHeightOfDetection = 3;
-    public float unfocusDistance = 20;
-    [HideInInspector] public float timeBetweenCheck = 0;
-    public float distanceBeforeChangingPriority = 3;
-    public float maxTimeBetweenCheck = 0.25f;
-    public float closestDistanceToplayer = 2; // The closest a following enemy can go to a player without touching it
+    public EnemyFocusValues focusValues;
+    [HideInInspector] protected float timeBetweenCheck = 0;
 
     [Space(3)]
     [Header("Movement")]
-    public float randomSpeedMod;
-    public float speedMultiplierFromPassHit;
-    public float timeToRecoverSlowFromPass;
-    public float speedMultiplierFromDunkHit;
-    public float timeToRecoverSlowFromDunk;
-    private WhatBumps whatBumps;
+    public EnemyMoveValues moveValues;
 
     [Space(3)]
     [Header("Common attack variables")]
-    public float maxAnticipationTime = 0.5f;
-    public float maxTimePauseAfterAttack = 1;
-    public Vector3 hitBoxOffset;
-    [Range(0, 1)] public float rotationSpeedPreparingAttack = 0.2f;
-    public float distanceToAttack = 5;
-    [Range(0, 1)] public float portionOfAnticipationWithRotation = 0.3f;
-    public float cooldownAfterAttackTime = 1f;
-
-
+    public EnemyAttackvalues attackValues;
+    
     protected float currentAnticipationTime;
     protected float attackDuration;
     protected float cooldownDuration;
@@ -128,11 +111,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
     [Space(3)]
     [Header("Death")]
-    public float coreDropChances = 1;
-    public Vector2 minMaxDropForce;
-    public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
-    [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
-    public float waitTimeBeforeDisappear = 1;
+    public EnemyDeathValues deathValues;
     private float currentDeathWaitTime;
     private HealthBar healthBar;
 
@@ -141,7 +120,7 @@ public class EnemyBehaviour : PawnController, IHitable
         InitializePlayersRefs();
 
         animator.SetBool("isFastDeployment", isDeploymentFast); 
-        timeBetweenCheck = maxTimeBetweenCheck;
+        timeBetweenCheck = focusValues.maxTimeBetweenCheck;
         
         EnemyManager.i.enemies.Add(this);
         if (canSurroundPlayer) { EnemyManager.i.enemiesThatSurround.Add(this); }
@@ -184,7 +163,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (navMeshAgent != null)
         {
-            navMeshAgent.speed = moveSpeed * GetSpeedCoef();
+            navMeshAgent.speed = pawnMovementValues.moveSpeed * GetSpeedCoef();
         }
     }
 
@@ -206,7 +185,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 if (timeBetweenCheck <= 0)
                 {
                     CheckDistanceAndAdaptFocus();
-                    timeBetweenCheck = maxTimeBetweenCheck;
+                    timeBetweenCheck = focusValues.maxTimeBetweenCheck;
                 }
                 if (focusedPawnController != null)
                 {
@@ -219,12 +198,12 @@ public class EnemyBehaviour : PawnController, IHitable
                 if (timeBetweenCheck <= 0)
                 {
                     CheckDistanceAndAdaptFocus();
-                    timeBetweenCheck = maxTimeBetweenCheck;
+                    timeBetweenCheck = focusValues.maxTimeBetweenCheck;
                 }
 
                 if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
                 {
-                    if (distanceWithFocusedPlayer < closestDistanceToplayer)
+                    if (distanceWithFocusedPlayer < focusValues.closestDistanceToplayer)
                     {
                         navMeshAgent.isStopped = true;
                     }
@@ -236,7 +215,7 @@ public class EnemyBehaviour : PawnController, IHitable
                             // Rotate to face the focused player
                             Quaternion i_targetRotation = Quaternion.LookRotation(focusedPawnController.GetCenterPosition() - transform.position);
                             i_targetRotation.eulerAngles = new Vector3(0, i_targetRotation.eulerAngles.y, 0);
-                            transform.rotation = Quaternion.Lerp(transform.rotation, i_targetRotation, rotationSpeedPreparingAttack);
+                            transform.rotation = Quaternion.Lerp(transform.rotation, i_targetRotation, attackValues.rotationSpeedPreparingAttack);
 
                             if (closestSurroundPoint != null)
                             {
@@ -254,7 +233,7 @@ public class EnemyBehaviour : PawnController, IHitable
                     }
                 }
                 cooldownDuration -= Time.deltaTime;
-                if (distanceWithFocusedPlayer <= distanceToAttack && cooldownDuration < 0)
+                if (distanceWithFocusedPlayer <= attackValues.distanceToAttack && cooldownDuration < 0)
                 {
                     ChangeState(EnemyState.PreparingAttack);
                 }
@@ -322,7 +301,7 @@ public class EnemyBehaviour : PawnController, IHitable
         switch (_newState)
         {
             case EnemyState.Idle:
-                timeBetweenCheck = maxTimeBetweenCheck;
+                timeBetweenCheck = focusValues.maxTimeBetweenCheck;
                 break;
             case EnemyState.Following:
                 navMeshAgent.enabled = true;
@@ -341,11 +320,11 @@ public class EnemyBehaviour : PawnController, IHitable
                 EnterAttackingState();
                 break;
             case EnemyState.PauseAfterAttack:
-                currentTimePausedAfterAttack = maxTimePauseAfterAttack;
+                currentTimePausedAfterAttack = attackValues.maxTimePauseAfterAttack;
                 break;
             case EnemyState.Dying:
                 selfCollider.enabled = false;
-                currentDeathWaitTime = waitTimeBeforeDisappear;
+                currentDeathWaitTime = deathValues.waitTimeBeforeDisappear;
                 Freeze();
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
                 break;
@@ -366,7 +345,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
-        currentAnticipationTime = maxAnticipationTime;
+        currentAnticipationTime = attackValues.maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
     }
 
@@ -385,11 +364,11 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public virtual void PreparingAttackState()
     {
-        if (currentAnticipationTime > portionOfAnticipationWithRotation * maxAnticipationTime)
+        if (currentAnticipationTime > attackValues.portionOfAnticipationWithRotation * attackValues.maxAnticipationTime)
         {
             Quaternion i_targetRotation = Quaternion.LookRotation(focusedPawnController.transform.position - transform.position);
             i_targetRotation.eulerAngles = new Vector3(0, i_targetRotation.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, i_targetRotation, rotationSpeedPreparingAttack);
+            transform.rotation = Quaternion.Lerp(transform.rotation, i_targetRotation, attackValues.rotationSpeedPreparingAttack);
         }
         currentAnticipationTime -= Time.deltaTime;
 
@@ -424,7 +403,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 DestroySpawnedAttackUtilities();
                 break;
             case EnemyState.PauseAfterAttack:
-                cooldownDuration = cooldownAfterAttackTime;
+                cooldownDuration = attackValues.cooldownAfterAttackTime;
                 break;
             case EnemyState.Dying:
                 break;
@@ -557,9 +536,9 @@ public class EnemyBehaviour : PawnController, IHitable
     public override void Kill()
     {
         if (healthBar != null) { Destroy(healthBar.gameObject); }
-        onDeath.Invoke();
+        deathValues.onDeath.Invoke();
         EnemyManager.i.RemoveEnemy(GetComponent<EnemyBehaviour>());
-        if (Random.Range(0f, 1f) <= coreDropChances)
+        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }
@@ -574,15 +553,15 @@ public class EnemyBehaviour : PawnController, IHitable
         i_newCore.name = "Core of " + gameObject.name;
         i_newCore.transform.position = transform.position;
         Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
-        float i_throwForce = Random.Range(minMaxDropForce.x, minMaxDropForce.y);
+        float i_throwForce = Random.Range(deathValues.minMaxDropForce.x, deathValues.minMaxDropForce.y);
         i_wantedDirectionAngle.y = i_throwForce * 0.035f;
-        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(minMaxCoreHealthValue.x, minMaxCoreHealthValue.y));
+        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(deathValues.minMaxCoreHealthValue.x, deathValues.minMaxCoreHealthValue.y));
     }
 
     void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
-        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - maxHeightOfDetection && transform.position.y < playerOneTransform.position.y + maxHeightOfDetection)
+        if (distanceWithPlayerOne < focusValues.focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - focusValues.maxHeightOfDetection && transform.position.y < playerOneTransform.position.y + focusValues.maxHeightOfDetection)
         {
             playerOneInRange = true;
         }
@@ -591,7 +570,7 @@ public class EnemyBehaviour : PawnController, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable() && transform.position.y > playerTwoTransform.position.y - maxHeightOfDetection && transform.position.y < playerTwoTransform.position.y + maxHeightOfDetection)
+        if (distanceWithPlayerTwo < focusValues.focusDistance && playerTwoPawnController.IsTargetable() && transform.position.y > playerTwoTransform.position.y - focusValues.maxHeightOfDetection && transform.position.y < playerTwoTransform.position.y + focusValues.maxHeightOfDetection)
         {
             playerTwoInRange = true;
         }
@@ -603,7 +582,7 @@ public class EnemyBehaviour : PawnController, IHitable
         //Unfocus player because of distance
         if (focusedPawnController != null)
         {
-            if (focusedPawnController.transform.position.y < transform.position.y - maxHeightOfDetection && focusedPawnController.transform.position.y >  transform.position.y + maxHeightOfDetection)
+            if (focusedPawnController.transform.position.y < transform.position.y - focusValues.maxHeightOfDetection && focusedPawnController.transform.position.y >  transform.position.y + focusValues.maxHeightOfDetection)
             {
                 //Debug.Log("Changing to null due to height");
                 ChangingFocus(null);
@@ -613,8 +592,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 return;
             }
             
-            if ((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne > unfocusDistance || !playerOnePawnController.IsTargetable()))
-                || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
+            if ((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne > focusValues.unfocusDistance || !playerOnePawnController.IsTargetable()))
+                || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > focusValues.unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
             }
@@ -625,11 +604,11 @@ public class EnemyBehaviour : PawnController, IHitable
             && (playerTwoInRange && playerTwoPawnController.IsTargetable())
             && focusedPawnController != null)
         {
-            if (focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if (focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > focusValues.distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerTwoTransform);
             }
-            else if (focusedPawnController.transform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPawnController.transform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > focusValues.distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerOneTransform);
             }

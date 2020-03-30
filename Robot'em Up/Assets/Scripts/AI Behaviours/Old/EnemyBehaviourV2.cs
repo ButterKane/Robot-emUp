@@ -146,7 +146,7 @@ public class EnemyBehaviourV2 : PawnController, IHitable
     {
         if (navMeshAgent != null)
         {
-            navMeshAgent.speed = moveSpeed * GetSpeedCoef();
+            navMeshAgent.speed = pawnMovementValues.moveSpeed * GetSpeedCoef();
         }
     }
 

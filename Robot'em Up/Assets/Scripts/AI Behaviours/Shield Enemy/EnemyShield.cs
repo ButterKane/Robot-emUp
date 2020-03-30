@@ -64,8 +64,8 @@ public class EnemyShield : EnemyBehaviour
     {
         //ChangePawnState("ShieldEnemyCharging", StartAttackState_C(), StopAttackState_C());
         initialSpeed = navMeshAgent.speed;
-        acceleration = navMeshAgent.acceleration;
-        currentAnticipationTime = maxAnticipationTime;
+        pawnMovementValues.acceleration = navMeshAgent.acceleration;
+        currentAnticipationTime = attackValues.maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
@@ -76,8 +76,8 @@ public class EnemyShield : EnemyBehaviour
         Debug.Log("start attackshield");
 
         initialSpeed = navMeshAgent.speed;
-        acceleration = navMeshAgent.acceleration;
-        currentAnticipationTime = maxAnticipationTime;
+        pawnMovementValues.acceleration = navMeshAgent.acceleration;
+        currentAnticipationTime = attackValues.maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
@@ -128,7 +128,7 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
+            pawnMovementValues.moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
             Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPawnController.transform.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
@@ -139,8 +139,8 @@ public class EnemyShield : EnemyBehaviour
 
         if (attackTimeProgression >= attackChargeDuration)
         {
-            moveSpeed = initialSpeed;
-            navMeshAgent.acceleration = acceleration;
+            pawnMovementValues.moveSpeed = initialSpeed;
+            navMeshAgent.acceleration = pawnMovementValues.acceleration;
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
             animator.SetTrigger("EndOfAttackTrigger");

@@ -58,9 +58,9 @@ public class EnemyMelee : EnemyBehaviour
         if (attackPreviewPlane != null)
         {
             // Make attack zone appear progressively
-            if (_anticipationTime > portionOfAnticipationWithFlickering * maxAnticipationTime)
+            if (_anticipationTime > portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)
             {
-                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
+                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)) / (attackValues.maxAnticipationTime - (attackValues.maxAnticipationTime * portionOfAnticipationWithFlickering))));
             }
             // If max size is reached, flicker the color
             else
@@ -117,7 +117,7 @@ public class EnemyMelee : EnemyBehaviour
 
     public override void HeavyPushAction()
     {
-        cooldownDuration = cooldownAfterAttackTime;
+        cooldownDuration = attackValues.cooldownAfterAttackTime;
         currentAnticipationTime = 0;
         animator.ResetTrigger("AnticipateAttackTrigger");
         animator.ResetTrigger("AttackTrigger");

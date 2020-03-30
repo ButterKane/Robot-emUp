@@ -56,7 +56,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         navMeshAgent.enabled = false;
         bodyRenderer.material = materialOnExplosion;
         LaunchExplosion();
-        currentAnticipationTime = maxAnticipationTime;
+        currentAnticipationTime = attackValues.maxAnticipationTime;
     }
     
 

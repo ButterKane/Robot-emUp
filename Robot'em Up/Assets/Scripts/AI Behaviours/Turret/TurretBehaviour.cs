@@ -104,13 +104,13 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     {
         if ((distanceWithPlayerOne >= distanceWithPlayerTwo &&
             (playerTwoPawnController.IsTargetable()) || !playerOnePawnController.IsTargetable()) &&
-            heightDeltaWithPlayerTwo < maxHeightOfDetection)
+            heightDeltaWithPlayerTwo < focusValues.maxHeightOfDetection)
         {
             return playerTwoTransform;
         }
         else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && 
             (playerOnePawnController.IsTargetable()) || !playerTwoPawnController.IsTargetable()) &&
-            heightDeltaWithPlayerOne < maxHeightOfDetection)
+            heightDeltaWithPlayerOne < focusValues.maxHeightOfDetection)
         {
             return playerOneTransform;
         }
@@ -162,7 +162,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 if (timeBetweenCheck <= 0)
                 {
                     CheckDistanceAndAdaptFocus();
-                    timeBetweenCheck = maxTimeBetweenCheck;
+                    timeBetweenCheck = focusValues.maxTimeBetweenCheck;
                 }
                 if (focusedPawnController != null)
                 {
@@ -179,7 +179,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 if (timeBetweenCheck <= 0)
                 {
                     CheckDistanceAndAdaptFocus();
-                    timeBetweenCheck = maxTimeBetweenCheck;
+                    timeBetweenCheck = focusValues.maxTimeBetweenCheck;
                 }
 
                 if(focusedPawnController != null)
@@ -256,7 +256,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretAttackState.Anticipation:
                 ChangeAimingRedDotState(AimingRedDotState.Following);
                 animator.SetTrigger("AnticipationTrigger");
-                currentAnticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + UnityEngine.Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 break;
             case TurretAttackState.Attack:
@@ -381,7 +381,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
-        if (distanceWithPlayerOne < focusDistance && playerOnePawnController.IsTargetable())
+        if (distanceWithPlayerOne < focusValues.focusDistance && playerOnePawnController.IsTargetable())
         {
             playerOneInRange = true;
         }
@@ -390,7 +390,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             playerOneInRange = false;
         }
 
-        if (distanceWithPlayerTwo < focusDistance && playerTwoPawnController.IsTargetable())
+        if (distanceWithPlayerTwo < focusValues.focusDistance && playerTwoPawnController.IsTargetable())
         {
             playerTwoInRange = true;
         }
@@ -403,8 +403,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         //Unfocus player because of distance
         if (focusedPawnController != null)
         {
-            if((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne>unfocusDistance || !playerOnePawnController.IsTargetable())) 
-                || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > unfocusDistance || !playerTwoPawnController.IsTargetable()))))
+            if((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne> focusValues.unfocusDistance || !playerOnePawnController.IsTargetable())) 
+                || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > focusValues.unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
                 ChangingFocus(null);
             }
@@ -415,11 +415,11 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             && (playerTwoInRange && playerTwoPawnController.IsTargetable()) 
             && focusedPawnController != null)
         {
-            if(focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > distanceBeforeChangingPriority)
+            if(focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne-distanceWithPlayerTwo > focusValues.distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerTwoTransform);
             }
-            else if (focusedPawnController.transform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > distanceBeforeChangingPriority)
+            else if (focusedPawnController.transform == playerTwoTransform && distanceWithPlayerTwo - distanceWithPlayerOne > focusValues.distanceBeforeChangingPriority)
             {
                 ChangingFocus(playerOneTransform);
             }
@@ -437,7 +437,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
     public virtual void Die()
     {
 
-        if (UnityEngine.Random.Range(0f, 1f) <= coreDropChances)
+        if (UnityEngine.Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }
