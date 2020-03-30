@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using MyBox;
-using PathCreation;
 
 public enum CameraCustomType { Combat, Adventure, Circle}
 public class CameraBehaviour : MonoBehaviour
