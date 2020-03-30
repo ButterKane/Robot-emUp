@@ -405,7 +405,7 @@ public class PassController : MonoBehaviour
 			Debug.Log(linkedPlayer.GetCurrentPawnState().name);
 			return false;
 		}
-		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.isDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.IsDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
 		{
 			return false;
 		} else

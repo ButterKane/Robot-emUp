@@ -211,15 +211,10 @@ public class PawnController : MonoBehaviour
 	}
 	public void ChangePawnState(string _newStateName, IEnumerator _coroutineToStart, IEnumerator _coroutineToCancel = null) //Check "Pawn state: manual" on google drive for more informations
 	{
-		if (GetCurrentPawnState() != null)
-		{
-			Debug.Log("Changing state: previous state: " + GetCurrentPawnState().name + " New state: " + _newStateName);
-		}
 		PawnState i_newState = pawnStates.GetPawnStateByName(_newStateName);
 		bool canOverrideState;
 		if (currentPawnState != null)
 		{
-			//Debug.Log("Current state not null");
 			if (pawnStates.IsStateOverriden(currentPawnState, i_newState) || currentStateCoroutine == null)
 			{
 				//Must cancel current state and replace by new state
@@ -227,7 +222,6 @@ public class PawnController : MonoBehaviour
 				canOverrideState = true;
 			} else
 			{
-				//Debug.Log("Current state not null & can't be override");
 				//Can't override current state, cancel action
 				return;
 			}
@@ -237,12 +231,10 @@ public class PawnController : MonoBehaviour
 		}
 		if (canOverrideState)
 		{
-			//Debug.Log("Can override state");
 			if (_coroutineToCancel != null)
 			{
 				currentStateStopCoroutine = _coroutineToCancel;
 			}
-			//Debug.Log("Starting new state coroutine");
 			currentStateStartCoroutine = StartCoroutine(StartStateCoroutine(_coroutineToStart, i_newState));
 			PawnState i_newStateInstance = new PawnState();
 			i_newStateInstance.allowBallReception = i_newState.allowBallReception;
