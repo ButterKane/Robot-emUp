@@ -4,13 +4,6 @@ using UnityEngine;
 using MyBox;
 using UnityEngine.Analytics;
 
-public enum PassMode
-{
-    Bounce, 
-    Curve,
-    Straight,
-    Count
-}
 public enum PassState
 {
 	None,
@@ -26,8 +19,6 @@ public class PassController : MonoBehaviour
 
     [Separator("General settings")]
 	public bool passPreviewInEditor;
-	public PassMode passMode;
-	public float passCooldown;
 	public Color previewDefaultColor;
 	public Color previewSnappedColor;
 
@@ -41,11 +32,11 @@ public class PassController : MonoBehaviour
 	public float perfectReceptionExplosionRadius = 2f;
 	public int perfectReceptionExplosionDamages = 1;
 
-	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxLateralDistance;
-	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMaxPlayerDistance;
-	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveRaycastIteration = 50;
-	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float curveMinAngle = 10;
-	[ConditionalField(nameof(passMode), false, PassMode.Curve)] public float hanseLength;
+	public float curveMaxLateralDistance;
+	public float curveMaxPlayerDistance;
+	public float curveRaycastIteration = 50;
+	public float curveMinAngle = 10;
+	public float hanseLength;
 
     // Auto-assigned References
     private PlayerController linkedPlayer;
@@ -95,20 +86,12 @@ public class PassController : MonoBehaviour
 			}
 		}
 
-		if (!otherPlayer.IsTargetable() && passMode == PassMode.Curve) { DisablePassPreview(); }
+		if (!otherPlayer.IsTargetable()) { DisablePassPreview(); }
 
 		if (passPreview)
 		{
 			bool i_snapped = false;
-			switch (passMode)
-			{
-				case PassMode.Bounce:
-					pathCoordinates = GetBouncingPathCoordinates(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward, out i_snapped), ballDatas.maxPreviewDistance);
-					break;
-				case PassMode.Curve:
-					pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer, linkedPlayer.GetLookInput());
-					break;
-			}
+			pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer, linkedPlayer.GetLookInput());
 			if (i_snapped) { ChangeColor(previewSnappedColor); } else { ChangeColor(previewDefaultColor); }
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates,0);
@@ -292,41 +275,23 @@ public class PassController : MonoBehaviour
 			BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
 		}
 		keepPerfectReceptionModifiers = false;
-		currentPassCooldown = passCooldown;
 		BallBehaviour i_shotBall = ball;
 		ball = null;
 		didPerfectReception = false;
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
 		MomentumManager.DisableMomentumExpontentialLoss();
-		if (passMode == PassMode.Curve)
+        // Throw a curve pass
+        if (otherPlayer != null)
         {
-            // Throw a curve pass
-            if (otherPlayer != null)
-            {
-				if (passPreview)
-				{
-					i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer, ballDatas, linkedPlayer.GetLookInput());
-				} else
-				{
-					//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
-					i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
-				}
-            }
+			if (passPreview)
+			{
+				i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer, ballDatas, linkedPlayer.GetLookInput());
+			} else
+			{
+				//shotBall.CurveShoot(this, linkedPlayer, otherPlayer.transform, ballDatas, (otherPlayer.transform.position - transform.position).normalized);
+				i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
+			}
         }
-		if (passMode == PassMode.Bounce)
-		{
-			if (!passPreview)
-			{
-				if (otherPlayer != null)
-				{
-					i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);    // shoot in direction of other player
-				}
-			}
-			else // if aiming with right joystick
-			{
-				i_shotBall.Shoot(handTransform.position, SnapController.SnapDirection(handTransform.position, transform.forward), linkedPlayer, ballDatas, false);
-			}
-		}
 		perfectReceptionShoot = false;
 		ChangePassState(PassState.None);
 	}
@@ -402,10 +367,9 @@ public class PassController : MonoBehaviour
 	{
 		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallThrow)
 		{
-			Debug.Log(linkedPlayer.GetCurrentPawnState().name);
 			return false;
 		}
-		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.IsDunking() || (!GetTarget().IsTargetable() && passMode == PassMode.Curve) || passState == PassState.Shooting)
+		if (ball == null || currentPassCooldown >= 0 || linkedDunkController.IsDunking() || (!GetTarget().IsTargetable()) || passState == PassState.Shooting)
 		{
 			return false;
 		} else
