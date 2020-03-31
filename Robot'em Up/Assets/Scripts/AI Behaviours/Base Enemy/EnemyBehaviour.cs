@@ -535,7 +535,7 @@ public class EnemyBehaviour : PawnController, IHitable
             case DamageSource.PerfectReceptionExplosion:
                 Damage(_damages);
 
-				BallDatas bd = _ball.currentBallDatas;
+				BallDatas bd = _ball.GetCurrentBallDatas();
 				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
 				//Debug.Log(ballChargePercent);
 				if (ballChargePercent >= bd.minimalChargeForBump)
