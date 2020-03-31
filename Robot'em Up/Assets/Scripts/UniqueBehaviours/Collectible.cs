@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using XInputDotNetPure;
 using MyBox;
 using TMPro;
@@ -24,6 +25,7 @@ public class Collectible : MonoBehaviour
     public float maxEmissiveMultiplier;
     public float curveTime;
     public AnimationCurve emissiveCurve;
+    public UnityEvent collectedEvent;
 
     [Header("Read Only")]
     [ReadOnly] public PlayerIndex playerIndex1;
@@ -196,6 +198,7 @@ public class Collectible : MonoBehaviour
         myAnim.enabled = true;
         myAnim.SetTrigger("CollectedTrigger");
         collected = true;
+        collectedEvent.Invoke();
     }
 
     void DestroyObject()
