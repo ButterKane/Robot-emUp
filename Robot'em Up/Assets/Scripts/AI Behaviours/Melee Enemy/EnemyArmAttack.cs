@@ -45,7 +45,7 @@ public class EnemyArmAttack : MonoBehaviour
             IHitable i_potentialHitableObject = i_hitColliders[i].GetComponent<IHitable>();
             if (i_potentialHitableObject != null)
             {
-                i_potentialHitableObject.OnHit(null, (other.transform.position - transform.position).normalized, null, attackDamage, DamageSource.EnemyContact);
+                i_potentialHitableObject.OnHit(null, (other.transform.position - transform.position).normalized, spawnParent, attackDamage, DamageSource.EnemyContact);
             }
             i++;
         }
