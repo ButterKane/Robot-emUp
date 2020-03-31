@@ -186,7 +186,7 @@ public class WaveController : MonoBehaviour
 		{
 			if (!foundSpawnerComponent.IsFree()) { return; }
 			EnemyBehaviour spawnedEnemy = foundSpawnerComponent.SpawnEnemy(_enemy.enemyType, true);
-			spawnedEnemy.onDeath.AddListener(() => { OnEnemyDeath(spawnedEnemy); });
+			spawnedEnemy.deathValues.onDeath.AddListener(() => { OnEnemyDeath(spawnedEnemy); });
 			currentEnemies.Add(spawnedEnemy);
 		}
 
@@ -196,7 +196,7 @@ public class WaveController : MonoBehaviour
 			GameObject i_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
 			EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
 			if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
-			i_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
+			i_enemyBehaviour.deathValues.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
 			if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
 			i_newEnemy.transform.position = spawnList[i_chosenSpawnerIndex].transform.position;
 			i_enemyBehaviour.GetNavMesh().enabled = true;

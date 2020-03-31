@@ -58,9 +58,9 @@ public class EnemyMelee : EnemyBehaviour
         if (attackPreviewPlane != null)
         {
             // Make attack zone appear progressively
-            if (_anticipationTime > portionOfAnticipationWithFlickering * maxAnticipationTime)
+            if (_anticipationTime > portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)
             {
-                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
+                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)) / (attackValues.maxAnticipationTime - (attackValues.maxAnticipationTime * portionOfAnticipationWithFlickering))));
             }
             // If max size is reached, flicker the color
             else
@@ -79,7 +79,7 @@ public class EnemyMelee : EnemyBehaviour
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
-        MeleeAttackPreview(anticipationTime);
+        MeleeAttackPreview(currentAnticipationTime);
     }
 
     public void ActivateAttackHitBox()
@@ -95,6 +95,7 @@ public class EnemyMelee : EnemyBehaviour
     {
         if (attackHitBoxInstance != null)
         {
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(false);
             attackHitBoxInstance.SetActive(false);
         }
     }
@@ -117,8 +118,8 @@ public class EnemyMelee : EnemyBehaviour
 
     public override void HeavyPushAction()
     {
-        cooldownDuration = cooldownAfterAttackTime;
-        anticipationTime = 0;
+        cooldownDuration = attackValues.cooldownAfterAttackTime;
+        currentAnticipationTime = 0;
         animator.ResetTrigger("AnticipateAttackTrigger");
         animator.ResetTrigger("AttackTrigger");
         ChangeState(EnemyState.Idle);

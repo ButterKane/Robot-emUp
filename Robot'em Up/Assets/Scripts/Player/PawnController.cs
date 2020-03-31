@@ -65,17 +65,7 @@ public class PawnController : MonoBehaviour
     [Space(2)]
     [Separator("Movement settings")]
     public bool canMove;
-    [ConditionalField(nameof(canMove))] public AnimationCurve accelerationCurve;
-
-    [ConditionalField(nameof(canMove))]
-    [Tooltip("Minimum required speed to go to walking state")] public float minWalkSpeed = 0.1f;
-    [ConditionalField(nameof(canMove))] public float moveSpeed = 15;
-    [ConditionalField(nameof(canMove))] public float acceleration = 200;
-    [ConditionalField(nameof(canMove))] public float movingDrag = .4f;
-    [ConditionalField(nameof(canMove))] public float idleDrag = .4f;
-    [ConditionalField(nameof(canMove))] public float onGroundGravityMultiplier;
-    [ConditionalField(nameof(canMove))] public float deadzone = 0.2f;
-    [ConditionalField(nameof(canMove))] [Range(0.01f, 1f)] public float turnSpeed = .25f;
+    public PawnMovementValues pawnMovementValues;
 
     [Separator("Climb settings")]
     public bool canClimb = true;
@@ -153,8 +143,8 @@ public class PawnController : MonoBehaviour
 
 		//Init variables
 		isInvincible = false;
-		customGravity = onGroundGravityMultiplier * -9.81f;
-        customDrag = idleDrag;
+		customGravity = pawnMovementValues.onGroundGravityMultiplier * -9.81f;
+        customDrag = pawnMovementValues.idleDrag;
 		currentHealth = maxHealth;
 		targetable = true;
 		if (GetComponent<PlayerController>() != null) { isPlayer = true; }
@@ -424,13 +414,13 @@ public class PawnController : MonoBehaviour
 	{
 		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
 
-		if (rb.velocity.magnitude <= minWalkSpeed)
+		if (rb.velocity.magnitude <= pawnMovementValues.minWalkSpeed)
 		{
 			if (moveState != MoveState.Idle)
 			{
 				rb.velocity = new Vector3(0, rb.velocity.y, 0);
 			}
-			customDrag = idleDrag;
+			customDrag = pawnMovementValues.idleDrag;
 			moveState = MoveState.Idle;
 		}
 	}
@@ -454,7 +444,7 @@ public class PawnController : MonoBehaviour
 		}
 		else
 		{
-			transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, turnSpeed);
+			transform.rotation = Quaternion.Slerp(transform.rotation, turnRotation, pawnMovementValues.turnSpeed);
 		}
 		rotationForced = false;
 	}
@@ -463,15 +453,15 @@ public class PawnController : MonoBehaviour
 		if (moveInput.magnitude != 0)
 		{
 			if (moveState == MoveState.Blocked) { return; }
-			rb.AddForce(moveInput * (accelerationCurve.Evaluate(rb.velocity.magnitude / moveSpeed) * acceleration * GetSpeedCoef()), ForceMode.Acceleration);
-			customDrag = movingDrag;
+			rb.AddForce(moveInput * (pawnMovementValues.accelerationCurve.Evaluate(rb.velocity.magnitude / pawnMovementValues.moveSpeed) * pawnMovementValues.acceleration * GetSpeedCoef()), ForceMode.Acceleration);
+			customDrag = pawnMovementValues.movingDrag;
 		}
 	}
 	private void UpdateNavMeshAgent ( NavMeshAgent _agent )
 	{
 		if (_agent == null) { return; }
 		_agent.speed = currentSpeed;
-		_agent.angularSpeed = turnSpeed;
+		_agent.angularSpeed = pawnMovementValues.turnSpeed;
 	}
 	private void Move ()
 	{
@@ -479,13 +469,13 @@ public class PawnController : MonoBehaviour
 		if (moveState == MoveState.Pushed) { return; }
 		if (navMeshAgent != null)
 		{
-			currentSpeed = moveSpeed * GetSpeedCoef();
+			currentSpeed = pawnMovementValues.moveSpeed * GetSpeedCoef();
 		}
 		else
 		{
 			Vector3 i_myVel = rb.velocity;
 			i_myVel.y = 0;
-			i_myVel = Vector3.ClampMagnitude(i_myVel, moveSpeed * GetSpeedCoef());
+			i_myVel = Vector3.ClampMagnitude(i_myVel, pawnMovementValues.moveSpeed * GetSpeedCoef());
 			i_myVel.y = rb.velocity.y;
 			rb.velocity = i_myVel;
 			currentSpeed = rb.velocity.magnitude;
