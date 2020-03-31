@@ -95,6 +95,7 @@ public class EnemyMelee : EnemyBehaviour
     {
         if (attackHitBoxInstance != null)
         {
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(false);
             attackHitBoxInstance.SetActive(false);
         }
     }
