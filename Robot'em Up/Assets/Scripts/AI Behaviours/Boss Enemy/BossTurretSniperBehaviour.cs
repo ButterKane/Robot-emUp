@@ -39,7 +39,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
 
     public override void Die()
     {
-        if (Random.Range(0f, 1f) <= coreDropChances)
+        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }
@@ -152,7 +152,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 //VARIABLES GAMEPLAY------------------
                 attackState = TurretAttackState.Anticipation;
                 animator.SetTrigger("AnticipationTrigger");
-                anticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
                 //VARIABLES FXs--------------------------------------
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
@@ -211,11 +211,11 @@ public class BossTurretSniperBehaviour : TurretBehaviour
                 }
 
                 //TRANSITION TO OTHER STATE
-                anticipationTime -= Time.deltaTime;
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+                currentAnticipationTime -= Time.deltaTime;
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime));
 
-                if (anticipationTime <= 0)
+                if (currentAnticipationTime <= 0)
                 {
                     attackState = TurretAttackState.Attack;
                     animator.SetTrigger("AttackTrigger");

@@ -42,30 +42,8 @@ MonoBehaviour:
   totalHeight: 2.25
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
-  currentPawnState:
-    name: New state
-    stateOverriden: []
-    invincibleDuringState: 0
-    damagesCancelState: 0
-    allowBallReception: 0
-    allowBallThrow: 0
-    preventMoving: 0
   canMove: 1
-  jumpForce: 0
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minWalkSpeed: 0.1
-  moveSpeed: 5.5
-  acceleration: 200
-  movingDrag: 0.4
-  idleDrag: 0.4
-  onGroundGravityMultiplyer: 0
-  deadzone: 0.2
-  turnSpeed: 0.25
+  pawnMovementValues: {fileID: 11400000, guid: 928400e785b706046a3a66078a74b87d, type: 2}
   canClimb: 0
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
@@ -74,41 +52,16 @@ MonoBehaviour:
   climbUpwardPushForce: 450
   isBumpable: 1
   maxGettingUpDuration: 0.6
-  bumpDistanceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  bumpRaycastDistance: 1
   whenToTriggerFallingAnim: 0.9
   eventOnBeingHit: event.EnemyShieldHit
   eventOnBeingBumpedAway: event.EnemyShieldBeingBumpedAway
   eventOnBeingGrounded: event.EnemyShieldGrounded
   eventOnDeath: event.EnemyShieldDeath
   eventOnHealing: 
-  moveInput: {x: 0, y: 0, z: 0}
-  currentHealth: 0
-  climbingHoldTime: 0
+  climbingDelay: 0
   passController: {fileID: 0}
+  rb: {fileID: 0}
+  animator: {fileID: 0}
   enemyState: 1
   healthBarRef: {fileID: 4697345455816352529}
   healthBarPrefab: {fileID: 6345541632243073559, guid: 72e89e25c3b6b9d408b85c2c8aef313c,
@@ -126,34 +79,15 @@ MonoBehaviour:
   lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
   isDeploymentFast: 1
-  focusDistance: 50
-  maxHeightOfDetection: 3
-  unfocusDistance: 55
-  timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 25
-  maxTimeBetweenCheck: 0.25
-  closestDistanceToplayer: 10
-  randomSpeedMod: 0
-  speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0.5
-  speedMultiplierFromDunkHit: 0
-  timeToRecoverSlowFromDunk: 0
-  maxAnticipationTime: 0.5
-  maxTimePauseAfterAttack: 1.5
-  hitBoxOffset: {x: 0.5, y: 1, z: 0}
-  rotationSpeedPreparingAttack: 0.2
-  distanceToAttack: 12
-  portionOfAnticipationWithRotation: 0.3
-  cooldownAfterAttackTime: 5
+  focusValues: {fileID: 11400000, guid: a44718c36d611194d89905502ffce143, type: 2}
+  moveValues: {fileID: 11400000, guid: 14e669405994afe4abc2f4e0f03c02fa, type: 2}
+  attackValues: {fileID: 11400000, guid: 311003abe907fe148ae7c0f044c686c3, type: 2}
   canSurroundPlayer: 0
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   spawnImpactRadius: 3
   spawnImpactDamages: 20
-  coreDropChances: 1
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
-  waitTimeBeforeDisappear: 1
+  deathValues: {fileID: 11400000, guid: 7bd88a0d2671390439b8ca8658a766fc, type: 2}
   shield: {fileID: 907304710442746487}
   deactivateShieldWhenAttacking: 0
   angleRangeForRebound: 90
@@ -203,6 +137,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6181108247738804001}
     m_Modifications:
+    - target: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
+        type: 3}
+      propertyPath: m_Name
+      value: Shield
+      objectReference: {fileID: 0}
     - target: {fileID: 6664741641726228486, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -258,11 +197,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6664741641726228487, guid: 3d2843c1071640d41aaadbea7e32a699,
-        type: 3}
-      propertyPath: m_Name
-      value: Shield
-      objectReference: {fileID: 0}
     - target: {fileID: 5760692066787637055, guid: 3d2843c1071640d41aaadbea7e32a699,
         type: 3}
       propertyPath: m_Layer
@@ -305,7 +239,7 @@ PrefabInstance:
     - target: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Name
-      value: EnemyShield
+      value: P_Enemy_Shield
       objectReference: {fileID: 0}
     - target: {fileID: 373019035910456879, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -362,6 +296,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Name
+      value: AttackHitBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.65
+      objectReference: {fileID: 0}
     - target: {fileID: 373019035910456886, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
       propertyPath: m_Radius
@@ -371,11 +320,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Speed
       value: 5.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7311809069756282518, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Radius
-      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540604, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}
@@ -411,16 +355,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 1.842
-      objectReference: {fileID: 0}
-    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_Name
-      value: AttackHitBox
-      objectReference: {fileID: 0}
-    - target: {fileID: 4822491348101545599, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 373019037066540610, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
         type: 3}

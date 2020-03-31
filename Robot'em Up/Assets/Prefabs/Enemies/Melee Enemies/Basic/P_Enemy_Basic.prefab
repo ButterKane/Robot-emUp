@@ -5636,20 +5636,7 @@ MonoBehaviour:
   invincibilityTime: 0.1
   ignoreEletricPlates: 0
   canMove: 1
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minWalkSpeed: 0.1
-  moveSpeed: 7
-  acceleration: 60
-  movingDrag: 0.4
-  idleDrag: 0.4
-  onGroundGravityMultiplier: 0
-  deadzone: 0.2
-  turnSpeed: 0.25
+  pawnMovementValues: {fileID: 11400000, guid: 4c7bfb2337b5a6c448e287d885f79e89, type: 2}
   canClimb: 0
   timeBeforeClimb: 0.2
   minDistanceToClimb: 1
@@ -5685,34 +5672,15 @@ MonoBehaviour:
   lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
   isDeploymentFast: 1
-  focusDistance: 50
-  maxHeightOfDetection: 3
-  unfocusDistance: 55
-  timeBetweenCheck: 0
-  distanceBeforeChangingPriority: 3
-  maxTimeBetweenCheck: 0.25
-  closestDistanceToplayer: 2
-  randomSpeedMod: 0
-  speedMultiplierFromPassHit: 0
-  timeToRecoverSlowFromPass: 0.5
-  speedMultiplierFromDunkHit: 0
-  timeToRecoverSlowFromDunk: 1
-  maxAnticipationTime: 0.66
-  maxTimePauseAfterAttack: 1
-  hitBoxOffset: {x: 0, y: 0, z: 0}
-  rotationSpeedPreparingAttack: 0.2
-  distanceToAttack: 6
-  portionOfAnticipationWithRotation: 0.2
-  cooldownAfterAttackTime: 1
+  focusValues: {fileID: 11400000, guid: 9a1ce72c366a42f4992e9cf1c606ef00, type: 2}
+  moveValues: {fileID: 11400000, guid: 0047457cf0d37cf46b0fb50b29f4898a, type: 2}
+  attackValues: {fileID: 11400000, guid: 78220c27aec2c30438f0233c8de74635, type: 2}
   canSurroundPlayer: 1
   bezierCurveHeight: 0.5
   bezierDistanceToHeightRatio: 100
   spawnImpactRadius: 2
   spawnImpactDamages: 20
-  coreDropChances: 0.1
-  minMaxDropForce: {x: 0, y: 0}
-  minMaxCoreHealthValue: {x: 10, y: 10}
-  waitTimeBeforeDisappear: 1
+  deathValues: {fileID: 11400000, guid: d4505948d72bb0c4893224947c4bfea9, type: 2}
   attackHitBoxPrefab: {fileID: 3204598243110983843, guid: 34976ce2e8641614f9791ea7f5d31244,
     type: 3}
   attackHitBoxCenterPoint: {fileID: 4446576434074462058}
