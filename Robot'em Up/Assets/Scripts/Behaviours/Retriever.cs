@@ -13,25 +13,30 @@ public class ReviveInformations
 }
 public class Retriever : MonoBehaviour
 {
-    private Transform parent;
 	private PassController passController;
 	private PlayerController playerController;
 
-
 	public List<ReviveInformations> retrievedParts = new List<ReviveInformations>();
 	// Start is called before the first frame update
-	void Awake()
+	private void Awake()
     {
-        parent = transform.parent;
-		passController = GetComponentInParent<PassController>();
 		playerController = GetComponentInParent<PlayerController>();
+		passController = playerController.passController;
     }
-
 	private void OnTriggerEnter ( Collider other )
 	{
 		if (other.tag == "Ball")
 		{
-			FeedbackManager.SendFeedback("event.PlayerAttractingBall", playerController, other.transform.position, other.transform.position - transform.position, other.transform.position - transform.position);
+			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
+			if (i_ballBehaviour.GetState() == BallState.Flying)
+			{
+				if (i_ballBehaviour.GetCurrentThrower() == playerController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+				passController.Receive(i_ballBehaviour);
+			}
+			else if (i_ballBehaviour.GetState() == BallState.Grounded)
+			{
+				passController.Receive(i_ballBehaviour);
+			}
 		}
 		if (other.tag == "GrabbableTrigger")
 		{
@@ -40,7 +45,6 @@ public class Retriever : MonoBehaviour
 			playerController.targetedGrabbable.Add(grabbableInformation);
 		}
 	}
-
 	private void OnTriggerExit ( Collider other )
 	{
 		if (other.tag == "GrabbableTrigger")
@@ -52,23 +56,6 @@ public class Retriever : MonoBehaviour
 	}
 	private void OnTriggerStay(Collider other)
     {
-
-        if (other.tag == "Ball")
-        {
-			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
-			if (i_ballBehaviour.GetState() == BallState.Grounded || i_ballBehaviour.GetState() == BallState.Flying)
-			{
-				if (i_ballBehaviour.GetState() == BallState.Flying)
-				{
-					if (i_ballBehaviour.GetCurrentThrower() == playerController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
-					passController.Receive(i_ballBehaviour);
-				}
-				else
-				{
-					passController.Receive(i_ballBehaviour);
-				}
-			}
-        }
 		if (other.tag == "CorePart")
 		{
 			CorePart i_corePart = other.GetComponent<CorePart>();
@@ -85,13 +72,13 @@ public class Retriever : MonoBehaviour
 		}
     }
 
+	#region Public functions
 	public void AllowPlayerRevive(ReviveInformations parts)
 	{
 		FeedbackManager.SendFeedback("event.PlayerPickingLastBodyPart", playerController, playerController.transform.position, playerController.transform.position - transform.position, playerController.transform.position - transform.position);
 		parts.linkedPanel.GetComponent<Animator>().SetTrigger("showInstructions");
 		playerController.AddRevivablePlayer(parts);
 	}
-
 	public void AllowPlayerRevive(PlayerController player)
 	{
 		ReviveInformations i_newPart = new ReviveInformations();
@@ -105,33 +92,32 @@ public class Retriever : MonoBehaviour
 		i_newPart.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_newPart.amount + "/" + player.revivePartsCount;
 		AllowPlayerRevive(i_newPart);
 	}
-
 	public void RetrieveCorePart(CorePart i_corePart)
 	{
 		i_corePart.Pick(playerController);
         FeedbackManager.SendFeedback("event.PlayerPickingBodyPart", playerController, i_corePart.transform.position, i_corePart.transform.position - transform.position, i_corePart.transform.position - transform.position);
         bool i_partsFound = false;
 		List<ReviveInformations> newList = new List<ReviveInformations>();
-		foreach (ReviveInformations parts in retrievedParts)
+		foreach (ReviveInformations i_parts in retrievedParts)
 		{
-			if (parts.linkedPlayer == i_corePart.linkedPawn)
+			if (i_parts.linkedPlayer == i_corePart.linkedPawn)
 			{
 				i_partsFound = true;
-				parts.amount++;
-				if (parts.amount >= parts.maxAmount)
+				i_parts.amount++;
+				if (i_parts.amount >= i_parts.maxAmount)
 				{
-					AllowPlayerRevive(parts);
+					AllowPlayerRevive(i_parts);
 				}
 				else
 				{
-					parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = parts.amount + "/" + parts.maxAmount;
-					parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
-					newList.Add(parts);
+					i_parts.linkedPanel.transform.Find("TextHolder").transform.Find("Amount").GetComponent<TextMeshProUGUI>().text = i_parts.amount + "/" + i_parts.maxAmount;
+					i_parts.linkedPanel.GetComponent<Animator>().SetTrigger("showAmount");
+					newList.Add(i_parts);
 				}
 			}
 			else
 			{
-				newList.Add(parts);
+				newList.Add(i_parts);
 			}
 		}
 		retrievedParts = newList;
@@ -149,4 +135,5 @@ public class Retriever : MonoBehaviour
 			retrievedParts.Add(i_newPart);
 		}
 	}
+	#endregion
 }
