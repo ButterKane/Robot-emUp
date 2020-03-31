@@ -129,13 +129,13 @@ public class PlayerController : PawnController, IHitable
 	} //Returns a transform of a point between both players
 	public PlayerController GetOtherPlayer ()
 	{
-		List<PlayerController> i_players = GameManager.alivePlayers;
+		List<PlayerController> i_players = GameManager.players;
 		foreach (PlayerController p in i_players)
 		{
 			if (p != this) { return p; }
 		}
 		return null;
-	} //Returns the other player (if he's alive)
+	} //Returns the other player
 	public void DisableInput ()
 	{
 		inputDisabled = true;

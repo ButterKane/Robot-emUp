@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     public static Canvas mainCanvas;
     public static List<PlayerController> deadPlayers;
     public static List<PlayerController> alivePlayers;
+    public static List<PlayerController> players;
 
     [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
@@ -85,6 +86,7 @@ public class GameManager : MonoBehaviour
         i = this;
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
+        players = new List<PlayerController>();
         //Auto assign players
         foreach (PlayerController pc in FindObjectsOfType<PlayerController>())
         {
@@ -96,6 +98,7 @@ public class GameManager : MonoBehaviour
             {
                 playerTwo = pc;
             }
+            players.Add(pc);
         }
         if (levelManager == null) { levelManager = FindObjectOfType<LevelManager>(); }
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
