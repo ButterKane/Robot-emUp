@@ -409,9 +409,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
     {
 		Vector3 i_normalizedImpactVector;
 		LockManager.UnlockTarget(this.transform);
-        float i_BumpDistanceMod = 0.5f;
-        float i_BumpDurationMod = 0.5f;
-        float i_BumpRestDurationMod = 0.5f;
 
         switch (_source)
         {
@@ -420,13 +417,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                 {
                     damageAfterBump = _damages;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                    if (_thrower.GetComponent<DunkController>() != null)
-                    {
-                        DunkController i_controller = _thrower.GetComponent<DunkController>();
-                        i_BumpDistanceMod = i_controller.bumpDistanceMod;
-                        i_BumpDurationMod = i_controller.bumpDurationMod;
-                        i_BumpRestDurationMod = i_controller.bumpRestDurationMod;
-                    }
                     BumpMe(i_normalizedImpactVector.normalized,BumpForce.Force2);
                     whatBumps = WhatBumps.Dunk;
                 }
@@ -443,12 +433,6 @@ public class EnemyBehaviourV2 : PawnController, IHitable
                     damageAfterBump = _damages;
                     EnergyManager.IncreaseEnergy(energyGainedOnHit);
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-                    if (_bumpModificators != default(Vector3))
-                    {
-                        i_BumpDistanceMod = _bumpModificators.x;
-                        i_BumpDurationMod = _bumpModificators.y;
-                        i_BumpRestDurationMod = _bumpModificators.z;
-                    }
                     BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                     whatBumps = WhatBumps.RedBarrel;
                 }

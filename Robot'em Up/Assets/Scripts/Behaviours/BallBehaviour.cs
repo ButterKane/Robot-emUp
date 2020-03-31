@@ -87,7 +87,7 @@ public class BallBehaviour : MonoBehaviour
 		currentBounceCount = 0;
 		canBounce = true;
 		canHitWalls = true;
-		currentCurve = _passController.GetCurvedPathCoordinates(startPosition, _target, _lookDirection);
+		currentCurve = _passController.GetCurvedPathCoordinates(startPosition, _target, _lookDirection, out float d);
 		currentTimeFlying = 0;
 		initialLookDirection = _lookDirection;
 		teleguided = false;
@@ -232,6 +232,11 @@ public class BallBehaviour : MonoBehaviour
 	public void ChangeSpeed(float _newSpeed)
 	{
 		currentSpeed = _newSpeed;
+	}
+
+	public float GetCurrentSpeed ()
+	{
+		return currentSpeed;
 	}
 
 	public float GetCurrentDistanceTravelled()
@@ -421,7 +426,7 @@ public class BallBehaviour : MonoBehaviour
 					float i_curveLength;
 					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
 					if (i_currentPassController == null) { return; }
-					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget(), initialLookDirection);
+					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget(), initialLookDirection, out float d);
 					ConvertCoordinatesToCurve(i_pathCoordinates, out i_curveX, out i_curveY, out i_curveZ, out i_curveLength);
 					currentMaxDistance = i_curveLength;
 					float i_positionOnCurve = currentDistanceTravelled / currentMaxDistance;
