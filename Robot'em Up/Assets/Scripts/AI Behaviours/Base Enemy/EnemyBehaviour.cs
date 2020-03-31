@@ -483,7 +483,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 Damage(_damages);
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
 
-                BallDatas bd = _ball.currentBallDatas;
+                BallDatas bd = _ball.GetCurrentBallDatas();
 				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
 
                 // Bump or push depending on Ball charge value
