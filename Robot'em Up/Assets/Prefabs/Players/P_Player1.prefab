@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 4824538873194744163}
   - component: {fileID: 6803351105506393549}
   m_Layer: 8
-  m_Name: Player1
+  m_Name: P_Player1
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,38 +63,7 @@ MonoBehaviour:
   invincibilityTime: 0.15
   ignoreEletricPlates: 0
   canMove: 1
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.5
-      inSlope: 0.5
-      outSlope: 0.5
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0.5
-      outSlope: 0.5
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  minWalkSpeed: 0.3
-  moveSpeed: 15
-  acceleration: 200
-  movingDrag: 0.08
-  idleDrag: 0.05
-  onGroundGravityMultiplier: 2
-  deadzone: 0.2
-  turnSpeed: 0.25
+  pawnMovementValues: {fileID: 11400000, guid: 74b063ecd24e4f34dbdb70dbcb8c2ee4, type: 2}
   canClimb: 1
   timeBeforeClimb: 0
   minDistanceToClimb: 1
@@ -1946,6 +1915,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5825664154814933021}
     m_Modifications:
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_Magnet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1316520370546782270, guid: cf94563e621637244851d67ba5863980,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2010,16 +1989,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 25.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_Name
-      value: FX_Magnet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1316520370547094246, guid: cf94563e621637244851d67ba5863980,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf94563e621637244851d67ba5863980, type: 3}
