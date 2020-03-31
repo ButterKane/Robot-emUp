@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BambooV3
-  m_Shader: {fileID: 4800000, guid: 4aadf5d4322a3da4daa09d1a693ee83d, type: 3}
+  m_Name: M_PillarGround1010_02
+  m_Shader: {fileID: 4800000, guid: 767f5279139608d4688d98b60f1cab19, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -19,6 +19,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _12517normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _51612536_553196668424338_6330084407579246592_n:
+        m_Texture: {fileID: 2800000, guid: 3ec8dcd850907854a92c1ed810903cb5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -35,28 +43,28 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Distortation:
-        m_Texture: {fileID: 2800000, guid: fd3aec1f10a9a184c966b35d8981a1c5, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a37cfc47ab70130449daade09d7d860b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 10098b6ab07bb81478f96a9c740c4fec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Marktexture:
+        m_Texture: {fileID: 2800000, guid: fc630e14e9b292b4eb1f9dadd6d5aebb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NoGrassTex:
-        m_Texture: {fileID: 2800000, guid: a37cfc47ab70130449daade09d7d860b, type: 3}
+    - _NoiseFFloor:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Noise:
-        m_Texture: {fileID: 2800000, guid: a799c193c43b8f9408a535764ceef4f5, type: 3}
+    - _NoiseMark:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -67,41 +75,37 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Ramp:
+    - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BoolProjector: -0.3
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _ForceWind: 0
-    - _FurShading: 0.164
-    - _FurThinness: 2
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NoiseFloorSharpness: 2.23
+    - _NoiseFloorTiling: 85.8
+    - _NoiseMarkInt: 1.69
+    - _NoiseMarkSharpness: 2
+    - _NoiuseMarkingTiling: 42.93
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RimMax: 1
-    - _RimMin: 1
-    - _RimPower: 8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpeedWind: 0
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
+    - __dirty: 0
+    - _noiseFloorint: 0.82
     m_Colors:
-    - _Color: {r: 0.6784314, g: 0.854902, b: 0.4901961, a: 1}
-    - _DiffTint: {r: 0.5943396, g: 0.5086853, b: 0.18222678, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HColor: {r: 0.6784314, g: 0.8588236, b: 0.4901961, a: 1}
-    - _NoirColor: {r: 1, g: 1, b: 1, a: 1}
-    - _PJShadowColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SColor: {r: 0.67058825, g: 0.8470589, b: 0.48627454, a: 1}
+    - _Color: {r: 0.098039225, g: 0.8588236, b: 0.15294118, a: 1}
+    - _DetailMaskCOlor: {r: 0.7372549, g: 0.7128202, b: 0.5875922, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _FlorCOlor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
+    - _MarkingCOlor: {r: 0.06950873, g: 0.14966008, b: 0.20754719, a: 0}
