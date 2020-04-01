@@ -32,7 +32,7 @@ public class EnemyMelee : EnemyBehaviour
     {
         //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
         base.EnterPreparingAttackState();
-        ActivateMeleeHitBox();
+        ActivateMeleeBoxInstance();
     }
 
     public void InititateMeleeHitBox()
@@ -48,7 +48,7 @@ public class EnemyMelee : EnemyBehaviour
         }
     }
 
-    public void ActivateMeleeHitBox()
+    public void ActivateMeleeBoxInstance()
     {
         attackHitBoxInstance.SetActive(true);
     }
@@ -58,9 +58,9 @@ public class EnemyMelee : EnemyBehaviour
         if (attackPreviewPlane != null)
         {
             // Make attack zone appear progressively
-            if (_anticipationTime > portionOfAnticipationWithFlickering * maxAnticipationTime)
+            if (_anticipationTime > portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)
             {
-                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
+                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)) / (attackValues.maxAnticipationTime - (attackValues.maxAnticipationTime * portionOfAnticipationWithFlickering))));
             }
             // If max size is reached, flicker the color
             else
@@ -79,7 +79,7 @@ public class EnemyMelee : EnemyBehaviour
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
-        MeleeAttackPreview(anticipationTime);
+        MeleeAttackPreview(currentAnticipationTime);
     }
 
     public void ActivateAttackHitBox()
@@ -93,8 +93,10 @@ public class EnemyMelee : EnemyBehaviour
 
     public override void DestroySpawnedAttackUtilities()
     {
+        // well, we don't destroy anything here, but this is an override method so teh name isn't contractual
         if (attackHitBoxInstance != null)
         {
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(false);
             attackHitBoxInstance.SetActive(false);
         }
     }
@@ -104,7 +106,7 @@ public class EnemyMelee : EnemyBehaviour
         Debug.Log("starting attack");
         base.EnterPreparingAttackState();
         attackPreviewPlane = null;
-        InititateMeleeHitBox();
+        InititateMeleeHitBox(); // just in case the hit box got a problem, recreate it
         yield return null;
     }
 
@@ -117,8 +119,8 @@ public class EnemyMelee : EnemyBehaviour
 
     public override void HeavyPushAction()
     {
-        cooldownDuration = cooldownAfterAttackTime;
-        anticipationTime = 0;
+        cooldownDuration = attackValues.cooldownAfterAttackTime;
+        currentAnticipationTime = 0;
         animator.ResetTrigger("AnticipateAttackTrigger");
         animator.ResetTrigger("AttackTrigger");
         ChangeState(EnemyState.Idle);
