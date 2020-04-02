@@ -29,7 +29,7 @@ public class PuzzleForceField : PuzzleActivable, IHitable
 
         if (isActivated && type == typeForceField.Flipper )
         {
-            _ball.ResetBounds();
+            _ball.ResetBounceCount();
             _ball.MultiplySpeed(2f);
         }
     }
