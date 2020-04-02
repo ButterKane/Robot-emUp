@@ -12,10 +12,10 @@ public enum DashState
 public class DashController : MonoBehaviour
 {
 	[Separator("General Settings")]
-	public float minDistance = 2f;
-	public float maxDistance = 3f;
+	public float minDistance = 2f; //If the free space in front of the player is less than minDistance, then he can't use the dash
+	public float distance = 3f; //Max distance travelled by the player during the dash
 	public float duration = 0.2f;
-	public AnimationCurve dashDistanceCurve;
+	public AnimationCurve dashSpeedCurve;
 	public int maxStackAmount = 3;
 
 	public bool unstoppableDash;
@@ -46,11 +46,13 @@ public class DashController : MonoBehaviour
 	private float currentStackCooldown;
 	private int currentStackAmount;
 	private GameObject currentDashFX;
+	private PlayerUI playerUI;
 
 	[ReadOnly] public DashState state;
 	private void Awake ()
 	{
 		linkedPawn = GetComponent<PawnController>();
+		playerUI = GetComponent<PlayerUI>();
 		currentStackAmount = maxStackAmount;
 	}
 
@@ -60,7 +62,47 @@ public class DashController : MonoBehaviour
 		UpdateStackAmount();
 	}
 
-	void UpdateStackAmount()
+	#region Public functions
+	public void Dash ( Vector3 _direction )
+	{
+		if (!CanDash()) { return; }
+		if (playerUI != null)
+		{
+			playerUI.DisplayDashes();
+		}
+		Analytics.CustomEvent("PlayerDash", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+		_direction = _direction.normalized;
+		Vector3 i_startPosition = transform.position;
+		Vector3 i_endPosition = transform.position + _direction * distance;
+		//Check for min distance & maxDistance
+		RaycastHit hit;
+		if (Physics.Raycast(linkedPawn.GetCenterPosition(), _direction, out hit, distance))
+		{
+			if (Vector3.Distance(linkedPawn.GetCenterPosition(), hit.point) <= minDistance)
+			{
+				return; //Cancel dash
+			}
+			else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
+			{
+				i_endPosition = hit.point - (_direction * 0.5f);
+			}
+		}
+		i_endPosition.y = i_startPosition.y;
+
+		linkedPawn.ChangePawnState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
+	}
+	public float GetCurrentStackCooldown ()
+	{
+		return currentStackCooldown;
+	}
+	public int GetCurrentStackAmount ()
+	{
+		return currentStackAmount;
+	}
+	#endregion
+
+	#region Private functions
+	private void UpdateStackAmount()
 	{
 		if (currentStackAmount < maxStackAmount)
 		{
@@ -75,34 +117,7 @@ public class DashController : MonoBehaviour
 			}
 		}
 	}
-	public void Dash(Vector3 _direction)
-	{
-		if (GetComponent<PlayerUI>() != null)
-		{
-			GetComponent<PlayerUI>().DisplayDashes();
-		}
-		if (!CanDash()) { return; }
-		Analytics.CustomEvent("PlayerDash", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
-		_direction = _direction.normalized;
-		Vector3 i_startPosition = transform.position;
-		Vector3 i_endPosition = transform.position + _direction * maxDistance; 
-		//Check for min distance & maxDistance
-		RaycastHit hit;
-		if (Physics.Raycast(linkedPawn.GetCenterPosition(), _direction, out hit, maxDistance))
-		{
-			if (Vector3.Distance(linkedPawn.GetCenterPosition(), hit.point) <= minDistance)
-			{
-				return; //Cancel dash
-			} else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
-			{
-				i_endPosition = hit.point - (_direction * 0.5f);
-			}
-		}
-		i_endPosition.y = i_startPosition.y;
-
-		linkedPawn.ChangePawnState("Dashing", Dash_C(i_startPosition, i_endPosition), StopDash_C());
-	}
-	void ChangeState(DashState _newState)
+	private void ChangeState(DashState _newState)
 	{
 		switch (_newState)
 		{
@@ -114,8 +129,7 @@ public class DashController : MonoBehaviour
 		}
 		state = _newState;
 	}
-
-	void GenerateClone()
+	private void GenerateClone()
 	{
 		GameObject i_clone = Instantiate(clonedVisuals.gameObject);
 		Transform[] i_childTransforms = clonedVisuals.GetComponentsInChildren<Transform>();
@@ -147,7 +161,6 @@ public class DashController : MonoBehaviour
 		i_newComp.delay = cloneDuration;
 
 	}
-
 	public bool CanDash()
 	{
 		if (currentUseCooldown >= 0 || currentStackAmount <= 0)
@@ -156,25 +169,16 @@ public class DashController : MonoBehaviour
 		}
 		return true;
 	}
-
-	void UpdateCooldown()
+	private void UpdateCooldown()
 	{
 		if (currentUseCooldown >= 0)
 		{
 			currentUseCooldown -= Time.deltaTime;
 		}
 	}
+	#endregion
 
-	public float GetCurrentStackCooldown()
-	{
-		return currentStackCooldown;
-	}
-
-	public int GetCurrentStackAmount()
-	{
-		return currentStackAmount;
-	}
-
+	#region Coroutines
 	IEnumerator Dash_C ( Vector3 _startPosition, Vector3 _endPosition )
 	{
 		currentUseCooldown = useCooldown;
@@ -220,8 +224,8 @@ public class DashController : MonoBehaviour
 					StartCoroutine(StopDash_C());
 				}
 			}
-			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashDistanceCurve.Evaluate(i/duration));
-			yield return new WaitForEndOfFrame();
+			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashSpeedCurve.Evaluate(i/duration));
+			yield return null;
 		}
 		transform.position = _endPosition;
 		GenerateClone();
@@ -229,14 +233,12 @@ public class DashController : MonoBehaviour
 		StartCoroutine(FadePlayerSpeed());
 		yield return null;
 	}
-
 	IEnumerator StopDash_C()
 	{
 		GenerateClone();
 		ChangeState(DashState.None);
 		yield return null;
 	}
-
 	IEnumerator FadePlayerSpeed()
 	{
 		for (float i = 0; i < dashFadeDuration; i+=Time.deltaTime)
@@ -245,5 +247,6 @@ public class DashController : MonoBehaviour
 			yield return null;
 		}
 	}
+	#endregion
 
 }
