@@ -16,6 +16,8 @@ public class Collectible : MonoBehaviour
     public Renderer quadPlayer1Rend;
     public Renderer quadPlayer2Rend;
     public Animator myAnim;
+    public GameObject aButtonPlayer1;
+    public GameObject aButtonPlayer2;
 
     [Header("Variables to tweak")]
     public float ratioBeforeTriggerOut;
@@ -25,7 +27,12 @@ public class Collectible : MonoBehaviour
     public float maxEmissiveMultiplier;
     public float curveTime;
     public AnimationCurve emissiveCurve;
+    //appearance of indicator
+    public float indicatorCurveTime;
+    public AnimationCurve indicatorCurve;
+    //UNITY EVENT
     public UnityEvent collectedEvent;
+
 
     [Header("Read Only")]
     [ReadOnly] public PlayerIndex playerIndex1;
@@ -43,6 +50,7 @@ public class Collectible : MonoBehaviour
     float player2PressRatio;
     float emissiveCurveTimerPlayer1;
     float emissiveCurveTimerPlayer2;
+    float indicatorCurveTimer;
 
     void Awake()
     {
@@ -56,6 +64,45 @@ public class Collectible : MonoBehaviour
     {
         CheckPlayerCompletion();
         CompletionEmissiveUpdate();
+        IndicatorAppearance();
+    }
+
+    void IndicatorAppearance()
+    {
+        if (!player1InRange && activated)
+        {
+            indicatorCurveTimer += Time.deltaTime/indicatorCurveTime;
+            if(indicatorCurve.Evaluate(indicatorCurveTimer%1) < 0.5f)
+            {
+                aButtonPlayer1.SetActive(false);
+            }
+            else
+            {
+                aButtonPlayer1.SetActive(true);
+            }
+        }
+        else if (!aButtonPlayer1.activeSelf)
+        {
+            aButtonPlayer1.SetActive(true);
+        }
+
+        if (!player2InRange && activated)
+        {
+            indicatorCurveTimer += Time.deltaTime / indicatorCurveTime;
+            if (indicatorCurve.Evaluate(indicatorCurveTimer % 1) < 0.5f)
+            {
+                aButtonPlayer2.SetActive(false);
+            }
+            else
+            {
+                aButtonPlayer2.SetActive(true);
+            }
+        }
+        else if (!aButtonPlayer2.activeSelf)
+        {
+            aButtonPlayer2.SetActive(true);
+        }
+
     }
 
     void CheckPlayerCompletion()
