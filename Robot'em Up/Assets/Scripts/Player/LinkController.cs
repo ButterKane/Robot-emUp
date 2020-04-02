@@ -55,8 +55,13 @@ public class LinkController : MonoBehaviour
         linkGameObject = GenerateLinkHolder();
 		ChangeLinkState(LinkState.Hidden);
     }
+	private void Update ()
+	{
+		UpdateLink();
+	}
 
-    GameObject GenerateLinkHolder()
+	#region Private functions
+	private GameObject GenerateLinkHolder ()
 	{
 		GameObject i_newLinkHolder = new GameObject();
 		i_newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
@@ -69,12 +74,6 @@ public class LinkController : MonoBehaviour
 		GameManager.DDOL.Add(i_newLinkHolder.gameObject);
 		return i_newLinkHolder;
 	}
-
-	private void Update ()
-	{
-		UpdateLink();
-	}
-
 	private void ChangeLinkState ( LinkState _newState )
 	{
 		if (linkState == _newState) { return; }
@@ -101,7 +100,6 @@ public class LinkController : MonoBehaviour
 
 		linkState = _newState;
 	}
-
 	private void UpdateLink()
 	{
 		if (linkGameObject != null)
@@ -181,4 +179,5 @@ public class LinkController : MonoBehaviour
 			}
 		}
 	}
+	#endregion
 }
