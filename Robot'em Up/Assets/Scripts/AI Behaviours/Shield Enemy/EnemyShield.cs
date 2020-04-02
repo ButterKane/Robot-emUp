@@ -7,7 +7,7 @@ public class EnemyShield : EnemyBehaviour
 {
     [Space(2)]
     [Separator("Shield Variables")]
-    public GameObject shield;       // It's only cosmetic now
+    public GameObject shield;      
     public bool deactivateShieldWhenAttacking = true;
     // The "field of view" angle of the shield. If incident angle of ball is within this, ball will rebound
     [Range(0, 90)] public float angleRangeForRebound = 45;
@@ -17,13 +17,16 @@ public class EnemyShield : EnemyBehaviour
         get { return isShieldActivated; }
         set
         {
+            // Launches coroutine of animation, and when done activates/deactivates the shield
             isShieldActivated = value;
             shield.SetActive(value);
+            
         }
     }
     bool isShieldActivated;
     private IEnumerator currentShieldDeactiveCoroutine;
 
+    // This is supposed to go away when we have the 3D asset
     [Space(2)]
     [Header("Aspect Variables")]
     public Renderer[] renderers;
@@ -38,9 +41,10 @@ public class EnemyShield : EnemyBehaviour
     public float attackChargeDuration = 5f;
     [Range(0, 1)] public float whenToTriggerEndOfAttackAnim = 0.9f;    // At what % of the attack duration do we want to stop animation to trigger?
     public float attackRaycastDistance = 2;
-    public float maxRotationSpeed = 20; // How many angle it can rotates in one second
+    public float maxRotationSpeed = 20; // How many angle it can rotate in one second
     private float attackTimeProgression;
     private float initialSpeed;
+    private float initialAcceleration;
 
     private new void Start()
     {
@@ -64,7 +68,7 @@ public class EnemyShield : EnemyBehaviour
     {
         //ChangePawnState("ShieldEnemyCharging", StartAttackState_C(), StopAttackState_C());
         initialSpeed = navMeshAgent.speed;
-        pawnMovementValues.acceleration = navMeshAgent.acceleration;
+        initialAcceleration = navMeshAgent.acceleration;
         currentAnticipationTime = attackValues.maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
 
@@ -76,7 +80,7 @@ public class EnemyShield : EnemyBehaviour
         Debug.Log("start attackshield");
 
         initialSpeed = navMeshAgent.speed;
-        pawnMovementValues.acceleration = navMeshAgent.acceleration;
+        initialAcceleration = navMeshAgent.acceleration;
         currentAnticipationTime = attackValues.maxAnticipationTime;
         animator.SetTrigger("AnticipateAttackTrigger");
 
@@ -86,7 +90,6 @@ public class EnemyShield : EnemyBehaviour
 
     public IEnumerator StopAttackState_C()
     {
-        Debug.Log("stop attackshield");
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
         mustCancelAttack = true;
         attackHitBox.ToggleCollider(false);
@@ -116,8 +119,6 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = false;
         }
 
-        //attackTimeProgression += Time.deltaTime / maxAttackDuration;
-
         //must stop ?
         int i_attackRaycastMask = 1 << LayerMask.NameToLayer("Environment");
         if (Physics.Raycast(transform.position, transform.forward, attackRaycastDistance, i_attackRaycastMask) && !mustCancelAttack)
@@ -128,7 +129,7 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            pawnMovementValues.moveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
+            effectiveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
             Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPawnController.transform.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
@@ -139,8 +140,8 @@ public class EnemyShield : EnemyBehaviour
 
         if (attackTimeProgression >= attackChargeDuration)
         {
-            pawnMovementValues.moveSpeed = initialSpeed;
-            navMeshAgent.acceleration = pawnMovementValues.acceleration;
+            effectiveSpeed = initialSpeed;
+            navMeshAgent.acceleration = initialAcceleration;
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
             animator.SetTrigger("EndOfAttackTrigger");
@@ -152,10 +153,10 @@ public class EnemyShield : EnemyBehaviour
             float i_rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
             foreach (var renderer in renderers)
             {
-                renderer.material.SetColor("_Color", Color.Lerp(normalColor,  attackingColor, i_rationalizedProgression)); // Time prgression isn't good
+                renderer.material.SetColor("_Color", Color.Lerp(normalColor,  attackingColor, i_rationalizedProgression));
             }
         }
-
+        
         attackTimeProgression += Time.deltaTime;
     }
 
@@ -188,7 +189,6 @@ public class EnemyShield : EnemyBehaviour
 
     public override void ExitBumpedState()
     {
-        //Debug.Log("exit bump state");
         if (currentShieldDeactiveCoroutine != null)
         {
             StopCoroutine(currentShieldDeactiveCoroutine);
