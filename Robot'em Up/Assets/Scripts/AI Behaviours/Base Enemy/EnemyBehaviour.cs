@@ -92,7 +92,6 @@ public class EnemyBehaviour : PawnController, IHitable
     protected float attackDuration;
     protected float cooldownDuration;
     protected bool endOfAttackTriggerLaunched;
-    
 
     float currentTimePausedAfterAttack;
     protected bool mustCancelAttack;
@@ -131,14 +130,6 @@ public class EnemyBehaviour : PawnController, IHitable
         ChangeState(EnemyState.Idle);
     }
 
-    private void InitializePlayersRefs()
-    {
-        playerOneTransform = GameManager.playerOne.transform;
-        playerTwoTransform = GameManager.playerTwo.transform;
-        playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
-        playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
-    }
-
     protected void Update()
     {
         UpdateDistancesToPlayers();
@@ -147,32 +138,79 @@ public class EnemyBehaviour : PawnController, IHitable
         UpdateHealthBar();
     }
 
-    protected void UpdateHealthBar()
+    #region EnemyState Changing
+    public void ChangeState(EnemyState _newState)
     {
-        if (GetHealth() < GetMaxHealth() && healthBar != null)
+        ExitState();
+        EnterState(_newState);
+        enemyState = _newState;
+    }
+
+    void EnterState(EnemyState _newState)
+    {
+        //print(_newState);
+        switch (_newState)
         {
-            healthBar.ToggleHealthBar(true);
-        }
-        else
-        {
-            healthBar.ToggleHealthBar(false);
+            case EnemyState.Idle:
+                timeBetweenCheck = focusValues.maxTimeBetweenCheck;
+                break;
+            case EnemyState.Following:
+                navMeshAgent.enabled = true;
+                timeBetweenCheck = 0;
+                break;
+            case EnemyState.Bumped:
+                DestroySpawnedAttackUtilities();
+                EnterBumpedState();
+                break;
+            case EnemyState.ChangingFocus:
+                break;
+            case EnemyState.PreparingAttack:
+                EnterPreparingAttackState();
+                break;
+            case EnemyState.Attacking:
+                EnterAttackingState();
+                break;
+            case EnemyState.PauseAfterAttack:
+                currentTimePausedAfterAttack = attackValues.maxTimePauseAfterAttack;
+                break;
+            case EnemyState.Dying:
+                selfCollider.enabled = false;
+                currentDeathWaitTime = deathValues.waitTimeBeforeDisappear;
+                Freeze();
+                if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
+                break;
+            case EnemyState.Spawning:
+                break;
+            case EnemyState.Deploying:
+                // is played automatically in the animator. See "isFastDeployment" bool to manage aniamtions
+                break;
         }
     }
 
-    protected void UpdateSpeed()
+    void ExitState()
     {
-        if (navMeshAgent != null)
+        switch (enemyState)
         {
-            navMeshAgent.speed = pawnMovementValues.moveSpeed * GetSpeedCoef();
-        }
-    }
-
-    public override void UpdateAnimatorBlendTree()
-    {
-        base.UpdateAnimatorBlendTree(); // Don't do anything if there is no animator
-        if (canMove)
-        {
-            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
+            case EnemyState.Idle:
+                break;
+            case EnemyState.Following:
+                break;
+            case EnemyState.Bumped:
+                ExitBumpedState();
+                break;
+            case EnemyState.ChangingFocus:
+                break;
+            case EnemyState.PreparingAttack:
+                break;
+            case EnemyState.Attacking:
+                navMeshAgent.enabled = true;
+                DestroySpawnedAttackUtilities();
+                break;
+            case EnemyState.PauseAfterAttack:
+                cooldownDuration = attackValues.cooldownAfterAttackTime;
+                break;
+            case EnemyState.Dying:
+                break;
         }
     }
 
@@ -266,87 +304,16 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
     }
+    #endregion
 
-    protected Vector3 UpdateNewDestinationAlongBezierCurve(Vector3 _endPosition)
+    #region Public Methods
+    public override void UpdateAnimatorBlendTree()
     {
-        float i_distanceToPointRatio = (1 + (transform.position - _endPosition).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
-
-        Vector3 i_p0 = transform.position;    // The starting point
-
-        Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(_endPosition, transform.position);  // The destination
-
-        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
-
-        int i_moveSens = i_angle > 1 ? 1 : -1;
-
-        Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
-
-        // Calculating position on bezier curve, following start point, end point and avancement
-        // In this version, the avancement has been replaced by a constant because it's recalculated every frame
-        Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
-        
-        return SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position);
-    }
-
-    public void ChangeState(EnemyState _newState)
-    {
-        ExitState();
-        EnterState(_newState);
-        enemyState = _newState;
-    }
-
-    void EnterState(EnemyState _newState)
-    {
-        //print(_newState);
-        switch (_newState)
+        base.UpdateAnimatorBlendTree(); // Don't do anything if there is no animator
+        if (canMove)
         {
-            case EnemyState.Idle:
-                timeBetweenCheck = focusValues.maxTimeBetweenCheck;
-                break;
-            case EnemyState.Following:
-                navMeshAgent.enabled = true;
-                timeBetweenCheck = 0;
-                break;
-            case EnemyState.Bumped:
-                DestroySpawnedAttackUtilities();
-                EnterBumpedState();
-                break;
-            case EnemyState.ChangingFocus:
-                break;
-            case EnemyState.PreparingAttack:
-				EnterPreparingAttackState();
-                break;
-            case EnemyState.Attacking:
-                EnterAttackingState();
-                break;
-            case EnemyState.PauseAfterAttack:
-                currentTimePausedAfterAttack = attackValues.maxTimePauseAfterAttack;
-                break;
-            case EnemyState.Dying:
-                selfCollider.enabled = false;
-                currentDeathWaitTime = deathValues.waitTimeBeforeDisappear;
-                Freeze();
-                if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
-                break;
-            case EnemyState.Spawning:
-                break;
-            case EnemyState.Deploying:
-                // is played automatically in the animator. See "isFastDeployment" bool to manage aniamtions
-                break;
+            animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
         }
-    }
-
-    public virtual void EnterBumpedState()
-    {
-        navMeshAgent.enabled = false;
-        animator.SetTrigger("BumpTrigger");
-    }
-
-    public virtual void EnterPreparingAttackState()
-    {
-        navMeshAgent.enabled = false;
-        currentAnticipationTime = attackValues.maxAnticipationTime;
-        animator.SetTrigger("AnticipateAttackTrigger");
     }
 
     public virtual IEnumerator ResetPreparingAttackState()
@@ -355,11 +322,11 @@ public class EnemyBehaviour : PawnController, IHitable
         yield return null;
     }
 
-    public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
+    public virtual void EnterPreparingAttackState()
     {
-        endOfAttackTriggerLaunched = false;
-        animator.SetTrigger("AttackTrigger");
-        mustCancelAttack = false;
+        navMeshAgent.enabled = false;
+        currentAnticipationTime = attackValues.maxAnticipationTime;
+        animator.SetTrigger("AnticipateAttackTrigger");
     }
 
     public virtual void PreparingAttackState()
@@ -378,60 +345,35 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
+    public virtual void EnterAttackingState(string attackSound = "EnemyAttack")
+    {
+        endOfAttackTriggerLaunched = false;
+        animator.SetTrigger("AttackTrigger");
+        mustCancelAttack = false;
+    }
+
     public virtual void AttackingState()
     {
         //ChangeState(EnemyState.PauseAfterAttack);
     }
 
-    void ExitState()
+    public virtual void EnterBumpedState()
     {
-        switch (enemyState)
-        {
-            case EnemyState.Idle:
-                break;
-            case EnemyState.Following:
-                break;
-            case EnemyState.Bumped:
-                ExitBumpedState();
-                break;
-            case EnemyState.ChangingFocus:
-                break;
-            case EnemyState.PreparingAttack:
-                break;
-            case EnemyState.Attacking:
-                navMeshAgent.enabled = true;
-                DestroySpawnedAttackUtilities();
-                break;
-            case EnemyState.PauseAfterAttack:
-                cooldownDuration = attackValues.cooldownAfterAttackTime;
-                break;
-            case EnemyState.Dying:
-                break;
-        }
+        navMeshAgent.enabled = false;
+        animator.SetTrigger("BumpTrigger");
     }
-
 
     public virtual void ExitBumpedState()
     {
         //Staggered(whatBumps);
     }
 
-    void UpdateDistancesToPlayers()
-    {
-        distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
-        distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
-        if (focusedPawnController != null)
-            distanceWithFocusedPlayer = Vector3.Distance(transform.position, focusedPawnController.transform.position);
-    }
-
-    
-
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
         damageAfterBump = 0;
         Vector3 i_normalizedImpactVector;
         LockManager.UnlockTarget(this.transform);
-        
+
         switch (_source)
         {
             case DamageSource.Dunk:
@@ -472,7 +414,7 @@ public class EnemyBehaviour : PawnController, IHitable
             case DamageSource.Ball:
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 
-				animator.SetTrigger("HitTrigger");
+                animator.SetTrigger("HitTrigger");
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
 
@@ -483,22 +425,22 @@ public class EnemyBehaviour : PawnController, IHitable
                 Damage(_damages);
                 FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
 
-                BallDatas bd = _ball.currentBallDatas;
-				float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
+                BallDatas bd = _ball.GetCurrentBallDatas();
+                float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
 
                 // Bump or push depending on Ball charge value
                 if (ballChargePercent >= bd.minimalChargeForBump)
-				{
-					BumpMe(_impactVector.normalized, BumpForce.Force1);
-				}
-				else if (ballChargePercent >= bd.minimalChargeForHeavyPush)
-				{
-					Push(PushType.Heavy, _impactVector.normalized, PushForce.Force1);
-				}
-				else if (ballChargePercent >= bd.minimalChargeForLightPush)
-				{
-					Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
-				}
+                {
+                    BumpMe(_impactVector.normalized, BumpForce.Force1);
+                }
+                else if (ballChargePercent >= bd.minimalChargeForHeavyPush)
+                {
+                    Push(PushType.Heavy, _impactVector.normalized, PushForce.Force1);
+                }
+                else if (ballChargePercent >= bd.minimalChargeForLightPush)
+                {
+                    Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
+                }
                 break;
 
             case DamageSource.Laser:
@@ -518,46 +460,9 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
     }
+    #endregion
 
-    public override void Damage(float _amount, bool _enableInvincibilityFrame = false)
-    {
-        if (!CanDamage()) { return; }
-        FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
-
-        currentHealth -= _amount;
-
-        if (currentHealth <= 0)
-        {
-            ChangeState(EnemyState.Dying);
-        }
-    }
-
-
-    public override void Kill()
-    {
-        if (healthBar != null) { Destroy(healthBar.gameObject); }
-        deathValues.onDeath.Invoke();
-        EnemyManager.i.RemoveEnemy(GetComponent<EnemyBehaviour>());
-        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
-        {
-            DropCore();
-        }
-        base.Kill();
-    }
-    /// <summary>
-    /// Need cleaning => Create core with enemy and drop it afterward
-    /// </summary>
-    protected void DropCore()
-    {
-        GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
-        i_newCore.name = "Core of " + gameObject.name;
-        i_newCore.transform.position = transform.position;
-        Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
-        float i_throwForce = Random.Range(deathValues.minMaxDropForce.x, deathValues.minMaxDropForce.y);
-        i_wantedDirectionAngle.y = i_throwForce * 0.035f;
-        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(deathValues.minMaxCoreHealthValue.x, deathValues.minMaxCoreHealthValue.y));
-    }
-
+    #region Private and protected methods
     void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
@@ -582,7 +487,7 @@ public class EnemyBehaviour : PawnController, IHitable
         //Unfocus player because of distance
         if (focusedPawnController != null)
         {
-            if (focusedPawnController.transform.position.y < transform.position.y - focusValues.maxHeightOfDetection && focusedPawnController.transform.position.y >  transform.position.y + focusValues.maxHeightOfDetection)
+            if (focusedPawnController.transform.position.y < transform.position.y - focusValues.maxHeightOfDetection && focusedPawnController.transform.position.y > transform.position.y + focusValues.maxHeightOfDetection)
             {
                 //Debug.Log("Changing to null due to height");
                 ChangingFocus(null);
@@ -591,7 +496,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 ChangeState(EnemyState.Idle);
                 return;
             }
-            
+
             if ((focusedPawnController.transform == playerOneTransform && (distanceWithPlayerOne > focusValues.unfocusDistance || !playerOnePawnController.IsTargetable()))
                 || ((focusedPawnController.transform == playerTwoTransform && (distanceWithPlayerTwo > focusValues.unfocusDistance || !playerTwoPawnController.IsTargetable()))))
             {
@@ -643,13 +548,114 @@ public class EnemyBehaviour : PawnController, IHitable
 
     void ChangingFocus(Transform _newFocus)
     {
-		if (_newFocus != null){focusedPawnController = _newFocus.GetComponent<PawnController>();}
-        else { focusedPawnController = null;}
+        if (_newFocus != null) { focusedPawnController = _newFocus.GetComponent<PawnController>(); }
+        else { focusedPawnController = null; }
     }
 
+    void UpdateDistancesToPlayers()
+    {
+        distanceWithPlayerOne = Vector3.Distance(transform.position, playerOneTransform.position);
+        distanceWithPlayerTwo = Vector3.Distance(transform.position, playerTwoTransform.position);
+        if (focusedPawnController != null)
+            distanceWithFocusedPlayer = Vector3.Distance(transform.position, focusedPawnController.transform.position);
+    }
+
+    private void InitializePlayersRefs()
+    {
+        playerOneTransform = GameManager.playerOne.transform;
+        playerTwoTransform = GameManager.playerTwo.transform;
+        playerOnePawnController = playerOneTransform.GetComponent<PlayerController>();
+        playerTwoPawnController = playerTwoTransform.GetComponent<PlayerController>();
+    }
+
+    protected void UpdateHealthBar()
+    {
+        if (GetHealth() < GetMaxHealth() && healthBar != null)
+        {
+            healthBar.ToggleHealthBar(true);
+        }
+        else
+        {
+            healthBar.ToggleHealthBar(false);
+        }
+    }
+
+    protected void UpdateSpeed()
+    {
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.speed = pawnMovementValues.moveSpeed * GetSpeedCoef();
+        }
+    }
+
+    protected Vector3 UpdateNewDestinationAlongBezierCurve(Vector3 _endPosition)
+    {
+        float i_distanceToPointRatio = (1 + (transform.position - _endPosition).magnitude / bezierDistanceToHeightRatio);  // widens the arc of surrounding the farther the surroundingPoint is
+
+        Vector3 i_p0 = transform.position;    // The starting point
+
+        Vector3 i_p2 = SwissArmyKnife.GetFlattedDownPosition(_endPosition, transform.position);  // The destination
+
+        float i_angle = Vector3.SignedAngle(i_p2 - i_p0, focusedPawnController.transform.position - i_p0, Vector3.up);
+
+        int i_moveSens = i_angle > 1 ? 1 : -1;
+
+        Vector3 i_p1 = i_p0 + (i_p2 - i_p0) / 0.5f + Vector3.Cross(i_p2 - i_p0, Vector3.up) * i_moveSens * bezierCurveHeight * i_distanceToPointRatio;  // "third point" of the bezier curve
+
+        // Calculating position on bezier curve, following start point, end point and avancement
+        // In this version, the avancement has been replaced by a constant because it's recalculated every frame
+        Vector3 i_positionOnBezierCurve = (Mathf.Pow(0.5f, 2) * i_p0) + (2 * 0.5f * 0.5f * i_p1) + (Mathf.Pow(0.5f, 2) * i_p2);
+
+        return SwissArmyKnife.GetFlattedDownPosition(i_positionOnBezierCurve, focusedPawnController.transform.position);
+    }
+
+    /// <summary>
+    /// Need cleaning => Create core with enemy and drop it afterward
+    /// </summary>
+    protected void DropCore()
+    {
+        GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
+        i_newCore.name = "Core of " + gameObject.name;
+        i_newCore.transform.position = transform.position;
+        Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
+        float i_throwForce = Random.Range(deathValues.minMaxDropForce.x, deathValues.minMaxDropForce.y);
+        i_wantedDirectionAngle.y = i_throwForce * 0.035f;
+        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(deathValues.minMaxCoreHealthValue.x, deathValues.minMaxCoreHealthValue.y));
+    }
+    #endregion
+
+    #region Overridden methods
+    public override void Damage(float _amount, bool _enableInvincibilityFrame = false)
+    {
+        if (!CanDamage()) { return; }
+        FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
+
+        currentHealth -= _amount;
+
+        if (currentHealth <= 0)
+        {
+            ChangeState(EnemyState.Dying);
+        }
+    }
+
+    public override void Kill()
+    {
+        if (healthBar != null) { Destroy(healthBar.gameObject); }
+        deathValues.onDeath.Invoke();
+        EnemyManager.i.RemoveEnemy(GetComponent<EnemyBehaviour>());
+        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
+        {
+            DropCore();
+        }
+        base.Kill();
+    }
+    #endregion
+
+    #region Coroutines
     IEnumerator WaitABit_C(float _duration)
     {
         yield return new WaitForSeconds(_duration);
         ChangeState(EnemyState.Following);
     }
+    #endregion
 }
