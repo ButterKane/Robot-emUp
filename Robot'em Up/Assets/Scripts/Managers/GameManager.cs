@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
     private static bool deathPanelCalled = false;
     public static List<GameObject> DDOL;
     public static string currentZoneName;
+    public static List<PlayerController> disabledInputs;
 
     private void Awake()
     {
@@ -117,6 +118,7 @@ public class GameManager : MonoBehaviour
         CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
+        disabledInputs = new List<PlayerController>();
     }
 
     private void Update()
@@ -214,12 +216,24 @@ public class GameManager : MonoBehaviour
 
     public static void OpenLevelMenu()
     {
+        foreach (PlayerController p in GameManager.players)
+        {
+            if (!p.IsInputDisabled())
+            {
+                p.DisableInput();
+                disabledInputs.Add(p);
+            }
+        }
         Time.timeScale = 0f;
         mainMenu.gameObject.SetActive(true);
     }
 
     public static void CloseLevelMenu()
     {
+        foreach (PlayerController p in disabledInputs)
+        {
+            p.EnableInput();
+        }
         Time.timeScale = 1f;
         mainMenu.gameObject.SetActive(false);
     }
@@ -257,6 +271,7 @@ public class GameManager : MonoBehaviour
             }
             GameObject i_newBall = Instantiate(i.ballPrefab, null);
             DontDestroyOnLoad(i_newBall);
+            DDOL.Add(i_newBall);
             BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
             ball = i_newBall.GetComponent<BallBehaviour>();
             ball.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
@@ -276,15 +291,15 @@ public class GameManager : MonoBehaviour
             {
                 if (i == 0) { if (menuCalledOne) { return; } }
                 if (i == 1) { if (menuCalledTwo) { return; } }
-                if (mainMenu != null)
+                if (mainMenu != null && !mainMenu.gameObject.activeSelf)
                 {
-                    CloseLevelMenu();
+                    OpenLevelMenu();
                     if (i == 0) { menuCalledOne = true; }
                     if (i == 1) { menuCalledTwo = true; }
                 }
-                else
+                else if (mainMenu != null)
                 {
-                    OpenLevelMenu();
+                    CloseLevelMenu();
                     if (i == 0) { menuCalledOne = true; }
                     if (i == 1) { menuCalledTwo = true; }
                 }
@@ -340,13 +355,13 @@ public class GameManager : MonoBehaviour
 
     void LoadMomentumManager()
     {
-        MomentumManager i_mm = gameObject.AddComponent<MomentumManager>();
+        gameObject.AddComponent<MomentumManager>();
         MomentumManager.datas = (MomentumData)Resources.Load("MomentumData");
     }
 
     void LoadEnergyManager()
     {
-        EnergyManager i_em = gameObject.AddComponent<EnergyManager>();
+        gameObject.AddComponent<EnergyManager>();
         EnergyManager.datas = (EnergyData)Resources.Load("EnergyData");
     }
 
@@ -376,6 +391,7 @@ public class GameManager : MonoBehaviour
 
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
+        Debug.Log("Creating menu");
         mainMenu = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"), null).GetComponent<MainMenu>();
         mainMenu.gameObject.SetActive(false);
 
@@ -386,7 +402,10 @@ public class GameManager : MonoBehaviour
         if (DDOL == null) { return; }
         foreach (GameObject obj in DDOL)
         {
-            Destroy(obj.gameObject);
+            if (DDOL != null)
+            {
+                Destroy(obj.gameObject);
+            }
         }
         GameManager.i = null;
     }
