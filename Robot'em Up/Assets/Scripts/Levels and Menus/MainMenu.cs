@@ -107,7 +107,7 @@ public class MainMenu : MonoBehaviour
 	private void Update ()
 	{
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
-        if (isMainMenuActive)
+        if (isMainMenuActive && gameObject.activeSelf)
         {
             for (int i = 0; i < 2; i++)
             {
