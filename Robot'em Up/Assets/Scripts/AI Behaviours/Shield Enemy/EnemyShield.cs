@@ -54,13 +54,26 @@ public class EnemyShield : EnemyBehaviour
         enemyType = EnemyTypes.Shield;
     }
 
-    // ATTACK
+    #region Public methods
+    // Ususally called when hitting player
+    public void StopAttack()
+    {
+        //navMeshAgent.SetDestination(transform.position);
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
+        animator.SetTrigger("AttackTouchedTrigger");
+        attackHitBox.ToggleCollider(false);
+        navMeshAgent.enabled = false;
+    }
+    #endregion
+
+    #region Overriden methods
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
         foreach (var renderer in renderers)
         {
-            renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor , currentAnticipationTime));
+            renderer.material.SetColor("_Color", Color.Lerp(attackingColor, normalColor, currentAnticipationTime));
         }
     }
 
@@ -73,28 +86,6 @@ public class EnemyShield : EnemyBehaviour
         animator.SetTrigger("AnticipateAttackTrigger");
 
         navMeshAgent.enabled = false;
-    }
-
-    public IEnumerator StartAttackState_C()
-    {
-        Debug.Log("start attackshield");
-
-        initialSpeed = navMeshAgent.speed;
-        initialAcceleration = navMeshAgent.acceleration;
-        currentAnticipationTime = attackValues.maxAnticipationTime;
-        animator.SetTrigger("AnticipateAttackTrigger");
-
-        navMeshAgent.enabled = false;
-        yield return null;
-    }
-
-    public IEnumerator StopAttackState_C()
-    {
-        attackTimeProgression = whenToTriggerEndOfAttackAnim;
-        mustCancelAttack = true;
-        attackHitBox.ToggleCollider(false);
-        navMeshAgent.enabled = false;
-        yield return null;
     }
 
     public override void EnterAttackingState(string attackSound = "EnemyAttack")
@@ -129,10 +120,10 @@ public class EnemyShield : EnemyBehaviour
 
         if (!mustCancelAttack)
         {
-            effectiveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression/attackChargeDuration));
+            effectiveSpeed = Mathf.Lerp(minMaxAttackSpeed.x, minMaxAttackSpeed.y, attackSpeedVariation.Evaluate(attackTimeProgression / attackChargeDuration));
             navMeshAgent.angularSpeed = maxRotationSpeed;
             navMeshAgent.acceleration = 100f;
-            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPawnController.transform.position - transform.position, (maxRotationSpeed/360) *Time.deltaTime );
+            Vector3 i_direction = Vector3.Lerp(transform.forward, focusedPawnController.transform.position - transform.position, (maxRotationSpeed / 360) * Time.deltaTime);
 
             Debug.DrawRay(transform.position + i_direction * 5, Vector3.up, Color.green, 2f);
             navMeshAgent.SetDestination(transform.position + i_direction * 5);
@@ -145,7 +136,7 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = true;
             ChangeState(EnemyState.PauseAfterAttack);
             animator.SetTrigger("EndOfAttackTrigger");
-            
+
             navMeshAgent.enabled = false;
         }
         else if (attackTimeProgression >= whenToTriggerEndOfAttackAnim)
@@ -153,30 +144,18 @@ public class EnemyShield : EnemyBehaviour
             float i_rationalizedProgression = (1 - attackTimeProgression) / (1 - whenToTriggerEndOfAttackAnim);
             foreach (var renderer in renderers)
             {
-                renderer.material.SetColor("_Color", Color.Lerp(normalColor,  attackingColor, i_rationalizedProgression));
+                renderer.material.SetColor("_Color", Color.Lerp(normalColor, attackingColor, i_rationalizedProgression));
             }
         }
-        
-        attackTimeProgression += Time.deltaTime;
-    }
 
-    // Ususally called when hitting player
-    public void StopAttack()
-    {
-        //navMeshAgent.SetDestination(transform.position);
-        attackTimeProgression = whenToTriggerEndOfAttackAnim;
-        mustCancelAttack = true;
-        animator.SetTrigger("AttackTouchedTrigger");
-        attackHitBox.ToggleCollider(false);
-        navMeshAgent.enabled = false;
+        attackTimeProgression += Time.deltaTime;
     }
 
     public override void DestroySpawnedAttackUtilities()
     {
         attackHitBox.ToggleCollider(false); // well, it's not destroying it, more like deactivating it. But that's the same point
     }
-
-    // BUMPED
+    
     public override void EnterBumpedState()
     {
         isShieldActivated_accesss = false;
@@ -203,15 +182,8 @@ public class EnemyShield : EnemyBehaviour
         base.Kill();   // Override the death sound with the right one 
     }
 
-    public IEnumerator DeactivateShieldForGivenTime( float _timeToDeactivate)
+    public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        isShieldActivated_accesss = false;
-        yield return new WaitForSeconds(_timeToDeactivate);
-        isShieldActivated_accesss = true;
-    }
-
-	public override void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
-	{
         Debug.Log("Shield hit by ball directly");
         if (_source == DamageSource.Dunk)
         {
@@ -229,7 +201,7 @@ public class EnemyShield : EnemyBehaviour
         }
 
         base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
-	}
+    }
 
     public override void HeavyPushAction()
     {
@@ -238,4 +210,36 @@ public class EnemyShield : EnemyBehaviour
         attackHitBox.ToggleCollider(false);
         navMeshAgent.enabled = false;
     }
+    #endregion
+
+    #region Coroutines
+    private IEnumerator StartAttackState_C()
+    {
+        Debug.Log("start attackshield");
+
+        initialSpeed = navMeshAgent.speed;
+        initialAcceleration = navMeshAgent.acceleration;
+        currentAnticipationTime = attackValues.maxAnticipationTime;
+        animator.SetTrigger("AnticipateAttackTrigger");
+
+        navMeshAgent.enabled = false;
+        yield return null;
+    }
+
+    private IEnumerator StopAttackState_C()
+    {
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
+        attackHitBox.ToggleCollider(false);
+        navMeshAgent.enabled = false;
+        yield return null;
+    }
+
+    private IEnumerator DeactivateShieldForGivenTime(float _timeToDeactivate)
+    {
+        isShieldActivated_accesss = false;
+        yield return new WaitForSeconds(_timeToDeactivate);
+        isShieldActivated_accesss = true;
+    }
+    #endregion
 }
