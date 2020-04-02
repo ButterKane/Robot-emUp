@@ -41,7 +41,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         UpdateAimingCubeState();
     }
 
-    public override void ExitTurretState()
+    protected override void ExitTurretState()
     {
         switch (turretState)
         {
@@ -64,7 +64,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterTurretState()
+    protected override void EnterTurretState()
     {
         //print(State);
         switch (turretState)
@@ -95,7 +95,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 break;
         }
     }
-    public override void EnterTurretAttackState()
+    protected override void EnterTurretAttackState()
     {
         switch (attackState)
         {
@@ -126,7 +126,7 @@ public class TurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    public override void ExitTurretAttackState()
+    protected override void ExitTurretAttackState()
     {
         switch (attackState)
         {
@@ -144,7 +144,7 @@ public class TurretSniperBehaviour : TurretBehaviour
                 break;
         }
     }
-    public override void AttackingUpdateState()
+    protected override void AttackingUpdateState()
     {
 		bool i_aimAtPlayer = false;
         
