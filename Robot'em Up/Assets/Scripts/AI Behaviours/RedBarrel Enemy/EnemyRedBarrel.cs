@@ -46,11 +46,6 @@ public class EnemyRedBarrel : EnemyBehaviour
         Explosion_C = null;
     }
 
-    public override void PreparingAttackState()
-    {
-        
-    }
-
     public override void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
