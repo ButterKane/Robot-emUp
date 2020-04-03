@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_MediumRock02
-  m_Shader: {fileID: 4800000, guid: 7a0d44aafb479454a9de87086d99ee68, type: 3}
+  m_Name: M_PillarGround510_01
+  m_Shader: {fileID: 4800000, guid: 767f5279139608d4688d98b60f1cab19, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -19,12 +19,16 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BumpMap:
+    - _12517normal:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _CombinedMask:
-        m_Texture: {fileID: 2800000, guid: b7d1edc1e62fedf4cb70a7b6037c9ec4, type: 3}
+    - _51612536_553196668424338_6330084407579246592_n:
+        m_Texture: {fileID: 2800000, guid: b86bafba4af6d1342ba0b1f1bdd6fd5f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -44,11 +48,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 10098b6ab07bb81478f96a9c740c4fec, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Marktexture:
+        m_Texture: {fileID: 2800000, guid: 0e7586c6389538641967d99f60bd4b79, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseFFloor:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseMark:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -69,13 +85,15 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0
     - _GlossyReflections: 1
-    - _GradientHeight: 0.1
-    - _GradientSharpness: 0.44
-    - _GrayMapContrast: 0
     - _Metallic: 0
     - _Mode: 0
+    - _NoiseFloorSharpness: 2.23
+    - _NoiseFloorTiling: 85.8
+    - _NoiseMarkInt: 1.69
+    - _NoiseMarkSharpness: 2
+    - _NoiuseMarkingTiling: 42.93
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
@@ -84,12 +102,10 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
+    - _noiseFloorint: 0.82
     m_Colors:
-    - _AOColorR: {r: 0.5660378, g: 0.3284087, b: 0.3284087, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorB: {r: 0.5309719, g: 0.6213193, b: 0.7169812, a: 1}
-    - _ColorG: {r: 0.5503293, g: 0.66335, b: 0.7830189, a: 1}
-    - _ColorR: {r: 0.69312924, g: 0.75957274, b: 0.8301887, a: 0}
-    - _CurvatureColorB: {r: 1, g: 1, b: 1, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GradientColorG: {r: 0.4779548, g: 0.509434, b: 0.19464225, a: 1}
+    - _Color: {r: 0.098039225, g: 0.8588236, b: 0.15294118, a: 1}
+    - _DetailMaskCOlor: {r: 0.754717, g: 0.754717, b: 0.754717, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _FlorCOlor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
+    - _MarkingCOlor: {r: 0.06950873, g: 0.14966008, b: 0.20754719, a: 0}
