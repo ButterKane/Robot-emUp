@@ -10,7 +10,7 @@ public class SoundData
 	public List<Sound> soundList;
 	[Range(0f, 1f)] public float volumeMultiplier = 1f;
 
-	public void SetPlayRate(Sound _sound, float _newPlayRate)
+	public void SetPlayProbability(Sound _sound, float _newProbability)
 	{
 		if (soundList.Count <= 1) { return; }
 		float i_difference = 0f;
@@ -19,8 +19,8 @@ public class SoundData
 		{
 			if (wep == _sound)
 			{
-				i_difference = _newPlayRate - wep.playChances;
-				wep.playChances = _newPlayRate;
+				i_difference = _newProbability - wep.playChances;
+				wep.playChances = _newProbability;
 			}
 			else
 			{
@@ -92,8 +92,9 @@ public class SoundManager
 	public static void PlaySound(string _soundName, Vector3 _worldPosition, Transform _parent = null)
 	{
 		SoundData i_soundData = GetSoundData(_soundName);
+		if (i_soundData == null) { return; }
 		AudioClip clip = GetSoundClip(i_soundData);
-		if (clip == null) { Debug.LogWarning("Warning: Clip '"+ _soundName + "' not found."); return; }
+		if (clip == null) { return; }
 		GameObject i_newSoundPlayer = new GameObject();
 		i_newSoundPlayer.name = "SoundPlayer";
 		AudioSource i_newAudioSource = i_newSoundPlayer.AddComponent<AudioSource>();
@@ -132,6 +133,10 @@ public class SoundManager
 		{
 			i_chosenIndex++;
 			i_cumulativeChances += _soundData.soundList[i_chosenIndex].playChances;
+		}
+		if (_soundData.soundList[i_chosenIndex].clip == null)
+		{
+			Debug.LogWarning("Warning: Clip '" + _soundData.soundName + "' not found."); return null;
 		}
 		return _soundData.soundList[i_chosenIndex].clip;
 	}
