@@ -24,7 +24,8 @@ public class NarrationManager : MonoBehaviour
     private Image subImage;
     private IEnumerator textWritingCoroutine;
 
-    public List<NarrativeInteractiveElements> narrativeElementsInRange = new List<NarrativeInteractiveElements>();
+    List<NarrativeInteractiveElements> narrativeElementsInRange = new List<NarrativeInteractiveElements>();
+    public float timeBetweenRangeCheck;
     [HideInInspector] public Transform player1Transform;
     [HideInInspector] public Transform player2Transform;
     Vector3 middlePlayerPosition;
@@ -40,12 +41,13 @@ public class NarrationManager : MonoBehaviour
 
         player1Transform = GameManager.playerOne.transform;
         player2Transform = GameManager.playerTwo.transform;
+
+        StartCoroutine(CheckElementToActivate());
     }
 
     // Update is called once per frame
     void Update()
     {
-        CheckElementToActivate();
         middlePlayerPosition = (player1Transform.position + player2Transform.position) / 2;
     }
 
@@ -54,14 +56,16 @@ public class NarrationManager : MonoBehaviour
         if (_add)
         {
             narrativeElementsInRange.Add(_narrativeElement);
+            print(_narrativeElement.name + " is added");
         }
         else
         {
             narrativeElementsInRange.Remove(_narrativeElement);
+            print(_narrativeElement.name + " is removed");
         }
     }
 
-    void CheckElementToActivate()
+    IEnumerator CheckElementToActivate()
     {
         if (narrativeElementsInRange.Count > 0)
         {
@@ -69,23 +73,30 @@ public class NarrationManager : MonoBehaviour
             int i_narrativeElementToActivate = -1;
             for (int i = 0; i < narrativeElementsInRange.Count; i++)
             {
-                if(Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition) < i_distance)
+                if (Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition) < i_distance)
                 {
                     i_distance = Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition);
                     i_narrativeElementToActivate = i;
                 }
             }
-            if(activatedNarrativeElement != null)
+
+            if(narrativeElementsInRange[i_narrativeElementToActivate] != activatedNarrativeElement)
             {
-                activatedNarrativeElement.SetAIPossession(false);
+                if (activatedNarrativeElement != null)
+                {
+                    activatedNarrativeElement.SetAIPossession(false);
+                }
+                activatedNarrativeElement = narrativeElementsInRange[i_narrativeElementToActivate];
+                activatedNarrativeElement.SetAIPossession(true);
             }
-            activatedNarrativeElement = narrativeElementsInRange[i_narrativeElementToActivate];
         }
-        else if(activatedNarrativeElement != null)
+        else if (activatedNarrativeElement != null)
         {
             activatedNarrativeElement.SetAIPossession(false);
             activatedNarrativeElement = null;
         }
+        yield return new WaitForSeconds(timeBetweenRangeCheck);
+        StartCoroutine(CheckElementToActivate());
     }
 
     public void LaunchDialogue(DialogueData _dialogueData)

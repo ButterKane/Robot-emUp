@@ -28,6 +28,7 @@ public class CameraBehavior : NarrativeInteractiveElements
     {
         if (possessed)
         {
+            print("hey hey heeeey !!");
             FollowPlayersMiddlePoint();
         }
     }
