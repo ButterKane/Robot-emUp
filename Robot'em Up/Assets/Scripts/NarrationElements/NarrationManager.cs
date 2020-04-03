@@ -24,6 +24,12 @@ public class NarrationManager : MonoBehaviour
     private Image subImage;
     private IEnumerator textWritingCoroutine;
 
+    public List<NarrativeInteractiveElements> narrativeElementsInRange = new List<NarrativeInteractiveElements>();
+    [HideInInspector] public Transform player1Transform;
+    [HideInInspector] public Transform player2Transform;
+    Vector3 middlePlayerPosition;
+    NarrativeInteractiveElements activatedNarrativeElement;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -31,12 +37,55 @@ public class NarrationManager : MonoBehaviour
 
         textWritingCoroutine = null;
         dialogueBoxInstance = null;
+
+        player1Transform = GameManager.playerOne.transform;
+        player2Transform = GameManager.playerTwo.transform;
     }
 
     // Update is called once per frame
     void Update()
     {
+        CheckElementToActivate();
+        middlePlayerPosition = (player1Transform.position + player2Transform.position) / 2;
+    }
 
+    public void SetNarrativeElementsInRange(bool _add, NarrativeInteractiveElements _narrativeElement)
+    {
+        if (_add)
+        {
+            narrativeElementsInRange.Add(_narrativeElement);
+        }
+        else
+        {
+            narrativeElementsInRange.Remove(_narrativeElement);
+        }
+    }
+
+    void CheckElementToActivate()
+    {
+        if (narrativeElementsInRange.Count > 0)
+        {
+            float i_distance = 100;
+            int i_narrativeElementToActivate = -1;
+            for (int i = 0; i < narrativeElementsInRange.Count; i++)
+            {
+                if(Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition) < i_distance)
+                {
+                    i_distance = Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition);
+                    i_narrativeElementToActivate = i;
+                }
+            }
+            if(activatedNarrativeElement != null)
+            {
+                activatedNarrativeElement.SetAIPossession(false);
+            }
+            activatedNarrativeElement = narrativeElementsInRange[i_narrativeElementToActivate];
+        }
+        else if(activatedNarrativeElement != null)
+        {
+            activatedNarrativeElement.SetAIPossession(false);
+            activatedNarrativeElement = null;
+        }
     }
 
     public void LaunchDialogue(DialogueData _dialogueData)
