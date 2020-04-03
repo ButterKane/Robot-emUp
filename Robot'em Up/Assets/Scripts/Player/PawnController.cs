@@ -66,6 +66,7 @@ public class PawnController : MonoBehaviour
     [Separator("Movement settings")]
     public bool canMove;
     public PawnMovementValues pawnMovementValues;
+    protected float effectiveSpeed;
 
     [Separator("Climb settings")]
     public bool canClimb = true;
@@ -151,7 +152,9 @@ public class PawnController : MonoBehaviour
 		UpdateNavMeshAgent(navMeshAgent);
 		moveState = MoveState.Idle;
 		currentPawnState = null;
-	}
+        effectiveSpeed = pawnMovementValues.moveSpeed;
+
+    }
 	protected virtual void FixedUpdate()
     {
 		if (frozen) { return; }
@@ -469,13 +472,13 @@ public class PawnController : MonoBehaviour
 		if (moveState == MoveState.Pushed) { return; }
 		if (navMeshAgent != null)
 		{
-			currentSpeed = pawnMovementValues.moveSpeed * GetSpeedCoef();
+			currentSpeed = effectiveSpeed * GetSpeedCoef();
 		}
 		else
 		{
 			Vector3 i_myVel = rb.velocity;
 			i_myVel.y = 0;
-			i_myVel = Vector3.ClampMagnitude(i_myVel, pawnMovementValues.moveSpeed * GetSpeedCoef());
+			i_myVel = Vector3.ClampMagnitude(i_myVel, effectiveSpeed * GetSpeedCoef());
 			i_myVel.y = rb.velocity.y;
 			rb.velocity = i_myVel;
 			currentSpeed = rb.velocity.magnitude;

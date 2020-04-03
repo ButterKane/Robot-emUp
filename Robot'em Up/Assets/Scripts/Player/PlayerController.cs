@@ -90,7 +90,6 @@ public class PlayerController : PawnController, IHitable
 		ui = GetComponent<PlayerUI>();
 
 		//Variable initialization
-		ExtendingArmsController.grabableObjects.Add(mainCollider);
 		GameManager.alivePlayers.Add(this);
 		GenerateMiddlePoint();
 	}
@@ -147,6 +146,11 @@ public class PlayerController : PawnController, IHitable
 	public Vector3 GetLookInput ()
 	{
 		return lookInput;
+	}
+
+	public bool IsInputDisabled()
+	{
+		return inputDisabled;
 	}
 	public void FreezeTemporarly ( float _duration )
 	{
@@ -465,6 +469,9 @@ public class PlayerController : PawnController, IHitable
 					extendingArmsController.TogglePreview(true);
 					ForceLookAt(prioritaryGrabInformation.targetedPosition.position); //Player will rotate toward look input
 				}
+			} else if (extendingArmsController != null)
+			{
+				extendingArmsController.TogglePreview(false);
 			}
 		}
 		else if (state.Buttons.RightShoulder == ButtonState.Released && rightButtonWaitForRelease)

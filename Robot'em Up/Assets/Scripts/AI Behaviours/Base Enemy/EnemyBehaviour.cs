@@ -463,7 +463,7 @@ public class EnemyBehaviour : PawnController, IHitable
     #endregion
 
     #region Private and protected methods
-    void CheckDistanceAndAdaptFocus()
+    protected void CheckDistanceAndAdaptFocus()
     {
         //Checking who is in range
         if (distanceWithPlayerOne < focusValues.focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - focusValues.maxHeightOfDetection && transform.position.y < playerOneTransform.position.y + focusValues.maxHeightOfDetection)
@@ -528,15 +528,17 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
-    Transform GetClosestAndAvailablePlayer()
+    protected Transform GetClosestAndAvailablePlayer()
     {
-        if ((distanceWithPlayerOne >= distanceWithPlayerTwo && playerTwoPawnController.IsTargetable())
-            || !playerOnePawnController.IsTargetable())
+        if ((distanceWithPlayerOne >= distanceWithPlayerTwo &&
+            (playerTwoPawnController.IsTargetable()) || !playerOnePawnController.IsTargetable()) &&
+            heightDeltaWithPlayerTwo < focusValues.maxHeightOfDetection)
         {
             return playerTwoTransform;
         }
-        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne && playerOnePawnController.IsTargetable())
-            || !playerTwoPawnController.IsTargetable())
+        else if ((distanceWithPlayerTwo >= distanceWithPlayerOne &&
+            (playerOnePawnController.IsTargetable()) || !playerTwoPawnController.IsTargetable()) &&
+            heightDeltaWithPlayerOne < focusValues.maxHeightOfDetection)
         {
             return playerOneTransform;
         }

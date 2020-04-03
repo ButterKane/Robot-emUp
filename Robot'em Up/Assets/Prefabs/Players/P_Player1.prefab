@@ -86,13 +86,9 @@ MonoBehaviour:
   triggerTreshold: 0.1
   highlightedColor: {r: 1, g: 0.99777603, b: 0, a: 1}
   highlightedSecondColor: {r: 1, g: 0.60341835, b: 0, a: 1}
-  targetedGrabbable: []
   lockable: 0
   lockHitboxSize: 0
   lockSize3DModifier: {x: 1, y: 1, z: 1}
-  enableDash: 1
-  enableJump: 0
-  enableDunk: 1
   enableMagnet: 1
   overHealValue: 20
   delayBeforeOverhealDecay: 5
@@ -135,6 +131,7 @@ MonoBehaviour:
   minMaxProjectionForce: {x: 12, y: 16}
   reviveHoldDuration: 0.85
   reviveFreezeDuration: 0.1
+  targetedGrabbable: []
   extendingArmsController: {fileID: 4824538873194744163}
   mainCollider: {fileID: 5419603750946610382}
 --- !u!114 &514769572
@@ -152,10 +149,7 @@ MonoBehaviour:
   handTransform: {fileID: 4655006219135653576}
   ballDatas: {fileID: 11400000, guid: 359213923aba4d6479b78ed4c94532a4, type: 2}
   passPreviewInEditor: 1
-  passMode: 1
-  passCooldown: 0.3
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
-  previewSnappedColor: {r: 0.18813753, g: 0.6862745, b: 0, a: 1}
   delayBeforePickingOwnBall: 0.1
   minBouncesBeforePickingOwnBall: 2
   perfectReceptionBufferOnFail: 0.65
@@ -163,8 +157,6 @@ MonoBehaviour:
   perfectReceptionMinDelay: 0.2
   perfectReceptionExplosionRadius: 7
   perfectReceptionExplosionDamages: 5
-  curveMaxLateralDistance: 0
-  curveMaxPlayerDistance: 0
   curveRaycastIteration: 50
   curveMinAngle: 5
   hanseLength: 29
@@ -181,17 +173,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb5ac05d469d05d4e8a7102a3795d22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableDunkAspiration: 1
   dunkJumpHeight: 5
   dunkJumpLength: 0.4
   dunkJumpDuration: 0.17
   dunkJumpFreezeDuration: 1
+  energyCost: 1
   energyPercentLostOnFail: 0
+  energyPercentLostOnSuccess: 1
   dunkHitlagForce: 0.117
   dunkDashSpeed: 40
   dunkExplosionRadius: 10
-  dunkAspirationRadius: 15
-  aspirationMinDistanceToPlayer: 4
   dunkDamages: 25
   dunkProjectionForce: 30
   dunkCancelledFallSpeed: 20
@@ -202,9 +193,9 @@ MonoBehaviour:
   dunkForwardAngleTreshold: 7.5
   dunkMaxForwardDistance: 5
   dunkForwardSpeed: 5
-  bumpDistanceMod: 1
-  bumpDurationMod: 0.5
-  bumpRestDurationMod: 0.7
+  enableDunkAspiration: 1
+  dunkAspirationRadius: 15
+  aspirationMinDistanceToPlayer: 4
 --- !u!114 &5564275353483555727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,16 +279,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minDistance: 0.1
-  maxDistance: 7.5
+  distance: 8
   duration: 0.2
-  dashDistanceCurve:
+  dashSpeedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -375,7 +366,7 @@ MonoBehaviour:
   UIFadeDuration: 0.5
   UIFadeDelay: 0.8
   clonedVisuals: {fileID: 4621407884147341700}
-  clonePerSec: 100
+  clonePerSec: 40
   cloneDuration: 0.5
   cloneMaterial: {fileID: 2100000, guid: 9085d16098a735b4b81fdcfd4139e48e, type: 2}
   state: 1

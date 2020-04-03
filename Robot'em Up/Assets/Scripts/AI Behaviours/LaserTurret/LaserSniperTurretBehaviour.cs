@@ -115,7 +115,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         UpdateAimingRedDotState();
     }
 
-    public override void ExitTurretState()
+    protected override void ExitTurretState()
     {
         switch (turretState)
         {
@@ -135,7 +135,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterTurretState()
+    protected override void EnterTurretState()
     {
         //print(State);
         switch (turretState)
@@ -161,7 +161,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterTurretAttackState()
+    protected override void EnterTurretAttackState()
     {
         switch (attackState)
         {
@@ -201,7 +201,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void ExitTurretAttackState()
+    protected override void ExitTurretAttackState()
     {
         switch (attackState)
         {
@@ -225,7 +225,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void AttackingUpdateState()
+    protected override void AttackingUpdateState()
     {
         bool i_aimAtPlayer = false;
         
@@ -353,7 +353,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         animator.ResetTrigger("FromRestToIdleTrigger");
     }
 
-    public override void AbortAttack()
+    protected override void AbortAttack()
     {
         ChangingTurretAttackState(TurretAttackState.Rest);
     }
