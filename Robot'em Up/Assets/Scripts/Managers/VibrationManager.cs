@@ -33,7 +33,10 @@ public class VibrationManager : MonoBehaviour
 	{
 		foreach (Vibrator v in vibrators)
 		{
-			v.ForceStopVibration();
+			if (v != null)
+			{
+				v.ForceStopVibration();
+			}
 		}
 		GamePad.SetVibration(PlayerIndex.One, 0, 0);
 		GamePad.SetVibration(PlayerIndex.Two, 0 ,0);

@@ -105,8 +105,7 @@ public class CheatCodes : MonoBehaviour
         int count = i_enemies.Count;
         for (int i = 0; i < count; i++)
         {
-            Debug.Log("destroying " + i_enemies[0]);
-            if (i_enemies[0].transform.GetComponent<EnemyRedBarrel>())
+            if (i_enemies[0].transform.GetComponent<EnemyRedBarrel>()) 
             {
                 EnemyBehaviour temp = i_enemies[0];
                 EnemyManager.i.enemies.Remove(temp);
