@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 3897057396212220960}
   - component: {fileID: 4637012694845503552}
   m_Layer: 0
-  m_Name: Managers
+  m_Name: P_Managers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,8 +185,6 @@ MonoBehaviour:
   SurrounderPrefab: {fileID: 602022937994174095, guid: 435ebdfea89f14e4395bc9182ffa13f6,
     type: 3}
   ballPrefab: {fileID: 312656209842447024, guid: 739fbb2b237f4614580ae2925bc3cbc4,
-    type: 3}
-  dummyPrefab: {fileID: 3777576183081971107, guid: 2661adb7610714b4b99a627f9b061cfe,
     type: 3}
 --- !u!114 &5253247827333039778
 MonoBehaviour:
@@ -272,12 +270,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66248d24fb8c5e34d8bbcc9c75c901dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
-    type: 3}
-  enemySpawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   enemies: []
   enemiesThatSurround: []
 --- !u!114 &1483543558
@@ -341,6 +333,10 @@ MonoBehaviour:
   dialogueBoxPrefab: {fileID: 4198591106925812, guid: 49e92541cd71c004c8293e57d6bde58a,
     type: 3}
   typingSpeed: 20
+  narrativeElementsInRange: []
+  timeBetweenRangeCheck: 0.3
+  player1Transform: {fileID: 0}
+  player2Transform: {fileID: 0}
 --- !u!114 &4637012694845503552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,6 +356,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5253247827333039776}
     m_Modifications:
+    - target: {fileID: 7632345197320477121, guid: 7e864662dd0fd1545bd1d9981ab032b9,
+        type: 3}
+      propertyPath: m_Name
+      value: DecalsSystem
+      objectReference: {fileID: 0}
     - target: {fileID: 7632345197320477123, guid: 7e864662dd0fd1545bd1d9981ab032b9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -414,11 +415,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7632345197320477121, guid: 7e864662dd0fd1545bd1d9981ab032b9,
-        type: 3}
-      propertyPath: m_Name
-      value: DecalsSystem
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e864662dd0fd1545bd1d9981ab032b9, type: 3}

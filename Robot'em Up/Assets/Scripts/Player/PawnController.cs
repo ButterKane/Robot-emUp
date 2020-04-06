@@ -946,7 +946,6 @@ public class PawnController : MonoBehaviour
 	}
 	private IEnumerator Bump_C( Vector3 _bumpDirectionFlat, BumpForce _force )
     {
-		animator.SetTrigger("FallingTrigger");
 		animator.SetTrigger("BumpTrigger");
 		moveState = MoveState.Pushed;
 		FeedbackManager.SendFeedback(eventOnBeingBumpedAway, this);
@@ -1037,21 +1036,24 @@ public class PawnController : MonoBehaviour
 			if (i_bumpTimeProgression >= whenToTriggerFallingAnim && i_playedEndOfFall == false)
             {
                 animator.SetTrigger("FallingTrigger");
-				if (damageAfterBump > 0)
-				{
-                    Damage(damageAfterBump);
-                    if (currentHealth <=0)
-                    {
-                        Kill();
-                    }
-				}
+				
                 i_playedEndOfFall = true;
             }
             yield return null;
         }
 
-		//when arrived on ground
-		while (i_restDuration > 0)
+        // After the whole bump-fly-fall sequence
+        if (damageAfterBump > 0)
+        {
+            Damage(damageAfterBump);
+            if (currentHealth <= 0)
+            {
+                Kill();
+            }
+        }
+
+        //when arrived on ground
+        while (i_restDuration > 0)
 		{
 			i_restDuration -= Time.deltaTime;
 			if (i_restDuration <= 0)

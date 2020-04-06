@@ -26,6 +26,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
 
     public AudioMixerGroup myAudioMixer;
 
+    [HideInInspector] public bool middlePointInRange;
+
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
         if (!broken)
@@ -146,6 +148,19 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         else
         {
             return player1Transform;
+        }
+    }
+
+    public void SetInRange(bool _inRange)
+    {
+        middlePointInRange = _inRange;
+        if (middlePointInRange)
+        {
+            NarrationManager.narrationManager.SetNarrativeElementsInRange(true, this);
+        }
+        else
+        {
+            NarrationManager.narrationManager.SetNarrativeElementsInRange(false, this);
         }
     }
 }

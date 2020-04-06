@@ -68,7 +68,7 @@ public class SoundEditor : Editor
 							float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(soundData.soundList[y].playChances * 100f) / 100f, 0f, 1f);
 							if (EditorGUI.EndChangeCheck())
 							{
-								soundData.SetPlayRate(soundData.soundList[y], probaSliderValue);
+								soundData.SetPlayProbability(soundData.soundList[y], probaSliderValue);
 							}
 							if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
 							{

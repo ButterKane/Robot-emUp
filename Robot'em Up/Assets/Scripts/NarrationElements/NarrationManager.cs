@@ -24,6 +24,13 @@ public class NarrationManager : MonoBehaviour
     private Image subImage;
     private IEnumerator textWritingCoroutine;
 
+    List<NarrativeInteractiveElements> narrativeElementsInRange = new List<NarrativeInteractiveElements>();
+    public float timeBetweenRangeCheck;
+    [HideInInspector] public Transform player1Transform;
+    [HideInInspector] public Transform player2Transform;
+    Vector3 middlePlayerPosition;
+    NarrativeInteractiveElements activatedNarrativeElement;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -31,12 +38,65 @@ public class NarrationManager : MonoBehaviour
 
         textWritingCoroutine = null;
         dialogueBoxInstance = null;
+
+        player1Transform = GameManager.playerOne.transform;
+        player2Transform = GameManager.playerTwo.transform;
+
+        StartCoroutine(CheckElementToActivate());
     }
 
     // Update is called once per frame
     void Update()
     {
+        middlePlayerPosition = (player1Transform.position + player2Transform.position) / 2;
+    }
 
+    public void SetNarrativeElementsInRange(bool _add, NarrativeInteractiveElements _narrativeElement)
+    {
+        if (_add)
+        {
+            narrativeElementsInRange.Add(_narrativeElement);
+            print(_narrativeElement.name + " is added");
+        }
+        else
+        {
+            narrativeElementsInRange.Remove(_narrativeElement);
+            print(_narrativeElement.name + " is removed");
+        }
+    }
+
+    IEnumerator CheckElementToActivate()
+    {
+        if (narrativeElementsInRange.Count > 0)
+        {
+            float i_distance = 100;
+            int i_narrativeElementToActivate = -1;
+            for (int i = 0; i < narrativeElementsInRange.Count; i++)
+            {
+                if (Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition) < i_distance)
+                {
+                    i_distance = Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition);
+                    i_narrativeElementToActivate = i;
+                }
+            }
+
+            if(narrativeElementsInRange[i_narrativeElementToActivate] != activatedNarrativeElement)
+            {
+                if (activatedNarrativeElement != null)
+                {
+                    activatedNarrativeElement.SetAIPossession(false);
+                }
+                activatedNarrativeElement = narrativeElementsInRange[i_narrativeElementToActivate];
+                activatedNarrativeElement.SetAIPossession(true);
+            }
+        }
+        else if (activatedNarrativeElement != null)
+        {
+            activatedNarrativeElement.SetAIPossession(false);
+            activatedNarrativeElement = null;
+        }
+        yield return new WaitForSeconds(timeBetweenRangeCheck);
+        StartCoroutine(CheckElementToActivate());
     }
 
     public void LaunchDialogue(DialogueData _dialogueData)

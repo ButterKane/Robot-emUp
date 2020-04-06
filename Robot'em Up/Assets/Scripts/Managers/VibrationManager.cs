@@ -15,6 +15,7 @@ public enum VibrationForce
 [ExecuteAlways]
 public class VibrationManager : MonoBehaviour
 {
+	public static List<Vibrator> vibrators = new List<Vibrator>();
 	public static void Vibrate ( PlayerIndex _playerIndex, float _duration, VibrationForce _force, AnimationCurve _forceCurve = default )
 	{
 		if (_forceCurve == default)
@@ -23,14 +24,34 @@ public class VibrationManager : MonoBehaviour
 			_forceCurve.AddKey(new Keyframe(0, 1f));
 			_forceCurve.AddKey(new Keyframe(1f, 1f));
 		}
-		Vibrator vibrator = new GameObject().AddComponent<Vibrator>();
-		vibrator.StartCoroutine(vibrator.Vibrate_C(_playerIndex, _duration, _force, _forceCurve));
+		Vibrator i_vibrator = new GameObject().AddComponent<Vibrator>();
+		i_vibrator.vibrationCoroutine = i_vibrator.StartCoroutine(i_vibrator.Vibrate_C(_playerIndex, _duration, _force, _forceCurve));
+		vibrators.Add(i_vibrator);
 	}
 
+	public static void CancelAllVibrations()
+	{
+		foreach (Vibrator v in vibrators)
+		{
+			v.ForceStopVibration();
+		}
+		GamePad.SetVibration(PlayerIndex.One, 0, 0);
+		GamePad.SetVibration(PlayerIndex.Two, 0 ,0);
+	}
 }
 
 public class Vibrator : MonoBehaviour
 {
+	public Coroutine vibrationCoroutine;
+
+	public void ForceStopVibration()
+	{
+		if (vibrationCoroutine != null)
+		{
+			StopCoroutine(vibrationCoroutine);
+		}
+		Destroy(this.gameObject);
+	}
 	public IEnumerator Vibrate_C ( PlayerIndex _playerIndex, float _duration, VibrationForce _force, AnimationCurve _forceCurve )
 	{
 		float i_momentumMultiplier;
