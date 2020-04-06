@@ -21,7 +21,6 @@ public class PuzzleMoveableWall : PuzzleActivable
     private float fractionOfJourney;
     float distCovered;
 
-    // Start is called before the first frame update
     void Awake()
     {
         startTime = Time.time;
@@ -30,7 +29,6 @@ public class PuzzleMoveableWall : PuzzleActivable
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (state == MoveableWallState.OneToTwo)
@@ -70,7 +68,7 @@ public class PuzzleMoveableWall : PuzzleActivable
 
 
 
-    override public void WhenActivate()
+    override public void Activate()
     {
         isActivated = true;
         if (state == MoveableWallState.Pos1)
@@ -81,7 +79,7 @@ public class PuzzleMoveableWall : PuzzleActivable
         UpdateLights();
     }
 
-    override public void WhenDesactivate()
+    override public void Desactivate()
     {
         isActivated = false;
         if (state == MoveableWallState.Pos2)
@@ -98,13 +96,11 @@ public class PuzzleMoveableWall : PuzzleActivable
         UpdateLights();
     }
 
-//#if UNITY_EDITOR // conditional compilation is not mandatory
     [ButtonMethod]
     private void RecalculatePositions()
     {
         pos1 = transform.position;
         pos2 = transform.position + positionModifier;
     }
-//#endif
 }
 

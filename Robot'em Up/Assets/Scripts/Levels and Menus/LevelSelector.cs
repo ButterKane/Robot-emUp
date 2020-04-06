@@ -28,7 +28,8 @@ public class LevelSelector : MonoBehaviour
 			if (skip) { continue; }
 			int x = i;
 			GameObject i_newButton = new GameObject();
-			i_newButton.name = "Button[" + SceneManager.GetSceneByBuildIndex(x).name + "]";
+			Scene foundScene = SceneManager.GetSceneByBuildIndex(x);
+			i_newButton.name = "Button[" + foundScene.name + "]";
 			Image i_image = i_newButton.AddComponent<Image>();
 			i_image.sprite = Resources.Load<Sprite>("Menu/default_button");
 			RectTransform i_buttonTransform = i_newButton.GetComponent<RectTransform>();

@@ -246,7 +246,8 @@ namespace Polybrush
 				Quaternion rotation = Quaternion.FromToRotation(Vector3.up, target.transform.TransformDirection(rand_hit.normal));
 				Quaternion random = Quaternion.AngleAxis(Random.Range(0f, 360f), Vector3.up);
 
-				GameObject inst = PrefabUtility.ConnectGameObjectToPrefab(Instantiate(prefab), prefab);
+				//GameObject inst =  PrefabUtility.ConnectGameObjectToPrefab(Instantiate(prefab), prefab);
+				GameObject inst = prefab; //THIS HAS BEEN CHANGED TO AVOID AN ERROR MESSAGE, MAYBE UNSTABLE !!!
 
 				inst.transform.localPosition = target.transform.TransformPoint(rand_hit.position);
 				inst.transform.localRotation = rotation * random;

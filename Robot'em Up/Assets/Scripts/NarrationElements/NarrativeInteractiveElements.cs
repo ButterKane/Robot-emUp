@@ -25,6 +25,9 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public float normalEmissiveIntensity;
 
     public AudioMixerGroup myAudioMixer;
+    public GameObject rangeTriggerGameObject;
+
+    [HideInInspector] public bool middlePointInRange;
 
     public virtual void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
@@ -44,8 +47,11 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     {
         broken = true;
         lockable = false;
-        if(possessed)
-            SetAIPossession(false);
+
+        rangeTriggerGameObject.SetActive(false);
+        SetInRange(false);
+
+
         FeedbackManager.SendFeedback(breakEventName, this);
         if (NarrationManager.narrationManager.currentNarrationElementActivated == this)
         {
@@ -147,5 +153,21 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         {
             return player1Transform;
         }
+    }
+
+    public void SetInRange(bool _inRange)
+    {
+        middlePointInRange = _inRange;
+        if (middlePointInRange)
+        {
+            NarrationManager.narrationManager.SetNarrativeElementsInRange(true, this);
+        }
+        else
+        {
+            NarrationManager.narrationManager.SetNarrativeElementsInRange(false, this);
+        }
+
+        NarrationManager.narrationManager.StopAllCoroutines();
+        StartCoroutine(NarrationManager.narrationManager.CheckElementToActivate());
     }
 }

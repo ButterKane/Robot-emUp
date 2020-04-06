@@ -12,7 +12,7 @@ public class Surrounder : MonoBehaviour
 
     [Separator("Auto-Assigned Variables")]
     public Transform playerTransform;
-    private List<EnemyBehaviour> closestEnemies;
+    private List<EnemyBehaviour> closestEnemies = new List<EnemyBehaviour>();
 
     [Separator("Variables")]
     public float minimalDistanceToFollow = 3f;  // distance before the points stop orienting themselves to face enemy group

@@ -110,7 +110,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed));
     }
 
-    public override void ExitTurretState()
+    protected override void ExitTurretState()
     {
         switch (turretState)
         {
@@ -133,7 +133,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterTurretState()
+    protected override void EnterTurretState()
     {
         //print(State);
         switch (turretState)
@@ -163,7 +163,7 @@ public class BossTurretSniperBehaviour : TurretBehaviour
         }
     }
 
-    public override void AttackingUpdateState()
+    protected override void AttackingUpdateState()
     {
         bool i_aimAtPlayer;
 

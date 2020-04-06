@@ -63,7 +63,11 @@ public class SettingsMenuOrganizer : MonoBehaviour
             }
             else
             {
-                childrenObjects[i].GetComponent<UIBehaviour>().UnselectThisSetting();
+                UIBehaviour foundBehaviour = childrenObjects[i].GetComponent<UIBehaviour>();
+                if (foundBehaviour != null)
+                {
+                    childrenObjects[i].GetComponent<UIBehaviour>().UnselectThisSetting();
+                }
             }
         }
         return settingScriptToReturn;

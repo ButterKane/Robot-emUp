@@ -9,7 +9,7 @@ public class BossLaser : MonoBehaviour
 	public GameObject laserHitEffect;
 	public BoxCollider col;
 
-	private bool enabled = false;
+	private bool isEnabled = false;
 	private float currentMaxLength;
 	private bool charging;
 	private BossSettings bossDatas;
@@ -17,7 +17,6 @@ public class BossLaser : MonoBehaviour
 	private void Awake ()
 	{
 		bossDatas = BossSettings.GetDatas();
-		enabled = false;
 		currentMaxLength = 0f;
 		lr.startWidth = bossDatas.laserSettings.chargingWidth;
 		lr.endWidth = bossDatas.laserSettings.chargingWidth;
@@ -58,7 +57,7 @@ public class BossLaser : MonoBehaviour
 
 	private void OnTriggerStay ( Collider other )
 	{
-		if (other.tag == "Player" && enabled)
+		if (other.tag == "Player" && isEnabled)
 		{
 			PlayerController player = other.GetComponent<PlayerController>();
 			player.Damage(Time.deltaTime * bossDatas.laserSettings.damagesPerSecond);
@@ -68,7 +67,7 @@ public class BossLaser : MonoBehaviour
 
 	private void OnTriggerEnter ( Collider other )
 	{
-		if (other.tag == "Player" && enabled)
+		if (other.tag == "Player" && isEnabled)
 		{
 			PlayerController player = other.GetComponent<PlayerController>();
 			player.Damage(bossDatas.laserSettings.damagesOnEnter);
@@ -88,6 +87,6 @@ public class BossLaser : MonoBehaviour
 		lr.startWidth = bossDatas.laserSettings.defaultWidth;
 		lr.endWidth = bossDatas.laserSettings.defaultWidth;
 		laserHitEffect.gameObject.SetActive(true);
-		enabled = true;
+		isEnabled = true;
 	}
 }
