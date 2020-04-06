@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
+using System.Linq;
 
 public enum EnemyState
 {
@@ -118,7 +119,13 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         InitializePlayersRefs();
 
-        animator.SetBool("isFastDeployment", isDeploymentFast); 
+        foreach (AnimatorControllerParameter  t in animator.parameters)
+        {
+            if (t.name == "isFastDeployment") 
+            {
+                animator.SetBool("isFastDeployment", isDeploymentFast);
+            }
+        }
         timeBetweenCheck = focusValues.maxTimeBetweenCheck;
         
         EnemyManager.i.enemies.Add(this);

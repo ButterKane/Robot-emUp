@@ -199,7 +199,7 @@ public class ExtendingArmsController : MonoBehaviour
 		grabHand.transform.localPosition = Vector3.zero;
 		grabHand.transform.localRotation = Quaternion.identity;
 		grabHand.gameObject.SetActive(false);
-		DontDestroyOnLoad(grabHand.gameObject);
+		DontDestroyOnLoad(grabHand.root);
 		GameManager.DDOL.Add(grabHand.gameObject);
 	}
 	private bool IsGrabbable (Transform t)

@@ -19,14 +19,12 @@ public class LaserSniper : MonoBehaviour
     [HideInInspector] public MeshRenderer laserRenderer;
     [HideInInspector] public bool isAimingPlayer;
     [HideInInspector] public float distanceAoEDamage;
-    private float accumulatedDamage;
 
     private void Awake()
     {
         isLaserActive = true;
         initialPosition = transform.position;
         laserRenderer = GetComponentInChildren<MeshRenderer>();
-        accumulatedDamage = 0;
     }
 
     void Update()

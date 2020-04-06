@@ -31,7 +31,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     public AnimationCurve reducingOfLaserWidth;
 
     private IEnumerator laserShootingCoroutine;
-    private IEnumerator redDotLoadingCoroutine;
     private GameObject FXChargingParticlesInstance;
     private ParticleSystem[] chargingPartSystList;
     private GameObject FXChargingMainLaserInstance;
@@ -122,7 +121,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
                 aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
 
-                redDotLoadingCoroutine = null;
                 laserShootingCoroutine = null;
                 break;
             case TurretAttackState.Attack:
