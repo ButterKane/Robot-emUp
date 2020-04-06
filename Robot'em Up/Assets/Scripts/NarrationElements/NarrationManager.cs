@@ -56,16 +56,14 @@ public class NarrationManager : MonoBehaviour
         if (_add)
         {
             narrativeElementsInRange.Add(_narrativeElement);
-            print(_narrativeElement.name + " is added");
         }
         else
         {
             narrativeElementsInRange.Remove(_narrativeElement);
-            print(_narrativeElement.name + " is removed");
         }
     }
 
-    IEnumerator CheckElementToActivate()
+    public IEnumerator CheckElementToActivate()
     {
         if (narrativeElementsInRange.Count > 0)
         {
