@@ -6,35 +6,23 @@ using MyBox;
 public class PuzzlePressurePlate : PuzzleActivator
 {
     [ReadOnly] public bool pawnHere;
-    private BoxCollider boxCollider;
-    private List<PawnController> listPawnsHere;
+    private int totalPawnsHere;
 
-
-    // Start is called before the first frame update
     void Awake()
     {
-        boxCollider = GetComponent<BoxCollider>();
-        listPawnsHere = new List<PawnController>();
+        totalPawnsHere = 0;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 
 
     private void OnTriggerEnter(Collider _other)
     {
-        if (_other.gameObject.GetComponent<PawnController>() && !shutDown)
+        PawnController foundPawn = _other.gameObject.GetComponent<PawnController>();
+        if (foundPawn && !shutDown)
         {
             pawnHere = true;
             transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
-            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
-            //pawn.Damage(puzzleData.DamageEletricPlate);
-            listPawnsHere.Add(pawn);
-			if (!isActivated)
+            totalPawnsHere++;
+            if (!isActivated)
 			{
 				FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
 			}
@@ -48,11 +36,11 @@ public class PuzzlePressurePlate : PuzzleActivator
 
     private void OnTriggerExit(Collider _other)
     {
-        if (_other.gameObject.GetComponent<PawnController>())
+        PawnController foundPawn = _other.gameObject.GetComponent<PawnController>();
+        if (foundPawn)
         {
-            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Remove(pawn);
-            if (listPawnsHere.Count < 1)
+            totalPawnsHere--;
+            if (totalPawnsHere < 1)
             {
 				if (isActivated)
 				{
@@ -70,11 +58,9 @@ public class PuzzlePressurePlate : PuzzleActivator
     }
 
 
-    override public void customShutDown()
+    override public void CustomShutDown()
     {
         transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
         isActivated = false;
     }
-
-
 }

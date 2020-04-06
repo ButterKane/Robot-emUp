@@ -6,47 +6,40 @@ using UnityEngine.Analytics;
 
 public class PuzzleEletricPlate : PuzzleActivable
 {
-   // [ReadOnly]
-   // public float waitTimeBeforeNextFx;
     [ReadOnly]
     public float waitTimeBeforeNextDamage;
     [ReadOnly]
-    public List<PawnController> PawnTrapped;
+    public List<PawnController> pawnTrapped;
     public List<GameObject> IdleFx;
-    private BoxCollider boxCollider;
+    public float speedModifier = 0.5f;
     private MeshRenderer meshRenderer;
     private GameObject myFx;
 
     // Update is called once per frame
     void Awake()
     {
-        // waitTimeBeforeNextFx = 0;
         IdleFx = new List<GameObject>();
-        boxCollider = GetComponent<BoxCollider>();
         meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
-
-
-        PawnTrapped.Clear();
+        pawnTrapped.Clear();
     }
 
     void FixedUpdate()
     {
-        for (int i = 0; i < PawnTrapped.Count; i++)
+        for (int i = 0; i < pawnTrapped.Count; i++)
         {
-            PawnController item = PawnTrapped[i];
+            PawnController item = pawnTrapped[i];
             if (item.GetHealth() < 1)
             {
-                PawnTrapped.Remove(item);
+                pawnTrapped.Remove(item);
             }
         }
         waitTimeBeforeNextDamage -= Time.deltaTime;
-        //waitTimeBeforeNextFx -= Time.deltaTime;
 
         if (waitTimeBeforeNextDamage < 0 && !isActivated && !shutDown)
         {
             waitTimeBeforeNextDamage = puzzleData.timeCheckingDamageEletricPlate;
-            foreach (PawnController item in PawnTrapped)
+            foreach (PawnController item in pawnTrapped)
             {
                 if (item.GetComponent<EnemyBehaviour>())
                 {
@@ -58,25 +51,11 @@ public class PuzzleEletricPlate : PuzzleActivable
                     item.Damage(puzzleData.DamageEletricPlate);
                 }
 				Analytics.CustomEvent("ElectricalPlateDamage", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
-				item.AddSpeedModifier(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
+				item.AddSpeedModifier(new SpeedCoef(speedModifier, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
 
 				FeedbackManager.SendFeedback("event.PuzzleElectricPlateDamage", item);
             }
         }
-        /*
-        if (waitTimeBeforeNextFx < 0 && isActivated)
-        {
-            waitTimeBeforeNextFx = 0.18f ;
-            if (IdleFx.Count > 4)
-            {
-                Destroy(IdleFx[0]);
-                IdleFx.RemoveAt(0);
-            }
-            //Vector3 pos_Fx = new Vector3(transform.localPosition.x + Random.Range(-transform.localScale.x, transform.localScale.x) * 0.6f, transform.localPosition.y + transform.localScale.x * 0.3f, transform.localPosition.z + Random.Range(-transform.localScale.z, transform.localScale.z) * 0.6f);
-            Vector3 pos_Fx = new Vector3(transform.position.x + Random.Range(-transform.lossyScale.x, transform.lossyScale.x) / 2, transform.position.y + transform.lossyScale.y * 0.3f, transform.position.z + Random.Range(-transform.lossyScale.z, transform.lossyScale.z) /2);
-            IdleFx.Add(FXManager.InstantiateFX(puzzleData.ElectricPlateActivate, pos_Fx, false, Vector3.zero, Vector3.one * 0.7f));
-        }
-        */
     }
 
     private void OnTriggerEnter(Collider _other)
@@ -85,11 +64,9 @@ public class PuzzleEletricPlate : PuzzleActivable
         {
             
             PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
-            //pawn.Damage(puzzleData.DamageEletricPlate);
-
             if (_pawn.ignoreEletricPlates == false)
             {
-                PawnTrapped.Add(_pawn);
+                pawnTrapped.Add(_pawn);
             }
 
             if (!isActivated)
@@ -106,25 +83,20 @@ public class PuzzleEletricPlate : PuzzleActivable
         if (_other.gameObject.GetComponent<PawnController>())
         {
             PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
-            PawnTrapped.Remove(_pawn);
+            pawnTrapped.Remove(_pawn);
         }
 
     }
 
-
-
     void OnDisable()
     {
-        PawnTrapped.Clear();
+        pawnTrapped.Clear();
     }
 
-
-
-    override public void WhenActivate()
+    override public void Activate()
     {
         if (!shutDown)
         {
-
             StopAllCoroutines();
             isActivated = true;
 
@@ -139,7 +111,7 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     }
 
-    override public void WhenDesactivate()
+    override public void Desactivate()
     {
         if (!shutDown)
         {
@@ -180,7 +152,7 @@ public class PuzzleEletricPlate : PuzzleActivable
     }
 
 
-    public override void customShutDown()
+    public override void CustomShutDown()
     {
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate_ShutDown;
         Destroy(myFx);

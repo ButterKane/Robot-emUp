@@ -24,7 +24,7 @@ public class OldBoss_WeakPoint : PuzzleActivable
     }
 
 
-    override public void WhenActivate()
+    override public void Activate()
     {
 
         isActivated = true;
@@ -43,7 +43,7 @@ public class OldBoss_WeakPoint : PuzzleActivable
                 OldBoss_Manager.i.DestroyAWeakPoint();
                 foreach (var item in puzzleActivators)
                 {
-                    item.shutDownPuzzleActivator();
+                    item.ShutDownPuzzleActivator();
                 }
             }
             else
