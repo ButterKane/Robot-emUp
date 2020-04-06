@@ -12,13 +12,7 @@ public class MultiChoiceOrganizer : MonoBehaviour
     private RectTransform thisRect;
 
     [ReadOnly] public List<RectTransform> choicesToOrganize;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
         if(thisRect == null)

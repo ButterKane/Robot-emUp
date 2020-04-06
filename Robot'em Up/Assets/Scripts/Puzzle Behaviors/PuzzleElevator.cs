@@ -12,18 +12,15 @@ public class PuzzleElevator : PuzzleActivable
     public float speed;
     public enum ElevatorState { Down, Up, MovingDown, MovingUp }
     public ElevatorState state;
-
     private float journeyLength;
     private float startTime;
 
-    // Start is called before the first frame update
     void Awake()
     {
         startTime = Time.time;
         journeyLength = Vector3.Distance(downPosition, upPosition);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (state == ElevatorState.MovingUp)
@@ -61,7 +58,7 @@ public class PuzzleElevator : PuzzleActivable
 
     }
 
-    override public void WhenActivate()
+    override public void Activate()
     {
         isActivated = true;
         if (state == ElevatorState.Down)
@@ -72,7 +69,7 @@ public class PuzzleElevator : PuzzleActivable
         }
     }
 
-    override public void WhenDesactivate()
+    override public void Desactivate()
     {
         isActivated = false;
         if (state == ElevatorState.Up)

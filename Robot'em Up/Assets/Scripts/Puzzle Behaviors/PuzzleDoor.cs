@@ -9,18 +9,17 @@ public class PuzzleDoor : PuzzleActivable
     public List<PuzzleActivator> activatorsToShutDown;
     public List<PuzzleActivable> activableToShutDown;
 
-    override public void WhenActivate()
+    override public void Activate()
     {
-        // Debug.Log("Activate a door");
         isActivated = true;
         UpdateLights();
         foreach (var item in activatorsToShutDown)
         {
-            item.shutDownPuzzleActivator();
+            item.ShutDownPuzzleActivator();
         }
         foreach (var item in activableToShutDown)
         {
-            item.shutDownPuzzle();
+            item.ShutDownPuzzle();
         }
         DestroyTheDoor();
     }
@@ -41,10 +40,6 @@ public class PuzzleDoor : PuzzleActivable
         if (destroyWhenOpened != null)
         {
             Destroy(destroyWhenOpened);
-            //FXManager.InstantiateFX(puzzleData.linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
         }
     }
-
-
-
 }

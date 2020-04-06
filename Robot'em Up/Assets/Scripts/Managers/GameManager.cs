@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour
     public static List<PlayerController> alivePlayers;
     public static List<PlayerController> players;
 
-    [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
 
     [NonSerialized] public static PlayerController playerOne;
@@ -101,7 +100,6 @@ public class GameManager : MonoBehaviour
             }
             players.Add(pc);
         }
-        if (levelManager == null) { levelManager = FindObjectOfType<LevelManager>(); }
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
@@ -180,8 +178,7 @@ public class GameManager : MonoBehaviour
     {
         DestroyDDOL();
         SceneManager.LoadScene(index);
-        GamePad.SetVibration(PlayerIndex.One, 0, 0);
-        GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+        VibrationManager.CancelAllVibrations();
         Time.timeScale = 1f;
     }
 
@@ -189,8 +186,7 @@ public class GameManager : MonoBehaviour
     {
         DestroyDDOL();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        GamePad.SetVibration(PlayerIndex.One, 0, 0);
-        GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+        VibrationManager.CancelAllVibrations();
         Time.timeScale = 1f;
     }
 
@@ -225,6 +221,7 @@ public class GameManager : MonoBehaviour
             }
         }
         Time.timeScale = 0f;
+        VibrationManager.CancelAllVibrations();
         mainMenu.gameObject.SetActive(true);
     }
 
@@ -255,6 +252,7 @@ public class GameManager : MonoBehaviour
     {
         DestroyDDOL();
         SceneManager.LoadScene(GetCurrentZoneName());
+        VibrationManager.CancelAllVibrations();
     }
 
     public static void ResetBall()
@@ -378,8 +376,7 @@ public class GameManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        GamePad.SetVibration(PlayerIndex.One, 0, 0);
-        GamePad.SetVibration(PlayerIndex.Two, 0, 0);
+        VibrationManager.CancelAllVibrations();
     }
 
     private void InstantiateMenus()
@@ -391,8 +388,8 @@ public class GameManager : MonoBehaviour
 
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
-        Debug.Log("Creating menu");
-        mainMenu = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"), null).GetComponent<MainMenu>();
+        GameObject menuObj = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"));
+        mainMenu = menuObj.GetComponent<MainMenu>();
         mainMenu.gameObject.SetActive(false);
 
     }
@@ -407,7 +404,7 @@ public class GameManager : MonoBehaviour
                 Destroy(obj.gameObject);
             }
         }
-        GameManager.i = null;
+        //GameManager.i = null;
     }
     #endregion
 }

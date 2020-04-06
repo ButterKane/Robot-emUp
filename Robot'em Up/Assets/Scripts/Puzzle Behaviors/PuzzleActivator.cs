@@ -53,7 +53,6 @@ public class PuzzleActivator : MonoBehaviour
 
 	public void ActivateLinkedObjectsCallback() {
 		PuzzleActivable[] i_activables = FindObjectsOfType<PuzzleActivable>();
-        //Debug.Log("Find call ");
 
         foreach (var item in i_activables)
         {
@@ -61,11 +60,11 @@ public class PuzzleActivator : MonoBehaviour
             {
                 if (item.puzzleActivators.Contains(this))
                 {
-                    item.WhenActivate();
+                    item.Activate();
                 }
                 if (item.puzzleDesactivator.Contains(this))
                 {
-                    item.WhenDesactivate();
+                    item.Desactivate();
                 }
             }
             else
@@ -73,12 +72,12 @@ public class PuzzleActivator : MonoBehaviour
                 item.UpdateListBool();
                 if (!item.puzzleActivationsBool.Contains(false))
                 {
-                    item.WhenActivate();
+                    item.Activate();
                 }
 
                 if (!item.puzzleActivationsBool.Contains(true))
                 {
-                    item.WhenDesactivate();
+                    item.Desactivate();
                 }
 
                 item.UpdateLights();
@@ -109,11 +108,11 @@ public class PuzzleActivator : MonoBehaviour
             {
                 if (item.puzzleActivators.Contains(this))
                 {
-                    item.WhenDesactivate();
+                    item.Desactivate();
                 }
                 if (item.puzzleDesactivator.Contains(this))
                 {
-                    item.WhenActivate();
+                    item.Activate();
                 }
             }
             else
@@ -121,12 +120,12 @@ public class PuzzleActivator : MonoBehaviour
                 item.UpdateListBool();
                 if (!item.puzzleActivationsBool.Contains(false))
                 {
-                    item.WhenActivate();
+                    item.Activate();
                 }
 
                 if (!item.puzzleActivationsBool.Contains(true))
                 {
-                    item.WhenDesactivate();
+                    item.Desactivate();
                 }
             }
 
@@ -136,18 +135,18 @@ public class PuzzleActivator : MonoBehaviour
     }
 
 
-    public virtual void shutDownPuzzleActivator()
+    public virtual void ShutDownPuzzleActivator()
     {
         if (!shutDown)
         {
             indictatorLight.intensity = 0;
             shutDown = true;
-            customShutDown();
+            CustomShutDown();
         }
     }
 
 
-    public virtual void customShutDown()
+    public virtual void CustomShutDown()
     {
     }
 }

@@ -11,18 +11,16 @@ public class SliderUI : UIBehaviour
     public int currentValue;
     public TextMeshProUGUI valueText;
 
-    private float defaultTimeBetweenChangeValue;
+    public float defaultTimeBetweenChangeValue;
     private float timeBetweenValueChange;
     private float currentTimeProgressionBeforeValueChange;
-    private float currentTimeProgressionBeforeReset;
-    private float currentTimeRatioBeforeReset;
 
     // Start is called before the first frame update
     void Start()
     {
         slider.value = (float)defaultValue / 100;
         currentValue = (int) slider.value * 100;
-        timeBetweenValueChange = defaultTimeBetweenChangeValue;
+        timeBetweenValueChange = defaultTimeBetweenChangeValue; 
         currentTimeProgressionBeforeValueChange = 0;
         UpdateSliderText();
     }
@@ -63,7 +61,6 @@ public class SliderUI : UIBehaviour
             slider.value = (float)_valueToAdd / 100;
             currentValue = (int)slider.value * 100;
             currentTimeProgressionBeforeValueChange = 0;
-            currentTimeProgressionBeforeReset = 0;
         }
     }
 
@@ -82,7 +79,6 @@ public class SliderUI : UIBehaviour
         slider.value = (float)defaultValue / 100;
         timeBetweenValueChange = defaultTimeBetweenChangeValue;
         currentTimeProgressionBeforeValueChange = 0;
-        currentTimeProgressionBeforeReset = 0;
         UpdateSliderText();
     }
 

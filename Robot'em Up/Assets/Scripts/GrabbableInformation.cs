@@ -8,8 +8,6 @@ public class GrabbableInformation : MonoBehaviour
 	public SphereCollider trigger;
 	public Transform targetedPosition;
 	public LineRenderer previewLine;
-	private Transform previewUI;
-	private bool previewEnabled;
 	private List<PlayerGrabPreview> playerGrabPreview = new List<PlayerGrabPreview>();
 	private GrabbableDatas datas;
 
@@ -19,7 +17,6 @@ public class GrabbableInformation : MonoBehaviour
 		previewLine.material = datas.ingameLineRendererMaterial;
 		previewLine.startWidth = datas.ingameLineRendererWidth;
 		previewLine.endWidth = datas.ingameLineRendererWidth;
-		previewEnabled = false;
 		previewLine.enabled = false;
 	}
 	private void Update ()
@@ -42,13 +39,6 @@ public class GrabbableInformation : MonoBehaviour
 
 	public void EnablePreviewForPlayer ( PlayerController player )
 	{
-		previewEnabled = true;
-		if (previewUI != null)
-		{
-			previewUI.transform.SetParent(GameManager.mainCanvas.transform);
-			//previewLine.enabled = true;
-			previewUI.gameObject.SetActive(true);
-		}
 		PlayerGrabPreview pgp = new GameObject().AddComponent<PlayerGrabPreview>();
 		pgp.gameObject.name = "PlayerGrabPreview";
 		pgp.transform.SetParent(transform);
@@ -65,14 +55,6 @@ public class GrabbableInformation : MonoBehaviour
 
 	public void DisablePreviewForPlayer ( PlayerController player )
 	{
-		previewEnabled = false;
-		if (previewUI != null)
-		{
-			previewUI.transform.SetParent(transform);
-			//previewLine.enabled = false;
-			previewUI.gameObject.SetActive(false);
-			player.extendingArmsController.TogglePreview(false);
-		}
 		PlayerGrabPreview foundPreview = null;
 		foreach (PlayerGrabPreview p in playerGrabPreview)
 		{

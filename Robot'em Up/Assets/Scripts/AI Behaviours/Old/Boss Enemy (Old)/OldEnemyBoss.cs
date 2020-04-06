@@ -673,7 +673,7 @@ public class OldEnemyBoss : PawnController, IHitable
     {
         foreach (var item in ListEletricPlates)
         {
-            item.WhenDesactivate();
+            item.Desactivate();
         }
     }
 
@@ -681,7 +681,7 @@ public class OldEnemyBoss : PawnController, IHitable
     {
         foreach (var item in ListEletricPlates)
         {
-            item.WhenActivate();
+            item.Activate();
         }
     }
 
