@@ -65,7 +65,7 @@ public class NarrationManager : MonoBehaviour
         }
     }
 
-    IEnumerator CheckElementToActivate()
+    public IEnumerator CheckElementToActivate()
     {
         if (narrativeElementsInRange.Count > 0)
         {

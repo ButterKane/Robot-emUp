@@ -25,6 +25,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     public float normalEmissiveIntensity;
 
     public AudioMixerGroup myAudioMixer;
+    public GameObject rangeTriggerGameObject;
 
     [HideInInspector] public bool middlePointInRange;
 
@@ -46,8 +47,11 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     {
         broken = true;
         lockable = false;
-        if(possessed)
-            SetAIPossession(false);
+
+        rangeTriggerGameObject.SetActive(false);
+        SetInRange(false);
+
+
         FeedbackManager.SendFeedback(breakEventName, this);
         if (NarrationManager.narrationManager.currentNarrationElementActivated == this)
         {
@@ -162,5 +166,8 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
         {
             NarrationManager.narrationManager.SetNarrativeElementsInRange(false, this);
         }
+
+        NarrationManager.narrationManager.StopAllCoroutines();
+        StartCoroutine(NarrationManager.narrationManager.CheckElementToActivate());
     }
 }
