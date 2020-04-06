@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour
     public static List<PlayerController> alivePlayers;
     public static List<PlayerController> players;
 
-    [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
 
     [NonSerialized] public static PlayerController playerOne;
@@ -101,7 +100,6 @@ public class GameManager : MonoBehaviour
             }
             players.Add(pc);
         }
-        if (levelManager == null) { levelManager = FindObjectOfType<LevelManager>(); }
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
@@ -390,7 +388,8 @@ public class GameManager : MonoBehaviour
 
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
-        mainMenu = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"), null).GetComponent<MainMenu>();
+        GameObject menuObj = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"));
+        mainMenu = menuObj.GetComponent<MainMenu>();
         mainMenu.gameObject.SetActive(false);
 
     }
@@ -405,7 +404,7 @@ public class GameManager : MonoBehaviour
                 Destroy(obj.gameObject);
             }
         }
-        GameManager.i = null;
+        //GameManager.i = null;
     }
     #endregion
 }

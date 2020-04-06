@@ -71,7 +71,9 @@ public class FeedbackManager
 			{
 				case VibrationTarget.TargetedPlayer:
 					if (_target == null) { Debug.LogWarning("Can't make target vibrate"); break; }
-					PlayerController player = (PlayerController)target;
+					Component component;
+					target.TryGetComponent(typeof(PlayerController), out component);
+					PlayerController player = (PlayerController)component;
 					if (player != null)
 					{
 						VibrationManager.Vibrate(player.playerIndex,i_feedback.vibrationData.duration, i_feedback.vibrationData.force, i_feedback.vibrationData.forceCurve);

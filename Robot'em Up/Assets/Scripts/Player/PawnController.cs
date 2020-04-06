@@ -883,7 +883,10 @@ public class PawnController : MonoBehaviour
 		{
 			FeedbackManager.SendFeedback("event.EnemyWallSplatHit", this);
 		}
-		transform.forward = _normalDirection;
+		if (_normalDirection != Vector3.zero)
+		{
+			transform.forward = _normalDirection;
+		}
 		Vector3 i_initialPosition = transform.position;
 		float i_damages = pushDatas.wallSplatDamages;
 		if (isPlayer) { i_damages = pushDatas.wallSplatPlayerDamages; }

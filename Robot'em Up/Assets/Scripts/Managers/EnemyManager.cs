@@ -8,8 +8,8 @@ public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager i;
     
-    [NonSerialized] public PlayerController playerOne;
-    [NonSerialized] public PlayerController playerTwo;
+    private PlayerController playerOne;
+    private PlayerController playerTwo;
 
     [ReadOnly] public List<EnemyBehaviour> enemies;
     [ReadOnly] public List<EnemyBehaviour> enemiesThatSurround;

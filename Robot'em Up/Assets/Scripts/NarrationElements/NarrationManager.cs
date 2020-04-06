@@ -21,7 +21,7 @@ public class NarrationManager : MonoBehaviour
     public float typingSpeed = 5;
     private GameObject dialogueBoxInstance;
     private TextMeshProUGUI textField;
-    private Image subImage;
+    public Image subImage;
     private IEnumerator textWritingCoroutine;
 
     List<NarrativeInteractiveElements> narrativeElementsInRange = new List<NarrativeInteractiveElements>();

@@ -221,8 +221,8 @@ namespace Polybrush
 				gc_SaveBrushSettings = new GUIContent("Save",
 					"Save the brush settings as a preset");
 
-			SceneView.onSceneGUIDelegate -= OnSceneGUI;
-			SceneView.onSceneGUIDelegate += OnSceneGUI;
+			SceneView.duringSceneGui -= OnSceneGUI;
+			SceneView.duringSceneGui += OnSceneGUI;
 
 			Undo.undoRedoPerformed -= UndoRedoPerformed;
 			Undo.undoRedoPerformed += UndoRedoPerformed;
@@ -243,7 +243,7 @@ namespace Polybrush
 
 		void OnDisable()
 		{
-			SceneView.onSceneGUIDelegate -= OnSceneGUI;
+			SceneView.duringSceneGui -= OnSceneGUI;
 			Undo.undoRedoPerformed -= UndoRedoPerformed;
 
 			if( z_ReflectionUtil.ProBuilderExists() )
