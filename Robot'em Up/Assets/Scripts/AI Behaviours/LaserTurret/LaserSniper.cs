@@ -5,7 +5,6 @@ public class LaserSniper : MonoBehaviour
     public float speed;
     [HideInInspector] public int damageDealt;
     Vector3 initialPosition;
-    [HideInInspector] public Transform target;
     [HideInInspector] public Transform spawnParent;
     [HideInInspector] public LaserSniperTurretBehaviour enemyScript;
     public GameObject impactFX;
@@ -37,7 +36,7 @@ public class LaserSniper : MonoBehaviour
         UpdateLaserLength(laserLength);
     }
 
-    public void UpdateLaserLength(float? givenLength)
+    private void UpdateLaserLength(float? givenLength)
     {
         float i_laserLength = 0;
         if (givenLength == null)
@@ -52,7 +51,7 @@ public class LaserSniper : MonoBehaviour
 
     }
 
-    public void RaycastToHitWithLaser()
+    private void RaycastToHitWithLaser()
     {
         // First raycast pass to determine the laser length
         float i_closestDistance = enemyScript.laserMaxLength;
@@ -68,7 +67,7 @@ public class LaserSniper : MonoBehaviour
             }
         }
 
-        laserLength = i_closestDistance + laserWidth; // This is to compensate the sphere cast radius
+        laserLength = i_closestDistance + laserWidth * 1.1f; // This is to compensate the sphere cast radius
 
         if (isLaserActive)
         {
@@ -97,8 +96,7 @@ public class LaserSniper : MonoBehaviour
         }
     }
 
-
-    void LaserRepulsion(Vector3 _centerRepulsionPoint)
+    private void LaserRepulsion(Vector3 _centerRepulsionPoint)
     {
         RaycastHit[] i_hitObjects = Physics.SphereCastAll(_centerRepulsionPoint, enemyScript.repulseCircleRadius, Vector3.forward);
         if (i_hitObjects.Length > 0)
