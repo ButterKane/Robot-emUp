@@ -50,11 +50,11 @@ public class BossTile : MonoBehaviour
 	{
 		if (currentElectricalPlate.isActivated)
 		{
-			currentElectricalPlate.WhenDesactivate();
+			currentElectricalPlate.Desactivate();
 			currentElectricalPlateToggleCD = bossSettings.electricalPlateSettings.desactivationDuration;
 		} else
 		{
-			currentElectricalPlate.WhenActivate();
+			currentElectricalPlate.Activate();
 			currentElectricalPlateToggleCD = bossSettings.electricalPlateSettings.activationDuration;
 		}
 	}
@@ -63,7 +63,7 @@ public class BossTile : MonoBehaviour
 	{
 		GameObject electricalPlate = Instantiate(bossSettings.electricalPlateSettings.platePrefab, transform);
 		currentElectricalPlate = electricalPlate.GetComponent<PuzzleEletricPlate>();
-		currentElectricalPlate.WhenDesactivate();
+		currentElectricalPlate.Desactivate();
 		electricalPlate.transform.localScale = new Vector3(1f, 0.1f, 1f);
 		Vector3 startPosition = transform.position + Vector3.down * 5f;
 		Vector3 endPosition = transform.position + Vector3.down * -0.1f;
@@ -78,7 +78,7 @@ public class BossTile : MonoBehaviour
 
 	IEnumerator DespawnElectricalPlate_C()
 	{
-		currentElectricalPlate.WhenDesactivate();
+		currentElectricalPlate.Desactivate();
 		Vector3 startPosition = transform.position + Vector3.down * -0.1f;
 		Vector3 endPosition = transform.position + Vector3.down * 5f;
 		for (float i = 0; i < 1f; i += Time.deltaTime)

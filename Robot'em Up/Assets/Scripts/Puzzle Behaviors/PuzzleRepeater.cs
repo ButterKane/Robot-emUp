@@ -23,7 +23,6 @@ public class PuzzleRepeater : PuzzleActivator
         timeSpeedChange = startSpeed;
     }
 
-    // Update is called once per frame
     void Update()
     {
         timeSpeedChange -= Time.deltaTime;
