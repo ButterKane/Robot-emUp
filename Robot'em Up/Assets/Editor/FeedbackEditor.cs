@@ -97,8 +97,9 @@ public class FeedbackEditor : Editor
 			GUILayout.Box("Global settings", i_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
-			GUILayout.Space(10);
 
+			//Event implementation check (Removed temporarly)
+			/*
 			if (recalculationCoroutine == null)
 			{
 				if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", i_buttonStyle, GUILayout.Height(100)))
@@ -110,6 +111,7 @@ public class FeedbackEditor : Editor
 				GUILayout.Label("Checking implementations...", i_headerStyle); 
 				EditorGUILayout.Slider(recalculationProgression, 0, 100);
 			}
+			*/
 		}
 		GUILayout.EndVertical();
 
@@ -164,6 +166,7 @@ public class FeedbackEditor : Editor
 						RemoveEvent(feedbackDatas.feedbackList[i].eventName);
 						break;
 					}
+					/*
 					if (i_feedbackData.eventCalled)
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_max"), GUILayout.Height(20), GUILayout.Width(20));
@@ -172,6 +175,7 @@ public class FeedbackEditor : Editor
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_close"), GUILayout.Height(20), GUILayout.Width(20));
 					}
+					*/
 
 					GUILayout.EndHorizontal();
 					if (showPosition[i])
