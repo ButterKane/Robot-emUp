@@ -245,7 +245,6 @@ public class SettingsMenu : MonoBehaviour
             {
                 CloseInputChanging();
             }
-            //else if (gameIsPlaying) // So if the settings were reached through the pause menu
             else
             { 
                 ReturnToMainMenu();
@@ -360,7 +359,7 @@ public class SettingsMenu : MonoBehaviour
        scriptLinkedToThisOne.waitForBResetOne = true;
        scriptLinkedToThisOne.isMainMenuActive = true;
        gameObject.SetActive(false);
-       //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
+       GameManager.LoadSceneByIndex(0);
     }
 
     void OpenInputChanging()
