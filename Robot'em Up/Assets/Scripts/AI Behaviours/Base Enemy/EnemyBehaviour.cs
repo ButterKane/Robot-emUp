@@ -112,6 +112,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [Space(3)]
     [Header("Death")]
     public EnemyDeathValues deathValues;
+    [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
     private float currentDeathWaitTime;
     private HealthBar healthBar;
 
@@ -148,6 +149,7 @@ public class EnemyBehaviour : PawnController, IHitable
     #region EnemyState Changing
     public void ChangeState(EnemyState _newState)
     {
+        if (enemyState == EnemyState.Dying) { return; }
         ExitState();
         EnterState(_newState);
         enemyState = _newState;
@@ -155,11 +157,13 @@ public class EnemyBehaviour : PawnController, IHitable
 
     void EnterState(EnemyState _newState)
     {
-        //print(_newState);
         switch (_newState)
         {
             case EnemyState.Idle:
-                timeBetweenCheck = focusValues.maxTimeBetweenCheck;
+                if (focusValues != null)
+                {
+                    timeBetweenCheck = focusValues.maxTimeBetweenCheck;
+                }
                 break;
             case EnemyState.Following:
                 navMeshAgent.enabled = true;
@@ -178,10 +182,14 @@ public class EnemyBehaviour : PawnController, IHitable
                 EnterAttackingState();
                 break;
             case EnemyState.PauseAfterAttack:
-                currentTimePausedAfterAttack = attackValues.maxTimePauseAfterAttack;
+                if (attackValues != null)
+                {
+                    currentTimePausedAfterAttack = attackValues.maxTimePauseAfterAttack;
+                }
                 break;
             case EnemyState.Dying:
                 selfCollider.enabled = false;
+                animator.SetTrigger("DeathTrigger");
                 currentDeathWaitTime = deathValues.waitTimeBeforeDisappear;
                 Freeze();
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
@@ -472,6 +480,7 @@ public class EnemyBehaviour : PawnController, IHitable
     #region Private and protected methods
     protected void CheckDistanceAndAdaptFocus()
     {
+        if (focusValues == null) { return; }
         //Checking who is in range
         if (distanceWithPlayerOne < focusValues.focusDistance && playerOnePawnController.IsTargetable() && transform.position.y > playerOneTransform.position.y - focusValues.maxHeightOfDetection && transform.position.y < playerOneTransform.position.y + focusValues.maxHeightOfDetection)
         {
@@ -649,9 +658,10 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public override void Kill()
     {
+        Debug.Log("kILL ENEMY");
         if (healthBar != null) { Destroy(healthBar.gameObject); }
-        deathValues.onDeath.Invoke();
-        EnemyManager.i.RemoveEnemy(GetComponent<EnemyBehaviour>());
+        onDeath.Invoke();
+        EnemyManager.i.RemoveEnemy(this);
         if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();

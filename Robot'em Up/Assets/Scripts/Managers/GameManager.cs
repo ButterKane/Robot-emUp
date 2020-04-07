@@ -113,7 +113,6 @@ public class GameManager : MonoBehaviour
 
         InstantiateMenus();
 
-        CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         disabledInputs = new List<PlayerController>();
