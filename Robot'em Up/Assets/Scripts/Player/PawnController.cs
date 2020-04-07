@@ -144,15 +144,18 @@ public class PawnController : MonoBehaviour
 
 		//Init variables
 		isInvincible = false;
-		customGravity = pawnMovementValues.onGroundGravityMultiplier * -9.81f;
-        customDrag = pawnMovementValues.idleDrag;
+		if (pawnMovementValues != null)
+		{
+			customGravity = pawnMovementValues.onGroundGravityMultiplier * -9.81f;
+			customDrag = pawnMovementValues.idleDrag;
+			effectiveSpeed = pawnMovementValues.moveSpeed;
+		}
 		currentHealth = maxHealth;
 		targetable = true;
 		if (GetComponent<PlayerController>() != null) { isPlayer = true; }
 		UpdateNavMeshAgent(navMeshAgent);
 		moveState = MoveState.Idle;
 		currentPawnState = null;
-        effectiveSpeed = pawnMovementValues.moveSpeed;
 
     }
 	protected virtual void FixedUpdate()
@@ -317,7 +320,7 @@ public class PawnController : MonoBehaviour
         {
             Kill();
         }
-		if (GetComponent<PlayerController>() != null)
+		if (isPlayer)
         {
             MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossOnDamage);
         }
@@ -425,7 +428,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
 
-		if (rb.velocity.magnitude <= pawnMovementValues.minWalkSpeed)
+		if (pawnMovementValues != null && rb.velocity.magnitude <= pawnMovementValues.minWalkSpeed)
 		{
 			if (moveState != MoveState.Idle)
 			{
@@ -472,7 +475,9 @@ public class PawnController : MonoBehaviour
 	{
 		if (_agent == null) { return; }
 		_agent.speed = currentSpeed;
-		_agent.angularSpeed = pawnMovementValues.turnSpeed;
+		if (pawnMovementValues != null) {
+			_agent.angularSpeed = pawnMovementValues.turnSpeed;
+		}
 	}
 	private void Move ()
 	{
@@ -1057,10 +1062,6 @@ public class PawnController : MonoBehaviour
         if (damageAfterBump > 0)
         {
             Damage(damageAfterBump);
-            if (currentHealth <= 0)
-            {
-                Kill();
-            }
         }
 
         //when arrived on ground
@@ -1113,7 +1114,7 @@ public class PawnController : MonoBehaviour
 		}
 
 		//time to get up
-		if (transform != null)
+		if (this != null && transform != null)
 		{
 			EnemyBehaviour i_enemy = GetComponent<EnemyBehaviour>();
 			while (i_gettingUpDuration > 0)

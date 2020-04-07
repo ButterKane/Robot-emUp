@@ -66,15 +66,18 @@ public class NarrationManager : MonoBehaviour
 
     public void LaunchDialogue(DialogueData _dialogueData)
     {
-        dialogueBoxInstance.SetActive(true);
-        textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
-        myAudioSource.clip = _dialogueData.dialogueClip;
-        myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
-
-        if (textWritingCoroutine == null)
+        if (dialogueBoxInstance != null)
         {
-            textWritingCoroutine = NewWriteText_C(_dialogueData, typingSpeed);
-            StartCoroutine(textWritingCoroutine);
+            dialogueBoxInstance.SetActive(true);
+            textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
+            myAudioSource.clip = _dialogueData.dialogueClip;
+            myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
+
+            if (textWritingCoroutine == null)
+            {
+                textWritingCoroutine = NewWriteText_C(_dialogueData, typingSpeed);
+                StartCoroutine(textWritingCoroutine);
+            }
         }
     }
 

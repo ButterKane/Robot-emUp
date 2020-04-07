@@ -307,21 +307,12 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public virtual void Die()
     {
-        if (UnityEngine.Random.Range(0f, 1f) <= deathValues.coreDropChances)
-        {
-            DropCore();
-        }
 
-        Destroy(gameObject);
     }
 
     public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
         base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
     }
 
     public virtual void ChangeAimingRedDotState(AimingRedDotState _newState)

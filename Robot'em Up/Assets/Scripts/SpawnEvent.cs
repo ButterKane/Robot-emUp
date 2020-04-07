@@ -49,7 +49,7 @@ public class SpawnEvent //A spawn event is either called from a waveController, 
 	{
 		yield return new WaitForSeconds(_inf.delayBeforeSpawn);
 		EnemyBehaviour newEnemy = _inf.spawner.SpawnEnemy(_inf.enemyType, false);
-		newEnemy.deathValues.onDeath.AddListener(() => { OnEnemyDeath(newEnemy); });
+		newEnemy.onDeath.AddListener(() => { OnEnemyDeath(newEnemy); });
 		enemyList.Add(newEnemy);
 
 		if (enemyList.Count >= spawnEventList.Count && !mustKillEnemiesBeforeNextWave && linkedWaveController != null)
