@@ -359,7 +359,6 @@ public class SettingsMenu : MonoBehaviour
        scriptLinkedToThisOne.waitForBResetOne = true;
        scriptLinkedToThisOne.isMainMenuActive = true;
        gameObject.SetActive(false);
-       GameManager.LoadSceneByIndex(0);
     }
 
     void OpenInputChanging()
