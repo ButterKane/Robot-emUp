@@ -358,7 +358,11 @@ public class PawnController : MonoBehaviour
 		{
 			i_collider.enabled = false;
 		}
-		targetable = false;
+        foreach (Collider i_collider in GetComponents<Collider>())
+        {
+            i_collider.enabled = false;
+        }
+        targetable = false;
 	}
 	public void SetTargetable ()
 	{
@@ -366,7 +370,11 @@ public class PawnController : MonoBehaviour
 		{
 			i_collider.enabled = true;
 		}
-		targetable = true;
+        foreach (Collider i_collider in GetComponents<Collider>())
+        {
+            i_collider.enabled = true;
+        }
+        targetable = true;
 	}
 	public Vector3 GetCenterPosition ()
 	{
