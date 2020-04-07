@@ -182,6 +182,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
             case EnemyState.Dying:
                 selfCollider.enabled = false;
+                animator.SetTrigger("DeathTrigger");
                 currentDeathWaitTime = deathValues.waitTimeBeforeDisappear;
                 Freeze();
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
