@@ -126,9 +126,9 @@ public class FeedbackPreviewer : EditorWindow
 			VibrationManager.Vibrate(PlayerIndex.One, _data.vibrationData.duration, _data.vibrationData.force, _data.vibrationData.forceCurve);
 			VibrationManager.Vibrate(PlayerIndex.Two, _data.vibrationData.duration, _data.vibrationData.force, _data.vibrationData.forceCurve);
 		}
-		if (_data.soundData.soundName != "" && _data.soundDataInited)
+		if (_data.soundDataInited)
 		{
-			SoundManager.PlaySoundInEditor(_data.soundData.soundName);
+			SoundManager.PlaySoundInEditor(_data.soundData);
 		}
 		if (_data.shakeDataInited)
 		{

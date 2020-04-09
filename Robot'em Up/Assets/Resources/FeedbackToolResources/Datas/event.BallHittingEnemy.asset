@@ -72,7 +72,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   shakeDataInited: 0
   vibrationDataInited: 0
-  soundDataInited: 0
+  soundDataInited: 1
   vfxDataInited: 1
   eventCalled: 1
   category:
@@ -80,7 +80,10 @@ MonoBehaviour:
     displayColor: {r: 0.89740425, g: 0.504717, b: 1, a: 1}
   soundData:
     soundName: EnemyHit
-    attachToTarget: 0
+    soundList:
+    - clip: {fileID: 8300000, guid: 7bfe7d5341803f745af34cc09be947ec, type: 3}
+      playChances: 1
+    volumeMultiplier: 0.55
   vfxData:
     vfxPrefab: {fileID: 2476377470663435437, guid: b2d1c8262dd2a074b8ffeffb04d5d220,
       type: 3}

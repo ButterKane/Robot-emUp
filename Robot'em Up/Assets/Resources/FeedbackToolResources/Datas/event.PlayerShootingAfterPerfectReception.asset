@@ -72,7 +72,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   shakeDataInited: 0
   vibrationDataInited: 0
-  soundDataInited: 0
+  soundDataInited: 1
   vfxDataInited: 0
   eventCalled: 0
   category:
@@ -80,7 +80,14 @@ MonoBehaviour:
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
     soundName: 
-    attachToTarget: 0
+    soundList:
+    - clip: {fileID: 8300000, guid: 875eb7ee93db51040af00a7273c1999f, type: 3}
+      playChances: 0.33
+    - clip: {fileID: 8300000, guid: 2f15bd11ceb3c42408d2f83f140332d0, type: 3}
+      playChances: 0.33499998
+    - clip: {fileID: 8300000, guid: 9c3640311b465d54a9cc60b5980c9469, type: 3}
+      playChances: 0.33499998
+    volumeMultiplier: 0.58
   vfxData:
     vfxPrefab: {fileID: 0}
     offset: {x: 0, y: 0, z: 0}
