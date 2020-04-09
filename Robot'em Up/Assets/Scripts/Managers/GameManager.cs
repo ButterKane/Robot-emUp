@@ -78,11 +78,21 @@ public class GameManager : MonoBehaviour
     public static string currentZoneName;
     public static List<PlayerController> disabledInputs;
 
+
+    // Settings variables
+    [ReadOnly] public float screenShakeIntensity;
+    [ReadOnly] public float hapticIntensity;
+    private float gameSpeed = 1;
+    public float gameSpeed_access {get {return gameSpeed; } set { gameSpeed = value; Time.timeScale = value; Debug.Log("new game speed is" + value); } }
+    [ReadOnly] [Range(0.2f, 1)] public float damageTaken = 1;
+    [ReadOnly] [Range(0, 1)] public float aimAssistance = 0;
+    [ReadOnly] public int enemiesAgressivity = 1;
+
     private void Awake()
     {
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = 1f;
+        Time.timeScale = gameSpeed_access;
         i = this;
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
@@ -178,7 +188,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(index);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed_access;
     }
 
     public static void LoadNextScene()
@@ -186,7 +196,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed_access;
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -230,7 +240,7 @@ public class GameManager : MonoBehaviour
         {
             p.EnableInput();
         }
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed_access; 
         mainMenu.gameObject.SetActive(false);
     }
 

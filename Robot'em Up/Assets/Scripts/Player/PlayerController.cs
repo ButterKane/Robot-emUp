@@ -646,24 +646,26 @@ public class PlayerController : PawnController, IHitable
 	{
 		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Source", _source } });
 		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-		switch (_source)
+        float i_actualDamages = _damages * GameManager.i.damageTaken;
+
+        switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
                 BumpMe(i_normalizedImpactVector, BumpForce.Force2);
-				Damage(_damages);
+				Damage(i_actualDamages);
 				break;
 
             case DamageSource.EnemyContact:
-                Damage(_damages);
+                Damage(i_actualDamages);
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
 
             case DamageSource.Laser:
-                Damage(_damages, false);
+                Damage(i_actualDamages, false);
                 break;
 
 			case DamageSource.SpawnImpact:
-                Damage(_damages);
+                Damage(i_actualDamages);
 				Push(PushType.Light, _impactVector, PushForce.Force1);
 				break;
 		}
