@@ -54,6 +54,7 @@ public class SettingsMenu : MonoBehaviour
 
     void Awake()
     {
+        ComputeSettings();
         foreach(var category in menuCategories)
         {
             category.SetActive(true);
@@ -358,6 +359,10 @@ public class SettingsMenu : MonoBehaviour
        FeedbackManager.SendFeedback("event.MenuBack", this);
        scriptLinkedToThisOne.waitForBResetOne = true;
        scriptLinkedToThisOne.isMainMenuActive = true;
+
+       ComputeSettings();
+       ModifyActualGameValues();
+
        gameObject.SetActive(false);
     }
 
@@ -373,7 +378,7 @@ public class SettingsMenu : MonoBehaviour
     }
 
     // Get all settings in the option menu and save their names + current value in matching dictionaries (one for the sliders, one for multichoices and one for toggles)
-    public void ComputeSettingsSaved()
+    public void ComputeSettings()
     {
         sliderSettings.Clear();
         sliderSettings = new Dictionary<string, int>();
@@ -411,7 +416,7 @@ public class SettingsMenu : MonoBehaviour
 
     }
 
-    // Display all the values saved for the settings, keyed with their names
+    // Display all the values saved for the settings, keyed with their names, as Debug Logs
     public void DisplaySettingsValues()
     {
         foreach (var slider in sliderSettings)
@@ -481,6 +486,10 @@ public class SettingsMenu : MonoBehaviour
 
     public void ModifyActualGameValues()
     {
-
+        if (sliderSettings.TryGetValue("GameSpeed", out int value))
+        {
+            GameManager.i.gameSpeed_access = ((float)value) / 100;
+        }
+        
     }
 }

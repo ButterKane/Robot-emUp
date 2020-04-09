@@ -199,7 +199,7 @@ public class MainMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
         SceneManager.LoadScene(1);
-        Time.timeScale = 1f;
+        Time.timeScale = GameManager.i.gameSpeed_access;
     }
 
     public void GoToSettings ()

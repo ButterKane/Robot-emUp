@@ -658,7 +658,6 @@ public class EnemyBehaviour : PawnController, IHitable
 
     public override void Kill()
     {
-        Debug.Log("kILL ENEMY");
         if (healthBar != null) { Destroy(healthBar.gameObject); }
         onDeath.Invoke();
         EnemyManager.i.RemoveEnemy(this);

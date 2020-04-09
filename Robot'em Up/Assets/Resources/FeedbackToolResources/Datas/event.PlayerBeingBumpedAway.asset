@@ -72,7 +72,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   shakeDataInited: 0
   vibrationDataInited: 0
-  soundDataInited: 0
+  soundDataInited: 1
   vfxDataInited: 0
   eventCalled: 1
   category:
@@ -80,7 +80,14 @@ MonoBehaviour:
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
     soundName: PlayerHitWithBump
-    attachToTarget: 0
+    soundList:
+    - clip: {fileID: 8300000, guid: 523dcfe79ceef2f4ea8dc874125a5e03, type: 3}
+      playChances: 0.33
+    - clip: {fileID: 8300000, guid: 93260c324e5df3a4ea94625016fc1408, type: 3}
+      playChances: 0.33499998
+    - clip: {fileID: 8300000, guid: 155eb307984072f488b86a4b4f0b2fa5, type: 3}
+      playChances: 0.33499998
+    volumeMultiplier: 0.6
   vfxData:
     vfxPrefab: {fileID: 0}
     offset: {x: 0, y: 0, z: 0}

@@ -206,7 +206,6 @@ public class WaveController : MonoBehaviour
 	{
 		currentEnemies.Remove(_enemy);
 		UpdateCurrentPowerLevel();
-		Debug.Log("Killed enemy: " + _enemy.name + " Remaining power: " + currentPowerLevel);
 	}
 	#endregion
 

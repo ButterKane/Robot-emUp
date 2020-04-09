@@ -47,7 +47,7 @@ public class PauseManager : MonoBehaviour
         if (initialTimeScale != 0)
             Time.timeScale = initialTimeScale;
         else
-            Time.timeScale = 1;
+            Time.timeScale = GameManager.i.gameSpeed_access;
     }
 
 }

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Unity.EditorCoroutines.Editor;
 
 [System.Serializable]
 public class SoundData
 {
 	public string soundName;
+	public float delay = 0;
 	public List<Sound> soundList;
 	[Range(0f, 1f)] public float volumeMultiplier = 1f;
 
@@ -89,41 +91,35 @@ public class Sound
 
 public class SoundManager
 {
-	public static void PlaySound(string _soundName, Vector3 _worldPosition, Transform _parent = null)
+	public static EditorCoroutine soundCoroutine;
+	public static void PlaySound(SoundData _soundData, Vector3 _worldPosition, Transform _parent = null)
 	{
-		SoundData i_soundData = GetSoundData(_soundName);
-		if (i_soundData == null) { return; }
-		AudioClip clip = GetSoundClip(i_soundData);
+		if (_soundData == null) { return; }
+		if (_soundData.soundList == null || _soundData.soundList.Count <= 0) { return; }
+		AudioClip clip = GetSoundClip(_soundData);
 		if (clip == null) { return; }
 		GameObject i_newSoundPlayer = new GameObject();
 		i_newSoundPlayer.name = "SoundPlayer";
 		AudioSource i_newAudioSource = i_newSoundPlayer.AddComponent<AudioSource>();
 		i_newAudioSource.spatialBlend = 0.65f;
 		i_newAudioSource.maxDistance = 100;
-		i_newAudioSource.volume = i_soundData.volumeMultiplier;
+		i_newAudioSource.volume = _soundData.volumeMultiplier;
 		if (_parent != null)
 		{
 			i_newAudioSource.transform.SetParent(_parent);
-		}
+		} 
 		i_newAudioSource.gameObject.AddComponent<SoundAutoDestroyer>();
 		i_newAudioSource.transform.position = _worldPosition;
 		i_newAudioSource.clip = clip;
-		i_newAudioSource.Play();
+		if (_soundData.delay > 0)
+		{
+			i_newAudioSource.PlayDelayed(_soundData.delay);
+		} else
+		{
+			i_newAudioSource.Play();
+		}
 	}
 
-	public static SoundData GetSoundData(string _soundName)
-	{
-		SoundDatas i_soundDatas = Resources.Load<SoundDatas>("SoundDatas");
-		foreach (SoundData soundData in i_soundDatas.soundList)
-		{
-			if (soundData.soundName == _soundName)
-			{
-				return soundData;
-			}
-		}
-		Debug.LogWarning("No data for sound with name " + _soundName + " found.");
-		return null;
-	}
 	public static AudioClip GetSoundClip(SoundData _soundData)
 	{
 		float i_pickChances = Random.value;
@@ -141,11 +137,30 @@ public class SoundManager
 		return _soundData.soundList[i_chosenIndex].clip;
 	}
 
-	public static void PlaySoundInEditor ( string soundName )
+	public static void PlaySoundInEditor ( SoundData _soundData )
 	{
 #if UNITY_EDITOR
-		PlaySoundInEditor(SoundManager.GetSoundClip(SoundManager.GetSoundData(soundName)));
+		if (_soundData.delay > 0)
+		{
+			if (soundCoroutine != null) { EditorCoroutineUtility.StopCoroutine(soundCoroutine); }
+			soundCoroutine = EditorCoroutineUtility.StartCoroutine(PlaySoundInEditor_C(GetSoundClip(_soundData), 0, false, _soundData.delay), _soundData);
+		}
+		else
+		{
+			PlaySoundInEditor(GetSoundClip(_soundData));
+		}
 #endif
+	}
+
+	public static IEnumerator PlaySoundInEditor_C( AudioClip _clip, int _startSample = 0, bool _loop = false, float _delay = 0)
+	{
+		float waitTimer = 0;
+		while (waitTimer < _delay)
+		{
+			yield return new WaitForFixedUpdate();
+			waitTimer += Time.deltaTime;
+		}
+		PlaySoundInEditor(_clip, _startSample, _loop);
 	}
 	public static void PlaySoundInEditor ( AudioClip _clip, int _startSample = 0, bool _loop = false )
 	{
