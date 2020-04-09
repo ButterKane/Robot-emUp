@@ -12,6 +12,6 @@ public class FeedbackData : ScriptableObject
 	public bool vfxDataInited;
 	public bool eventCalled = false;
 	public FeedbackEventCategory category;
-	public SoundPlayData soundData;
+	public SoundData soundData;
 	public VFXData vfxData;
 }
