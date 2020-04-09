@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ToxicAreaManager : MonoBehaviour
 {
     public bool areaActivated = false;
-    public bool accelerateDepoisened = false;
+    public bool accelerateDepoisoned = false;
     public float decay_multiplier;
     public float damageWhenPoisened_multiplier;
     public float toxicValue_P1;
@@ -39,19 +39,11 @@ public class ToxicAreaManager : MonoBehaviour
 
         playerOneToxicBar.gameObject.SetActive(false);
         playerTwoToxicBar.gameObject.SetActive(false);
-        NewMethod();
-    }
-
-    private void NewMethod()
-    {
-       // poisonedSprite_P1.gameObject.SetActive(false);
-       // poisonedSprite_P2.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-
         //Update slider values
         playerOneToxicBarSlider.value = toxicValue_P1;
         playerTwoToxicBarSlider.value = toxicValue_P2;
@@ -89,7 +81,7 @@ public class ToxicAreaManager : MonoBehaviour
            // poisonedSprite_P1.gameObject.SetActive(true);
 
             GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
-            if (accelerateDepoisened)
+            if (accelerateDepoisoned)
             {
                 toxicValue_P1 -= Time.deltaTime * decay_multiplier * 3;
             }
@@ -105,7 +97,7 @@ public class ToxicAreaManager : MonoBehaviour
           //  poisonedSprite_P2.gameObject.SetActive(true);
 
             GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
-            if (accelerateDepoisened)
+            if (accelerateDepoisoned)
             {
                 toxicValue_P2 -= Time.deltaTime * decay_multiplier * 3;
             }
