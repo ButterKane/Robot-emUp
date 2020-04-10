@@ -57,6 +57,7 @@ public class SliderUI : UIBehaviour
             if (currentTimeProgressionBeforeValueChange <= 0) // from max to min
             {
                 slider.value += _valueToAdd;
+                slider.value = Mathf.RoundToInt(slider.value);
                 currentValue = (int)slider.value;
                 currentTimeProgressionBeforeValueChange = defaultTimeBetweenChangeValue;
                 UpdateSliderText();
@@ -103,5 +104,10 @@ public class SliderUI : UIBehaviour
 
         slider.minValue = minValue;
         slider.maxValue = maxValue;
+
+        slider.value = defaultValue;
+        currentValue = (int)slider.value;
+
+        valueText.text = currentValue.ToString();
     }
 }

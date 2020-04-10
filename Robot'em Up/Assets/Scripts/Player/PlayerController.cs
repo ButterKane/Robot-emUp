@@ -260,7 +260,7 @@ public class PlayerController : PawnController, IHitable
 			{
 				ui.DisplayHealth(HealthAnimationType.Loss);
 			}
-			base.Damage(_amount, _enableInvincibilityFrame);   // manages the recovery time as well
+			base.Damage(_amount * GameManager.i.damageTakenSettingsMod, _enableInvincibilityFrame);   // manages the recovery time as well
 		}
 	}
 	#endregion
@@ -646,7 +646,7 @@ public class PlayerController : PawnController, IHitable
 	{
 		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Source", _source } });
 		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-        float i_actualDamages = _damages * GameManager.i.damageTaken;
+        float i_actualDamages = _damages * GameManager.i.damageTakenSettingsMod;
 
         switch (_source)
 		{

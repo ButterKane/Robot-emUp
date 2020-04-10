@@ -9,7 +9,7 @@ public class CameraShaker : MonoBehaviour
 	public static List<ShakeData> shakeList = new List<ShakeData>();
 	public static ShakeData currentShake;
 	public static ShakeEffect cameraShaker;
-
+    public static float shakeSettingsMod = 1;
 	public static void ShakeEditorCamera (Camera _camera, float _intensity, float _duration, float _frequency, AnimationCurve _intensityCurve)
 	{
 		EditorCameraShaker shaker = _camera.gameObject.AddComponent<EditorCameraShaker>();
@@ -23,7 +23,7 @@ public class CameraShaker : MonoBehaviour
 			cameraShaker = new GameObject().AddComponent<ShakeEffect>();
 			cameraShaker.gameObject.name = "Camera Shaker";
 		}
-		ShakeData i_shakeData = new ShakeData(_intensity, _duration, _frequency);
+		ShakeData i_shakeData = new ShakeData(_intensity * shakeSettingsMod, _duration, _frequency);
 		i_shakeData.intensityCurve = _intensityCurve;
 		if (currentShake != null)
 		{

@@ -193,13 +193,14 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(false);
         buttons = menuButtons;
         SelectButton(buttons[0]);
+        Time.timeScale = GameManager.i.gameSpeed;
     }
 
     public void StartGame ()
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
         SceneManager.LoadScene(1);
-        Time.timeScale = GameManager.i.gameSpeed_access;
+        Time.timeScale = GameManager.i.gameSpeed;
     }
 
     public void GoToSettings ()

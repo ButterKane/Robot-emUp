@@ -80,19 +80,16 @@ public class GameManager : MonoBehaviour
 
 
     // Settings variables
-    [ReadOnly] public float screenShakeIntensity;
-    [ReadOnly] public float hapticIntensity;
-    private float gameSpeed = 1;
-    public float gameSpeed_access {get {return gameSpeed; } set { gameSpeed = value; Time.timeScale = value; Debug.Log("new game speed is" + value); } }
-    [ReadOnly] [Range(0.2f, 1)] public float damageTaken = 1;
-    [ReadOnly] [Range(0, 1)] public float aimAssistance = 0;
+    [ReadOnly] public float gameSpeed = 1;
+    [ReadOnly] public float damageTakenSettingsMod = 1;
+    [ReadOnly] public float aimAssistanceSettingsMod = 0;
     [ReadOnly] public int enemiesAgressivity = 1;
 
     private void Awake()
     {
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = gameSpeed_access;
+        Time.timeScale = gameSpeed;
         i = this;
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
@@ -188,7 +185,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(index);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = i.gameSpeed_access;
+        Time.timeScale = i.gameSpeed;
     }
 
     public static void LoadNextScene()
@@ -196,7 +193,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = i.gameSpeed_access;
+        Time.timeScale = i.gameSpeed;
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -240,7 +237,7 @@ public class GameManager : MonoBehaviour
         {
             p.EnableInput();
         }
-        Time.timeScale = i.gameSpeed_access; 
+        Time.timeScale = i.gameSpeed; 
         mainMenu.gameObject.SetActive(false);
     }
 
