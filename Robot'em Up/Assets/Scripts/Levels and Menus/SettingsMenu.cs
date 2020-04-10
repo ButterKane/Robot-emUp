@@ -518,7 +518,8 @@ public class SettingsMenu : MonoBehaviour
         // 10 to 100
         if (sliderSettings.TryGetValue("Trigger_Treshold", out int valueTriggerTreshold))
         {
-
+            GameManager.playerOne.triggerTreshold = ((float)valueTriggerTreshold)/100;
+            GameManager.playerTwo.triggerTreshold = ((float)valueTriggerTreshold)/100; 
         }
 
         // 0 to 100
