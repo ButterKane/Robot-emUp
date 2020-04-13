@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+#if UNITY_EDITOR
 using Unity.EditorCoroutines.Editor;
+#endif
 
 [System.Serializable]
 public class SoundData
@@ -91,7 +93,9 @@ public class Sound
 
 public class SoundManager
 {
+#if UNITY_EDITOR
 	public static EditorCoroutine soundCoroutine;
+#endif
 	public static void PlaySound(SoundData _soundData, Vector3 _worldPosition, Transform _parent = null)
 	{
 		if (_soundData == null) { return; }

@@ -18,6 +18,22 @@ public class EnemyDatas : ScriptableObject
 		}
 		return 0;
 	}
+
+	public static EnemyDatas GetEnemyDatas()
+	{
+		return Resources.Load<EnemyDatas>("EnemyDatas");
+	}
+	public EnemyData GetEnemyByID(string id)
+	{
+		foreach (EnemyData d in enemyDatas)
+		{
+			if (id == d.name)
+			{
+				return d;
+			}
+		}
+		return null;
+	}
 }
 
 [System.Serializable]
