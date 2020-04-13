@@ -43,9 +43,9 @@ MonoBehaviour:
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
-    force: 0
-    duration: 0
-    target: 0
+    force: 3
+    duration: 0.2
+    target: 1
     forceCurve:
       serializedVersion: 2
       m_Curve:
@@ -71,16 +71,23 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   shakeDataInited: 0
-  vibrationDataInited: 0
-  soundDataInited: 0
+  vibrationDataInited: 1
+  soundDataInited: 1
   vfxDataInited: 0
   eventCalled: 1
   category:
     displayName: Player
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
-    soundName: 
-    attachToTarget: 0
+    soundName: PlayerPickingBodyPart
+    soundList:
+    - clip: {fileID: 8300000, guid: 47319625f5699aa45bf2885f86d3846b, type: 3}
+      playChances: 0.33
+    - clip: {fileID: 8300000, guid: 1b0d971ef26636d4fa96072a29c5943c, type: 3}
+      playChances: 0.33499998
+    - clip: {fileID: 8300000, guid: cc53a8384915c5f4faa9a10b6861c835, type: 3}
+      playChances: 0.33499998
+    volumeMultiplier: 0.8
   vfxData:
     vfxPrefab: {fileID: 0}
     offset: {x: 0, y: 0, z: 0}

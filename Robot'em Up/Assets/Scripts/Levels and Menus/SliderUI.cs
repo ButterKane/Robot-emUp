@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,23 +7,27 @@ using UnityEngine.UI;
 
 public class SliderUI : UIBehaviour
 {
+    [Separator("References (don't touch)")]
     public Slider slider;
-    [Range(0, 100)] public int defaultValue = 50;
-    public int currentValue;
     public TextMeshProUGUI valueText;
+    public TextMeshProUGUI minValueText;
+    public TextMeshProUGUI maxValueText;
 
-    private float defaultTimeBetweenChangeValue;
-    private float timeBetweenValueChange;
+    [Separator ("Tweakable variables")]
+    public int minValue = 0;
+    public int maxValue = 100;
+    public int defaultValue = 50;
+    [ReadOnly] public int currentValue;        // This is the actual value, not the 0-1 of the slider
+    public float defaultTimeBetweenChangeValue;
+
     private float currentTimeProgressionBeforeValueChange;
-    private float currentTimeProgressionBeforeReset;
-    private float currentTimeRatioBeforeReset;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        slider.value = (float)defaultValue / 100;
-        currentValue = (int) slider.value * 100;
-        timeBetweenValueChange = defaultTimeBetweenChangeValue;
+        slider.value = defaultValue;
+        currentValue = (int)slider.value;
         currentTimeProgressionBeforeValueChange = 0;
         UpdateSliderText();
     }
@@ -42,7 +47,7 @@ public class SliderUI : UIBehaviour
 
     public void UpdateSliderText()
     {
-        valueText.text = Mathf.RoundToInt(slider.value *100).ToString() ;
+        valueText.text = Mathf.RoundToInt(slider.value).ToString() ;
     }
 
     public void UpdateSliderValue(int _valueToAdd, bool _valueIsAdded)
@@ -51,19 +56,19 @@ public class SliderUI : UIBehaviour
         {
             if (currentTimeProgressionBeforeValueChange <= 0) // from max to min
             {
-                slider.value += (float)_valueToAdd / 100;
-                currentValue = (int)slider.value * 100;
-                currentTimeProgressionBeforeValueChange = timeBetweenValueChange;
+                slider.value += _valueToAdd;
+                slider.value = Mathf.RoundToInt(slider.value);
+                currentValue = (int)slider.value;
+                currentTimeProgressionBeforeValueChange = defaultTimeBetweenChangeValue;
                 UpdateSliderText();
             }
             currentTimeProgressionBeforeValueChange -= Time.unscaledDeltaTime;
         }
         else
         {
-            slider.value = (float)_valueToAdd / 100;
-            currentValue = (int)slider.value * 100;
+            slider.value = _valueToAdd;
+            currentValue = (int)slider.value;
             currentTimeProgressionBeforeValueChange = 0;
-            currentTimeProgressionBeforeReset = 0;
         }
     }
 
@@ -79,15 +84,30 @@ public class SliderUI : UIBehaviour
 
     public override void ResetValueToDefault()
     {
-        slider.value = (float)defaultValue / 100;
-        timeBetweenValueChange = defaultTimeBetweenChangeValue;
+        slider.value = defaultValue;
         currentTimeProgressionBeforeValueChange = 0;
-        currentTimeProgressionBeforeReset = 0;
         UpdateSliderText();
     }
 
     public void ForceModifyValue(int _value)
     {
         UpdateSliderValue(_value, false);
+    }
+
+    /// <summary>
+    /// Attribute the texts AND the slider min and max values
+    /// </summary>
+    public void AttributeMinMaxValues()
+    {
+        minValueText.text = minValue.ToString();
+        maxValueText.text = maxValue.ToString();
+
+        slider.minValue = minValue;
+        slider.maxValue = maxValue;
+
+        slider.value = defaultValue;
+        currentValue = (int)slider.value;
+
+        valueText.text = currentValue.ToString();
     }
 }

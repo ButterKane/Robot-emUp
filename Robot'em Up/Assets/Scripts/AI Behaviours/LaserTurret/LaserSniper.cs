@@ -5,7 +5,6 @@ public class LaserSniper : MonoBehaviour
     public float speed;
     [HideInInspector] public int damageDealt;
     Vector3 initialPosition;
-    [HideInInspector] public Transform target;
     [HideInInspector] public Transform spawnParent;
     [HideInInspector] public LaserSniperTurretBehaviour enemyScript;
     public GameObject impactFX;
@@ -20,14 +19,12 @@ public class LaserSniper : MonoBehaviour
     [HideInInspector] public MeshRenderer laserRenderer;
     [HideInInspector] public bool isAimingPlayer;
     [HideInInspector] public float distanceAoEDamage;
-    private float accumulatedDamage;
 
     private void Awake()
     {
         isLaserActive = true;
         initialPosition = transform.position;
         laserRenderer = GetComponentInChildren<MeshRenderer>();
-        accumulatedDamage = 0;
     }
 
     void Update()
@@ -37,7 +34,7 @@ public class LaserSniper : MonoBehaviour
         UpdateLaserLength(laserLength);
     }
 
-    public void UpdateLaserLength(float? givenLength)
+    private void UpdateLaserLength(float? givenLength)
     {
         float i_laserLength = 0;
         if (givenLength == null)
@@ -52,7 +49,7 @@ public class LaserSniper : MonoBehaviour
 
     }
 
-    public void RaycastToHitWithLaser()
+    private void RaycastToHitWithLaser()
     {
         // First raycast pass to determine the laser length
         float i_closestDistance = enemyScript.laserMaxLength;
@@ -68,7 +65,7 @@ public class LaserSniper : MonoBehaviour
             }
         }
 
-        laserLength = i_closestDistance + laserWidth; // This is to compensate the sphere cast radius
+        laserLength = i_closestDistance + laserWidth * 1.1f; // This is to compensate the sphere cast radius
 
         if (isLaserActive)
         {
@@ -82,7 +79,7 @@ public class LaserSniper : MonoBehaviour
                         Debug.DrawRay(touched.transform.position, Vector3.up * 4, Color.green);
                         IHitable i_potentialHitableObject = touched.collider.GetComponent<IHitable>();
 
-                        if (i_potentialHitableObject != null && touched.transform != transform.root) 
+                        if (i_potentialHitableObject != null && touched.transform != enemyScript.transform) 
                         {
                             i_potentialHitableObject.OnHit(null, (touched.transform.position - touched.point).normalized, null, enemyScript.damagePerSecond * Time.deltaTime, DamageSource.Laser, Vector3.zero);
 
@@ -97,8 +94,7 @@ public class LaserSniper : MonoBehaviour
         }
     }
 
-
-    void LaserRepulsion(Vector3 _centerRepulsionPoint)
+    private void LaserRepulsion(Vector3 _centerRepulsionPoint)
     {
         RaycastHit[] i_hitObjects = Physics.SphereCastAll(_centerRepulsionPoint, enemyScript.repulseCircleRadius, Vector3.forward);
         if (i_hitObjects.Length > 0)
@@ -118,7 +114,7 @@ public class LaserSniper : MonoBehaviour
 
                         if (touched.collider.tag == "Player")
                         {
-                            touched.collider.gameObject.GetComponent<PlayerController>().AddSpeedCoef(new SpeedCoef(enemyScript.playerSpeedReductionCoef, Time.deltaTime, SpeedMultiplierReason.Environment, true));
+                            touched.collider.gameObject.GetComponent<PlayerController>().AddSpeedModifier(new SpeedCoef(enemyScript.playerSpeedReductionCoef, Time.deltaTime, SpeedMultiplierReason.Environment, true));
                         }
                     }
                 }

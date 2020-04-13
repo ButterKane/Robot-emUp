@@ -10,6 +10,7 @@ public class TurretBasicBullet : MonoBehaviour
     public GameObject deathParticle;
     public int damageDealt;
     public float maxLifeTime;
+    private float currentLifeTime;
     public Transform target;
     public bool canHitEnemies;
     public float damageModificator;
@@ -20,12 +21,20 @@ public class TurretBasicBullet : MonoBehaviour
     void Update()
     {
         rb.position = transform.position + transform.forward * speed * Time.deltaTime;
-        maxLifeTime -= Time.deltaTime;
-        if (maxLifeTime <= 0)
+        currentLifeTime -= Time.deltaTime;
+        if (currentLifeTime <= 0)
         {
             Debug.Log("maxlifetime turret");
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
+    }
+
+    public void ActivateProjectile(Vector3 _positionToSpawn, Quaternion _rotationToDirection)
+    {
+        currentLifeTime = maxLifeTime;
+        transform.position = _positionToSpawn;
+        transform.rotation = _rotationToDirection;
+        gameObject.SetActive(true);
     }
 
     private void OnTriggerEnter(Collider _other)
@@ -36,23 +45,23 @@ public class TurretBasicBullet : MonoBehaviour
             {
                 _other.GetComponent<PawnController>().Damage(Mathf.RoundToInt(damageDealt * damageModificator));
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             else if (_other.tag == "Player")
             {
                 _other.GetComponent<PlayerController>().Damage(damageDealt);
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             else if (_other.tag == "Environment" || _other.tag == "Ground")
             {
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             else if (_other.tag == "Boss_Destructible")
             {
                 Destroy(Instantiate(deathParticle, transform.position, Quaternion.identity), .25f);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
     }

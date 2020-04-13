@@ -64,7 +64,7 @@ public class LinkBehaviourToAnimator : MonoBehaviour
 
     public void Die()
     {
-        enemyScriptRef.Kill();
+        //enemyScriptRef.Kill();
     }
 
     public void EndOfDeployment()

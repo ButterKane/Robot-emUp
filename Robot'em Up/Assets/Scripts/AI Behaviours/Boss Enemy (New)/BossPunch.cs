@@ -26,8 +26,6 @@ public class BossPunch : MonoBehaviour
 	[ConditionalField("canPushPlayers")] public float punchPushForce = 10f;
 	[ConditionalField("canPushPlayers")] public float punchPushHeight = 3f;
 	private bool cubeDestroyed = false;
-
-	private bool damaging;
 	private void Awake ()
 	{
 		punchOutline.enabled = false;
@@ -56,7 +54,6 @@ public class BossPunch : MonoBehaviour
 		newFillColor.a = 1f;
 		if (damageCollider != null && canDamagePlayers)
 		{
-			damaging = true;
 			damageCollider.enabled = true;
 			FeedbackManager.SendFeedback("event.BossPunchHit", this, damageCollider.transform.position, Vector3.up, Vector3.up);
 			yield return null;
@@ -70,7 +67,6 @@ public class BossPunch : MonoBehaviour
 				punchFill.material.SetColor("Tint", Color.Lerp(newFillColor, fillColorHit, i / 0.1f));
 				yield return null;
 			}
-			damaging = false;
 			pushCollider.enabled = true;
 			FeedbackManager.SendFeedback("event.BossPunchPush", this, pushCollider.transform.position, transform.forward, Vector3.up);
 			yield return null;

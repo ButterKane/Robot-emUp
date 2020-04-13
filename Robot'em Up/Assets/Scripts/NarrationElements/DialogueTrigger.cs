@@ -19,6 +19,7 @@ public class DialogueTrigger : MonoBehaviour
     {
         textWritingCoroutine = null;
         dialogueBoxInstance = null;
+        CreateDialogueBox();
     }
 
 
@@ -70,15 +71,22 @@ public class DialogueTrigger : MonoBehaviour
             yield return new WaitForSeconds(dialogueData.texts[i].pauseAfterText);
             textWritingCoroutine = null;
         }
-        Destroy(dialogueBoxInstance, dialogueData.timeBeforeDestruction);
-        Destroy(gameObject, dialogueData.timeBeforeDestruction);
+        yield return new WaitForSeconds(dialogueData.timeBeforeDestruction);
+        dialogueBoxInstance.SetActive(false);   // Not that useful, since we destroy the object right after, but this is clean at least
+        Destroy(gameObject);
+    }
+
+    private void CreateDialogueBox()
+    {
+        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
+        dialogueBoxInstance.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player" && dialogueBoxInstance == null)
         {
-            dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
+            dialogueBoxInstance.SetActive(true);
             textField = dialogueBoxInstance.transform.GetComponentInChildren<TextMeshProUGUI>();
             subImage = dialogueBoxInstance.transform.GetChild(0).GetComponent<Image>();
             StartCoroutine(BlinkSubImage());
@@ -110,22 +118,5 @@ public class DialogueTrigger : MonoBehaviour
         i_newAudioSource.transform.position = _position;
         i_newAudioSource.clip = _dialogueClip;
         i_newAudioSource.Play();
-    }
-
-    public IEnumerator WriteText_C()
-    {
-        for (int j = 0; j < dialogueData.texts.Length; j++)
-        {
-            for (int i = 0; i < dialogueData.texts[j].text.Length + 1; i++)
-            {
-                textField.text = dialogueData.texts[j].text.Substring(0, i);
-                yield return new WaitForSeconds(1 / typingSpeed);
-            }
-
-            yield return new WaitForSeconds(dialogueData.texts[j].pauseAfterText);
-            textWritingCoroutine = null;
-        }
-        Destroy(dialogueBoxInstance, dialogueData.timeBeforeDestruction);
-        Destroy(gameObject, dialogueData.timeBeforeDestruction);
     }
 }

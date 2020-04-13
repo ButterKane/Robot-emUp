@@ -29,6 +29,7 @@ public class RushAttackHitBox : MonoBehaviour
         if (other.transform.tag == "Player")
         {
             other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, parent.damage, DamageSource.EnemyContact);
+            FeedbackManager.SendFeedback("event.EnemyShieldHitPlayer", this);
             parent.StopAttack();
             ToggleCollider(false);
         }

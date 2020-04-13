@@ -32,6 +32,7 @@ Transform:
   - {fileID: 2308905656792231224}
   - {fileID: 1435241108147176463}
   - {fileID: 1107410883874630175}
+  - {fileID: 4891339051591210792}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180.00002, z: 0}
@@ -54,8 +55,10 @@ MonoBehaviour:
   possessed: 0
   lockable: 1
   lockHitboxSize: 1.5
+  lockSize3DModifier: {x: 1, y: 1, z: 1}
   breakEventName: event.ScreenBreaking
   possessionAnimationMaxTime: 0.25
+  possessionColor: {r: 0, g: 0, b: 0, a: 0}
   possessionAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -96,6 +99,8 @@ MonoBehaviour:
   maxEmissiveIntensity: 3
   normalEmissiveIntensity: 1.3
   myAudioMixer: {fileID: 24300002, guid: c757bd821215f664d966ce787ae1ac26, type: 2}
+  rangeTriggerGameObject: {fileID: 6396425681679077417}
+  middlePointInRange: 0
   speakerRB: {fileID: 1370003645928433649}
   forwardForceThrow: 200
   downForceThrow: 400
@@ -511,3 +516,61 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6396425681679077417
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4891339051591210792}
+  - component: {fileID: 5436992801730834170}
+  - component: {fileID: 6781422853267691163}
+  m_Layer: 0
+  m_Name: RangeTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4891339051591210792
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6396425681679077417}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 539808258351391943}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &5436992801730834170
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6396425681679077417}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 17.4
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6781422853267691163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6396425681679077417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b95b2003b436a4b88fc242cb279bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myElement: {fileID: 539808258351391944}

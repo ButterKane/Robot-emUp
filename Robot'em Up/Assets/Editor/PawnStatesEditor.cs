@@ -81,7 +81,6 @@ public class PawnStatesEditor : Editor
 		GUILayout.FlexibleSpace();
 		EditorGUILayout.EndHorizontal();
 
-		EditorUtility.SetDirty(target);
-		serializedObject.ApplyModifiedProperties();
+ 
 	}
 }

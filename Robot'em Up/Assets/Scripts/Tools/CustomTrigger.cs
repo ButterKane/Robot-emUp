@@ -12,19 +12,17 @@ public class CustomTrigger : MonoBehaviour
 {
 	public bool onExit;
 	public bool singleUse;
-	public bool useDirection = true;
+	public bool oneWayOnly = true; //Mean the player must 
 	public TriggerCondition triggerCondition;
 	public UnityEvent onTriggerEnterAction;
 	public UnityEvent onTriggerComebackAction;
 
     private List<PlayerController> playerGoneThroughDoor;
-	private Collider col;
 	private bool used;
 	private int direction;
 
 	private void Awake ()
 	{
-		col = GetComponent<Collider>();
 		playerGoneThroughDoor = new List<PlayerController>();
 		direction = 1;
     }
@@ -41,7 +39,7 @@ public class CustomTrigger : MonoBehaviour
 			PlayerController potentialPlayer = other.transform.gameObject.GetComponent<PlayerController>();
 			if (potentialPlayer != null)
 			{
-				if (useDirection == false || transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
+				if (oneWayOnly == false || transform.InverseTransformPoint(potentialPlayer.transform.position).z * direction > 0.0)
 				{
 					if (!playerGoneThroughDoor.Contains(potentialPlayer))
 					{

@@ -9,6 +9,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
     [Header("Puzzle Link")]
     [Range(0.3f, 20)] public float nbSecondsLinkMaintained = 8f;
     public MeshRenderer CompletionShader;
+    public Animator myAnim;
 
     private GameObject fX_Activation;
     private GameObject fX_Linked;
@@ -47,6 +48,7 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
                 chargingTime = nbSecondsLinkMaintained;
                 isActivated = true;
+                myAnim.SetTrigger("ActivatingTrigger");
 
                 ActivateLinkedObjects();
             }
@@ -58,7 +60,6 @@ public class PuzzleLink : PuzzleActivator, IHitable
         chargingTime = 0;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (chargingTime > 0 && isActivated)
@@ -84,10 +85,13 @@ public class PuzzleLink : PuzzleActivator, IHitable
     }
 
 
-    override public void customShutDown()
+    override public void CustomShutDown()
     {
-        transform.position = transform.position + Vector3.up * -0.5f;
+        myAnim.SetTrigger("ClosingTrigger");
+        CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
         isActivated = false;
+
+
         fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
         if (fX_Activation != null)
         {
