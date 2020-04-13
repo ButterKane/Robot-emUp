@@ -80,11 +80,19 @@ MonoBehaviour:
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
     soundName: BallReception
-    attachToTarget: 0
+    delay: 0
+    soundList:
+    - clip: {fileID: 8300000, guid: 0201b1a6bdf86b44e8582fc502f986e0, type: 3}
+      playChances: 0.33
+    - clip: {fileID: 8300000, guid: 51513087277790a4a9b6a78519982f43, type: 3}
+      playChances: 0.33499998
+    - clip: {fileID: 8300000, guid: 87c09f494f8257642bdf69e5350b75c5, type: 3}
+      playChances: 0.33499998
+    volumeMultiplier: 0.6
   vfxData:
     vfxPrefab: {fileID: 7265315026588711800, guid: e245b08f5a7fe054fa34eb0670e15abb,
       type: 3}
-    offset: {x: 0, y: 0, z: 0}
+    offset: {x: 0, y: 0.75, z: 0}
     scaleMultiplier: {x: 1, y: 1, z: 1}
     direction: 0
     position: 1

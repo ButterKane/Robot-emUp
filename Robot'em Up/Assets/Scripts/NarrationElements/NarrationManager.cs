@@ -35,7 +35,7 @@ public class NarrationManager : MonoBehaviour
     void Awake()
     {
         narrationManager = this;
-
+        CreateDialogueBox();
         textWritingCoroutine = null;
         dialogueBoxInstance = null;
 
@@ -51,6 +51,7 @@ public class NarrationManager : MonoBehaviour
         middlePlayerPosition = (player1Transform.position + player2Transform.position) / 2;
     }
 
+    #region Public methods
     public void SetNarrativeElementsInRange(bool _add, NarrativeInteractiveElements _narrativeElement)
     {
         if (_add)
@@ -63,22 +64,63 @@ public class NarrationManager : MonoBehaviour
         }
     }
 
+    public void LaunchDialogue(DialogueData _dialogueData)
+    {
+        if (dialogueBoxInstance != null)
+        {
+            dialogueBoxInstance.SetActive(true);
+            textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
+            myAudioSource.clip = _dialogueData.dialogueClip;
+            myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
+
+            if (textWritingCoroutine == null)
+            {
+                textWritingCoroutine = NewWriteText_C(_dialogueData, typingSpeed);
+                StartCoroutine(textWritingCoroutine);
+            }
+        }
+    }
+
+    public void ChangeActivatedNarrationElement(NarrativeInteractiveElements _newNarrativeElement)
+    {
+        currentNarrationElementActivated = _newNarrativeElement;
+        if (currentNarrationElementActivated != null)
+        {
+            myAudioSource.outputAudioMixerGroup = currentNarrationElementActivated.myAudioMixer;
+        }
+        else
+        {
+            myAudioSource.outputAudioMixerGroup = defaultAudioMixer;
+        }
+    }
+    #endregion
+
+    #region Private methods
+    private void CreateDialogueBox()
+    {
+        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
+        dialogueBoxInstance.SetActive(false);
+    }
+    #endregion
+
+    #region Coroutines
     public IEnumerator CheckElementToActivate()
     {
         if (narrativeElementsInRange.Count > 0)
         {
-            float i_distance = 100;
+            float i_minimalDistance = 100;
             int i_narrativeElementToActivate = -1;
             for (int i = 0; i < narrativeElementsInRange.Count; i++)
             {
-                if (Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition) < i_distance)
+                float i_distanceFromElement = Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition);
+                if (i_distanceFromElement < i_minimalDistance)
                 {
-                    i_distance = Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition);
+                    i_minimalDistance = i_distanceFromElement;
                     i_narrativeElementToActivate = i;
                 }
             }
 
-            if(narrativeElementsInRange[i_narrativeElementToActivate] != activatedNarrativeElement)
+            if (narrativeElementsInRange[i_narrativeElementToActivate] != activatedNarrativeElement)
             {
                 if (activatedNarrativeElement != null)
                 {
@@ -97,34 +139,7 @@ public class NarrationManager : MonoBehaviour
         StartCoroutine(CheckElementToActivate());
     }
 
-    public void LaunchDialogue(DialogueData _dialogueData)
-    {
-        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
-        textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
-        myAudioSource.clip = _dialogueData.dialogueClip;
-        myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
-
-        if (textWritingCoroutine == null)
-        {
-            textWritingCoroutine = NewWriteText_C(_dialogueData, typingSpeed);
-            StartCoroutine(textWritingCoroutine);
-        }
-    }
-
-    public void ChangeActivatedNarrationElement(NarrativeInteractiveElements _newNarrativeElement)
-    {
-        currentNarrationElementActivated = _newNarrativeElement;
-        if(currentNarrationElementActivated != null)
-        {
-            myAudioSource.outputAudioMixerGroup = currentNarrationElementActivated.myAudioMixer;
-        }
-        else
-        {
-            myAudioSource.outputAudioMixerGroup = defaultAudioMixer;
-        }
-    }
-
-    public IEnumerator NewWriteText_C(DialogueData _dialogueData, float _typingSpeed)
+    private IEnumerator NewWriteText_C(DialogueData _dialogueData, float _typingSpeed)
     {
         Color i_appearingColor = new Color(textField.color.r, textField.color.g, textField.color.b, 1);
         TMP_TextInfo i_textInfo = textField.textInfo;
@@ -163,39 +178,9 @@ public class NarrationManager : MonoBehaviour
             yield return new WaitForSeconds(_dialogueData.texts[i].pauseAfterText);
             textWritingCoroutine = null;
         }
-        Destroy(dialogueBoxInstance, _dialogueData.timeBeforeDestruction);
+
+        yield return new WaitForSeconds(_dialogueData.timeBeforeDestruction);
+        dialogueBoxInstance.SetActive(false);
     }
-
-    public IEnumerator WriteText_C(DialogueData _dialogueData, float _typingSpeed)
-    {
-        if (currentNarrationElementActivated != null)   // Check if IA's Screen is still active
-        {
-            for (int j = 0; j < _dialogueData.texts.Length; j++)
-            {
-                for (int i = 0; i < _dialogueData.texts[j].text.Length + 1; i++)
-                {
-                    textField.text = _dialogueData.texts[j].text.Substring(0, i);
-                    yield return new WaitForSeconds(1 / _typingSpeed);
-                }
-
-                yield return new WaitForSeconds(_dialogueData.texts[j].pauseAfterText);
-            }
-        }
-        else
-        {
-            yield return new WaitForSeconds(_dialogueData.timeBeforeDestruction);
-            textWritingCoroutine = null;
-        }
-        Destroy(dialogueBoxInstance);
-    }
-
-    public IEnumerator BlinkSubImage()
-    {
-        while (true)
-        {
-            subImage.enabled = !subImage.enabled;
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
-
+    #endregion
 }

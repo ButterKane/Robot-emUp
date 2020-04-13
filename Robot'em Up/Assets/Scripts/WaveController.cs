@@ -89,8 +89,10 @@ public class WaveController : MonoBehaviour
 	}
 	public void RegisterEnemy(EnemyBehaviour _enemy)
 	{
-		_enemy.deathValues.onDeath.AddListener(() => { OnEnemyDeath(_enemy); });
+		_enemy.onDeath.AddListener(() => { OnEnemyDeath(_enemy); });
 		currentEnemies.Add(_enemy);
+		Debug.Log("Registering enemy: " + _enemy.name + " New power: " + currentPowerLevel);
+		UpdateCurrentPowerLevel();
 	}
 	public void EndWave()
 	{
@@ -99,6 +101,7 @@ public class WaveController : MonoBehaviour
 			FeedbackManager.SendFeedback("event.ArenaWaveFinished", this);
 			if (exitDoor != null) { exitDoor.OnWaveFinished(); }
 			enemiesKilled = true;
+			currentEnemies.Clear();
 		}
 	}
 	public void EndArena()
@@ -169,7 +172,7 @@ public class WaveController : MonoBehaviour
 		if (i_spawnerScript != null)
 		{
 			if (!i_spawnerScript.IsFree()) { return; }
-			EnemyBehaviour spawnedEnemy = i_spawnerScript.SpawnEnemy(_enemy.enemyType, true);
+			EnemyBehaviour spawnedEnemy = i_spawnerScript.SpawnEnemy(EnemyDatas.GetEnemyDatas().GetEnemyByID(_enemy.enemyType.name), true);
 			RegisterEnemy(spawnedEnemy);
 		}
 

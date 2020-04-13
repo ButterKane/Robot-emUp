@@ -11,7 +11,6 @@ public class CheatCodes : MonoBehaviour
     [ConditionalField(nameof(activateCheat))] public PlayerController playerOne;
     [ConditionalField(nameof(activateCheat))] public PlayerController playerTwo;
     [ConditionalField(nameof(activateCheat))] public bool playersInvicible;
-    private bool isInvincibilityToggled = false;
 
 
     private void Start()
@@ -41,7 +40,7 @@ public class CheatCodes : MonoBehaviour
                 TPBallOnPlayer();
             }
 
-            if (isInvincibilityToggled)
+            if (playersInvicible)
             {
                 GUI.backgroundColor = Color.green;
             }
@@ -88,7 +87,6 @@ public class CheatCodes : MonoBehaviour
 
     public void ToggleInvicibility()
     {
-        isInvincibilityToggled = !isInvincibilityToggled;
         playersInvicible = !playersInvicible;
         playerOne.SetInvincible(playersInvicible);
         playerTwo.SetInvincible(playersInvicible);
@@ -121,7 +119,7 @@ public class CheatCodes : MonoBehaviour
         TurretBehaviour[] i_turrets = FindObjectsOfType<TurretBehaviour>();
         foreach(var turret in i_turrets)
         {
-            turret.Die();
+            turret.Kill();
             yield return null;
         }
     }
