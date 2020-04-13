@@ -2,7 +2,7 @@
 
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "MM_Folliage"
+Shader "MM_FolliageMatthieu"
 {
 	Properties
 	{
@@ -17,39 +17,60 @@ Shader "MM_Folliage"
 		_Max_Clamp("Max_Clamp", Float) = 0.25
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 		[HideInInspector] __dirty( "", Int ) = 1
+
+			//Sway
+		_Speed("MoveSpeed", Range(20,50)) = 25 // speed of the swaying
+		_Rigidness("Rigidness", Range(1,50)) = 25 // lower makes it look more "liquid" higher makes it look rigid
+		_SwayMax("Sway Max", Range(0, 0.1)) = .005 // how far the swaying goes
+		_YOffset("Y offset", float) = 0.0// y offset, below this is no animation
 	}
 
 	SubShader
 	{
-		Tags{ "RenderType" = "TransparentCutout"  "Queue" = "AlphaTest+0" "IgnoreProjector" = "True" }
+		Tags{ "RenderType" = "TransparentCutout"  "Queue" = "AlphaTest+0" "IgnoreProjector" = "True" "DisableBatching" = "True"}
 		Cull Off
 		CGPROGRAM
 		#pragma target 3.0
-		#pragma multi_compile_instancing
-		#pragma surface surf Standard keepalpha addshadow fullforwardshadows exclude_path:deferred 
-		struct Input
-		{
-			float4 vertexColor : COLOR;
-			float2 uv_texcoord;
-		};
+		//#pragma multi_compile_instancing
+		#pragma surface surf Lambert vertex:vert
 
-		uniform float _HueShiftIntensity;
-		uniform float4 _MainFoliageColor;
-		uniform sampler2D _T_Grass_test;
-		uniform float4 _GradientBlend;
-		uniform float _Min_Clamp;
-		uniform float _Max_Clamp;
-		uniform float _Float3;
-		uniform float _Cutoff = 0.2;
+		float _HueShiftIntensity;
+		float4 _MainFoliageColor;
+		sampler2D _T_Grass_test;
+		float4 _GradientBlend;
+		float _Min_Clamp;
+		float _Max_Clamp;
+		float _Float3;
+		float _Cutoff = 0.2;
+		float _Speed;
+		float _SwayMax;
+		float _YOffset;
+		float _Rigidness;
 
 		UNITY_INSTANCING_BUFFER_START(MM_Folliage)
 			UNITY_DEFINE_INSTANCED_PROP(float4, _T_Grass_test_ST)
 #define _T_Grass_test_ST_arr MM_Folliage
 			UNITY_DEFINE_INSTANCED_PROP(float4, _OutlineColor)
 #define _OutlineColor_arr MM_Folliage
-		UNITY_INSTANCING_BUFFER_END(MM_Folliage)
+			UNITY_INSTANCING_BUFFER_END(MM_Folliage)
 
+		struct Input
+		{
+			float4 vertexColor : COLOR;
+			float2 uv_texcoord;
+		};
 
+		
+		void vert(inout appdata_full v)//
+		{
+			// basic swaying movement
+			float3 wpos = mul(unity_ObjectToWorld, v.vertex).xyz;// world position
+			float x = sin(wpos.x / _Rigidness + (_Time.x * _Speed)) *saturate(v.vertex.z) * 5;// x axis movements
+			float z = sin(wpos.y / _Rigidness + (_Time.x * _Speed)) *saturate(v.vertex.z) * 5;// z axis movements
+
+			v.vertex.x += (step(0, v.vertex.z) * x * _SwayMax);// apply the movement if the vertex's y above the YOffset
+			v.vertex.y += (step(0, v.vertex.z) * z * _SwayMax);
+		}
 		float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 
 		float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
@@ -102,7 +123,8 @@ Shader "MM_Folliage"
 		}
 
 
-		void surf( Input i , inout SurfaceOutputStandard o )
+
+		void surf( Input i , inout SurfaceOutput o )
 		{
 			float4 color153 = IsGammaSpace() ? float4(0.6792453,0.6294477,0.259523,0) : float4(0.418999,0.3540061,0.05477216,0);
 			float3 normalizeResult2_g4 = normalize( float3(1,1,1) );
@@ -113,7 +135,7 @@ Shader "MM_Folliage"
 			float3 temp_output_6_0_g4 = _MainFoliageColor.rgb;
 			float3 rotatedValue3_g4 = RotateAroundAxis( temp_cast_2, temp_output_6_0_g4, normalizeResult2_g4, ( clampResult123 * _HueShiftIntensity ) );
 			float4 _T_Grass_test_ST_Instance = UNITY_ACCESS_INSTANCED_PROP(_T_Grass_test_ST_arr, _T_Grass_test_ST);
-			float2 uv_T_Grass_test = i.uv_texcoord * _T_Grass_test_ST_Instance.xy + _T_Grass_test_ST_Instance.zw;
+			float2 uv_T_Grass_test = i.uv_texcoord* _T_Grass_test_ST_Instance.xy + _T_Grass_test_ST_Instance.zw;
 			float4 tex2DNode142 = tex2D( _T_Grass_test, uv_T_Grass_test );
 			float4 lerpResult152 = lerp( color153 , float4( ( rotatedValue3_g4 + temp_output_6_0_g4 ) , 0.0 ) , tex2DNode142.b);
 			float4 _OutlineColor_Instance = UNITY_ACCESS_INSTANCED_PROP(_OutlineColor_arr, _OutlineColor);
@@ -130,7 +152,7 @@ Shader "MM_Folliage"
 		ENDCG
 	}
 	Fallback "Diffuse"
-	CustomEditor "ASEMaterialInspector"
+	//CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
 Version=17200

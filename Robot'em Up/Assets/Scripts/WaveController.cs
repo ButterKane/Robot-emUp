@@ -172,7 +172,7 @@ public class WaveController : MonoBehaviour
 		if (i_spawnerScript != null)
 		{
 			if (!i_spawnerScript.IsFree()) { return; }
-			EnemyBehaviour spawnedEnemy = i_spawnerScript.SpawnEnemy(_enemy.enemyType, true);
+			EnemyBehaviour spawnedEnemy = i_spawnerScript.SpawnEnemy(EnemyDatas.GetEnemyDatas().GetEnemyByID(_enemy.enemyType.name), true);
 			RegisterEnemy(spawnedEnemy);
 		}
 
