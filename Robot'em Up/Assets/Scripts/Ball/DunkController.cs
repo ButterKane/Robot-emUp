@@ -306,7 +306,7 @@ public class DunkController : MonoBehaviour
 	}
 	IEnumerator FallOnGround_C ( float _speed )
 	{
-		Time.timeScale = 1f - dunkHitlagForce;
+		Time.timeScale = Mathf.Clamp(GameManager.i.gameSpeed - dunkHitlagForce, 0.2f, 1);
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = i_startPosition;
 
@@ -340,7 +340,7 @@ public class DunkController : MonoBehaviour
 			playerController.FreezeTemporarly(dunkCancelFreezeDuration);
 		}
 		pawnController.UnFreeze();
-		Time.timeScale = 1f;
+		Time.timeScale = GameManager.i.gameSpeed;
 	}
 	#endregion
 }

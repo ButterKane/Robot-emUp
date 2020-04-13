@@ -88,14 +88,10 @@ public class FeedbackManager
 		}
 
 		//Play sound
-		if (i_feedback.soundData != null && i_feedback.soundDataInited && i_feedback.soundData.soundName != "")
+		if (i_feedback.soundData != null && i_feedback.soundDataInited)
 		{
-			Transform parent = null;
-			if (i_feedback.soundData.attachToTarget)
-			{
-				parent = target.transform;
-			}
-			SoundManager.PlaySound(i_feedback.soundData.soundName, target.transform.position, parent);
+			if (target == null) { target = GameManager.mainCamera; }
+			SoundManager.PlaySound(i_feedback.soundData, target.transform.position, target.transform);
 		}
 
 		//Generate FX

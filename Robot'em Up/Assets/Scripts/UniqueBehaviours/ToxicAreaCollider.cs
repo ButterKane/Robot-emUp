@@ -48,7 +48,7 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        if (_source == DamageSource.Dunk |_source == DamageSource.RedBarrelExplosion)
+        if (_source == DamageSource.Dunk || _source == DamageSource.RedBarrelExplosion)
         {
             Destroy(gameObject);
         }

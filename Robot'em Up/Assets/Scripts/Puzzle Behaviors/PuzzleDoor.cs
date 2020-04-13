@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PuzzleDoor : PuzzleActivable
 {
@@ -8,6 +9,7 @@ public class PuzzleDoor : PuzzleActivable
     public GameObject destroyWhenOpened;
     public List<PuzzleActivator> activatorsToShutDown;
     public List<PuzzleActivable> activableToShutDown;
+    public UnityEvent eventOnActivation;
 
     override public void Activate()
     {
@@ -29,6 +31,7 @@ public class PuzzleDoor : PuzzleActivable
         if (!open)
         {
             FeedbackManager.SendFeedback("event.PuzzleDoorOpen", this, transform.position, Vector3.zero, Vector3.zero);
+            eventOnActivation.Invoke();
         }
 
         open = true;

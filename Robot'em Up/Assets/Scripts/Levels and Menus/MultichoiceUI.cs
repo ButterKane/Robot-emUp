@@ -14,12 +14,16 @@ public class Choice
 
 public class MultichoiceUI : UIBehaviour
 {
+    [Separator("References (don't touch)")]
+    public TextMeshProUGUI displayText;
+
+    [Separator("Tweakable Variables")]
     public int defaultValue = 0;
     public Choice[] choices;
-    public int selectedChoiceIndex;
+    [ReadOnly] public int selectedChoiceIndex;
     public Color selectedChoiceColor = new Color(0.5f, 0.5f, 1f, 1);
     public Color normalChoiceColor = new Color(0.1f, 0.1f, 0.1f, 1);
-    public TextMeshProUGUI displayText;
+    
 
     void Start()
     {

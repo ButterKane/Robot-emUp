@@ -66,7 +66,6 @@ public class ArenaDoor : MonoBehaviour
 
 	public void OpenDoor()
 	{
-		Debug.Log("DOOR OPENING");
 		linkedCollider.isTrigger = true;
 		animator.SetBool("Opened", true);
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);

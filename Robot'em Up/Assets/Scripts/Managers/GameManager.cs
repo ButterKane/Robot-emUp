@@ -78,11 +78,18 @@ public class GameManager : MonoBehaviour
     public static string currentZoneName;
     public static List<PlayerController> disabledInputs;
 
+
+    // Settings variables
+    [ReadOnly] public float gameSpeed = 1;
+    [ReadOnly] public float damageTakenSettingsMod = 1;
+    [ReadOnly] public float aimAssistanceSettingsMod = 0;
+    [ReadOnly] public int enemiesAgressivity = 1;
+
     private void Awake()
     {
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = 1f;
+        Time.timeScale = gameSpeed;
         i = this;
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
@@ -113,7 +120,6 @@ public class GameManager : MonoBehaviour
 
         InstantiateMenus();
 
-        CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         disabledInputs = new List<PlayerController>();
@@ -179,7 +185,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(index);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed;
     }
 
     public static void LoadNextScene()
@@ -187,7 +193,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed;
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -231,7 +237,7 @@ public class GameManager : MonoBehaviour
         {
             p.EnableInput();
         }
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed; 
         mainMenu.gameObject.SetActive(false);
     }
 
