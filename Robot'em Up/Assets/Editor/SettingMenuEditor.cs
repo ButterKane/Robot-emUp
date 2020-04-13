@@ -25,7 +25,7 @@ public class SettingMenuEditor : Editor
         SettingsMenu myScript = (SettingsMenu)target;
         if (GUILayout.Button("Compute settings values"))
         {
-            myScript.ComputeSettingsSaved();
+            myScript.ComputeSettings();
         }
 
         if (GUILayout.Button("Display all saved settings values"))
@@ -37,5 +37,11 @@ public class SettingMenuEditor : Editor
         {
             myScript.AssignSavedValuesInSettings();
         }
+
+        if (GUILayout.Button("Link Settings values to Game"))
+        {
+            myScript.ModifyActualGameValues();
+        }
+
     }
 }

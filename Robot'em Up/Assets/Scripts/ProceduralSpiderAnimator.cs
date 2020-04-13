@@ -5,6 +5,7 @@ using UnityEngine;
 public class ProceduralSpiderAnimator : MonoBehaviour
 {
 	public Transform forwardPart;
+	public bool invertForwardDirection;
 	public List<ProceduralSpiderLegAnimator> forwardLegs;
 	public List<ProceduralSpiderLegAnimator> backwardLegs;
 	private List<Vector3> forwardLegsDefaultPosition;
@@ -13,30 +14,37 @@ public class ProceduralSpiderAnimator : MonoBehaviour
 	public float maxRoll = 5f;
 	public float moveSpeed = 4;
 	public float stepLength = 3f;
+	private bool proceduralAnimationEnabled;
 
 	private void Awake ()
 	{
+		ToggleProceduralAnimations(true);
 		forwardLegsDefaultPosition = new List<Vector3>();
 		backwardLegsDefaultPosition = new List<Vector3>();
 		foreach (ProceduralSpiderLegAnimator leg in forwardLegs)
 		{
-			forwardLegsDefaultPosition.Add(leg.wantedTransform.localPosition);
+			forwardLegsDefaultPosition.Add(transform.InverseTransformPoint(leg.wantedTransform.position));
 		}
 		foreach (ProceduralSpiderLegAnimator leg in backwardLegs)
 		{
-			backwardLegsDefaultPosition.Add(leg.wantedTransform.localPosition);
+			backwardLegsDefaultPosition.Add(transform.InverseTransformPoint(leg.wantedTransform.position));
 		}
 	}
-	private void LateUpdate ()
+	private void Update ()
 	{
+		if (!proceduralAnimationEnabled) { return; }
+		int direction = 1;
+		if (invertForwardDirection) { direction = -1; }
 		for (int i = 0; i < forwardLegs.Count; i++)
 		{
-			forwardLegs[i].forwardOffset = forwardPart.transform.forward * stepLength;
+			forwardLegs[i].wantedTransformPos = transform.TransformPoint(forwardLegsDefaultPosition[i]);
+			forwardLegs[i].forwardOffset = forwardPart.transform.forward * stepLength * direction;
 			//forwardLegs[i].wantedTransform.localPosition = forwardLegsDefaultPosition[i] + (forwardPart.transform.forward * stepLength);
 		}
 		for (int i = 0; i < backwardLegs.Count; i++)
 		{
-			backwardLegs[i].forwardOffset = forwardPart.transform.forward * stepLength;
+			backwardLegs[i].wantedTransformPos = transform.TransformPoint(backwardLegsDefaultPosition[i]);
+			backwardLegs[i].forwardOffset = forwardPart.transform.forward * stepLength * direction;
 			//backwardLegs[i].wantedTransform.localPosition = backwardLegsDefaultPosition[i] + (forwardPart.transform.forward * stepLength);
 		}
 		int groundedLegsAmount = 0;
@@ -129,5 +137,27 @@ public class ProceduralSpiderAnimator : MonoBehaviour
 
 		Vector3 newRotation = new Vector3(roll, transform.localEulerAngles.y, yaw);
 		transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(newRotation), Time.deltaTime * (3.5f));
+	}
+
+	public void DisableProceduralAnimations()
+	{
+		ToggleProceduralAnimations(false);
+	}
+
+	public void EnableProceduralAnimations()
+	{
+		ToggleProceduralAnimations(true);
+	}
+	public void ToggleProceduralAnimations(bool _state)
+	{
+		proceduralAnimationEnabled = _state;
+		foreach (ProceduralSpiderLegAnimator leg in forwardLegs)
+		{
+			leg.ToggleProceduralAnimation(_state);
+		}
+		foreach (ProceduralSpiderLegAnimator leg in backwardLegs)
+		{
+			leg.ToggleProceduralAnimation(_state);
+		}
 	}
 }

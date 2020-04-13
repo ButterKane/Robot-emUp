@@ -6,6 +6,7 @@ using UnityEngine;
 public class ProceduralSpiderLegAnimator : MonoBehaviour
 {
 	public Transform wantedTransform;
+	[HideInInspector] public Vector3 wantedTransformPos;
 	public FastIKFabric IK;
 	public float height = 0.5f;
 	public float maxDistanceToTarget = 0.8f;
@@ -28,7 +29,7 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 		isGrounded = true;
 	}
 
-	private void Update ()
+	private void LateUpdate ()
 	{
 		UpdateLeg();
 	}
@@ -38,6 +39,10 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 		moveCoroutine = StartCoroutine(MoveLeg_C());
 	}
 
+	public void ToggleProceduralAnimation(bool _state)
+	{
+		IK.enabled = _state;
+	}
 	public bool ShouldMove ()
 	{
 		Vector3 IKFlatted = IK.transform.position;
@@ -54,8 +59,8 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 	public void UpdateLeg()
 	{
 		RaycastHit hit;
-		Vector3 newWantedPos = wantedTransform.position;
-		if (Physics.Raycast(IK.transform.position + (Vector3.up * 2) + forwardOffset, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+		Vector3 newWantedPos = wantedTransformPos;
+		if (Physics.Raycast(IK.transform.position + (Vector3.up * 4) + forwardOffset, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
 		{
 			newWantedPos.y = hit.point.y;
 		}
@@ -65,11 +70,10 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 	public IEnumerator MoveLeg_C ()
 	{
 		isGrounded = false;
-		Vector3 startPosition = IK.Target.transform.position;
 		for (float i = 0; i < 1; i+= Time.deltaTime * (legSpeed * Random.Range(0.8f, 1.2f)))
 		{
-			Vector3 newPosition = Vector3.Lerp(startPosition, wantedTransform.transform.position + forwardOffset, i / 1f);
-			float yPos = Mathf.Lerp(startPosition.y, wantedTransform.transform.position.y, i / 1f);
+			Vector3 newPosition = Vector3.Lerp(IK.Target.transform.position, wantedTransform.transform.position + forwardOffset, i / 1f);
+			float yPos = Mathf.Lerp(IK.Target.transform.position.y, wantedTransform.transform.position.y, i / 1f);
 			yPos += heightCurve.Evaluate(i / 1f) * height;
 			newPosition.y = yPos;
 			IK.Target.transform.position = newPosition;

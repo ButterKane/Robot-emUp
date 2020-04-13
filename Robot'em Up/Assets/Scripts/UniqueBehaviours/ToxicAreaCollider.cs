@@ -5,7 +5,7 @@ using UnityEngine;
 public class ToxicAreaCollider : MonoBehaviour, IHitable
 {
     public ToxicAreaManager manager;
-    public ParticleSystem particleSystem;
+    public new ParticleSystem particleSystem;
     public float multiplicator = 1f;
 
 	[SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
@@ -16,7 +16,6 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     // Start is called before the first frame update
     void Start()
     {
-        particleSystem.Stop();
     }
 
     // Update is called once per frame
@@ -25,11 +24,9 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     }
     void OnBecameVisible()
     {
-        particleSystem.Play();
     }
     void OnBecameInvisible()
     {
-        particleSystem.Stop();
 
     }
 
@@ -51,7 +48,7 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        if (_source == DamageSource.Dunk |_source == DamageSource.RedBarrelExplosion)
+        if (_source == DamageSource.Dunk || _source == DamageSource.RedBarrelExplosion)
         {
             Destroy(gameObject);
         }

@@ -54,6 +54,7 @@ public class SettingsMenu : MonoBehaviour
 
     void Awake()
     {
+        ComputeSettings();
         foreach(var category in menuCategories)
         {
             category.SetActive(true);
@@ -144,11 +145,6 @@ public class SettingsMenu : MonoBehaviour
 
 
     }
-
-    // TODO: make the navigation available.
-    // Joystick = settings navigation and modification
-    // LB & RB = Category navigation                        Script Done, needs tweaking to just go to next Category
-    // Each Category changing makes the available settings change, but the easy way to do it is to get the UIBehaviour Script of each category main object, and store the settings in it.
 
     void Update()
     {
@@ -245,7 +241,6 @@ public class SettingsMenu : MonoBehaviour
             {
                 CloseInputChanging();
             }
-            //else if (gameIsPlaying) // So if the settings were reached through the pause menu
             else
             { 
                 ReturnToMainMenu();
@@ -357,9 +352,15 @@ public class SettingsMenu : MonoBehaviour
     void ReturnToMainMenu()
     {
        FeedbackManager.SendFeedback("event.MenuBack", this);
+       ComputeSettings();
+       ModifyActualGameValues();
+
+       Time.timeScale = 0; // make sure it is still stopped
+
+       scriptLinkedToThisOne.waitForBResetOne = true;
        scriptLinkedToThisOne.isMainMenuActive = true;
+
        gameObject.SetActive(false);
-       //GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName("MainMenu"));
     }
 
     void OpenInputChanging()
@@ -374,7 +375,7 @@ public class SettingsMenu : MonoBehaviour
     }
 
     // Get all settings in the option menu and save their names + current value in matching dictionaries (one for the sliders, one for multichoices and one for toggles)
-    public void ComputeSettingsSaved()
+    public void ComputeSettings()
     {
         sliderSettings.Clear();
         sliderSettings = new Dictionary<string, int>();
@@ -412,7 +413,7 @@ public class SettingsMenu : MonoBehaviour
 
     }
 
-    // Display all the values saved for the settings, keyed with their names
+    // Display all the values saved for the settings, keyed with their names, as Debug Logs
     public void DisplaySettingsValues()
     {
         foreach (var slider in sliderSettings)
@@ -482,6 +483,163 @@ public class SettingsMenu : MonoBehaviour
 
     public void ModifyActualGameValues()
     {
+        // SLIDER SECTION ------------------------------------
 
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Screenshake_intensity", out int valueScreenShake))
+        {
+            CameraShaker.shakeSettingsMod = ((float)valueScreenShake) / 100;
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Haptic_intensity", out int valueVibrations))
+        {
+            VibrationManager.vibrationSettingsMod = ((float)valueVibrations)/50; // Only divided by 50 because 50 is the base value. We want it to be stronger if we go above 50
+        }
+
+        // 20 to 100
+        if (sliderSettings.TryGetValue("GameSpeed", out int valueGameSpeed))
+        {
+            GameManager.i.gameSpeed = ((float)valueGameSpeed) / 100;
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Damage Taken", out int valueDamageTaken))
+        {
+            GameManager.i.damageTakenSettingsMod = ((float)valueDamageTaken)/100;
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Assisting Aim", out int valueAimAssistance))
+        {
+            GameManager.i.aimAssistanceSettingsMod = ((float)valueAimAssistance)/100;
+        }
+
+        // 10 to 100
+        if (sliderSettings.TryGetValue("Trigger_Treshold", out int valueTriggerTreshold))
+        {
+            GameManager.playerOne.triggerTreshold = ((float)valueTriggerTreshold)/100;
+            GameManager.playerTwo.triggerTreshold = ((float)valueTriggerTreshold)/100; 
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
+        {
+
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("SFX Volume", out int valueSfxVolume))
+        {
+
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Dialogue Volume", out int valueDialogueVolume))
+        {
+
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Ambiance Volume", out int valueAmbianceVolume))
+        {
+
+        }
+
+        // 0 to 100
+        if (sliderSettings.TryGetValue("Music Volume", out int valueMusicVolume))
+        {
+
+        }
+
+
+        // MULTICHOICE SECTION ---------------------------------------------
+
+        // Adaptative - Easy - Medium - Difficult
+        if (multiChoiceSettings.TryGetValue("Overall Difficulty", out int valueDifficulty))
+        {
+            switch(valueDifficulty)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
+        // Gentle - Classic - Aggressive
+        if (multiChoiceSettings.TryGetValue("Enemies Agressivity", out int valueEnemiesAgressivity))
+        {
+            switch (valueDifficulty)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+            }
+        }
+
+        // White - Yellow - Blue - Green - Red
+        if (multiChoiceSettings.TryGetValue("In-Game Text Color", out int valueTextColor))
+        {
+            switch (valueDifficulty)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+            }
+        }
+
+        // Small - Regular - Big - Very Big
+        if (multiChoiceSettings.TryGetValue("In-Game Text Size", out int valueTextSize))
+        {
+            switch (valueDifficulty)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
+
+        // TOGGLE SECTION ------------------------------------------------------
+
+        if (toggleSettings.TryGetValue("Hold Down Input", out bool valueHoldDown))
+        {
+
+        }
+
+        if (toggleSettings.TryGetValue("FullScreen/Window", out bool valueFullScreen))
+        {
+
+        }
+
+        if (toggleSettings.TryGetValue("Background Animation", out bool valueBackground))
+        {
+
+        }
+
+        if (toggleSettings.TryGetValue("Stylized In-Game Text Font", out bool valueStylizedFont))
+        {
+
+        }
     }
 }

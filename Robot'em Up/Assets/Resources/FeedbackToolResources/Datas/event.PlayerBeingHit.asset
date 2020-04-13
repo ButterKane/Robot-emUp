@@ -43,7 +43,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
-    force: 3
+    force: 2
     duration: 0.2
     target: 0
     forceCurve:
@@ -72,19 +72,28 @@ MonoBehaviour:
       m_RotationOrder: 4
   shakeDataInited: 0
   vibrationDataInited: 1
-  soundDataInited: 0
+  soundDataInited: 1
   vfxDataInited: 1
   eventCalled: 1
   category:
     displayName: Player
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
-    soundName: hit
-    attachToTarget: 0
+    soundName: PlayerHitNoBump
+    soundList:
+    - clip: {fileID: 8300000, guid: 03204975a4508604daa77249b51f3065, type: 3}
+      playChances: 0.25
+    - clip: {fileID: 8300000, guid: 48acd59428034ad4dafc46a494cf0cd7, type: 3}
+      playChances: 0.25000003
+    - clip: {fileID: 8300000, guid: 72286cfab988a404796f274070715316, type: 3}
+      playChances: 0.25000003
+    - clip: {fileID: 8300000, guid: 6f5ce39e4b3ce70468ea92fb7af63509, type: 3}
+      playChances: 0.25000003
+    volumeMultiplier: 0.6
   vfxData:
     vfxPrefab: {fileID: 5870721448474755085, guid: a57489330300112429eb3c92dcdc8b89,
       type: 3}
-    offset: {x: 0, y: 0, z: 0}
+    offset: {x: 0, y: 0.5, z: 0}
     scaleMultiplier: {x: 2, y: 2, z: 2}
     direction: 0
     position: 1

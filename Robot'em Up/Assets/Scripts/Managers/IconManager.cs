@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-public class IconManager
+public class IconManager //This script is used to create 3D icons in the inspector, over objects
 {
 
 	public enum LabelIcon

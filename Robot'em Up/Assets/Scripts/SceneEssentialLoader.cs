@@ -52,8 +52,8 @@ public class SceneEssentialLoader : MonoBehaviour
 		{
 			if (light.type == LightType.Directional)
 			{
-				GameManager.DDOL.Add(light.gameObject);
-				DontDestroyOnLoad(light.gameObject);
+				GameManager.DDOL.Add(light.transform.root.gameObject);
+				DontDestroyOnLoad(light.transform.root);
 			}
 		}
 

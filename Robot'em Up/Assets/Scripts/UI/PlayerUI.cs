@@ -34,6 +34,7 @@ public class PlayerUI : MonoBehaviour
 	public float healthGainLerpSpeed = 1f;
 	public float healthLossLerpSpeed = 1f;
 	public Gradient healthColorGradient;
+	public Color overHealColor;
 	[Range(0f, 1f)] public float healthGradientInterpolationRate = 0.1f;
 
 	public GameObject healthBarPrefab;
@@ -96,7 +97,59 @@ public class PlayerUI : MonoBehaviour
 		UpdateHealth();
 	}
 
-	void UpdateHealth()
+	#region Public functions
+	public void DisplayDashes ()
+	{
+		if (displayedPanels.Contains(dashPanel))
+		{
+			StopCoroutine(currentCoroutines[dashPanel]);
+			currentCoroutines[dashPanel] = StartCoroutine(UpdatePanel_C(dashPanel, dashShowDuration, dashFadeOutSpeed, dashEndScale));
+		}
+		else
+		{
+			if (!currentCoroutines.ContainsKey(dashPanel))
+			{
+				currentCoroutines.Add(dashPanel, StartCoroutine(DisplayPanel_C(dashPanel, dashShowDuration, dashFadeInSpeed, dashFadeOutSpeed, dashStartScale, dashEndScale, dashAnimationCurve)));
+			}
+		}
+	}
+	public void DisplayHealth ( HealthAnimationType _type = HealthAnimationType.Gain )
+	{
+		switch (_type)
+		{
+			case HealthAnimationType.Gain:
+				if (displayedPanels.Contains(healthPanel))
+				{
+					HideHealthBar();
+					StopCoroutine(currentCoroutines[healthPanel]);
+					currentCoroutines[healthPanel] = StartCoroutine(UpdatePanel_C(healthPanel, healthGainShowDuration, healthGainFadeOutSpeed, healthGainEndScale, ShowHealthBar));
+				}
+				else if (!currentCoroutines.ContainsKey(healthPanel))
+				{
+					HideHealthBar();
+					currentCoroutines.Add(healthPanel, StartCoroutine(DisplayPanel_C(healthPanel, healthGainShowDuration, healthGainFadeInSpeed, healthGainFadeOutSpeed, healthGainStartScale, healthGainEndScale, healthGainAnimationCurve, ShowHealthBar)));
+				}
+				break;
+			case HealthAnimationType.Loss:
+				FeedbackManager.SendFeedback("event.PlayerHealthDecreasing", healthPanel);
+				if (displayedPanels.Contains(healthPanel))
+				{
+					HideHealthBar();
+					StopCoroutine(currentCoroutines[healthPanel]);
+					currentCoroutines[healthPanel] = StartCoroutine(UpdatePanel_C(healthPanel, healthLossShowDuration, healthLossFadeOutSpeed, healthLossEndScale, ShowHealthBar));
+				}
+				else if (!currentCoroutines.ContainsKey(healthPanel))
+				{
+					HideHealthBar();
+					currentCoroutines.Add(healthPanel, StartCoroutine(DisplayPanel_C(healthPanel, healthLossShowDuration, healthLossFadeInSpeed, healthLossFadeOutSpeed, healthLossStartScale, healthLossEndScale, healthLossAnimationCurve, ShowHealthBar)));
+				}
+				break;
+		}
+	}
+	#endregion
+
+	#region Private functions
+	private void UpdateHealth()
 	{
 		currentHealth = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
 		float i_healthLerpSpeed = healthLossLerpSpeed;
@@ -105,11 +158,18 @@ public class PlayerUI : MonoBehaviour
 			i_healthLerpSpeed = healthGainLerpSpeed;
 		}
 		displayedHealth = Mathf.Lerp(displayedHealth, currentHealth, Time.deltaTime * i_healthLerpSpeed);
-		displayedHealth = Mathf.Clamp(displayedHealth, 0f, 1f);
+		displayedHealth = Mathf.Clamp(displayedHealth, 0f, Mathf.Infinity);
 		healthText.text = "" + Mathf.RoundToInt((displayedHealth * 100f)).ToString() + "%";
 
 		float i_evaluateTime = 1f - Mathf.Clamp(displayedHealth - (displayedHealth % healthGradientInterpolationRate), 0f, 1f);
-		healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
+		if (currentHealth > 1)
+		{
+			healthText.color = overHealColor;
+		}
+		else
+		{
+			healthText.color = healthColorGradient.Evaluate(i_evaluateTime);
+		}
 
 		float i_HealthNormalized = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
 		if (i_HealthNormalized < healthAlwaysDisplayedTreshold && i_HealthNormalized > 0)
@@ -123,8 +183,7 @@ public class PlayerUI : MonoBehaviour
 			panelShowedPermanently.Remove(healthPanel);
 		}
 	}
-
-	void UpdateDashBars()
+	private void UpdateDashBars()
 	{
 		float i_totalFillAmount = dashController.GetCurrentStackAmount() + (dashController.GetCurrentStackCooldown() / dashController.defaultStackRecoveryDuration);
 		for (int i = 0; i < dashStacks.Count; i++)
@@ -134,15 +193,13 @@ public class PlayerUI : MonoBehaviour
 			i_totalFillAmount -= fillAmount;
 		}
 	}
-
-	void GenerateCanvas()
+	private void GenerateCanvas ()
 	{
 		playerCanvas = transform.Find("PlayerUIMain").GetComponent<Canvas>();
 		playerCanvasRectTransform = playerCanvas.GetComponent<RectTransform>();
 		playerCanvasLateralRectTransform = transform.Find("PlayerUILateral").GetComponentInChildren<RectTransform>();
 	}
-
-	void GenerateHealthPanel()
+	private void GenerateHealthPanel ()
 	{
 		healthPanel = new GameObject();
 		healthPanel.name = "HealthPanel";
@@ -159,16 +216,14 @@ public class PlayerUI : MonoBehaviour
 		healthPanel.SetActive(false);
 		i_healthRT.pivot = new Vector2(0.5f, 0f);
 	}
-
-	void GenerateHealthBar()
+	private void GenerateHealthBar ()
 	{
 		healthBar = Instantiate(healthBarPrefab, GameManager.mainCanvas.transform).GetComponent<HealthBar>();
 		healthBar.target = pawnController;
 		healthBar.heightOffset = healthBarHeight;
 		healthBar.name = "HealthBar";
 	}
-
-	void GenerateDashBars()
+	private void GenerateDashBars ()
 	{
 		dashPanel = new GameObject();
 		dashPanel.name = "DashUI";
@@ -218,72 +273,23 @@ public class PlayerUI : MonoBehaviour
 		dashPanel.SetActive(false);
 
 	}
-
-	public void DisplayHealth( HealthAnimationType _type = HealthAnimationType.Gain)
+	private void ShowHealthBar ()
 	{
-		switch (_type)
-		{
-			case HealthAnimationType.Gain:
-				if (displayedPanels.Contains(healthPanel))
-				{
-					HideHealthBar();
-					StopCoroutine(currentCoroutines[healthPanel]);
-					currentCoroutines[healthPanel] = StartCoroutine(UpdatePanel_C(healthPanel, healthGainShowDuration, healthGainFadeOutSpeed, healthGainEndScale, ShowHealthBar));
-				}
-				else if (!currentCoroutines.ContainsKey(healthPanel))
-				{
-					HideHealthBar();
-					currentCoroutines.Add(healthPanel, StartCoroutine(DisplayPanel_C(healthPanel, healthGainShowDuration, healthGainFadeInSpeed, healthGainFadeOutSpeed, healthGainStartScale, healthGainEndScale, healthGainAnimationCurve, ShowHealthBar)));
-				}
-				break;
-			case HealthAnimationType.Loss:
-				FeedbackManager.SendFeedback("event.PlayerHealthDecreasing", healthPanel);
-				if (displayedPanels.Contains(healthPanel))
-				{
-					HideHealthBar();
-					StopCoroutine(currentCoroutines[healthPanel]);
-					currentCoroutines[healthPanel] = StartCoroutine(UpdatePanel_C(healthPanel, healthLossShowDuration, healthLossFadeOutSpeed, healthLossEndScale, ShowHealthBar));
-				} else if (!currentCoroutines.ContainsKey(healthPanel))
-				{
-					HideHealthBar();
-					currentCoroutines.Add(healthPanel, StartCoroutine(DisplayPanel_C(healthPanel, healthLossShowDuration, healthLossFadeInSpeed, healthLossFadeOutSpeed, healthLossStartScale, healthLossEndScale, healthLossAnimationCurve, ShowHealthBar)));
-				}
-				break;
-		}
-	}
-
-	void ShowHealthBar ()
-	{
-		if (healthBar != null && pawnController.currentHealth < pawnController.GetMaxHealth())
+		if (healthBar != null && pawnController.GetHealth() < pawnController.GetMaxHealth())
 		{
 			healthBar.ToggleHealthBar(true);
 		}
 	}
-
-	void HideHealthBar()
+	private void HideHealthBar ()
 	{
 		if (healthBar != null)
 		{
 			healthBar.ToggleHealthBar(false);
 		}
 	}
+	#endregion
 
-	public void DisplayDashes()
-	{
-		if (displayedPanels.Contains(dashPanel))
-		{
-			StopCoroutine(currentCoroutines[dashPanel]);
-			currentCoroutines[dashPanel] = StartCoroutine(UpdatePanel_C(dashPanel, dashShowDuration, dashFadeOutSpeed, dashEndScale));
-		}
-		else
-		{
-			if (!currentCoroutines.ContainsKey(dashPanel))
-			{
-				currentCoroutines.Add(dashPanel, StartCoroutine(DisplayPanel_C(dashPanel, dashShowDuration, dashFadeInSpeed, dashFadeOutSpeed, dashStartScale, dashEndScale, dashAnimationCurve)));
-			}
-		}
-	}
-
+	#region Coroutines
 	IEnumerator UpdatePanel_C ( GameObject _panel, float _duration, float _fadeOutSpeed, float _endScale, Action _callBack = default )
 	{
 		_panel.SetActive(true);
@@ -341,7 +347,6 @@ public class PlayerUI : MonoBehaviour
 		_panel.SetActive(false);
 		if (_callBack != default) { _callBack.Invoke(); }
 	}
-
 	IEnumerator DisplayPanel_C(GameObject _panel, float _duration, float _fadeInSpeed, float _fadeOutSpeed, float _startScale, float _endScale, AnimationCurve _scaleCurve, Action _callBack = default)
 	{
 		_panel.SetActive(true);
@@ -375,4 +380,5 @@ public class PlayerUI : MonoBehaviour
 		displayedPanels.Add(_panel);
 		currentCoroutines[_panel] = StartCoroutine(UpdatePanel_C(_panel, _duration, _fadeOutSpeed, _endScale, _callBack)) ;
 	}
+	#endregion
 }

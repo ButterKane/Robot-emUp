@@ -42,7 +42,6 @@ public class WaveController : MonoBehaviour
 			zone.onZoneActivation.AddListener(StartArena);
 		}
 	}
-
 	private void Update ()
 	{
 		if (arenaFinished) { return; }
@@ -63,7 +62,7 @@ public class WaveController : MonoBehaviour
 			{
 				if (currentPowerLevel <= 0)
 				{
-					EnemiesKilled();
+					EndWave();
 					delayBeforeNextWave -= Time.deltaTime;
 					if (delayBeforeNextWave <= 0)
 					{
@@ -74,6 +73,7 @@ public class WaveController : MonoBehaviour
 		}
 	}
 
+	#region Public functions
 	public void StartArena()
 	{
 		if (skipArena) { EndArena(); return; }
@@ -87,14 +87,21 @@ public class WaveController : MonoBehaviour
 			exitDoor.OnArenaEnter();
 		}
 	}
-
-	public void EnemiesKilled()
+	public void RegisterEnemy(EnemyBehaviour _enemy)
+	{
+		_enemy.onDeath.AddListener(() => { OnEnemyDeath(_enemy); });
+		currentEnemies.Add(_enemy);
+		Debug.Log("Registering enemy: " + _enemy.name + " New power: " + currentPowerLevel);
+		UpdateCurrentPowerLevel();
+	}
+	public void EndWave()
 	{
 		if (!enemiesKilled)
 		{
 			FeedbackManager.SendFeedback("event.ArenaWaveFinished", this);
 			if (exitDoor != null) { exitDoor.OnWaveFinished(); }
 			enemiesKilled = true;
+			currentEnemies.Clear();
 		}
 	}
 	public void EndArena()
@@ -111,6 +118,10 @@ public class WaveController : MonoBehaviour
 	public void StartNextWave()
 	{
 		if (waveStarted) { return; }
+		if (currentWaveIndex >= 0)
+		{
+			waveList[currentWaveIndex].onEndEvents.Invoke();
+		}
 		currentWaveIndex++;
 		if (currentWaveIndex >= waveList.Count) { EndArena(); return; }
 		if (exitDoor != null) { exitDoor.OnWaveStart(); }
@@ -128,33 +139,12 @@ public class WaveController : MonoBehaviour
 			StartCoroutine(StartWave_C(currentWaveIndex));
 		}
 	}
-
-	public void StopWave()
+	public void StopWaveSpawning()
 	{
 		delayBeforeNextWave = waveList[currentWaveIndex].pauseBeforeNextWave;
 		waveStarted = false;
-		waveList[currentWaveIndex].onEndEvents.Invoke();
 	}
-
-	IEnumerator StartWave_C (int _waveIndex)
-	{
-		float waveDuration = waveList[_waveIndex].duration;
-		if (waveDuration <= -1)
-		{
-			currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(0);
-		}
-		else
-		{
-			for (float i = 0; i < waveDuration; i += Time.deltaTime)
-			{
-				yield return null;
-				currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
-			}
-			StopWave();
-		}
-	}
-
-	public WaveEnemy GetRandomEnemy()
+	public WaveEnemy GetRandomEnemy ()
 	{
 		if (waveList[currentWaveIndex].currentEnemies.Count <= 0) { Debug.LogWarning("Wave can't instantiate enemies: no list defined"); return null; }
 		float i_pickChances = Random.value;
@@ -173,18 +163,17 @@ public class WaveController : MonoBehaviour
 		if (_enemy.spawnIndexes.Count <= 0) { Debug.LogWarning("Can't spawn enemy: no spawn assigned"); return; }
 		int i_chosenSpawnerIndex = Random.Range(0, _enemy.spawnIndexes.Count);
 		i_chosenSpawnerIndex = _enemy.spawnIndexes[i_chosenSpawnerIndex];
-		GameObject spawner = spawnList[i_chosenSpawnerIndex].transform.gameObject;
+		GameObject i_spawner = spawnList[i_chosenSpawnerIndex].transform.gameObject;
 
-		Spawner foundSpawnerComponent = spawner.GetComponent<Spawner>();
-		if (foundSpawnerComponent != null && !foundSpawnerComponent.IsFree()) { return; }
+		Spawner i_spawnerScript = i_spawner.GetComponent<Spawner>();
+		if (i_spawnerScript != null && !i_spawnerScript.IsFree()) { return; }
 
 		//A custom spawner is assigned, it can be used to spawn enemy
-		if (foundSpawnerComponent != null)
+		if (i_spawnerScript != null)
 		{
-			if (!foundSpawnerComponent.IsFree()) { return; }
-			EnemyBehaviour spawnedEnemy = foundSpawnerComponent.SpawnEnemy(_enemy.enemyType, true);
-			spawnedEnemy.onDeath.AddListener(() => { OnEnemyDeath(spawnedEnemy); });
-			currentEnemies.Add(spawnedEnemy);
+			if (!i_spawnerScript.IsFree()) { return; }
+			EnemyBehaviour spawnedEnemy = i_spawnerScript.SpawnEnemy(_enemy.enemyType, true);
+			RegisterEnemy(spawnedEnemy);
 		}
 
 		//No custom spawner found, it'll spawn the enemy instantly on the assigned position
@@ -193,17 +182,18 @@ public class WaveController : MonoBehaviour
 			GameObject i_newEnemy = Instantiate(_enemy.enemyType.prefab).gameObject;
 			EnemyBehaviour i_enemyBehaviour = i_newEnemy.GetComponent<EnemyBehaviour>();
 			if (i_enemyBehaviour == null) { Destroy(i_newEnemy); Debug.LogWarning("Wave can't instantiate enemy: invalid prefab"); return; }
-			i_enemyBehaviour.onDeath.AddListener(() => { OnEnemyDeath(i_enemyBehaviour); });
 			if (i_enemyBehaviour.GetNavMesh() != null) { i_enemyBehaviour.GetNavMesh().enabled = false; }
 			i_newEnemy.transform.position = spawnList[i_chosenSpawnerIndex].transform.position;
 			i_enemyBehaviour.GetNavMesh().enabled = true;
-			currentEnemies.Add(i_enemyBehaviour);
+			RegisterEnemy(i_enemyBehaviour);
 		}
 		UpdateCurrentPowerLevel();
 		nextEnemyToSpawn = null;
 	}
+	#endregion
 
-	public float UpdateCurrentPowerLevel()
+	#region Private functions
+	private float UpdateCurrentPowerLevel ()
 	{
 		currentPowerLevel = 0;
 		foreach (EnemyBehaviour enemy in currentEnemies)
@@ -212,10 +202,30 @@ public class WaveController : MonoBehaviour
 		}
 		return currentPowerLevel;
 	}
-
-	void OnEnemyDeath(EnemyBehaviour _enemy)
+	private void OnEnemyDeath ( EnemyBehaviour _enemy )
 	{
 		currentEnemies.Remove(_enemy);
 		UpdateCurrentPowerLevel();
 	}
+	#endregion
+
+	#region Coroutines
+	IEnumerator StartWave_C (int _waveIndex)
+	{
+		float waveDuration = waveList[_waveIndex].duration;
+		if (waveDuration <= -1)
+		{
+			currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(0);
+		}
+		else
+		{
+			for (float i = 0; i < waveDuration; i += Time.deltaTime)
+			{
+				yield return null;
+				currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
+			}
+			StopWaveSpawning();
+		}
+	}
+	#endregion
 }

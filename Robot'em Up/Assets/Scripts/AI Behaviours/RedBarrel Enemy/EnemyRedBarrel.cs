@@ -39,36 +39,36 @@ public class EnemyRedBarrel : EnemyBehaviour
     new void Start()
     {
         base.Start();
+        eventOnBeingHit = "event.EnemyRedBarrelHit";
+        eventOnDeath = "event.EnemyRedBarrelDeathPart2";
         bumpValues = new Vector3(bumpDistanceMod, bumpDurationMod, bumpRestDurationMod);
         explosionRadiusTransform.localScale = new Vector3(explosionRadius * 2, explosionRadius * 2, explosionRadius * 2);
         Explosion_C = null;
     }
 
-    public override void PreparingAttackState()
+    #region Private methods
+    private void LaunchExplosion()
     {
-        ChangeState(EnemyState.Dying);
-        bodyRenderer.material = materialOnExplosion;
-    }
-
-    public override void Kill()
-    {
-        if (currentHealth <= 0)
+        if (GetHealth() <= 0)
         {
             if (willExplodeWhenKilled) { isExplosionSafe = true; }
             else { base.Kill(); return; }
         }
-        else {isExplosionSafe = false;}
+        else { isExplosionSafe = false; }
 
         if (Explosion_C == null)
         {
             Explosion_C = ExplosionSequence_C(isExplosionSafe);
-			Debug.Log("Changing state");
-            ChangeState("RedBarrelAnticipating", ExplosionSequence_C(isExplosionSafe), CancelExplosionSequence_C());
-            //StartCoroutine(Explosion_C);
         }
+        else
+        {
+            StopCoroutine(Explosion_C);
+            Explosion_C = ExplosionSequence_C(isExplosionSafe);
+        }
+        ChangePawnState("RedBarrelAnticipating", Explosion_C, CancelExplosionSequence_C());
     }
 
-    public void Explode()
+    private void Explode()
     {
         GameObject explosionFXInstance = FeedbackManager.SendFeedback(explosionFX, this).GetVFX();
         explosionFXInstance.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
@@ -86,31 +86,43 @@ public class EnemyRedBarrel : EnemyBehaviour
         }
     }
 
-    public void SafeExplode() // explodes, but only touches enemies
+    private void SafeExplode() // explodes, but only touches enemies
     {
         GameObject explosionFXInstance = FeedbackManager.SendFeedback(safeExplosionFX, this).GetVFX();
         explosionFXInstance.transform.localScale = new Vector3(explosionFXScale, explosionFXScale, explosionFXScale);
 
-        Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius, layersToCheckForExplosion) ;
+        Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, explosionRadius, layersToCheckForExplosion);
         int i = 0;
         while (i < i_hitColliders.Length)
         {
             IHitable potentialHitableObject = i_hitColliders[i].GetComponent<IHitable>();
-            if (potentialHitableObject != null && i_hitColliders[i].gameObject.tag == "Enemy") 
+            if (potentialHitableObject != null && i_hitColliders[i].gameObject.tag == "Enemy")
             {
                 potentialHitableObject.OnHit(null, (i_hitColliders[i].transform.position - transform.position).normalized, null, explosionDamage, DamageSource.RedBarrelExplosion, bumpValues);
             }
             i++;
         }
     }
+    #endregion
+
+    #region Coroutines
+    private IEnumerator CancelExplosionSequence_C()
+    {
+        StopCoroutine(Explosion_C);
+        Explosion_C = null;
+        willExplode = false;
+        explosionRadiusTransform.gameObject.SetActive(false);
+        explosionGrowingRenderer.localScale = Vector3.zero;
+        yield return null;
+    }
 
     private IEnumerator ExplosionSequence_C(bool _isSafeExplosion)
     {
-		Debug.Log("Starting explosion sequence");
+        Debug.Log("Starting explosion sequence");
         animator.SetTrigger("DeathTrigger");
         if (_isSafeExplosion) { FeedbackManager.SendFeedback(buildUpSafeExplosionFX, this); }
         else { FeedbackManager.SendFeedback(buildUpExplosionFX, this); }
-        
+
         willExplode = true;
 
         //hitParticle.transform.localScale = 3f;
@@ -147,16 +159,24 @@ public class EnemyRedBarrel : EnemyBehaviour
             {
                 Explode();
             }
-            base.Kill();
+            Kill();
         }
     }
+    #endregion
 
-	private IEnumerator CancelExplosionSequence_C ()
-	{
-		Explosion_C = null;
-		willExplode = false;
-		explosionRadiusTransform.gameObject.SetActive(false);
-		explosionGrowingRenderer.localScale = Vector3.zero;
-		yield return null;
-	}
+    #region Overriden methods
+    public override void HeavyPushAction()
+    {
+        currentAnticipationTime = 0;
+        ChangeState(EnemyState.Idle);
+    }
+
+    public override void EnterPreparingAttackState()
+    {
+        navMeshAgent.enabled = false;
+        bodyRenderer.material = materialOnExplosion;
+        LaunchExplosion();
+        currentAnticipationTime = attackValues.maxAnticipationTime;
+    }
+    #endregion
 }

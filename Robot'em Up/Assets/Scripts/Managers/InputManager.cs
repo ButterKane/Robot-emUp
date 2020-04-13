@@ -51,7 +51,7 @@ public class InputManager : MonoBehaviour
     public BothInputs[] mappedInputs;
 
     private bool rightTriggerWaitForRelease;
-    private bool leftTriggerWaitForRelease;
+    //private bool leftTriggerWaitForRelease; //Uncomment if needed (Commented to avoid errors)
     private bool leftShouldWaitForRelease;
     private bool rightShouldWaitForRelease;
 
@@ -70,6 +70,7 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
+        cam = GameManager.mainCamera;
         if (i == null)
         {
             i = this;
@@ -135,11 +136,11 @@ public class InputManager : MonoBehaviour
         if (state.Triggers.Left > triggerTreshold)
         {
             if (!rightTriggerWaitForRelease) { LTAction(); }
-            leftTriggerWaitForRelease = true;
+            //leftTriggerWaitForRelease = true;
         }
         else
         {
-            leftTriggerWaitForRelease = false;
+            //leftTriggerWaitForRelease = false;
         }
 
         // BUMPERS

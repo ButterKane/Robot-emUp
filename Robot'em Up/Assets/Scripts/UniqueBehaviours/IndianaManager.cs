@@ -23,6 +23,7 @@ public class IndianaManager : MonoBehaviour
     public float maxDistancePlayer;
     public float explosionWaitingTime;
     public float nbExplosionBySec;
+    public float spaceBetweenBombsInColumns;
     [Header("Barrage")]
     public float timeBarrage;
     public int nbExplosionByBarrage;
@@ -97,7 +98,7 @@ public class IndianaManager : MonoBehaviour
                 currentTimerExplosionBarrage = timeBarrage;
 
                 currentPositionMultiplier++;
-                ColliderBackwardWantedPosition = transform.position + (currentPositionMultiplier - 3f) * directionIndiania;
+                ColliderBackwardWantedPosition = transform.position + (currentPositionMultiplier - 4f) * directionIndiania;
                 ColliderForwardWantedPosition = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
                 indianaCamera.railPositionWanted = transform.position + (currentPositionMultiplier + 1 ) * directionIndiania;
                 for (int j = 0; j < nbBarrage; j++)
@@ -145,6 +146,37 @@ public class IndianaManager : MonoBehaviour
         ColliderForwardWantedPosition = transform.position + (currentPositionMultiplier + 3.5f) * directionIndiania;
         invisibleColliderForward.transform.position = ColliderForwardWantedPosition;
         invisibleColliderBackward.transform.position = ColliderBackwardWantedPosition;
+    }
+
+
+    public void StartIndianaColumn(Transform zPosition)
+    {
+        Debug.Log("STARTING COLUMN");
+        Vector3 i_wantedPosition = zPosition.position;
+        for (int i = 0; i < 10; i++)
+        {
+            i_wantedPosition = new Vector3(zPosition.position.x, startposition.y, i_wantedPosition.z);
+            i_wantedPosition += directionIndiania * spaceBetweenBombsInColumns;
+            IndianaExplosion i_newExplosion = Instantiate(prefabIndianaExplosion, i_wantedPosition, Quaternion.Euler(-90, 0, 0)).GetComponent<IndianaExplosion>();
+            i_newExplosion.myScale = maxSizeExplosion;
+            i_newExplosion.waitTimeForExplosion = explosionWaitingTime;
+            i_newExplosion.indianaManager = this;
+            i_newExplosion.isBarrage = true;
+            i_newExplosion.Initiate();
+        }
+    }
+
+    public void ScriptedIndianaExplosion(Transform xzPosition)
+    {
+        print("hey yo");
+        Vector3 i_wantedPosition = xzPosition.position;
+        i_wantedPosition.y = startposition.y;
+        IndianaExplosion i_newExplosion = Instantiate(prefabIndianaExplosion, i_wantedPosition, Quaternion.Euler(-90, 0, 0)).GetComponent<IndianaExplosion>();
+        i_newExplosion.myScale = maxSizeExplosion;
+        i_newExplosion.waitTimeForExplosion = explosionWaitingTime;
+        i_newExplosion.indianaManager = this;
+        i_newExplosion.isBarrage = true;
+        i_newExplosion.Initiate();
     }
 
 

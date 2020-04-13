@@ -43,8 +43,8 @@ MonoBehaviour:
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
-    force: 0
-    duration: 0
+    force: 3
+    duration: 0.2
     target: 0
     forceCurve:
       serializedVersion: 2
@@ -71,7 +71,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   shakeDataInited: 0
-  vibrationDataInited: 0
+  vibrationDataInited: 1
   soundDataInited: 1
   vfxDataInited: 1
   eventCalled: 0
@@ -80,7 +80,10 @@ MonoBehaviour:
     displayColor: {r: 0.25, g: 0.31471133, b: 1, a: 1}
   soundData:
     soundName: PlayerDash
-    attachToTarget: 0
+    soundList:
+    - clip: {fileID: 8300000, guid: 67000da42a67fb543965be74c8888133, type: 3}
+      playChances: 1
+    volumeMultiplier: 0.7
   vfxData:
     vfxPrefab: {fileID: 8651325449361012943, guid: 8ebb4c678bbe08b479176d5701dcab4b,
       type: 3}

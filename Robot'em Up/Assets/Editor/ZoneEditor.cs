@@ -2,7 +2,7 @@
 using UnityEngine;
 using Cinemachine;
 using System.Collections.Generic;
-using PathCreation;
+//using PathCreation;
 
 public class ZoneEditor
 {

@@ -54,7 +54,7 @@ public class HealthBar : MonoBehaviour
         {
             if (!customHealthBar)
             {
-                fillRect.sizeDelta = new Vector2(((float)target.currentHealth / target.maxHealth) * _initialWidth, _rect.height);
+                fillRect.sizeDelta = new Vector2(((float)target.GetHealth() / target.GetMaxHealth()) * _initialWidth, _rect.height);
             }
             else
             {
@@ -66,7 +66,7 @@ public class HealthBar : MonoBehaviour
 			barFill.color = newColor;
 
 			_self.position = _mainCamera.WorldToScreenPoint(target.GetHeadPosition() + new Vector3(0f, heightOffset + customDeltaPosition, 0f));
-            if (target.currentHealth <= 0)
+            if (target.GetHealth() <= 0)
             {
 				ToggleHealthBar(false);
 			}
@@ -90,38 +90,38 @@ public class HealthBar : MonoBehaviour
 	{
 		barBackground.enabled = true;
 		barFill.enabled = true;
-		Color barColor = barFill.color;
-		Color backgroundColor = barBackground.color;
+		Color i_barColor = barFill.color;
+		Color i_backgroundColor = barBackground.color;
 		for (float i = 0; i < _duration; i+= Time.deltaTime)
 		{
-			barColor.a = Mathf.Lerp(0f, initialBarFillAlpha, i / _duration);
-			barFill.color = barColor;
-			backgroundColor.a = Mathf.Lerp(0f, initialBarBackgroundAlpha, i / _duration);
-			barBackground.color = backgroundColor;
+			i_barColor.a = Mathf.Lerp(0f, initialBarFillAlpha, i / _duration);
+			barFill.color = i_barColor;
+			i_backgroundColor.a = Mathf.Lerp(0f, initialBarBackgroundAlpha, i / _duration);
+			barBackground.color = i_backgroundColor;
 			yield return null;
 		}
-		barColor.a = initialBarFillAlpha;
-		barFill.color = barColor;
-		backgroundColor.a = initialBarBackgroundAlpha;
-		barBackground.color = backgroundColor;
+		i_barColor.a = initialBarFillAlpha;
+		barFill.color = i_barColor;
+		i_backgroundColor.a = initialBarBackgroundAlpha;
+		barBackground.color = i_backgroundColor;
 	}
 
 	IEnumerator FadeOut_C ( float _duration )
 	{
-		Color barColor = barFill.color;
-		Color backgroundColor = barBackground.color;
+		Color i_barColor = barFill.color;
+		Color i_backgroundColor = barBackground.color;
 		for (float i = 0; i < _duration; i += Time.deltaTime)
 		{
-			barColor.a = Mathf.Lerp(initialBarFillAlpha, 0f, i / _duration);
-			barFill.color = barColor;
-			backgroundColor.a = Mathf.Lerp(initialBarBackgroundAlpha, 0f, i / _duration);
-			barBackground.color = backgroundColor;
+			i_barColor.a = Mathf.Lerp(initialBarFillAlpha, 0f, i / _duration);
+			barFill.color = i_barColor;
+			i_backgroundColor.a = Mathf.Lerp(initialBarBackgroundAlpha, 0f, i / _duration);
+			barBackground.color = i_backgroundColor;
 			yield return null;
 		}
-		barColor.a = 0f;
-		barFill.color = barColor;
-		backgroundColor.a = 0f;
-		barBackground.color = backgroundColor;
+		i_barColor.a = 0f;
+		barFill.color = i_barColor;
+		i_backgroundColor.a = 0f;
+		barBackground.color = i_backgroundColor;
 		barBackground.enabled = false;
 		barFill.enabled = false;
 	}

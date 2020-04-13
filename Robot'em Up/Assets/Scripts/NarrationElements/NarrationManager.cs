@@ -21,42 +21,70 @@ public class NarrationManager : MonoBehaviour
     public float typingSpeed = 5;
     private GameObject dialogueBoxInstance;
     private TextMeshProUGUI textField;
-    private Image subImage;
+    public Image subImage;
     private IEnumerator textWritingCoroutine;
+
+    List<NarrativeInteractiveElements> narrativeElementsInRange = new List<NarrativeInteractiveElements>();
+    public float timeBetweenRangeCheck;
+    [HideInInspector] public Transform player1Transform;
+    [HideInInspector] public Transform player2Transform;
+    Vector3 middlePlayerPosition;
+    NarrativeInteractiveElements activatedNarrativeElement;
 
     // Start is called before the first frame update
     void Awake()
     {
         narrationManager = this;
-
+        CreateDialogueBox();
         textWritingCoroutine = null;
         dialogueBoxInstance = null;
+
+        player1Transform = GameManager.playerOne.transform;
+        player2Transform = GameManager.playerTwo.transform;
+
+        StartCoroutine(CheckElementToActivate());
     }
 
     // Update is called once per frame
     void Update()
     {
+        middlePlayerPosition = (player1Transform.position + player2Transform.position) / 2;
+    }
 
+    #region Public methods
+    public void SetNarrativeElementsInRange(bool _add, NarrativeInteractiveElements _narrativeElement)
+    {
+        if (_add)
+        {
+            narrativeElementsInRange.Add(_narrativeElement);
+        }
+        else
+        {
+            narrativeElementsInRange.Remove(_narrativeElement);
+        }
     }
 
     public void LaunchDialogue(DialogueData _dialogueData)
     {
-        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
-        textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
-        myAudioSource.clip = _dialogueData.dialogueClip;
-        myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
-
-        if (textWritingCoroutine == null)
+        if (dialogueBoxInstance != null)
         {
-            textWritingCoroutine = NewWriteText_C(_dialogueData, typingSpeed);
-            StartCoroutine(textWritingCoroutine);
+            dialogueBoxInstance.SetActive(true);
+            textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
+            myAudioSource.clip = _dialogueData.dialogueClip;
+            myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
+
+            if (textWritingCoroutine == null)
+            {
+                textWritingCoroutine = NewWriteText_C(_dialogueData, typingSpeed);
+                StartCoroutine(textWritingCoroutine);
+            }
         }
     }
 
     public void ChangeActivatedNarrationElement(NarrativeInteractiveElements _newNarrativeElement)
     {
         currentNarrationElementActivated = _newNarrativeElement;
-        if(currentNarrationElementActivated != null)
+        if (currentNarrationElementActivated != null)
         {
             myAudioSource.outputAudioMixerGroup = currentNarrationElementActivated.myAudioMixer;
         }
@@ -65,8 +93,53 @@ public class NarrationManager : MonoBehaviour
             myAudioSource.outputAudioMixerGroup = defaultAudioMixer;
         }
     }
+    #endregion
 
-    public IEnumerator NewWriteText_C(DialogueData _dialogueData, float _typingSpeed)
+    #region Private methods
+    private void CreateDialogueBox()
+    {
+        dialogueBoxInstance = Instantiate(dialogueBoxPrefab, GameManager.mainCanvas.transform);
+        dialogueBoxInstance.SetActive(false);
+    }
+    #endregion
+
+    #region Coroutines
+    public IEnumerator CheckElementToActivate()
+    {
+        if (narrativeElementsInRange.Count > 0)
+        {
+            float i_minimalDistance = 100;
+            int i_narrativeElementToActivate = -1;
+            for (int i = 0; i < narrativeElementsInRange.Count; i++)
+            {
+                float i_distanceFromElement = Vector3.Distance(narrativeElementsInRange[i].transform.position, middlePlayerPosition);
+                if (i_distanceFromElement < i_minimalDistance)
+                {
+                    i_minimalDistance = i_distanceFromElement;
+                    i_narrativeElementToActivate = i;
+                }
+            }
+
+            if (narrativeElementsInRange[i_narrativeElementToActivate] != activatedNarrativeElement)
+            {
+                if (activatedNarrativeElement != null)
+                {
+                    activatedNarrativeElement.SetAIPossession(false);
+                }
+                activatedNarrativeElement = narrativeElementsInRange[i_narrativeElementToActivate];
+                activatedNarrativeElement.SetAIPossession(true);
+            }
+        }
+        else if (activatedNarrativeElement != null)
+        {
+            activatedNarrativeElement.SetAIPossession(false);
+            activatedNarrativeElement = null;
+        }
+        yield return new WaitForSeconds(timeBetweenRangeCheck);
+        StartCoroutine(CheckElementToActivate());
+    }
+
+    private IEnumerator NewWriteText_C(DialogueData _dialogueData, float _typingSpeed)
     {
         Color i_appearingColor = new Color(textField.color.r, textField.color.g, textField.color.b, 1);
         TMP_TextInfo i_textInfo = textField.textInfo;
@@ -105,39 +178,9 @@ public class NarrationManager : MonoBehaviour
             yield return new WaitForSeconds(_dialogueData.texts[i].pauseAfterText);
             textWritingCoroutine = null;
         }
-        Destroy(dialogueBoxInstance, _dialogueData.timeBeforeDestruction);
+
+        yield return new WaitForSeconds(_dialogueData.timeBeforeDestruction);
+        dialogueBoxInstance.SetActive(false);
     }
-
-    public IEnumerator WriteText_C(DialogueData _dialogueData, float _typingSpeed)
-    {
-        if (currentNarrationElementActivated != null)   // Check if IA's Screen is still active
-        {
-            for (int j = 0; j < _dialogueData.texts.Length; j++)
-            {
-                for (int i = 0; i < _dialogueData.texts[j].text.Length + 1; i++)
-                {
-                    textField.text = _dialogueData.texts[j].text.Substring(0, i);
-                    yield return new WaitForSeconds(1 / _typingSpeed);
-                }
-
-                yield return new WaitForSeconds(_dialogueData.texts[j].pauseAfterText);
-            }
-        }
-        else
-        {
-            yield return new WaitForSeconds(_dialogueData.timeBeforeDestruction);
-            textWritingCoroutine = null;
-        }
-        Destroy(dialogueBoxInstance);
-    }
-
-    public IEnumerator BlinkSubImage()
-    {
-        while (true)
-        {
-            subImage.enabled = !subImage.enabled;
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
-
+    #endregion
 }

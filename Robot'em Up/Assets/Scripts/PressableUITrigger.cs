@@ -20,11 +20,11 @@ public class PressableUITrigger : MonoBehaviour
 	public void Init ( PlayerIndex _playerIndex)
 	{
 		playerIndex = _playerIndex;
-		//state = GamePad.GetState(_playerIndex);
+		state = GamePad.GetState(_playerIndex);
 		image.sprite = defaultButtonSprite;
 	}
 
-	/*
+	
 	private void Update ()
 	{
 		state = GamePad.GetState(playerIndex);
@@ -60,7 +60,7 @@ public class PressableUITrigger : MonoBehaviour
 		image.color = newColor;
 
 	}
-	*/
+	
 
 	private void HoldButton()
 	{
