@@ -120,9 +120,9 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 			Vector3 startFallPosition = IK.transform.position;
 			Vector3 endFallPosition = startFallPosition;
 			endFallPosition.y = hit.point.y;
-			for (float i = 0; i < Vector3.Distance(IK.transform.position, hit.point); i += Time.deltaTime * 5f)
+			for (float i = 0; i < Vector3.Distance(IK.transform.position, hit.point) / 5f; i += Time.deltaTime * 5f)
 			{
-				IK.Target.transform.position = Vector3.Lerp(startFallPosition, endFallPosition, i / Vector3.Distance(IK.transform.position, hit.point));
+				IK.Target.transform.position = Vector3.Lerp(startFallPosition, endFallPosition, i / (Vector3.Distance(IK.transform.position, hit.point)) / 5f);
 				yield return null;
 			}
 		}

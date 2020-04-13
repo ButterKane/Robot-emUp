@@ -15,7 +15,9 @@ float _TerrainClipHeightPower;
 	int TerrainsCount;
 #elif TERRAIN_DECAL
 	sampler2D_float _TerrainHeightMap;
-	float4x4 _World2Terrain;
+	#if UNITY_EDITOR
+		float4x4 _World2Terrain;
+	#endif
 	float3 _TerrainSize;
 #endif
 
@@ -46,6 +48,7 @@ float GetTerrainBlending(float3 wpos)
 	return alpha;
 	*/
 #if TERRAIN_DECAL
+	#if UNITY_EDITOR
 	float alpha = 1;
 	
 	float3 terrainPos = mul(_World2Terrain, float4(wpos, 1));
@@ -64,6 +67,7 @@ float GetTerrainBlending(float3 wpos)
 	alpha *= pow(blendDither, _TerrainClipHeightPower);
 
 	return alpha;
+	#endif
 #endif
 	return 0;
 }
