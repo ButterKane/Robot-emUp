@@ -193,6 +193,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 currentDeathWaitTime = deathValues.waitTimeBeforeDisappear;
                 Freeze();
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
+                StopAnyAction();
                 break;
             case EnemyState.Spawning:
                 break;
@@ -639,6 +640,12 @@ public class EnemyBehaviour : PawnController, IHitable
         float i_throwForce = Random.Range(deathValues.minMaxDropForce.x, deathValues.minMaxDropForce.y);
         i_wantedDirectionAngle.y = i_throwForce * 0.035f;
         i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(deathValues.minMaxCoreHealthValue.x, deathValues.minMaxCoreHealthValue.y));
+    }
+
+    protected virtual void StopAnyAction()
+    {
+        // To make sure the attack / move / action is over
+        // is filled in the children that use it
     }
     #endregion
 
