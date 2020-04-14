@@ -89,6 +89,9 @@ public class PlayerController : PawnController, IHitable
 		extendingArmsController = GetComponent<ExtendingArmsController>();
 		ui = GetComponent<PlayerUI>();
 
+		//Set pass target
+		passController.SetTargetedPawn(GetOtherPlayer());
+
 		//Variable initialization
 		GameManager.alivePlayers.Add(this);
 		GenerateMiddlePoint();
@@ -353,6 +356,7 @@ public class PlayerController : PawnController, IHitable
 	{
 		if (lookInput.magnitude > triggerTreshold)
 		{
+			passController.SetLookDirection(lookInput);
 			if (!rightButtonWaitForRelease)
 			{
 				passController.Aim();

@@ -112,6 +112,12 @@ public class EnemyMelee : EnemyBehaviour
         animator.ResetTrigger("AttackTrigger");
         ChangeState(EnemyState.Idle);
     }
+
+    protected override void StopAnyAction()
+    {
+        attackHitBoxInstance.SetActive(false);
+        attackPreviewPlane.SetActive(false);
+    }
     #endregion
     #region Coroutines
     private IEnumerator StartAttackState_C()
