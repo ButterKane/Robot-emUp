@@ -71,7 +71,7 @@ public class PlayerUI : MonoBehaviour
 	public RectTransform playerCanvasRectTransform;
 	public RectTransform playerCanvasLateralRectTransform;
 
-	private void Awake ()
+	private void Start ()
 	{
 		pawnController = GetComponent<PawnController>();
 		dashController = GetComponent<DashController>();

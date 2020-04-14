@@ -19,10 +19,10 @@ public class ToxicAreaPoint : MonoBehaviour
             switch (myType)
             {
                 case ToxicAreaPointType.Entry:
-                    manager.ToxicAreaEntry();
+                    ToxicAreaManager.toxicAreaManager.ToxicAreaEntry();
                     break;
                 case ToxicAreaPointType.Exit:
-                    manager.ToxicAreaLeaving();
+                    ToxicAreaManager.toxicAreaManager.ToxicAreaLeaving();
                     break;
                 default:
                     break;

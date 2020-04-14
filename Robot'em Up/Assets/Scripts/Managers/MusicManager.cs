@@ -32,13 +32,23 @@ public class MusicManager : MonoBehaviour
 	{
 		if (instance.changeClipDelayCooldown > 0) { return; }
 		MusicData data = MusicDatas.GetMusicData(_music);
+		bool musicAlreadyPlaying = false;
 		foreach (MusicInformation s in instance.currentMusicInformations)
 		{
-			instance.StartCoroutine(instance.FadeOutSound_C(s.linkedSource, s.linkedMusicData.fadeOutDuration));
+			if (s.linkedMusicData != data)
+			{
+				instance.StartCoroutine(instance.FadeOutSound_C(s.linkedSource, s.linkedMusicData.fadeOutDuration));
+			} else if (s.linkedSource.isPlaying)
+			{
+				musicAlreadyPlaying = true;
+			}
 		}
-		instance.currentMusicInformations.Clear();
-		instance.StartCoroutine(instance.FadeInSound_C(data));
-		instance.changeClipDelayCooldown = instance.minDelayBeforeChangingMusic;
+		if (musicAlreadyPlaying == false)
+		{
+			instance.currentMusicInformations.Clear();
+			instance.StartCoroutine(instance.FadeInSound_C(data));
+			instance.changeClipDelayCooldown = instance.minDelayBeforeChangingMusic;
+		}
 	}
 	public static void ChangeVolume(float _newVolume)
 	{

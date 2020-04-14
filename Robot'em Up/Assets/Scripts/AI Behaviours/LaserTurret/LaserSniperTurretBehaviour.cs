@@ -62,9 +62,11 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         {
             case TurretState.Hiding:
                 animator.SetTrigger("HidingTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("HidingTrigger");}
                 break;
             case TurretState.GettingOutOfGround:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger");}
                 ChangingTurretAttackState(TurretAttackState.NotAttacking);
                 break;
             case TurretState.Hidden:
@@ -91,6 +93,8 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 animator.ResetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
+                animator.SetTrigger("GettingOutOfGroundTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger"); }
                 break;
             case TurretState.Dying:
                 break;
