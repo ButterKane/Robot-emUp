@@ -5,6 +5,7 @@ using UnityEngine;
 public class ExoticExplosionTrigger : MonoBehaviour
 {
     bool explosionInitiated;
+    public float explosionDelay;
     public float myScale;
     public float waitTimeForExplosion;
     float waitingForExplosion;
@@ -18,10 +19,15 @@ public class ExoticExplosionTrigger : MonoBehaviour
     // Start is called before the first frame update
     public void Initiate()
     {
-        transform.localScale = Vector3.one * myScale;
         waitingForExplosion = waitTimeForExplosion;
         listPawnsHere = new List<PawnController>();
+        Invoke("ExplosionInitiatedTrue", explosionDelay);
+    }
+
+    void ExplosionInitiatedTrue()
+    {
         explosionInitiated = true;
+        transform.localScale = Vector3.one * myScale;
     }
 
     // Update is called once per frame
