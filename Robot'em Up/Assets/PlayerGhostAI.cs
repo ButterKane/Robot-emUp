@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerGhostAI : MonoBehaviour
 {
-    public float dashCooldown = 5;
+    public float actionCooldown = 5;
     private float currentCooldown;
 
     private DashController dashController;
@@ -29,24 +29,13 @@ public class PlayerGhostAI : MonoBehaviour
         if (currentCooldown <= 0)
         {
             transform.LookAt(passTarget.transform.position);
-            if (passController.CanShoot())
-            {
-                StartCoroutine(DunkAction());
-            }
-            //dunkController.ForceDunk();
-            //dashController.Dash(transform.forward);
-            currentCooldown = dashCooldown;
+            passController.Shoot();
+            currentCooldown = actionCooldown;
         } else
         {
+            passController.Aim();
+            passController.SetLookDirection(transform.right);
             currentCooldown -= Time.deltaTime;
         }
-    }
-
-    IEnumerator DunkAction()
-    {
-        passTarget.GetComponent<DunkController>().ForceDunk();
-        yield return new WaitForSeconds(0.25f);
-        passController.Shoot();
-        passController.SetLookDirection(passTarget.transform.position - transform.position);
     }
 }
