@@ -525,7 +525,7 @@ public class SettingsMenu : MonoBehaviour
         // 0 to 100
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
-
+            // It's post process wesh
         }
 
         // 0 to 100
@@ -590,15 +590,20 @@ public class SettingsMenu : MonoBehaviour
         {
             switch (valueDifficulty)
             {
-                case 0:
+                case 0://white
+                    NarrationManager.narrationManager.textColor = Color.white;
                     break;
-                case 1:
+                case 1://yellow
+                    NarrationManager.narrationManager.textColor = Color.yellow;
                     break;
-                case 2:
+                case 2://blue
+                    NarrationManager.narrationManager.textColor = Color.blue;
                     break;
-                case 3:
+                case 3://green
+                    NarrationManager.narrationManager.textColor = Color.green;
                     break;
-                case 4:
+                case 4://red
+                    NarrationManager.narrationManager.textColor = Color.red;
                     break;
             }
         }
@@ -608,13 +613,17 @@ public class SettingsMenu : MonoBehaviour
         {
             switch (valueDifficulty)
             {
-                case 0:
+                case 0://small
+                    NarrationManager.narrationManager.textSize = 14;
                     break;
-                case 1:
+                case 1://regular
+                    NarrationManager.narrationManager.textSize = 20;
                     break;
-                case 2:
+                case 2://big
+                    NarrationManager.narrationManager.textSize = 30;
                     break;
-                case 3:
+                case 3://very big
+                    NarrationManager.narrationManager.textSize = 40;
                     break;
             }
         }
@@ -629,17 +638,33 @@ public class SettingsMenu : MonoBehaviour
 
         if (toggleSettings.TryGetValue("FullScreen/Window", out bool valueFullScreen))
         {
-
+            if (valueFullScreen)
+            {
+                Screen.fullScreen = true;
+            }
+            else
+            {
+                Screen.fullScreen = false;
+            }
         }
 
         if (toggleSettings.TryGetValue("Background Animation", out bool valueBackground))
         {
-
+            // Change if the grass is moving or this kind of things
         }
 
         if (toggleSettings.TryGetValue("Stylized In-Game Text Font", out bool valueStylizedFont))
         {
-
+            if (valueStylizedFont)
+            {
+                NarrationManager.narrationManager.selectedFont = NarrationManager.narrationManager.stylizedTextFont;
+            }
+            else
+            {
+                NarrationManager.narrationManager.selectedFont = NarrationManager.narrationManager.robotoTextFont;
+            }
+            // Yes = Pas Roboto
+            // No = Roboto
         }
     }
 }
