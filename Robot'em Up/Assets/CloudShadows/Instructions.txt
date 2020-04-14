@@ -1,0 +1,56 @@
+DESCRIPTION:
+------------
+
+This asset uses Unity's Projector component to produce an effect that mimics cloud shadows moving over a surface.
+
+RESOURCES INCLUDED: 
+-------------------
+
+* CloudShadows.shader
+* cloud-shadows.bmp
+* cloud-shadows-noise.bmp
+* cloud-shadows-inverted.bmp
+
+HOW TO USE:
+-----------
+
+Import the custom package into your project. (Assets > Import Packabe > Custom Package)
+Drag the included Prefab into your scene and adjust the material properties - that's it!
+
+Or, follow the steps below to use the assets without the custom package or prefab...
+
+Create a Projector. (To access the Projector assets, Import "Effects" from Unity's Standard Assets)
+Create a new Material, assign the "Projector/CloudShadows" Shader to that Material, then attach that Material to the Projector.
+Make sure the Projector is facing the correct direction. (90º on the x axis to point downward)
+Set the Projector to Orthographic and make sure its size and height cover the whole area.
+Adjust the Material properties to fit your scene!
+
+GENERAL NOTES:
+--------------
+
+Use the Color property to adjust opacity and color. The alpha is not used.
+
+Textures are included for convenience, use any textures you want.  Make sure the texture's Import Settings are set to "Repeat".  
+
+Don't forget to adjust the Tiling properties of the textures in the Material properties.
+
+Use the projector's "Ignore Layers" setting to exclude water and transparent objects.
+
+Unfortunately, the projector does not affect grass, trees, or other various objects that use custom shaders.
+
+
+UPGRADE NOTES:
+--------------
+2020-02-28
+The original CloudShadows.shader has been replaced with this new one. 
+The original version was an "inverted" effect - the new shader works as intended, similar to the previous HDR version, which has now been removed because it's not needed.
+There's a new distance property that you can use to make the effect fade out at a distance.
+Cloud textures have been replaced with a version that tiles better, and looks better I think.
+
+LICENSE:
+--------
+
+Use at your own risk.  You may modify this code, use it in your personal or commercial projects, and redistribute, granted credit is given. Created by Chris Cunningham.
+
+-----------------------------------------------------------
+Made with Unity 5.6, also tested successfully in Unity 2018. The projector is broken in Unity 5.3.x [www.unity3d.com]
