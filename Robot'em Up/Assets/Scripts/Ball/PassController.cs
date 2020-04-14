@@ -36,8 +36,8 @@ public class PassController : MonoBehaviour
 	public float hanseLength;
 
     // Auto-assigned References
-    private PlayerController linkedPlayer;
-	private PlayerController otherPlayer;
+	private PawnController targetedPawn;
+	private PawnController linkedPawn;
 	private DunkController linkedDunkController;
     private LineRenderer lineRenderer;
     private Animator animator;
@@ -54,26 +54,33 @@ public class PassController : MonoBehaviour
 	private float perfectReceptionBuffer;
 	private bool keepPerfectReceptionModifiers;
 	private bool perfectReceptionShoot;
+	private Vector3 lookDirection;
+	private bool isPlayer;
 	private float pathLength;
 	[ReadOnly] public PassState passState;
 
-    private void Awake ()
+    private void Start ()
 	{
 		lineRenderer = GetComponent<LineRenderer>();
-		linkedPlayer = GetComponent<PlayerController>();
+		linkedPawn = GetComponent<PawnController>();
 		linkedDunkController = GetComponent<DunkController>();
-		animator = linkedPlayer.GetAnimator();
+		if (GetComponent<PlayerController>() != null)
+		{
+			isPlayer = true;
+		}
+		animator = linkedPawn.GetAnimator();
 
 		canReceive = true;
 		ChangeColor(previewDefaultColor);
-
-		otherPlayer = linkedPlayer.GetOtherPlayer();
 	}
 	private void Update ()
 	{
 		UpdateCooldowns();
 		UpdateBallTimeInHand();
-		if (!otherPlayer.IsTargetable()) { DisablePassPreview(); }
+		if (targetedPawn != null)
+		{
+			if (!targetedPawn.IsTargetable()) { DisablePassPreview(); }
+		}
 	}
 
 	private void LateUpdate ()
@@ -82,6 +89,15 @@ public class PassController : MonoBehaviour
 	}
 
 	#region Public functions
+
+	public void SetTargetedPawn(PawnController _pawn)
+	{
+		targetedPawn = _pawn;
+	}
+	public void SetLookDirection(Vector3 _lookDirection)
+	{
+		lookDirection = _lookDirection;
+	}
 	public void ExecutePerfectReception ( BallBehaviour _ball )
 	{
 		Receive(_ball);
@@ -96,7 +112,7 @@ public class PassController : MonoBehaviour
 		_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
 
 		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1); //Used for color
-		GameObject i_perfectReceptionFX = FeedbackManager.SendFeedback("event.PlayerPerfectReception", linkedPlayer, handTransform.position, _ball.GetCurrentDirection(), default).GetVFX();
+		GameObject i_perfectReceptionFX = FeedbackManager.SendFeedback("event.PlayerPerfectReception", linkedPawn, handTransform.position, _ball.GetCurrentDirection(), default, !isPlayer).GetVFX();
 		ParticleColorer.ReplaceParticleColor(i_perfectReceptionFX, Color.white, ballDatas.colorOverDamage.Evaluate(i_lerpValue));
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
 		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, perfectReceptionExplosionRadius);
@@ -107,7 +123,7 @@ public class PassController : MonoBehaviour
 			IHitable i_potentialHitableObject = i_hitColliders[i].GetComponentInParent<IHitable>();
 			if (i_potentialHitableObject != null && !i_hitTargets.Contains(i_potentialHitableObject))
 			{
-				i_potentialHitableObject.OnHit(_ball, (i_hitColliders[i].transform.position - transform.position).normalized, linkedPlayer, perfectReceptionExplosionDamages, DamageSource.PerfectReceptionExplosion);
+				i_potentialHitableObject.OnHit(_ball, (i_hitColliders[i].transform.position - transform.position).normalized, linkedPawn, perfectReceptionExplosionDamages, DamageSource.PerfectReceptionExplosion);
 				i_hitTargets.Add(i_potentialHitableObject);
 			}
 			i++;
@@ -117,7 +133,7 @@ public class PassController : MonoBehaviour
 	{
 		if (didPerfectReception || perfectReceptionBuffer > 0) { return; }
 		BallBehaviour i_mainBall = BallBehaviour.instance;
-		if (i_mainBall.GetCurrentThrower() == linkedPlayer) { return; }
+		if (i_mainBall.GetCurrentThrower() == linkedPawn) { return; }
 		if (currentBall == null)
 		{
 			if (Vector3.Distance(handTransform.position, i_mainBall.transform.position) > perfectReceptionMinDistance) { perfectReceptionBuffer += perfectReceptionBufferOnFail; return; }
@@ -128,9 +144,9 @@ public class PassController : MonoBehaviour
 		}
 		ExecutePerfectReception(i_mainBall);
 	}
-	public PlayerController GetTarget ()
+	public PawnController GetTarget ()
 	{
-		return otherPlayer;
+		return targetedPawn;
 	}
 	public List<Vector3> GetCurvedPathCoordinates ( Vector3 _startPosition, PawnController _target, Vector3 _lookDirection, out float totalLength )
 	{
@@ -224,11 +240,11 @@ public class PassController : MonoBehaviour
 	}
 	public bool CanShoot ()
 	{
-		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallThrow)
+		if (linkedPawn.GetCurrentPawnState() != null && !linkedPawn.GetCurrentPawnState().allowBallThrow)
 		{
 			return false;
 		}
-		if (currentBall == null || currentPassCooldown >= 0 || linkedDunkController.IsDunking() || (!otherPlayer.IsTargetable()) || passState == PassState.Shooting)
+		if (currentBall == null || currentPassCooldown >= 0 || linkedDunkController.IsDunking() || (!targetedPawn.IsTargetable()) || passState == PassState.Shooting)
 		{
 			return false;
 		}
@@ -263,7 +279,7 @@ public class PassController : MonoBehaviour
 		if (didPerfectReception) { return; }
 		ChangePassState(PassState.Shooting);
 		Analytics.CustomEvent("PlayerPass", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
-		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPlayer, handTransform.position, linkedPlayer.GetLookInput(), Vector3.zero); ;
+		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPawn, handTransform.position, lookDirection, Vector3.zero, !isPlayer);
 		if (!keepPerfectReceptionModifiers)
 		{
 			BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
@@ -275,15 +291,15 @@ public class PassController : MonoBehaviour
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
 		MomentumManager.DisableMomentumExpontentialLoss();
 		// Throw a curve pass
-		if (otherPlayer != null)
+		if (targetedPawn != null)
 		{
 			if (passPreview)
 			{
-				i_shotBall.CurveShoot(this, linkedPlayer, otherPlayer, ballDatas, linkedPlayer.GetLookInput());
+				i_shotBall.CurveShoot(this, linkedPawn, targetedPawn, ballDatas, lookDirection);
 			}
 			else
 			{
-				i_shotBall.Shoot(handTransform.position, otherPlayer.transform.position - transform.position, linkedPlayer, ballDatas, true);
+				i_shotBall.Shoot(handTransform.position, targetedPawn.transform.position - transform.position, linkedPawn, ballDatas, true);
 			}
 		}
 		perfectReceptionShoot = false;
@@ -292,13 +308,16 @@ public class PassController : MonoBehaviour
 	public void Receive ( BallBehaviour _ball )
 	{
 		if (!canReceive) { return; }
-		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPlayer, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection());
-		CursorManager.SetBallPointerParent(transform);
+		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPawn, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection(), !isPlayer);
+		if (isPlayer)
+		{
+			CursorManager.SetBallPointerParent(transform);
+		}
 		currentBall = _ball;
 		currentBall.GoToHands(handTransform, 0.2f, ballDatas);
 		ballTimeInHand = 0;
 		MomentumManager.EnableMomentumExponentialLoss(MomentumManager.datas.minPassDelayBeforeMomentumLoss, MomentumManager.datas.momentumLossSpeedIfNoPass);
-		if (!linkedPlayer.IsTargetable()) { DropBall(); }
+		if (!linkedPawn.IsTargetable()) { DropBall(); }
 		if (linkedDunkController != null) { linkedDunkController.OnBallReceive(); }
 	}
 	public void EnablePassPreview ()
@@ -315,7 +334,7 @@ public class PassController : MonoBehaviour
 	}
 	public bool CanReceive ()
 	{
-		if (linkedPlayer.GetCurrentPawnState() != null && !linkedPlayer.GetCurrentPawnState().allowBallReception)
+		if (linkedPawn.GetCurrentPawnState() != null && !linkedPawn.GetCurrentPawnState().allowBallReception)
 		{
 			return false;
 		}
@@ -390,7 +409,7 @@ public class PassController : MonoBehaviour
 	{
 		if (passPreview)
 		{
-			pathCoordinates = GetCurvedPathCoordinates(handTransform.position, otherPlayer, linkedPlayer.GetLookInput(), out pathLength);
+			pathCoordinates = GetCurvedPathCoordinates(handTransform.position, targetedPawn, lookDirection, out pathLength);
 			PreviewPath(pathCoordinates);
 			LockManager.LockTargetsInPath(pathCoordinates, 0);
 		}
@@ -416,7 +435,7 @@ public class PassController : MonoBehaviour
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;
 		Analytics.CustomEvent("PerfectReception", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
-		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPlayer, handTransform.position, default, default);
+		FeedbackManager.SendFeedback("event.PlayerShootingAfterPerfectReception", linkedPawn, handTransform.position, default, default, !isPlayer);
 		perfectReceptionShoot = true;
 		Shoot();
 	}

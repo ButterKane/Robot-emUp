@@ -159,6 +159,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 break;
             case TurretState.Hidden:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger"); }
                 break;
             case TurretState.Dying:
                 break;
@@ -181,7 +182,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 break;
             case TurretState.GettingOutOfGround:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
-                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger"); }
                 break;
             case TurretState.Hidden:
                 break;
