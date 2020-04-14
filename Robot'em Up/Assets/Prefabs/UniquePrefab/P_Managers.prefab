@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 8126601537515546756}
   - component: {fileID: 3897057396212220960}
   - component: {fileID: 4637012694845503552}
+  - component: {fileID: 8153805115754326338}
   m_Layer: 0
   m_Name: P_Managers
   m_TagString: Untagged
@@ -186,6 +187,10 @@ MonoBehaviour:
     type: 3}
   ballPrefab: {fileID: 312656209842447024, guid: 739fbb2b237f4614580ae2925bc3cbc4,
     type: 3}
+  gameSpeed: 1
+  damageTakenSettingsMod: 1
+  aimAssistanceSettingsMod: 0
+  enemiesAgressivity: 1
 --- !u!114 &5253247827333039778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +342,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4b35791e66ab44aa68f35dfbc8d322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8153805115754326338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1bd662f64d039a4d8c4612033ea3ccb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  areaActivated: 0
+  accelerateDepoisoned: 0
+  decay_multiplier: 0.08
+  damageWhenPoisened_multiplier: 30
+  toxicValue_P1: 0
+  toxicValue_P2: 0
+  isPoisened_P1: 0
+  isPoisened_P2: 0
+  poisonedSprite_P1: {fileID: 0}
+  poisonedSprite_P2: {fileID: 0}
 --- !u!1 &5966096648677660823
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,8 +407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c32b2f6cf606be2409740e59be7f39b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPlayingClip: {fileID: 0}
-  overridingClip: {fileID: 0}
+  minDelayBeforeChangingMusic: 1
 --- !u!1001 &1547541213301003501
 PrefabInstance:
   m_ObjectHideFlags: 0

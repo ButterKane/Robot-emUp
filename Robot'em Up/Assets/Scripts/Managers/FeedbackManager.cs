@@ -51,7 +51,7 @@ public class FeedbackManager
 	{
 		return SendFeedback(_eventName, _target, Vector3.zero, Vector3.forward, Vector3.forward);
 	}
-	public static FeedbackCallback SendFeedback (string _eventName, Object _target, Vector3 _eventPosition, Vector3 _eventDirection, Vector3 _eventNormal)
+	public static FeedbackCallback SendFeedback (string _eventName, Object _target, Vector3 _eventPosition, Vector3 _eventDirection, Vector3 _eventNormal, bool _onlyFX = false)
 	{
 		//Data initianilisation
 		FeedbackCallback i_callBack = new FeedbackCallback();
@@ -60,12 +60,12 @@ public class FeedbackManager
 		Component target = _target as Component;
 
 		//Shake camera
-		if (i_feedback.shakeData != null && i_feedback.shakeDataInited) { 
+		if (i_feedback.shakeData != null && i_feedback.shakeDataInited && !_onlyFX) { 
 			CameraShaker.ShakeCamera(i_feedback.shakeData.intensity, i_feedback.shakeData.duration, i_feedback.shakeData.frequency, i_feedback.shakeData.intensityCurve); 
 		}
 
 		//Vibrate gamepad
-		if (i_feedback.vibrationData != null && i_feedback.vibrationDataInited)
+		if (i_feedback.vibrationData != null && i_feedback.vibrationDataInited && !_onlyFX)
 		{
 			switch (i_feedback.vibrationData.target)
 			{
@@ -88,10 +88,11 @@ public class FeedbackManager
 		}
 
 		//Play sound
-		if (i_feedback.soundData != null && i_feedback.soundDataInited)
+		if (i_feedback.soundData != null && i_feedback.soundDataInited && !_onlyFX)
 		{
-			if (target == null) { target = GameManager.mainCamera; }
-			SoundManager.PlaySound(i_feedback.soundData, target.transform.position, target.transform);
+			Component newTarget = target;
+			if (newTarget == null) { newTarget = GameManager.mainCamera; }
+			SoundManager.PlaySound(i_feedback.soundData, newTarget.transform.position, newTarget.transform);
 		}
 
 		//Generate FX

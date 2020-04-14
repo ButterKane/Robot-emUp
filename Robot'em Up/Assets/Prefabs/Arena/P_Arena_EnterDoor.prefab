@@ -123,8 +123,9 @@ GameObject:
   - component: {fileID: 4918866794418339673}
   - component: {fileID: 4918866794418339672}
   - component: {fileID: 4918866794418339679}
+  - component: {fileID: 4182164038234717339}
   m_Layer: 0
-  m_Name: ArenaEnterDoor
+  m_Name: P_Arena_EnterDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -242,6 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onExit: 1
   singleUse: 1
+  oneWayOnly: 1
   triggerCondition: 1
   onTriggerEnterAction:
     m_PersistentCalls:
@@ -257,6 +259,31 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 4182164038234717339}
+        m_MethodName: LoadMusic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTriggerComebackAction:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4182164038234717339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4918866794418339678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf73e526f21254e4ca3c136f421ffc46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicID: BattleThemeA
+  loadOnAwake: 0
