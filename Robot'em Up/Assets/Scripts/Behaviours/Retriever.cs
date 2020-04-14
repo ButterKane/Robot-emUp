@@ -15,13 +15,15 @@ public class Retriever : MonoBehaviour
 {
 	private PassController passController;
 	private PlayerController playerController;
+	private PawnController pawnController;
 
 	public List<ReviveInformations> retrievedParts = new List<ReviveInformations>();
 	// Start is called before the first frame update
-	private void Awake()
+	private void Start()
     {
 		playerController = GetComponentInParent<PlayerController>();
-		passController = playerController.passController;
+		pawnController = GetComponentInParent<PawnController>();
+		passController = pawnController.passController;
     }
 	private void OnTriggerEnter ( Collider other )
 	{
@@ -30,7 +32,7 @@ public class Retriever : MonoBehaviour
 			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
 			if (i_ballBehaviour.GetState() == BallState.Flying)
 			{
-				if (i_ballBehaviour.GetCurrentThrower() == playerController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+				if (i_ballBehaviour.GetCurrentThrower() == pawnController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
 				passController.Receive(i_ballBehaviour);
 			}
 			else if (i_ballBehaviour.GetState() == BallState.Grounded)
@@ -38,7 +40,7 @@ public class Retriever : MonoBehaviour
 				passController.Receive(i_ballBehaviour);
 			}
 		}
-		if (other.tag == "GrabbableTrigger")
+		if (other.tag == "GrabbableTrigger" && playerController)
 		{
 			GrabbableInformation grabbableInformation = other.GetComponent<GrabbableInformation>();
 			grabbableInformation.EnablePreviewForPlayer(playerController);
@@ -47,7 +49,7 @@ public class Retriever : MonoBehaviour
 	}
 	private void OnTriggerExit ( Collider other )
 	{
-		if (other.tag == "GrabbableTrigger")
+		if (other.tag == "GrabbableTrigger" && playerController)
 		{
 			GrabbableInformation grabbableInformation = other.GetComponent<GrabbableInformation>();
 			grabbableInformation.DisablePreviewForPlayer(playerController);
@@ -56,7 +58,7 @@ public class Retriever : MonoBehaviour
 	}
 	private void OnTriggerStay(Collider other)
     {
-		if (other.tag == "CorePart")
+		if (other.tag == "CorePart" && playerController)
 		{
 			CorePart i_corePart = other.GetComponent<CorePart>();
 			if (!i_corePart.grounded) { return; }

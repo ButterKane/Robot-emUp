@@ -54,6 +54,7 @@ public class DunkController : MonoBehaviour
 	[ConditionalField(nameof(enableDunkAspiration))] public float aspirationMinDistanceToPlayer = 4;
 
 	private DunkState dunkState;
+	private bool isPlayer;
 
 
     // Auto-assigned References
@@ -69,13 +70,17 @@ public class DunkController : MonoBehaviour
 	private GameObject currentDunkReadyPanel;
 	private GameObject currentDunkReadyFX;
 
-	private void Awake ()
+	private void Start ()
 	{
         dunkState = DunkState.None;
 
 		passController = GetComponent<PassController>();
 		pawnController = GetComponent<PawnController>();
 		playerController = GetComponent<PlayerController>();
+		if (playerController != null)
+		{
+			isPlayer = true;
+		} 
 
 		currentDunkReadyPanel = Instantiate(Resources.Load<GameObject>("PlayerResource/DunkReadyPanel"));
 		currentDunkReadyPanel.transform.SetParent(GameManager.mainCanvas.transform);
@@ -106,6 +111,11 @@ public class DunkController : MonoBehaviour
 	public void Dunk ()
 	{
 		if (!CanDunk()) { return; }
+		jumpCoroutine = StartCoroutine(Dunk_C());
+	}
+
+	public void ForceDunk()
+	{
 		jumpCoroutine = StartCoroutine(Dunk_C());
 	}
 	public bool CanDunk ()
@@ -142,7 +152,7 @@ public class DunkController : MonoBehaviour
 		if (CanDunk() && currentDunkReadyPanel != null)
 		{
 			if (!currentDunkReadyPanel.activeSelf) { if (enableDunkReadyPanel) { currentDunkReadyPanel.SetActive(true); } }
-			if (currentDunkReadyFX == null) { currentDunkReadyFX = FeedbackManager.SendFeedback("event.DunkReady", this, pawnController.GetCenterPosition(), Vector3.up, Vector3.up).GetVFX(); }
+			if (currentDunkReadyFX == null) { currentDunkReadyFX = FeedbackManager.SendFeedback("event.DunkReady", this, pawnController.GetCenterPosition(), Vector3.up, Vector3.up, !isPlayer).GetVFX(); }
 			currentDunkReadyPanel.transform.position = GameManager.mainCamera.WorldToScreenPoint(pawnController.GetHeadPosition());
 		}
 		else
@@ -156,7 +166,10 @@ public class DunkController : MonoBehaviour
 		Analytics.CustomEvent("SuccessfulDunk", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		BallBehaviour i_ball = passController.GetBall();
 		ChangeState(DunkState.Explosing);
-		EnergyManager.DecreaseEnergy(energyPercentLostOnSuccess);
+		if (playerController != null)
+		{
+			EnergyManager.DecreaseEnergy(energyPercentLostOnSuccess);
+		}
 		List<IHitable> i_hitTarget = new List<IHitable>();
 		Collider[] i_hitColliders = Physics.OverlapSphere(i_ball.transform.position, dunkExplosionRadius);
 		int i = 0;
@@ -174,8 +187,8 @@ public class DunkController : MonoBehaviour
 	}
 	private void AttractEnemies()
 	{
-		if (playerController == null) { return; }
-		GameObject attractionFX = FeedbackManager.SendFeedback("event.DunkAttraction", this, transform.position, Vector3.up, Vector3.up).GetVFX();
+		if (pawnController == null) { return; }
+		GameObject attractionFX = FeedbackManager.SendFeedback("event.DunkAttraction", this, transform.position, Vector3.up, Vector3.up, !isPlayer).GetVFX();
 		attractionFX.transform.localScale = Vector3.one * dunkAspirationRadius;
 		List<EnemyBehaviour> pushedEnemies = new List<EnemyBehaviour>();
 		foreach (Collider c in Physics.OverlapSphere(transform.position, dunkAspirationRadius))
@@ -203,14 +216,14 @@ public class DunkController : MonoBehaviour
 		switch (_newState)
 		{
 			case DunkState.Jumping:
-				FeedbackManager.SendFeedback("event.DunkJumping", playerController);
+				FeedbackManager.SendFeedback("event.DunkJumping", pawnController, Vector3.zero, Vector3.zero, Vector3.zero, !isPlayer);
 				i_playerAnimator.SetTrigger("PrepareDunkTrigger");
 				break;
 			case DunkState.Dashing:
-				dunkDashFX = FeedbackManager.SendFeedback("event.DunkDashing", i_handTransform).GetVFX();
+				dunkDashFX = FeedbackManager.SendFeedback("event.DunkDashing", i_handTransform, Vector3.zero, Vector3.zero, Vector3.zero, !isPlayer).GetVFX();
 				break;
 			case DunkState.Waiting:
-				dunkWaitingFX = FeedbackManager.SendFeedback("event.DunkWaiting", i_handTransform).GetVFX();
+				dunkWaitingFX = FeedbackManager.SendFeedback("event.DunkWaiting", i_handTransform, Vector3.zero, Vector3.zero, Vector3.zero, !isPlayer).GetVFX();
 				break;
 			case DunkState.Canceling:
 				if (dunkWaitingFX) { Destroy(dunkWaitingFX); }
@@ -219,11 +232,11 @@ public class DunkController : MonoBehaviour
 			case DunkState.Receiving:
 				if (dunkWaitingFX) { Destroy(dunkWaitingFX); }
 				i_playerAnimator.SetTrigger("DunkTrigger");
-				FeedbackManager.SendFeedback("event.DunkCatchingBall", i_handTransform);
+				FeedbackManager.SendFeedback("event.DunkCatchingBall", i_handTransform, Vector3.zero, Vector3.zero, Vector3.zero, !isPlayer);
 				break;
 			case DunkState.Explosing:
 				if (dunkDashFX) { Destroy(dunkDashFX); }
-				FeedbackManager.SendFeedback("event.DunkSmashingOnGround", playerController);
+				FeedbackManager.SendFeedback("event.DunkSmashingOnGround", pawnController, Vector3.zero, Vector3.zero, Vector3.zero, !isPlayer);
 				break;
 		}
 		dunkState = _newState;
