@@ -321,6 +321,16 @@ public class BallBehaviour : MonoBehaviour
 	{
 		return ballInformations.state;
 	}
+	public bool HasTarget()
+	{
+		if (ballInformations.curve != null || ballInformations.isTeleguided)
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
 	#endregion
 
 	#region Private functions
