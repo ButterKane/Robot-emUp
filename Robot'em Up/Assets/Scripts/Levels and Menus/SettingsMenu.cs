@@ -575,15 +575,7 @@ public class SettingsMenu : MonoBehaviour
         // Gentle - Classic - Aggressive
         if (multiChoiceSettings.TryGetValue("Enemies Agressivity", out int valueEnemiesAgressivity))
         {
-            switch (valueDifficulty)
-            {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-            }
+            EnemyManager.i.ChangeEnemiesAgressivity(valueEnemiesAgressivity);
         }
 
         // White - Yellow - Blue - Green - Red

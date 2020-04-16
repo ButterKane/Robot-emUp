@@ -19,6 +19,17 @@ public class EnemyManager : MonoBehaviour
     [NonSerialized] public Vector3 groupOneMiddlePoint;
     [NonSerialized] public Vector3 groupTwoMiddlePoint;
 
+    [Separator("Enemies agressivity")]
+    [Space(10)]
+    public float gentleAnticipationModifier = 1;
+    public float gentleRestTimeModifier = 1.5f;
+    [Space(10)]
+    public float normalAnticipationModifier = 1;
+    public float normalRestTimeModifier = 1;
+    [Space(10)]
+    public float agressiveAnticipationModifier = 0.7f;
+    public float agressiveRestTimeModifier = 0.1f;
+
     private void Awake()
     {
         if (i != null) { Destroy(i); }
@@ -158,6 +169,35 @@ public class EnemyManager : MonoBehaviour
         }
 
         return i_closeEnemies;
+    }
+
+    public void ChangeEnemiesAgressivity(int _newAgressivity)
+    {
+        float i_newWaitModifier = 1;
+        float i_newAnticipationModifier = 1;
+        switch (_newAgressivity)
+        {
+            case 0:
+                i_newWaitModifier = gentleRestTimeModifier;
+                i_newAnticipationModifier= gentleAnticipationModifier;
+                break;
+            case 1:
+                i_newWaitModifier = normalRestTimeModifier;
+                i_newAnticipationModifier =normalAnticipationModifier;
+                break;
+            case 2:
+                i_newWaitModifier = agressiveRestTimeModifier;
+                i_newAnticipationModifier= agressiveAnticipationModifier;
+                break;
+            default:
+                break;
+        }
+
+        foreach(var enemy in enemies)
+        {
+            enemy.attackAnticipationSettingMod = i_newAnticipationModifier;
+            enemy.attackPauseSettingMod = i_newWaitModifier;
+        }
     }
     #endregion
 
