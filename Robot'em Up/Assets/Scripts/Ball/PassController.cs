@@ -159,7 +159,7 @@ public class PassController : MonoBehaviour
 		_lookDirection.y = 0;
 
 		Vector3 i_firstPoint = i_startPosition;
-		Vector3 i_firstHandle = i_startPosition + _lookDirection.normalized * hanseLength;
+		Vector3 i_firstHandle = i_startPosition + _lookDirection * hanseLength;
 		Vector3 i_secondPoint = i_endPosition;
 		totalLength = 0;
 		for (int i = 0; i < curveRaycastIteration; i++)
