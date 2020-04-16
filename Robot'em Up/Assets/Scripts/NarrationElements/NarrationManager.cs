@@ -11,6 +11,7 @@ public class NarrationManager : MonoBehaviour
     public static NarrationManager narrationManager;
 
     public AudioSource myAudioSource;
+    [ReadOnly] public float dialogueVolumeSettingsMod;
     public AudioMixerGroup defaultAudioMixer;
     public int textSize = 20;
     public Color textColor = Color.white;
@@ -75,11 +76,14 @@ public class NarrationManager : MonoBehaviour
     {
         if (dialogueBoxInstance != null)
         {
+            float i_normalAudioVolume = myAudioSource.volume;
             dialogueBoxInstance.SetActive(true);
             textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
             textField.color = textColor;
             textField.fontSize = textSize;
             textField.font = selectedFont;
+
+            myAudioSource.volume = i_normalAudioVolume * dialogueVolumeSettingsMod;
             myAudioSource.clip = _dialogueData.dialogueClip;
             myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
 

@@ -525,19 +525,20 @@ public class SettingsMenu : MonoBehaviour
         // 0 to 100
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
+            MomentumManager.instance.postProcessSettingsMod = ((float)valueContrast) / 100;
             // It's post process wesh
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("SFX Volume", out int valueSfxVolume))
         {
-
+            FeedbackManager.fXVolumeSettingsMod = ((float)valueSfxVolume) / 100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Dialogue Volume", out int valueDialogueVolume))
         {
-
+            NarrationManager.narrationManager.dialogueVolumeSettingsMod = ((float)valueDialogueVolume) / 100;
         }
 
         // 0 to 100
@@ -549,7 +550,7 @@ public class SettingsMenu : MonoBehaviour
         // 0 to 100
         if (sliderSettings.TryGetValue("Music Volume", out int valueMusicVolume))
         {
-
+            MusicManager.ChangeVolume(((float)valueMusicVolume) / 100);
         }
 
 
