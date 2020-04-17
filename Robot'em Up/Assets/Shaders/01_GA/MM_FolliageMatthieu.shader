@@ -15,6 +15,7 @@ Shader "MM_FolliageMatthieu"
 		_Min_Clamp("Min_Clamp", Float) = 0.4
 		_Float3("Float 3", Float) = 0.5
 		_Max_Clamp("Max_Clamp", Float) = 0.25
+		_CanSwing("CanSwing", Range(0,1)) = 1
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 		[HideInInspector] __dirty( "", Int ) = 1
 
@@ -46,6 +47,7 @@ Shader "MM_FolliageMatthieu"
 		float _SwayMax;
 		float _YOffset;
 		float _Rigidness;
+		float _CanSwing;
 
 		UNITY_INSTANCING_BUFFER_START(MM_Folliage)
 			UNITY_DEFINE_INSTANCED_PROP(float4, _T_Grass_test_ST)
@@ -65,11 +67,15 @@ Shader "MM_FolliageMatthieu"
 		{
 			// basic swaying movement
 			float3 wpos = mul(unity_ObjectToWorld, v.vertex).xyz;// world position
-			float x = sin(wpos.x / _Rigidness + (_Time.x * _Speed)) *saturate(v.vertex.z) * 5;// x axis movements
-			float z = sin(wpos.y / _Rigidness + (_Time.x * _Speed)) *saturate(v.vertex.z) * 5;// z axis movements
 
-			v.vertex.x += (step(0, v.vertex.z) * x * _SwayMax);// apply the movement if the vertex's y above the YOffset
-			v.vertex.y += (step(0, v.vertex.z) * z * _SwayMax);
+			if (_CanSwing == 1)
+			{
+				float x = sin(wpos.x / _Rigidness + (_Time.x * _Speed)) *saturate(v.vertex.z) * 5;// x axis movements
+				float z = sin(wpos.y / _Rigidness + (_Time.x * _Speed)) *saturate(v.vertex.z) * 5;// z axis movements
+
+				v.vertex.x += (step(0, v.vertex.z) * x * _SwayMax);// apply the movement if the vertex's y above the YOffset
+				v.vertex.y += (step(0, v.vertex.z) * z * _SwayMax);
+			}
 		}
 		float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 
