@@ -559,16 +559,23 @@ public class SettingsMenu : MonoBehaviour
         // Adaptative - Easy - Medium - Difficult
         if (multiChoiceSettings.TryGetValue("Overall Difficulty", out int valueDifficulty))
         {
-            switch(valueDifficulty)
+            if (valueDifficulty == 0)
             {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
+                GameManager.i.isDifficultyAdaptative = true;
+            }
+            else
+            {
+                GameManager.i.isDifficultyAdaptative = false;
+                switch (valueDifficulty)
+                {
+                    // Something with damage dealt/taken? Or with the amount of energy you get? Or the number of enemies?
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
             }
         }
 
