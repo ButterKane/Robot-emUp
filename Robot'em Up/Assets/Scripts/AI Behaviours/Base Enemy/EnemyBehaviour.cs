@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
 using System.Linq;
+using System;
 
 public enum EnemyState
 {
@@ -88,7 +89,10 @@ public class EnemyBehaviour : PawnController, IHitable
     [Space(3)]
     [Header("Common attack variables")]
     public EnemyAttackvalues attackValues;
-    
+    [NonSerialized] public float attackAnticipationSettingMod = 1;
+    [NonSerialized] public float attackPauseSettingMod = 1;
+
+
     protected float currentAnticipationTime;
     protected float attackDuration;
     protected float cooldownDuration;
@@ -223,7 +227,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 DestroySpawnedAttackUtilities();
                 break;
             case EnemyState.PauseAfterAttack:
-                cooldownDuration = attackValues.cooldownAfterAttackTime;
+                cooldownDuration = attackValues.cooldownAfterAttackTime * attackPauseSettingMod;
                 break;
             case EnemyState.Dying:
                 break;
@@ -341,13 +345,13 @@ public class EnemyBehaviour : PawnController, IHitable
     public virtual void EnterPreparingAttackState()
     {
         navMeshAgent.enabled = false;
-        currentAnticipationTime = attackValues.maxAnticipationTime;
+        currentAnticipationTime = attackValues.maxAnticipationTime * attackAnticipationSettingMod;
         animator.SetTrigger("AnticipateAttackTrigger");
     }
 
     public virtual void PreparingAttackState()
     {
-        if (currentAnticipationTime > attackValues.portionOfAnticipationWithRotation * attackValues.maxAnticipationTime)
+        if (currentAnticipationTime > attackValues.portionOfAnticipationWithRotation * (attackValues.maxAnticipationTime * attackAnticipationSettingMod))
         {
             Quaternion i_targetRotation = Quaternion.LookRotation(focusedPawnController.transform.position - transform.position);
             i_targetRotation.eulerAngles = new Vector3(0, i_targetRotation.eulerAngles.y, 0);
@@ -636,10 +640,10 @@ public class EnemyBehaviour : PawnController, IHitable
         GameObject i_newCore = Instantiate(Resources.Load<GameObject>("EnemyResource/EnemyCore"));
         i_newCore.name = "Core of " + gameObject.name;
         i_newCore.transform.position = transform.position;
-        Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, Random.Range(0, 360), 0));
-        float i_throwForce = Random.Range(deathValues.minMaxDropForce.x, deathValues.minMaxDropForce.y);
+        Vector3 i_wantedDirectionAngle = SwissArmyKnife.RotatePointAroundPivot(Vector3.forward, Vector3.up, new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
+        float i_throwForce = UnityEngine.Random.Range(deathValues.minMaxDropForce.x, deathValues.minMaxDropForce.y);
         i_wantedDirectionAngle.y = i_throwForce * 0.035f;
-        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)Random.Range(deathValues.minMaxCoreHealthValue.x, deathValues.minMaxCoreHealthValue.y));
+        i_newCore.GetComponent<CorePart>().Init(null, i_wantedDirectionAngle.normalized * i_throwForce, 1, (int)UnityEngine.Random.Range(deathValues.minMaxCoreHealthValue.x, deathValues.minMaxCoreHealthValue.y));
     }
 
     protected virtual void StopAnyAction()
@@ -668,7 +672,7 @@ public class EnemyBehaviour : PawnController, IHitable
         if (healthBar != null) { Destroy(healthBar.gameObject); }
         onDeath.Invoke();
         EnemyManager.i.RemoveEnemy(this);
-        if (Random.Range(0f, 1f) <= deathValues.coreDropChances)
+        if (UnityEngine.Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();
         }

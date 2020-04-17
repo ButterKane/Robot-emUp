@@ -11,7 +11,14 @@ public class NarrationManager : MonoBehaviour
     public static NarrationManager narrationManager;
 
     public AudioSource myAudioSource;
+    [ReadOnly] public float dialogueVolumeSettingsMod;
     public AudioMixerGroup defaultAudioMixer;
+    public int textSize = 20;
+    public Color textColor = Color.white;
+    public TMP_FontAsset robotoTextFont;
+    public TMP_FontAsset stylizedTextFont;
+    [ReadOnly] public TMP_FontAsset selectedFont;
+
 
     [Header("Read-Only")]
     public NarrativeInteractiveElements currentNarrationElementActivated;
@@ -34,6 +41,7 @@ public class NarrationManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        selectedFont = robotoTextFont;
         narrationManager = this;
         CreateDialogueBox();
         textWritingCoroutine = null;
@@ -68,8 +76,14 @@ public class NarrationManager : MonoBehaviour
     {
         if (dialogueBoxInstance != null)
         {
+            float i_normalAudioVolume = myAudioSource.volume;
             dialogueBoxInstance.SetActive(true);
             textField = dialogueBoxInstance.GetComponentInChildren<TextMeshProUGUI>();
+            textField.color = textColor;
+            textField.fontSize = textSize;
+            textField.font = selectedFont;
+
+            myAudioSource.volume = i_normalAudioVolume * dialogueVolumeSettingsMod;
             myAudioSource.clip = _dialogueData.dialogueClip;
             myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
 
