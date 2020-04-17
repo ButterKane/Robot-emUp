@@ -70,6 +70,8 @@ public class DunkController : MonoBehaviour
 	private GameObject currentDunkReadyPanel;
 	private GameObject currentDunkReadyFX;
 
+	private float dunkFreezeDurationBonus;
+
 	private void Start ()
 	{
         dunkState = DunkState.None;
@@ -120,11 +122,22 @@ public class DunkController : MonoBehaviour
 	}
 	public bool CanDunk ()
 	{
-		if (EnergyManager.GetEnergy() < energyCost || dunkState != DunkState.None || passController.GetBall() != null || GameManager.deadPlayers.Count > 0 || currentCD > 0 || playerController.GetOtherPlayer().passController.GetBall() == null)
+		if (isPlayer)
+		{
+			if (EnergyManager.GetEnergy() < energyCost || dunkState != DunkState.None || passController.GetBall() != null || GameManager.deadPlayers.Count > 0 || currentCD > 0 || playerController.GetOtherPlayer().passController.GetBall() == null)
+			{
+				return false;
+			}
+		} else
 		{
 			return false;
 		}
 		return true;
+	}
+
+	public void IncrementDunkWaitingTime(float _duration)
+	{
+		dunkFreezeDurationBonus += _duration;
 	}
 	public bool IsDunking ()
 	{
@@ -285,14 +298,20 @@ public class DunkController : MonoBehaviour
 	}
 	IEnumerator DunkWait_C ()
 	{
+		dunkFreezeDurationBonus = 0;
 		passController.EnableBallReception();
 		ChangeState(DunkState.Waiting);
 		SnapController.SetSnappable(SnapType.Pass, this.gameObject, dunkSnapTreshold, dunkJumpFreezeDuration);
 		float forwardDistanceTravelled = 0;
-		for (float i = 0; i < dunkJumpFreezeDuration; i += Time.deltaTime)
+		for (float i = 0; i < dunkJumpFreezeDuration + dunkFreezeDurationBonus; i += Time.deltaTime)
 		{
 			if (playerController)
 			{
+				//Check if ball is coming
+				if (BallBehaviour.instance.GetState() == BallState.Flying && BallBehaviour.instance.HasTarget())
+				{
+					dunkFreezeDurationBonus += Time.deltaTime;
+				}
 				Vector3 camForwardNormalized = GameManager.mainCamera.transform.forward;
 				camForwardNormalized.y = 0;
 				camForwardNormalized = camForwardNormalized.normalized;
