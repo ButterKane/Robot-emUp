@@ -12,8 +12,10 @@ public class MomentumManager: MonoBehaviour
 	private static float currentMomentum;
 	private static float wantedMomentum;
 	public static MomentumManager instance;
+    [ReadOnly] public float postProcessSettingsMod = 1; // Goes from 0 to 1
 
-	private bool exponentialLossEnabled = false;
+
+    private bool exponentialLossEnabled = false;
 	private float exponentialLossDuration = 0;
 	private float exponentialLossCoef = 1;
 
@@ -74,16 +76,16 @@ public class MomentumManager: MonoBehaviour
 	private void UpdatePostProcess ()
 	{
 		//Updates bloom
-		bloom.intensity.value = GetValue(datas.minMaxBloom);
+		bloom.intensity.value = GetValue(datas.minMaxBloom)* postProcessSettingsMod;
 
 		//Updates color grading
-		colorGrading.temperature.value = GetValue(datas.minMaxTemperature);
+		colorGrading.temperature.value = GetValue(datas.minMaxTemperature)* postProcessSettingsMod;
 
 		//Updates chromatic aberration
-		chromaticAberration.intensity.value = GetValue(datas.minMaxChromaticAberration);
+		chromaticAberration.intensity.value = GetValue(datas.minMaxChromaticAberration)* postProcessSettingsMod;
 
         //Updates grain
-        grain.intensity.value = GetValue(datas.minMaxGrain);
+        grain.intensity.value = GetValue(datas.minMaxGrain)* postProcessSettingsMod;
     }
 
 	public static float GetMomentum()

@@ -19,6 +19,21 @@ public class EnemyManager : MonoBehaviour
     [NonSerialized] public Vector3 groupOneMiddlePoint;
     [NonSerialized] public Vector3 groupTwoMiddlePoint;
 
+    [Separator("Enemies agressivity")]
+    [Space(10)]
+    public float gentleAnticipationModifier = 1;
+    public float gentleRestTimeModifier = 1.5f;
+    public float gentleSpeedModifier = 0.7f;
+    [Space(10)]
+    public float normalAnticipationModifier = 1;
+    public float normalRestTimeModifier = 1;
+    public float normalSpeedModifier = 1f;
+    [Space(10)]
+    public float aggressiveAnticipationModifier = 0.7f;
+    public float aggressiveRestTimeModifier = 0.1f;
+    public float aggressiveSpeedModifier = 1.5f;
+
+
     private void Awake()
     {
         if (i != null) { Destroy(i); }
@@ -158,6 +173,40 @@ public class EnemyManager : MonoBehaviour
         }
 
         return i_closeEnemies;
+    }
+
+    public void ChangeEnemiesAgressivity(int _newAgressivity)
+    {
+        float i_newWaitModifier = 1;
+        float i_newAnticipationModifier = 1;
+        float i_newSpeedMoveModifier = 1;
+        switch (_newAgressivity)
+        {
+            case 0:
+                i_newWaitModifier = gentleRestTimeModifier;
+                i_newAnticipationModifier= gentleAnticipationModifier;
+                i_newSpeedMoveModifier = gentleSpeedModifier;
+                break;
+            case 1:
+                i_newWaitModifier = normalRestTimeModifier;
+                i_newAnticipationModifier =normalAnticipationModifier;
+                i_newSpeedMoveModifier = normalSpeedModifier;
+                break;
+            case 2:
+                i_newWaitModifier = aggressiveRestTimeModifier;
+                i_newAnticipationModifier= aggressiveAnticipationModifier;
+                i_newSpeedMoveModifier = aggressiveSpeedModifier;
+                break;
+            default:
+                break;
+        }
+
+        foreach(var enemy in enemies)
+        {
+            enemy.attackAnticipationSettingMod = i_newAnticipationModifier;
+            enemy.attackPauseSettingMod = i_newWaitModifier;
+            enemy.speedSettingsMod = i_newSpeedMoveModifier;
+        }
     }
     #endregion
 

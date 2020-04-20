@@ -46,7 +46,8 @@ public class FeedbackCallback
 
 public class FeedbackManager
 {
-	public static FeedbackDatas feedbacksDatas;
+    public static float fXVolumeSettingsMod = 0.8f;
+    public static FeedbackDatas feedbacksDatas;
 	public static FeedbackCallback SendFeedback (string _eventName, Object _target)
 	{
 		return SendFeedback(_eventName, _target, Vector3.zero, Vector3.forward, Vector3.forward);
@@ -92,7 +93,13 @@ public class FeedbackManager
 		{
 			Component newTarget = target;
 			if (newTarget == null) { newTarget = GameManager.mainCamera; }
-			SoundManager.PlaySound(i_feedback.soundData, newTarget.transform.position, newTarget.transform);
+            SoundData i_modifiedSoundData = new SoundData();
+            i_modifiedSoundData.soundName = i_feedback.soundData.soundName;
+            i_modifiedSoundData.soundList = i_feedback.soundData.soundList;
+            i_modifiedSoundData.delay = i_feedback.soundData.delay;
+            i_modifiedSoundData.volumeMultiplier = i_feedback.soundData.volumeMultiplier * fXVolumeSettingsMod ;
+
+            SoundManager.PlaySound(i_modifiedSoundData, newTarget.transform.position, newTarget.transform);
 		}
 
 		//Generate FX
