@@ -213,6 +213,15 @@ public class PassController : MonoBehaviour
 		}
 		return i_coordinates;
 	}
+
+	public bool IsAiming()
+	{
+		if (passState == PassState.Aiming)
+		{
+			return true;
+		}
+		return false;
+	}
 	public void Aim ()
 	{
 		ChangePassState(PassState.Aiming);

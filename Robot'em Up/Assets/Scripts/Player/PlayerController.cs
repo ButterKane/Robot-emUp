@@ -251,7 +251,19 @@ public class PlayerController : PawnController, IHitable
 	public override void UpdateAnimatorBlendTree () //Called each frame by pawnController
 	{
 		base.UpdateAnimatorBlendTree();
-		animator.SetFloat("IdleRunningBlend", currentSpeed / pawnMovementValues.moveSpeed);
+		if (passController.IsAiming())
+		{
+			float angle = Vector3.SignedAngle(transform.forward, Vector3.forward, Vector3.up);
+			Vector3 forwardVector = rb.velocity;
+			forwardVector = Quaternion.Euler(0, angle, 0) * forwardVector;
+			forwardVector = forwardVector / pawnMovementValues.moveSpeed;
+			animator.SetFloat("ForwardBlend", forwardVector.z);
+			animator.SetFloat("SideBlend", forwardVector.x);
+		} else
+		{
+			animator.SetFloat("ForwardBlend", currentSpeed / pawnMovementValues.moveSpeed);
+			animator.SetFloat("SideBlend", 0);
+		}
 	}
 	public override void Damage ( float _amount, bool _enableInvincibilityFrame = false )
 	{
