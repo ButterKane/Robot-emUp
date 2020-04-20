@@ -366,8 +366,8 @@ public class PassController : MonoBehaviour
 				if (perfectReceptionShoot)
 				{
 					animator.ResetTrigger("ShootingMissedTrigger");
-					animator.SetTrigger("PrepareShootingTrigger");
-					animator.SetTrigger("ShootingTrigger");
+					animator.ResetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("PerfectReceptionShootTrigger");
 				}
 				else
 				{

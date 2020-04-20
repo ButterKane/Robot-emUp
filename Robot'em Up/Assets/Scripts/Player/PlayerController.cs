@@ -223,6 +223,7 @@ public class PlayerController : PawnController, IHitable
 		PawnController[] foundPawns = FindObjectsOfType<PawnController>();
 		foreach (PawnController p in foundPawns)
 		{
+			//p.BumpMe(-p.transform.forward, BumpForce.Force2);
 			p.Push(PushType.Heavy, -p.transform.forward, PushForce.Force2);
 		}
 	} //Debug function to push every pawn in scene
@@ -346,22 +347,25 @@ public class PlayerController : PawnController, IHitable
 	{
 		_lookInput = lookInput;
 		_moveInput = moveInput;
-		Vector3 i_camForwardNormalized = cam.transform.forward;
-		i_camForwardNormalized.y = 0;
-		i_camForwardNormalized = i_camForwardNormalized.normalized;
-		Vector3 i_camRightNormalized = cam.transform.right;
-		i_camRightNormalized.y = 0;
-		i_camRightNormalized = i_camRightNormalized.normalized;
-		if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+		if (cam != null)
 		{
-			_moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
-			_moveInput.y = 0;
-			_moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
-			_lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
-		}
-		else
-		{
-			_moveInput = Vector3.zero;
+			Vector3 i_camForwardNormalized = cam.transform.forward;
+			i_camForwardNormalized.y = 0;
+			i_camForwardNormalized = i_camForwardNormalized.normalized;
+			Vector3 i_camRightNormalized = cam.transform.right;
+			i_camRightNormalized.y = 0;
+			i_camRightNormalized = i_camRightNormalized.normalized;
+			if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+			{
+				_moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
+				_moveInput.y = 0;
+				_moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
+				_lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
+			}
+			else
+			{
+				_moveInput = Vector3.zero;
+			}
 		}
 	}
 	private void CheckRightStick ()
