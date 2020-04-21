@@ -24,7 +24,7 @@ public class SceneEssentialLoader : MonoBehaviour
 			Destroy(this.gameObject);
 			return; 
 		}
-		Debug.Log("Spawning in zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
+		//Debug.Log("Spawning in zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 		StartCoroutine(ReplaceScene_C());
 	}

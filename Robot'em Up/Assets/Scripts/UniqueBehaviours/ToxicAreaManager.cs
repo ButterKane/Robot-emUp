@@ -29,8 +29,17 @@ public class ToxicAreaManager : MonoBehaviour
         playerOneToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
         playerTwoToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
 
-        playerOneToxicBar.SetParent(GameManager.playerOne.GetComponent<PlayerUI>().playerCanvasLateralRectTransform.transform);
-        playerTwoToxicBar.SetParent(GameManager.playerTwo.GetComponent<PlayerUI>().playerCanvasLateralRectTransform.transform);
+        PlayerUI player1UI = GameManager.playerOne.GetComponent<PlayerUI>();
+        PlayerUI player2UI = GameManager.playerTwo.GetComponent<PlayerUI>();
+
+        if (player1UI.playerCanvasLateralRectTransform != null)
+        {
+            playerOneToxicBar.SetParent(player1UI.playerCanvasLateralRectTransform.transform);
+        }
+        if (player2UI.playerCanvasLateralRectTransform != null)
+        {
+            playerTwoToxicBar.SetParent(player2UI.playerCanvasLateralRectTransform.transform);
+        }
 
         playerOneToxicBar.transform.localScale = Vector3.one;
         playerTwoToxicBar.transform.localScale = Vector3.one;

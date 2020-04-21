@@ -794,12 +794,13 @@ public class PawnController : MonoBehaviour
 		_pushFlatDirection = _pushFlatDirection.normalized * i_pushDistance;
 		Vector3 moveDirection = _pushFlatDirection;
 		moveDirection.y = i_pushHeight;
-		transform.forward = moveDirection;
+		transform.forward = -moveDirection;
 		Vector3 initialPosition = transform.position;
 		Vector3 endPosition = initialPosition + moveDirection;
 		Vector3 moveOffset = Vector3.zero;
 		for (float i = 0f; i < i_pushDuration; i += Time.deltaTime)
 		{
+			transform.forward = -moveDirection;
 			moveState = MoveState.Pushed;
 			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.heavyPushAirControlSpeed;
 			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.heavyPushSpeedCurve.Evaluate(i / i_pushDuration)) + moveOffset;
@@ -1009,12 +1010,12 @@ public class PawnController : MonoBehaviour
 		float i_restDuration = pushDatas.bumpRestDuration;
 		if (isPlayer) { i_restDuration = pushDatas.bumpPlayerRestDuration; }
 	     i_restDuration = i_restDuration + Random.Range(pushDatas.bumpRandomRestModifier.x, pushDatas.bumpRandomRestModifier.y);
-		Vector3 i_bumpDuration = _bumpDirectionFlat;
-		i_bumpDuration.y = 0;
+		Vector3 i_bumpDirection = _bumpDirectionFlat;
+		i_bumpDirection.y = 0;
 		Vector3 i_bumpInitialPosition = transform.position;
-		Vector3 i_bumpDestinationPosition = transform.position + i_bumpDuration * bumpDistance;
+		Vector3 i_bumpDestinationPosition = transform.position + i_bumpDirection * bumpDistance;
 
-		transform.rotation = Quaternion.LookRotation(-i_bumpDuration);
+		transform.rotation = Quaternion.LookRotation(-i_bumpDirection);
 		float i_gettingUpDuration = maxGettingUpDuration;
 
 		EnemyBehaviour i_enemy = GetComponent<EnemyBehaviour>();
