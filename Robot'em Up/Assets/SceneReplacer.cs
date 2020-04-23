@@ -15,6 +15,7 @@ public class SceneReplacer : MonoBehaviour
 
 	public List<ReplaceInformation> replaceInformations;
 
+#if UNITY_EDITOR
 	[ContextMenu("Replace")]
 	public void Replace()
 	{
@@ -39,8 +40,9 @@ public class SceneReplacer : MonoBehaviour
 		}
 		foreach (GameObject go in foundObjects)
 		{
+			Debug.Log("Deleting " + go);
 			DestroyImmediate(go);
 		}
 	}
-
+#endif
 }
