@@ -72,12 +72,15 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 		isGrounded = false;
 		for (float i = 0; i < 1; i+= Time.deltaTime * (legSpeed * Random.Range(0.8f, 1.2f)))
 		{
-			Vector3 newPosition = Vector3.Lerp(IK.Target.transform.position, wantedTransform.transform.position + forwardOffset, i / 1f);
-			float yPos = Mathf.Lerp(IK.Target.transform.position.y, wantedTransform.transform.position.y, i / 1f);
-			yPos += heightCurve.Evaluate(i / 1f) * height;
-			newPosition.y = yPos;
-			IK.Target.transform.position = newPosition;
-			yield return null;
+			if (wantedTransform != null && IK.Target.transform != null)
+			{
+				Vector3 newPosition = Vector3.Lerp(IK.Target.transform.position, wantedTransform.transform.position + forwardOffset, i / 1f);
+				float yPos = Mathf.Lerp(IK.Target.transform.position.y, wantedTransform.transform.position.y, i / 1f);
+				yPos += heightCurve.Evaluate(i / 1f) * height;
+				newPosition.y = yPos;
+				IK.Target.transform.position = newPosition;
+				yield return null;
+			}
 		}
 		IK.Target.transform.position = wantedTransform.transform.position + forwardOffset;
 		isGrounded = true;
