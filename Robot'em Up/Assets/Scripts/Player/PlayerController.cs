@@ -15,6 +15,7 @@ public class PlayerController : PawnController, IHitable
 	public float triggerTreshold = 0.1f;
 	public Color highlightedColor;
 	public Color highlightedSecondColor;
+	public bool forceInsideCameraView = false;
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	[SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
@@ -316,7 +317,7 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void UpdateWhenOutOfCamera ()
 	{
-		if (GameManager.timeInZone < 1f || !Application.isPlaying) { return; }
+		if (GameManager.timeInZone < 1f || !Application.isPlaying || !forceInsideCameraView) { return; }
 		Vector3 i_viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (i_viewPortPosition.x > 1 + extents || i_viewPortPosition.x < -extents || i_viewPortPosition.y > 1 + extents || i_viewPortPosition.y < -extents) {
