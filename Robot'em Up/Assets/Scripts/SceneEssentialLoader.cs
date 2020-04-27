@@ -85,7 +85,7 @@ public class SceneEssentialLoader : MonoBehaviour
 				virtualCam = cameraPosition.gameObject.AddComponent<CinemachineVirtualCamera>();
 			}
 			cameraPosition.transform.SetParent(null);
-			virtualCam.m_Priority = 10;
+			virtualCam.m_Priority = 11;
 		}
 
 		if (previewCamera != null)
