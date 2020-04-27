@@ -67,7 +67,7 @@ public class PlayerController : PawnController, IHitable
 	//Other
 	private Coroutine freezeCoroutine;
 	private Coroutine disableInputCoroutine;
-    private bool canbeKilled = true;
+    private bool canBeKilled = true;
 
     //References
     private DunkController dunkController;
@@ -194,11 +194,11 @@ public class PlayerController : PawnController, IHitable
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
 		GameManager.alivePlayers.Add(_player);
-        canbeKilled = true;
+        canBeKilled = true;
 	}
 	public void KillWithoutCorePart ()
 	{
-        canbeKilled = false;
+        canBeKilled = false;
 		if (moveState == MoveState.Dead) { return; }
         SetUntargetable();
         Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
@@ -233,7 +233,7 @@ public class PlayerController : PawnController, IHitable
 	} //Debug function to push every pawn in scene
 	public override void Kill ()
 	{
-        if (canbeKilled)
+        if (canBeKilled)
         {
             KillWithoutCorePart();
             StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
