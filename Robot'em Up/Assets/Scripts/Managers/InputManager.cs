@@ -26,15 +26,6 @@ public enum Inputs
     BackButton
 }
 
-[System.Serializable]
-public class BothInputs
-{
-    public string inputName;
-    public UnityEvent inputEvent;
-    public Inputs p1Input;
-    public Inputs p2Input;
-}
-
 public class InputManager : MonoBehaviour
 {
     public static InputManager i;
@@ -48,25 +39,27 @@ public class InputManager : MonoBehaviour
     [ReadOnly] public Vector3 leftJoystickInput;
     public float deadzone = 0.2f;
     protected Vector3 rightJoystickInput;
-    public BothInputs[] mappedInputs;
+    public Dictionary<Inputs, UnityEvent> mappedInputsP1;
+    public Dictionary<Inputs, UnityEvent> mappedInputsP2;
+    private Dictionary<Inputs, UnityEvent> usedInputs;
 
     private bool rightTriggerWaitForRelease;
     //private bool leftTriggerWaitForRelease; //Uncomment if needed (Commented to avoid errors)
     private bool leftShouldWaitForRelease;
     private bool rightShouldWaitForRelease;
 
-    private UnityEvent startButtonEvent;
-    private UnityEvent backButtonEvent;
-    private UnityEvent LeftJoystickEvent;
-    private UnityEvent RightJoystickEvent;
-    private UnityEvent RTEvent;
-    private UnityEvent LTEvent;
-    private UnityEvent LBEvent;
-    private UnityEvent RBEvent;
-    private UnityEvent AButtonEvent;
-    private UnityEvent BButtonEvent;
-    private UnityEvent YButtonEvent;
-    private UnityEvent XButtonEvent;
+    [NonSerialized] public UnityEvent startButtonEvent;
+    [NonSerialized] public UnityEvent backButtonEvent;
+    [NonSerialized] public UnityEvent LeftJoystickEvent;
+    [NonSerialized] public UnityEvent RightJoystickEvent;
+    [NonSerialized] public UnityEvent RTEvent;
+    [NonSerialized] public UnityEvent LTEvent;
+    [NonSerialized] public UnityEvent LBEvent;
+    [NonSerialized] public UnityEvent RBEvent;
+    [NonSerialized] public UnityEvent AButtonEvent;
+    [NonSerialized] public UnityEvent BButtonEvent;
+    [NonSerialized] public UnityEvent YButtonEvent;
+    [NonSerialized] public UnityEvent XButtonEvent;
 
     private void Awake()
     {
@@ -82,198 +75,75 @@ public class InputManager : MonoBehaviour
         //ApplyInputChanges();
     }
 
-    public void ApplyInputChanges()
+    private void Update()
     {
-        startButtonEvent = GetActionFromInput(mappedInputs, Inputs.StartButton, playerIndex);
-        backButtonEvent = GetActionFromInput(mappedInputs, Inputs.BackButton, playerIndex);
-        LeftJoystickEvent = GetActionFromInput(mappedInputs, Inputs.LeftJoystick, playerIndex);
-        RightJoystickEvent = GetActionFromInput(mappedInputs, Inputs.RightJoystick, playerIndex);
-        RTEvent = GetActionFromInput(mappedInputs, Inputs.RT, playerIndex);
-        LTEvent = GetActionFromInput(mappedInputs, Inputs.LT, playerIndex);
-        LBEvent = GetActionFromInput(mappedInputs, Inputs.LB, playerIndex);
-        RBEvent = GetActionFromInput(mappedInputs, Inputs.RB, playerIndex);
-        AButtonEvent = GetActionFromInput(mappedInputs, Inputs.AButton, playerIndex);
-        BButtonEvent = GetActionFromInput(mappedInputs, Inputs.BButton, playerIndex);
-        YButtonEvent = GetActionFromInput(mappedInputs, Inputs.YButton, playerIndex);
-        XButtonEvent = GetActionFromInput(mappedInputs, Inputs.XButton, playerIndex);
-    }
-
-    void GamepadInput()
-    {
-        state = GamePad.GetState(playerIndex);
-        Vector3 camForwardNormalized = cam.transform.forward;
-        camForwardNormalized.y = 0;
-        camForwardNormalized = camForwardNormalized.normalized;
-        Vector3 camRightNormalized = cam.transform.right;
-        camRightNormalized.y = 0;
-        camRightNormalized = camRightNormalized.normalized;
-        leftJoystickInput = (state.ThumbSticks.Left.X * camRightNormalized) + (state.ThumbSticks.Left.Y * camForwardNormalized);
-        leftJoystickInput.y = 0;
-        leftJoystickInput = leftJoystickInput.normalized * ((leftJoystickInput.magnitude - deadzone) / (1 - deadzone));
-
-        rightJoystickInput = (state.ThumbSticks.Right.X * camRightNormalized) + (state.ThumbSticks.Right.Y * camForwardNormalized);
-
-        // JOYSTICKS
-        if (leftJoystickInput.magnitude > 0.1f)
+        if (playerIndex == PlayerIndex.One)
         {
-            LeftJoystickAction(leftJoystickInput);
+            usedInputs = mappedInputsP1;
         }
-        if (rightJoystickInput.magnitude > 0.1f)
+        if (playerIndex == PlayerIndex.Two)
         {
-            RightJoystickAction(rightJoystickInput);
-        }
-
-        // TRIGGERS
-        if (state.Triggers.Right > triggerTreshold)
-        {
-            if (!rightTriggerWaitForRelease) { RTAction();}
-            rightTriggerWaitForRelease = true;
-        }
-        else if (state.Triggers.Right < triggerTreshold)
-        {
-            rightTriggerWaitForRelease = false;
-        }
-        if (state.Triggers.Left > triggerTreshold)
-        {
-            if (!rightTriggerWaitForRelease) { LTAction(); }
-            //leftTriggerWaitForRelease = true;
-        }
-        else
-        {
-            //leftTriggerWaitForRelease = false;
-        }
-
-        // BUMPERS
-        if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
-        {
-            LBAction();
-            leftShouldWaitForRelease = true;
-        }
-        else if (state.Buttons.LeftShoulder == ButtonState.Released)
-        {
-            leftShouldWaitForRelease = false;
-        }
-
-        if (state.Buttons.RightShoulder == ButtonState.Pressed && !rightShouldWaitForRelease)
-        {
-            RBAction();
-            rightShouldWaitForRelease = true;
-        }
-        else if (state.Buttons.RightShoulder == ButtonState.Released)
-        {
-            rightShouldWaitForRelease = false;
-        }
-
-        // BUTTONS
-        if (state.Buttons.A == ButtonState.Pressed)
-        {
-            AButtonAction();
-        }
-        if (state.Buttons.B == ButtonState.Pressed)
-        {
-            BButtonAction();
-        }
-        if (state.Buttons.Y == ButtonState.Pressed)
-        {
-            YButtonAction();
-        }
-        if (state.Buttons.X == ButtonState.Pressed)
-        {
-            XButtonAction();
-        }
-        if (state.Buttons.Back == ButtonState.Pressed)
-        {
-            BackButtonAction();
-        }
-        if (state.Buttons.Start == ButtonState.Pressed)
-        {
-            StartButtonAction();
+            usedInputs = mappedInputsP2;
         }
     }
 
-    private void StartButtonAction()
+    public void StartButtonAction()
     {
+        usedInputs.TryGetValue(Inputs.StartButton, out startButtonEvent);
         startButtonEvent.Invoke();
     }
 
-    private void BackButtonAction()
+    public void BackButtonAction()
     {
+        usedInputs.TryGetValue(Inputs.BackButton, out backButtonEvent);
         backButtonEvent.Invoke();
     }
 
-    private void XButtonAction()
+    public void XButtonAction()
     {
+        usedInputs.TryGetValue(Inputs.XButton, out XButtonEvent);
         XButtonEvent.Invoke();
     }
 
-    private void YButtonAction()
+    public void YButtonAction()
     {
+        usedInputs.TryGetValue(Inputs.YButton, out YButtonEvent);
         YButtonEvent.Invoke();
     }
 
-    private void BButtonAction()
+    public void BButtonAction()
     {
+        usedInputs.TryGetValue(Inputs.BButton, out BButtonEvent);
         BButtonEvent.Invoke();
     }
 
-    private void AButtonAction()
+    public void AButtonAction()
     {
+        usedInputs.TryGetValue(Inputs.AButton, out AButtonEvent);
         AButtonEvent.Invoke();
     }
 
-    private void RBAction()
+    public void RBAction()
     {
+        usedInputs.TryGetValue(Inputs.RB, out RBEvent);
         RBEvent.Invoke();
     }
 
-    private void LBAction()
+    public void LBAction()
     {
+        usedInputs.TryGetValue(Inputs.LB, out LBEvent);
         LBEvent.Invoke();
     }
 
-    private void LTAction()
+    public void LTAction()
     {
+        usedInputs.TryGetValue(Inputs.LT, out LTEvent);
         LTEvent.Invoke();
     }
 
-    private void RTAction()
+    public void RTAction()
     {
+        usedInputs.TryGetValue(Inputs.RT, out RTEvent);
         RTEvent.Invoke();
-    }
-
-    private void RightJoystickAction(Vector3 rightJoystickInput)
-    {
-        RightJoystickEvent.Invoke();
-    }
-
-    private void LeftJoystickAction(Vector3 leftJoystickInput)
-    {
-        LeftJoystickEvent.Invoke();
-    }
-
-    public static UnityEvent GetActionFromInput(BothInputs[] _dict, Inputs _input, PlayerIndex _playerIndex)
-    {
-        if (_playerIndex == PlayerIndex.One)
-        {
-            foreach (var bothInput in _dict)
-            {
-
-                if (bothInput.p1Input == _input)
-                {
-                    return bothInput.inputEvent;
-                }
-            }
-        }
-        else if (_playerIndex == PlayerIndex.Two)
-        {
-            foreach (var bothInput in _dict)
-            {
-                if (bothInput.p2Input == _input)
-                {
-                    return bothInput.inputEvent;
-                }
-            }
-        }
-        return null;
     }
 }

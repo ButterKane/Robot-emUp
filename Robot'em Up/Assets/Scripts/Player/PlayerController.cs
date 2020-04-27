@@ -394,6 +394,7 @@ public class PlayerController : PawnController, IHitable
 	{
 		if (state.Buttons.B == ButtonState.Pressed)
 		{
+            InputManager.i.BButtonAction();
 			PushEveryPawn();
 		}
 
