@@ -213,6 +213,15 @@ public class PassController : MonoBehaviour
 		}
 		return i_coordinates;
 	}
+
+	public bool IsAiming()
+	{
+		if (passState == PassState.Aiming)
+		{
+			return true;
+		}
+		return false;
+	}
 	public void Aim ()
 	{
 		ChangePassState(PassState.Aiming);
@@ -357,8 +366,8 @@ public class PassController : MonoBehaviour
 				if (perfectReceptionShoot)
 				{
 					animator.ResetTrigger("ShootingMissedTrigger");
-					animator.SetTrigger("PrepareShootingTrigger");
-					animator.SetTrigger("ShootingTrigger");
+					animator.ResetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("PerfectReceptionShootTrigger");
 				}
 				else
 				{

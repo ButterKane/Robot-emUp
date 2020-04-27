@@ -91,6 +91,7 @@ public class EnemyBehaviour : PawnController, IHitable
     public EnemyAttackvalues attackValues;
     [NonSerialized] public float attackAnticipationSettingMod = 1;
     [NonSerialized] public float attackPauseSettingMod = 1;
+    [NonSerialized] public float speedSettingsMod = 1;
 
 
     protected float currentAnticipationTime;
@@ -607,7 +608,7 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         if (navMeshAgent != null)
         {
-            navMeshAgent.speed = pawnMovementValues.moveSpeed * GetSpeedCoef();
+            navMeshAgent.speed = (pawnMovementValues.moveSpeed*speedSettingsMod) * GetSpeedCoef();
         }
     }
 

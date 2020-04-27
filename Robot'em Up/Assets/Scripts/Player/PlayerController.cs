@@ -15,6 +15,7 @@ public class PlayerController : PawnController, IHitable
 	public float triggerTreshold = 0.1f;
 	public Color highlightedColor;
 	public Color highlightedSecondColor;
+	public bool forceInsideCameraView = false;
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	[SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
@@ -223,6 +224,7 @@ public class PlayerController : PawnController, IHitable
 		PawnController[] foundPawns = FindObjectsOfType<PawnController>();
 		foreach (PawnController p in foundPawns)
 		{
+			//p.BumpMe(-p.transform.forward, BumpForce.Force2);
 			p.Push(PushType.Heavy, -p.transform.forward, PushForce.Force2);
 		}
 	} //Debug function to push every pawn in scene
@@ -251,7 +253,19 @@ public class PlayerController : PawnController, IHitable
 	public override void UpdateAnimatorBlendTree () //Called each frame by pawnController
 	{
 		base.UpdateAnimatorBlendTree();
-		animator.SetFloat("IdleRunningBlend", currentSpeed / pawnMovementValues.moveSpeed);
+		if (passController.IsAiming())
+		{
+			float angle = Vector3.SignedAngle(transform.forward, Vector3.forward, Vector3.up);
+			Vector3 forwardVector = rb.velocity;
+			forwardVector = Quaternion.Euler(0, angle, 0) * forwardVector;
+			forwardVector = forwardVector / pawnMovementValues.moveSpeed;
+			animator.SetFloat("ForwardBlend", forwardVector.z);
+			animator.SetFloat("SideBlend", forwardVector.x);
+		} else
+		{
+			animator.SetFloat("ForwardBlend", currentSpeed / pawnMovementValues.moveSpeed);
+			animator.SetFloat("SideBlend", 0);
+		}
 	}
 	public override void Damage ( float _amount, bool _enableInvincibilityFrame = false )
 	{
@@ -303,7 +317,7 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void UpdateWhenOutOfCamera ()
 	{
-		if (GameManager.timeInZone < 1f || !Application.isPlaying) { return; }
+		if (GameManager.timeInZone < 1f || !Application.isPlaying || !forceInsideCameraView) { return; }
 		Vector3 i_viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (i_viewPortPosition.x > 1 + extents || i_viewPortPosition.x < -extents || i_viewPortPosition.y > 1 + extents || i_viewPortPosition.y < -extents) {
@@ -334,22 +348,25 @@ public class PlayerController : PawnController, IHitable
 	{
 		_lookInput = lookInput;
 		_moveInput = moveInput;
-		Vector3 i_camForwardNormalized = cam.transform.forward;
-		i_camForwardNormalized.y = 0;
-		i_camForwardNormalized = i_camForwardNormalized.normalized;
-		Vector3 i_camRightNormalized = cam.transform.right;
-		i_camRightNormalized.y = 0;
-		i_camRightNormalized = i_camRightNormalized.normalized;
-		if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+		if (cam != null)
 		{
-			_moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
-			_moveInput.y = 0;
-			_moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
-			_lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
-		}
-		else
-		{
-			_moveInput = Vector3.zero;
+			Vector3 i_camForwardNormalized = cam.transform.forward;
+			i_camForwardNormalized.y = 0;
+			i_camForwardNormalized = i_camForwardNormalized.normalized;
+			Vector3 i_camRightNormalized = cam.transform.right;
+			i_camRightNormalized.y = 0;
+			i_camRightNormalized = i_camRightNormalized.normalized;
+			if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+			{
+				_moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
+				_moveInput.y = 0;
+				_moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
+				_lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
+			}
+			else
+			{
+				_moveInput = Vector3.zero;
+			}
 		}
 	}
 	private void CheckRightStick ()

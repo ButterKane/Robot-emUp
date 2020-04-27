@@ -23,12 +23,16 @@ public class EnemyManager : MonoBehaviour
     [Space(10)]
     public float gentleAnticipationModifier = 1;
     public float gentleRestTimeModifier = 1.5f;
+    public float gentleSpeedModifier = 0.7f;
     [Space(10)]
     public float normalAnticipationModifier = 1;
     public float normalRestTimeModifier = 1;
+    public float normalSpeedModifier = 1f;
     [Space(10)]
-    public float agressiveAnticipationModifier = 0.7f;
-    public float agressiveRestTimeModifier = 0.1f;
+    public float aggressiveAnticipationModifier = 0.7f;
+    public float aggressiveRestTimeModifier = 0.1f;
+    public float aggressiveSpeedModifier = 1.5f;
+
 
     private void Awake()
     {
@@ -175,19 +179,23 @@ public class EnemyManager : MonoBehaviour
     {
         float i_newWaitModifier = 1;
         float i_newAnticipationModifier = 1;
+        float i_newSpeedMoveModifier = 1;
         switch (_newAgressivity)
         {
             case 0:
                 i_newWaitModifier = gentleRestTimeModifier;
                 i_newAnticipationModifier= gentleAnticipationModifier;
+                i_newSpeedMoveModifier = gentleSpeedModifier;
                 break;
             case 1:
                 i_newWaitModifier = normalRestTimeModifier;
                 i_newAnticipationModifier =normalAnticipationModifier;
+                i_newSpeedMoveModifier = normalSpeedModifier;
                 break;
             case 2:
-                i_newWaitModifier = agressiveRestTimeModifier;
-                i_newAnticipationModifier= agressiveAnticipationModifier;
+                i_newWaitModifier = aggressiveRestTimeModifier;
+                i_newAnticipationModifier= aggressiveAnticipationModifier;
+                i_newSpeedMoveModifier = aggressiveSpeedModifier;
                 break;
             default:
                 break;
@@ -197,6 +205,7 @@ public class EnemyManager : MonoBehaviour
         {
             enemy.attackAnticipationSettingMod = i_newAnticipationModifier;
             enemy.attackPauseSettingMod = i_newWaitModifier;
+            enemy.speedSettingsMod = i_newSpeedMoveModifier;
         }
     }
     #endregion
