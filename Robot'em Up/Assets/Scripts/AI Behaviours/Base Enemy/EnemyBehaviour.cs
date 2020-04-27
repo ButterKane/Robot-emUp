@@ -199,6 +199,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 Freeze();
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
                 StopAnyAction();
+                if (this is TurretBehaviour) { Kill(); }
                 break;
             case EnemyState.Spawning:
                 break;
