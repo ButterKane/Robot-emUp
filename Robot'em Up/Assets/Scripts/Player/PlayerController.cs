@@ -67,9 +67,10 @@ public class PlayerController : PawnController, IHitable
 	//Other
 	private Coroutine freezeCoroutine;
 	private Coroutine disableInputCoroutine;
+    private bool canbeKilled = true;
 
-	//References
-	private DunkController dunkController;
+    //References
+    private DunkController dunkController;
 	private DashController dashController;
 	[HideInInspector] public ExtendingArmsController extendingArmsController;
 	public static Transform middlePoint;
@@ -193,16 +194,18 @@ public class PlayerController : PawnController, IHitable
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
 		GameManager.alivePlayers.Add(_player);
+        canbeKilled = true;
 	}
 	public void KillWithoutCorePart ()
 	{
+        canbeKilled = false;
 		if (moveState == MoveState.Dead) { return; }
-		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+        SetUntargetable();
+        Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		dunkController.StopDunk();
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		passController.DropBall();
-		SetUntargetable();
 		Freeze();
 		DisableInput();
 		StartCoroutine(HideAfterDelay_C(0.5f));
@@ -230,8 +233,11 @@ public class PlayerController : PawnController, IHitable
 	} //Debug function to push every pawn in scene
 	public override void Kill ()
 	{
-		KillWithoutCorePart();
-		StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
+        if (canbeKilled)
+        {
+            KillWithoutCorePart();
+            StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
+        }
 	}
 	public override void Heal ( int _amount )
 	{
