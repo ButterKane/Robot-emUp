@@ -10,6 +10,7 @@ public class PuzzleActivable : MonoBehaviour
     [SerializeField] public List<PuzzleActivator> puzzleDesactivator;
     [ReadOnly] public List<bool> puzzleActivationsBool;
     [SerializeField] public bool needAllConditions = false;
+    [SerializeField] public bool needAllConditionsToFalseForDesactivation = false;
 
     public List<Light> indictatorLightsList;
     public bool isActivated = true;
