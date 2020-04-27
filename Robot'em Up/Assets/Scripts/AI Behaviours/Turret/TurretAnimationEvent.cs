@@ -25,7 +25,6 @@ public class TurretAnimationEvent : MonoBehaviour
     }
     void Attack()
     {
-        Debug.Log("bidouille");
         myScript.Shoot();
     }
 

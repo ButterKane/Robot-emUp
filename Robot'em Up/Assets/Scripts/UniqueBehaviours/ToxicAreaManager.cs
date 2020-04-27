@@ -90,7 +90,7 @@ public class ToxicAreaManager : MonoBehaviour
             toxicValue_P2 -= Time.deltaTime * decay_multiplier;
 
 
-            if (isPoisened_P1)
+            if (isPoisened_P1 && GameManager.alivePlayers.Contains(GameManager.playerOne))
             {
                 // poisonedSprite_P1.gameObject.SetActive(true);
 
@@ -106,7 +106,7 @@ public class ToxicAreaManager : MonoBehaviour
             }
 
 
-            if (isPoisened_P2)
+            if (isPoisened_P2 && GameManager.alivePlayers.Contains(GameManager.playerTwo))
             {
                 //  poisonedSprite_P2.gameObject.SetActive(true);
 
