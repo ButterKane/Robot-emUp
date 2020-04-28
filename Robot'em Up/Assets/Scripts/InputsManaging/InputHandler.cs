@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
@@ -19,43 +20,64 @@ using XInputDotNetPure;
 [System.Serializable]
 public struct SingleButton
 {
-    public GamePadButtons key;
-    public ButtonState keyState;
-    public bool keyUp;
-    public bool keyDown;
-    //public bool key => Input.GetKey(keyCode);
+    public CustomKeyCode key;
+    [NonSerialized] public PlayerIndex index;
+    public ButtonState? keyState => InputHandler.instance.GetState(key,index);
 }
 
 [System.Serializable]
-public struct ButtonAction
+public class ButtonAction
 {
-    public SingleButton[] buttons;
+    public SingleButton[] buttons; // All the buttons assigned to this action
+    [NonSerialized] public bool isPressed;
+    [NonSerialized] public bool isReleasable;
+
+    public bool keyDown
+    {
+        get
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i].keyState == ButtonState.Pressed && isPressed == false)
+                { Debug.Log("pressingButton"); return true; }
+            }
+            return false;
+        }
+    }
 
     public bool keyUp
     {
-        get { return true; }
+        get
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i].keyState == ButtonState.Released && isReleasable == true)
+                { Debug.Log("releasingButton"); isReleasable = false; return true; }
+            }
+            return false;
+        }
     }
 
-    //public bool keyDown
-    //{
-    //    get { return true; }
-    //}
-
-    //public bool key
-    //{
-    //    get { return true; }
-    //}
+    public bool key
+    {
+        get
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i].keyState == ButtonState.Pressed)
+                { Debug.Log("holdingButton"); isPressed = true; return true; }
+            }
+            return false;
+        }
+    }
 }
 
 [System.Serializable]
 public struct KeyBindingStruct
 {
     //public AxisAction moveX, moveY, aimX, aimY;
-    public ButtonAction dunk, throwBall, interact, grapple; 
+    public ButtonAction dunk, throwBall, interact, grapple, detectBall; 
 }
-
-
-
 
 public class InputHandler : MonoBehaviour
 {
@@ -69,34 +91,73 @@ public class InputHandler : MonoBehaviour
         if (instance == null) { instance = this; }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        //For player1
+        ResetUnusedButtons(bindingP1.dunk);
+        ResetUnusedButtons(bindingP1.throwBall);
+        ResetUnusedButtons(bindingP1.grapple);
+        ResetUnusedButtons(bindingP1.detectBall);
+
+        //For player2
+        ResetUnusedButtons(bindingP2.dunk);
+        ResetUnusedButtons(bindingP2.throwBall);
+        ResetUnusedButtons(bindingP2.grapple);
+        ResetUnusedButtons(bindingP2.detectBall);
     }
 
-    
-
-    public ButtonState GetState(CustomKeyCode _ck, PlayerIndex _index)
+    // Makes transition between serialized keys in inspector and XInput 
+    public ButtonState? GetState(CustomKeyCode _ck, PlayerIndex _index)
     {
         GamePadState i_state = GamePad.GetState(_index);
         switch (_ck)
         {
+            case CustomKeyCode.A:
+                return i_state.Buttons.A;
             case CustomKeyCode.B:
                 return i_state.Buttons.B;
-            // Manque la ref au pad, parce que le bon Buttons.B c'est accessible par GamePadState, 
-            //qui lui-même est accessible par ;
+            case CustomKeyCode.Y:
+                return i_state.Buttons.Y;
+            case CustomKeyCode.X:
+                return i_state.Buttons.X;
+            case CustomKeyCode.LB:
+                return i_state.Buttons.LeftShoulder;
+            case CustomKeyCode.RB:
+                return i_state.Buttons.RightShoulder;
+            case CustomKeyCode.Start:
+                return i_state.Buttons.Start;
+            case CustomKeyCode.Back:
+                return i_state.Buttons.Back;
             default:
-                return ButtonState.;
+                return null;
+        }
+    }
+
+    public void ResetUnusedButtons(ButtonAction _buttonAction)
+    {
+        foreach(var button in _buttonAction.buttons)
+        {
+            if (button.keyState == ButtonState.Pressed)
+            {
+                _buttonAction.isPressed = true;
+                _buttonAction.isReleasable = true;
+            }
+            else { _buttonAction.isPressed = false; }
         }
     }
 }
 
+// Allows transition between serializable keys in inspector and XInput 
 public enum CustomKeyCode
 {
     A,
     B,
-    etc
+    Y,
+    X,
+    LB,
+    RB,
+    Start,
+    Back
 }
 
 
