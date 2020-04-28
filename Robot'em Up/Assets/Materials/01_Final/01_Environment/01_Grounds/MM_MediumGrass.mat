@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MM_MediumGrass
-  m_Shader: {fileID: 4800000, guid: 57fc4423655462f4daf34d5f75a6b078, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: 2eb1a4e30e4a7624d88def903c0c3d45, type: 3}
+  m_ShaderKeywords: NO_TERRAIN
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -24,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _T_Grass_test:
-        m_Texture: {fileID: 2800000, guid: 36c939c131f75d14dbaa3495f61efe24, type: 3}
+        m_Texture: {fileID: 2800000, guid: 11e62ff65bf54da4f913ecef73991b94, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _testgraycale:
@@ -36,18 +36,24 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Cutoff: 0
+    - _CanSwing: 1
+    - _Cutoff: 0.77
     - _Float0: 0.57
     - _Float3: 0.5
-    - _HueShiftIntensity: 1.5
-    - _Max_Clamp: 0.7
-    - _Min_Clamp: 0.24
+    - _HueShiftIntensity: 1.2
+    - _Max_Clamp: 0.25
+    - _Min_Clamp: 0.4
+    - _Rigidness: 1.5
+    - _Speed: 39.4
+    - _SwayMax: 0.0288
+    - _YOffset: 0
     - __dirty: 0
     - _outlinesoftness: 1.31
     - _outlinewidth: 0
     m_Colors:
     - _Color0: {r: 0.49803925, g: 0.4901961, b: 0.47450984, a: 1}
     - _Color1: {r: 0.5471698, g: 0.38828692, b: 0.19873619, a: 1}
-    - _GradientBlend: {r: 0.56272525, g: 0.692, b: 0.26235163, a: 1}
+    - _Fake_Shadow_Color: {r: 0.6590789, g: 0.8301887, b: 0.3798505, a: 0}
+    - _GradientBlend: {r: 0.51571435, g: 0.6226415, b: 0.26726595, a: 1}
     - _MainFoliageColor: {r: 0.34766793, g: 0.3882353, b: 0.16862746, a: 0}
-    - _OutlineColor: {r: 0.35925356, g: 0.4509804, b: 0.18823533, a: 1}
+    - _OutlineColor: {r: 0.6421739, g: 0.77599996, b: 0.33135197, a: 1}

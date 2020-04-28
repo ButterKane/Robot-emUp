@@ -36,7 +36,7 @@ public class ExtendingArmsController : MonoBehaviour
 	public AnimationCurve distancePriorityScore;
 	public AnimationCurve anglePriorityScore;
 
-	private PlayerController linkedPlayer;
+	private PawnController linkedPawn;
 	[HideInInspector] public bool previewShown;
 	private Transform grabbedObject;
 	private Transform currentHitDecal;
@@ -48,10 +48,10 @@ public class ExtendingArmsController : MonoBehaviour
 
 	public static List<Collider> grabableObjects = new List<Collider>();
 
-	private void Awake ()
+	private void Start ()
 	{
-		linkedPlayer = GetComponent<PlayerController>();
-		animator = linkedPlayer.animator;
+		linkedPawn = GetComponent<PawnController>();
+		animator = linkedPawn.animator;
 		GeneratePreviewDecal();
 		GenerateGrabHand();
 		TogglePreview(false);
@@ -80,7 +80,7 @@ public class ExtendingArmsController : MonoBehaviour
 	}
 	public void ExtendArm()
 	{
-		linkedPlayer.ChangePawnState("GrabThrowing", ExtendArm_C(), RetractArm_C());
+		linkedPawn.ChangePawnState("GrabThrowing", ExtendArm_C(), RetractArm_C());
 	}
 	public void RetractArm()
 	{
@@ -117,6 +117,8 @@ public class ExtendingArmsController : MonoBehaviour
 	{
 		if (!previewShown) { return; }
 
+		PlayerController linkedPlayer = linkedPawn.gameObject.GetComponent<PlayerController>();
+		if (linkedPlayer == null) { return; }
 		Collider snappedCollider = null;
 		float bestPriorityScore = 0;
 		foreach (Collider c in grabableObjects)
@@ -199,7 +201,7 @@ public class ExtendingArmsController : MonoBehaviour
 		grabHand.transform.localPosition = Vector3.zero;
 		grabHand.transform.localRotation = Quaternion.identity;
 		grabHand.gameObject.SetActive(false);
-		DontDestroyOnLoad(grabHand.gameObject);
+		DontDestroyOnLoad(grabHand.root);
 		GameManager.DDOL.Add(grabHand.gameObject);
 	}
 	private bool IsGrabbable (Transform t)
@@ -219,9 +221,9 @@ public class ExtendingArmsController : MonoBehaviour
 	#region Coroutines
 	IEnumerator DashTowardHand_C ()
 	{
-		linkedPlayer.animator.SetBool("GrapplePulled", true);
-		linkedPlayer.Freeze();
-		linkedPlayer.moveState = MoveState.Blocked;
+		linkedPawn.animator.SetBool("GrapplePulled", true);
+		linkedPawn.Freeze();
+		linkedPawn.moveState = MoveState.Blocked;
 		Vector3 startPosition = armTransform.transform.position;
 		Vector3 endPosition = grabHand.transform.position;
 		float totalDistance = Vector3.Distance(startPosition, endPosition);
@@ -230,8 +232,8 @@ public class ExtendingArmsController : MonoBehaviour
 		for (float i = 0; i < totalDistance - distanceFromHandOnDash; i+= Time.deltaTime * dashSpeed)
 		{
 			Vector3 armPosition = Vector3.Lerp(startPosition, endPosition, dashSpeedCurve.Evaluate(i / totalDistance));
-			linkedPlayer.transform.position = armPosition + (linkedPlayer.transform.position - armTransform.position);
-			linkedPlayer.transform.forward = endPosition - startPosition;
+			linkedPawn.transform.position = armPosition + (linkedPawn.transform.position - armTransform.position);
+			linkedPawn.transform.forward = endPosition - startPosition;
 			colliderRecalculationIterationCount--;
 			if (colliderRecalculationIterationCount <= 0)
 			{
@@ -248,17 +250,17 @@ public class ExtendingArmsController : MonoBehaviour
 			}
 			yield return null;
 		}
-		linkedPlayer.UnFreeze();
-		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetBool("GrapplePulled", false);
+		linkedPawn.UnFreeze();
+		linkedPawn.moveState = MoveState.Idle;
+		linkedPawn.animator.SetBool("GrapplePulled", false);
 		RetractArm();
 	}
 	IEnumerator CancelDashTowardHand_C ()
 	{
 		yield return null;
-		linkedPlayer.UnFreeze();
-		linkedPlayer.moveState = MoveState.Idle;
-		linkedPlayer.animator.SetBool("GrapplePulled", false);
+		linkedPawn.UnFreeze();
+		linkedPawn.moveState = MoveState.Idle;
+		linkedPawn.animator.SetBool("GrapplePulled", false);
 		RetractArm();
 	}
 	IEnumerator ExtendArm_C ()
@@ -320,7 +322,7 @@ public class ExtendingArmsController : MonoBehaviour
 		else if (grabbedObject.gameObject.GetComponent<Grabbable>() != null)
 		{
 			FeedbackManager.SendFeedback("event.GrabHit", grabHand);
-			linkedPlayer.ChangePawnState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
+			linkedPawn.ChangePawnState("GrabDashing", DashTowardHand_C(), CancelDashTowardHand_C());
 		}
 		else
 		{

@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 1260329285050522133}
   - component: {fileID: 1260329285050522121}
   m_Layer: 0
-  m_Name: Puzzle_EletricPlate
+  m_Name: P_Puzzle_ElectricPlate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -210,9 +210,11 @@ MonoBehaviour:
   - {fileID: 6212610917634281209}
   - {fileID: 6212610917634281209}
   isActivated: 0
+  shutDown: 0
   waitTimeBeforeNextDamage: 0
-  PawnTrapped: []
+  pawnTrapped: []
   IdleFx: []
+  speedModifier: 0.5
 --- !u!1 &7932483470970075561
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,7 +294,7 @@ Light:
   m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 523319
   m_RenderingLayerMask: 1
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0

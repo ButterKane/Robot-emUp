@@ -321,6 +321,16 @@ public class BallBehaviour : MonoBehaviour
 	{
 		return ballInformations.state;
 	}
+	public bool HasTarget()
+	{
+		if (ballInformations.curve != null || ballInformations.isTeleguided)
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
 	#endregion
 
 	#region Private functions
@@ -584,9 +594,9 @@ public class BallBehaviour : MonoBehaviour
 	}
 	IEnumerator SlowTimeScale_C ()
 	{
-		Time.timeScale = ballInformations.ballDatas.timescaleOnHit;
+		Time.timeScale = Mathf.Min(ballInformations.ballDatas.timescaleOnHit, GameManager.i.gameSpeed);
 		yield return new WaitForSeconds(ballInformations.ballDatas.timescaleDurationOnHit);
-		Time.timeScale = 1f;
+		Time.timeScale = GameManager.i.gameSpeed;
 	}
 	#endregion
 }

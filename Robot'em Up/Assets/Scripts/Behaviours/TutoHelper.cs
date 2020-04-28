@@ -9,19 +9,19 @@ public class TutoHelper : MonoBehaviour
     public GameObject myText;
     public GameObject mySprite;
     public bool GivePlayerEnergy = false;
-    private List<PawnController> listPawnsHere;
+    private int pawnCount;
     // Start is called before the first frame update
     void Start()
     {
         myText.gameObject.SetActive(false);
         mySprite.gameObject.SetActive(false);
-        listPawnsHere = new List<PawnController>();
+        pawnCount = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (GivePlayerEnergy && listPawnsHere.Count > 0)
+        if (GivePlayerEnergy && pawnCount > 0)
         {
             EnergyManager.IncreaseEnergy(Time.deltaTime);
         }
@@ -32,8 +32,7 @@ public class TutoHelper : MonoBehaviour
     {
         if (_other.GetComponent<PlayerController>())
         {
-            PawnController i_pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Add(i_pawn);
+            pawnCount++;
             if (puzzleData.showTuto)
             {
                 myText.SetActive(true);
@@ -46,9 +45,8 @@ public class TutoHelper : MonoBehaviour
     {
         if (_other.GetComponent<PlayerController>())
         {
-            PawnController i_pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Remove(i_pawn);
-            if (listPawnsHere.Count < 1)
+            pawnCount--;
+            if (pawnCount < 1)
             {
                 myText.SetActive(false);
                 mySprite.SetActive(false);

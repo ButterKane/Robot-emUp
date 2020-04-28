@@ -60,7 +60,6 @@ public class PuzzleLink : PuzzleActivator, IHitable
         chargingTime = 0;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (chargingTime > 0 && isActivated)
@@ -86,9 +85,8 @@ public class PuzzleLink : PuzzleActivator, IHitable
     }
 
 
-    override public void customShutDown()
+    override public void CustomShutDown()
     {
-        //transform.position = transform.position + Vector3.up * -0.5f;
         myAnim.SetTrigger("ClosingTrigger");
         CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
         isActivated = false;

@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class MaterialReplacer : MonoBehaviour
 {
-	Renderer renderer;
+	Renderer newRenderer;
 	Material[] previousMaterials;
 	public void ReplaceMaterial ( Material _newMaterial)
 	{
-		renderer = GetComponent<Renderer>();
-		previousMaterials = renderer.materials;
-		renderer.material = _newMaterial;
+		newRenderer = GetComponent<Renderer>();
+		previousMaterials = newRenderer.materials;
+		newRenderer.material = _newMaterial;
 	}
 
 	private void OnDestroy ()
 	{
-		if (renderer != null)
+		if (newRenderer != null)
 		{
-			renderer.materials = previousMaterials;
+			newRenderer.materials = previousMaterials;
 		}
 	}
 }

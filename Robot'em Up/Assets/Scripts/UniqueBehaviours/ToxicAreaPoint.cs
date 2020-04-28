@@ -11,17 +11,6 @@ public class ToxicAreaPoint : MonoBehaviour
         Entry,
         Exit
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerEnter(Collider _other)
     {
@@ -30,10 +19,10 @@ public class ToxicAreaPoint : MonoBehaviour
             switch (myType)
             {
                 case ToxicAreaPointType.Entry:
-                    manager.ToxicAreaEntry();
+                    ToxicAreaManager.toxicAreaManager.ToxicAreaEntry();
                     break;
                 case ToxicAreaPointType.Exit:
-                    manager.ToxicAreaLeaving();
+                    ToxicAreaManager.toxicAreaManager.ToxicAreaLeaving();
                     break;
                 default:
                     break;

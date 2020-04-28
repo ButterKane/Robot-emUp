@@ -24,7 +24,7 @@ public class SceneEssentialLoader : MonoBehaviour
 			Destroy(this.gameObject);
 			return; 
 		}
-		Debug.Log("Spawning in zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
+		//Debug.Log("Spawning in zone: " + GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(SceneManager.GetActiveScene().buildIndex));
 		StartCoroutine(ReplaceScene_C());
 	}
@@ -52,8 +52,8 @@ public class SceneEssentialLoader : MonoBehaviour
 		{
 			if (light.type == LightType.Directional)
 			{
-				GameManager.DDOL.Add(light.gameObject);
-				DontDestroyOnLoad(light.gameObject);
+				GameManager.DDOL.Add(light.transform.root.gameObject);
+				DontDestroyOnLoad(light.transform.root);
 			}
 		}
 
@@ -85,7 +85,7 @@ public class SceneEssentialLoader : MonoBehaviour
 				virtualCam = cameraPosition.gameObject.AddComponent<CinemachineVirtualCamera>();
 			}
 			cameraPosition.transform.SetParent(null);
-			virtualCam.m_Priority = 10;
+			virtualCam.m_Priority = 11;
 		}
 
 		if (previewCamera != null)

@@ -15,6 +15,7 @@ public class PlayerController : PawnController, IHitable
 	public float triggerTreshold = 0.1f;
 	public Color highlightedColor;
 	public Color highlightedSecondColor;
+	public bool forceInsideCameraView = false;
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	[SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
@@ -66,9 +67,10 @@ public class PlayerController : PawnController, IHitable
 	//Other
 	private Coroutine freezeCoroutine;
 	private Coroutine disableInputCoroutine;
+    private bool canBeKilled = true;
 
-	//References
-	private DunkController dunkController;
+    //References
+    private DunkController dunkController;
 	private DashController dashController;
 	[HideInInspector] public ExtendingArmsController extendingArmsController;
 	public static Transform middlePoint;
@@ -88,6 +90,9 @@ public class PlayerController : PawnController, IHitable
 		dashController = GetComponent<DashController>();
 		extendingArmsController = GetComponent<ExtendingArmsController>();
 		ui = GetComponent<PlayerUI>();
+
+		//Set pass target
+		passController.SetTargetedPawn(GetOtherPlayer());
 
 		//Variable initialization
 		GameManager.alivePlayers.Add(this);
@@ -189,16 +194,18 @@ public class PlayerController : PawnController, IHitable
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
 		GameManager.alivePlayers.Add(_player);
+        canBeKilled = true;
 	}
 	public void KillWithoutCorePart ()
 	{
+        canBeKilled = false;
 		if (moveState == MoveState.Dead) { return; }
-		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+        SetUntargetable();
+        Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		dunkController.StopDunk();
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		passController.DropBall();
-		SetUntargetable();
 		Freeze();
 		DisableInput();
 		StartCoroutine(HideAfterDelay_C(0.5f));
@@ -220,13 +227,17 @@ public class PlayerController : PawnController, IHitable
 		PawnController[] foundPawns = FindObjectsOfType<PawnController>();
 		foreach (PawnController p in foundPawns)
 		{
+			//p.BumpMe(-p.transform.forward, BumpForce.Force2);
 			p.Push(PushType.Heavy, -p.transform.forward, PushForce.Force2);
 		}
 	} //Debug function to push every pawn in scene
 	public override void Kill ()
 	{
-		KillWithoutCorePart();
-		StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
+        if (canBeKilled)
+        {
+            KillWithoutCorePart();
+            StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
+        }
 	}
 	public override void Heal ( int _amount )
 	{
@@ -248,7 +259,19 @@ public class PlayerController : PawnController, IHitable
 	public override void UpdateAnimatorBlendTree () //Called each frame by pawnController
 	{
 		base.UpdateAnimatorBlendTree();
-		animator.SetFloat("IdleRunningBlend", currentSpeed / pawnMovementValues.moveSpeed);
+		if (passController.IsAiming())
+		{
+			float angle = Vector3.SignedAngle(transform.forward, Vector3.forward, Vector3.up);
+			Vector3 forwardVector = rb.velocity;
+			forwardVector = Quaternion.Euler(0, angle, 0) * forwardVector;
+			forwardVector = forwardVector / pawnMovementValues.moveSpeed;
+			animator.SetFloat("ForwardBlend", forwardVector.z);
+			animator.SetFloat("SideBlend", forwardVector.x);
+		} else
+		{
+			animator.SetFloat("ForwardBlend", currentSpeed / pawnMovementValues.moveSpeed);
+			animator.SetFloat("SideBlend", 0);
+		}
 	}
 	public override void Damage ( float _amount, bool _enableInvincibilityFrame = false )
 	{
@@ -260,7 +283,7 @@ public class PlayerController : PawnController, IHitable
 			{
 				ui.DisplayHealth(HealthAnimationType.Loss);
 			}
-			base.Damage(_amount, _enableInvincibilityFrame);   // manages the recovery time as well
+			base.Damage(_amount * GameManager.i.damageTakenSettingsMod, _enableInvincibilityFrame);   // manages the recovery time as well
 		}
 	}
 	#endregion
@@ -300,7 +323,7 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void UpdateWhenOutOfCamera ()
 	{
-		if (GameManager.timeInZone < 1f || !Application.isPlaying) { return; }
+		if (GameManager.timeInZone < 1f || !Application.isPlaying || !forceInsideCameraView) { return; }
 		Vector3 i_viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (i_viewPortPosition.x > 1 + extents || i_viewPortPosition.x < -extents || i_viewPortPosition.y > 1 + extents || i_viewPortPosition.y < -extents) {
@@ -331,28 +354,32 @@ public class PlayerController : PawnController, IHitable
 	{
 		_lookInput = lookInput;
 		_moveInput = moveInput;
-		Vector3 i_camForwardNormalized = cam.transform.forward;
-		i_camForwardNormalized.y = 0;
-		i_camForwardNormalized = i_camForwardNormalized.normalized;
-		Vector3 i_camRightNormalized = cam.transform.right;
-		i_camRightNormalized.y = 0;
-		i_camRightNormalized = i_camRightNormalized.normalized;
-		if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+		if (cam != null)
 		{
-			_moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
-			_moveInput.y = 0;
-			_moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
-			_lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
-		}
-		else
-		{
-			_moveInput = Vector3.zero;
+			Vector3 i_camForwardNormalized = cam.transform.forward;
+			i_camForwardNormalized.y = 0;
+			i_camForwardNormalized = i_camForwardNormalized.normalized;
+			Vector3 i_camRightNormalized = cam.transform.right;
+			i_camRightNormalized.y = 0;
+			i_camRightNormalized = i_camRightNormalized.normalized;
+			if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
+			{
+				_moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
+				_moveInput.y = 0;
+				_moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
+				_lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
+			}
+			else
+			{
+				_moveInput = Vector3.zero;
+			}
 		}
 	}
 	private void CheckRightStick ()
 	{
 		if (lookInput.magnitude > triggerTreshold)
 		{
+			passController.SetLookDirection(lookInput);
 			if (!rightButtonWaitForRelease)
 			{
 				passController.Aim();
@@ -646,24 +673,26 @@ public class PlayerController : PawnController, IHitable
 	{
 		Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Source", _source } });
 		Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-		switch (_source)
+        float i_actualDamages = _damages * GameManager.i.damageTakenSettingsMod;
+
+        switch (_source)
 		{
 			case DamageSource.RedBarrelExplosion:
                 BumpMe(i_normalizedImpactVector, BumpForce.Force2);
-				Damage(_damages);
+				Damage(i_actualDamages);
 				break;
 
             case DamageSource.EnemyContact:
-                Damage(_damages);
+                Damage(i_actualDamages);
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
 
             case DamageSource.Laser:
-                Damage(_damages, false);
+                Damage(i_actualDamages, false);
                 break;
 
 			case DamageSource.SpawnImpact:
-                Damage(_damages);
+                Damage(i_actualDamages);
 				Push(PushType.Light, _impactVector, PushForce.Force1);
 				break;
 		}

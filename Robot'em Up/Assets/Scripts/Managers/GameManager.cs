@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour
     public static List<PlayerController> alivePlayers;
     public static List<PlayerController> players;
 
-    [NonSerialized] public LevelManager levelManager;
     [NonSerialized] public InputManager inputManager;
 
     [NonSerialized] public static PlayerController playerOne;
@@ -79,11 +78,20 @@ public class GameManager : MonoBehaviour
     public static string currentZoneName;
     public static List<PlayerController> disabledInputs;
 
+
+    // Settings variables
+    [ReadOnly] public float gameSpeed = 1;
+    [ReadOnly] public float damageTakenSettingsMod = 1;
+    [ReadOnly] public float aimAssistanceSettingsMod = 0;
+    [ReadOnly] public int enemiesAgressivity = 1;
+    [ReadOnly] public bool isDifficultyAdaptative = true;
+    [ReadOnly] public int currentDifficultySetting = 0;
+
     private void Awake()
     {
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = 1f;
+        Time.timeScale = gameSpeed;
         i = this;
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
@@ -101,7 +109,6 @@ public class GameManager : MonoBehaviour
             }
             players.Add(pc);
         }
-        if (levelManager == null) { levelManager = FindObjectOfType<LevelManager>(); }
         if (inputManager == null) { inputManager = FindObjectOfType<InputManager>(); }
         if (ball == null) { ball = FindObjectOfType<BallBehaviour>(); }
 
@@ -115,7 +122,6 @@ public class GameManager : MonoBehaviour
 
         InstantiateMenus();
 
-        CameraBehaviour.allCameras = FindObjectsOfType<CameraBehaviour>();
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         disabledInputs = new List<PlayerController>();
@@ -181,7 +187,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(index);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed;
     }
 
     public static void LoadNextScene()
@@ -189,7 +195,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed;
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -233,7 +239,7 @@ public class GameManager : MonoBehaviour
         {
             p.EnableInput();
         }
-        Time.timeScale = 1f;
+        Time.timeScale = i.gameSpeed; 
         mainMenu.gameObject.SetActive(false);
     }
 
@@ -390,7 +396,8 @@ public class GameManager : MonoBehaviour
 
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
-        mainMenu = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"), null).GetComponent<MainMenu>();
+        GameObject menuObj = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"));
+        mainMenu = menuObj.GetComponent<MainMenu>();
         mainMenu.gameObject.SetActive(false);
 
     }
@@ -405,7 +412,7 @@ public class GameManager : MonoBehaviour
                 Destroy(obj.gameObject);
             }
         }
-        GameManager.i = null;
+        //GameManager.i = null;
     }
     #endregion
 }

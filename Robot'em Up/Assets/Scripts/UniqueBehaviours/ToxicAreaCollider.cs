@@ -37,18 +37,18 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         {
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
-                manager.toxicValue_P1 += Time.deltaTime * multiplicator;
+                ToxicAreaManager.toxicAreaManager.toxicValue_P1 += Time.deltaTime * multiplicator;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
-                manager.toxicValue_P2 += Time.deltaTime * multiplicator;
+                ToxicAreaManager.toxicAreaManager.toxicValue_P2 += Time.deltaTime * multiplicator;
             }
         }
   }
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        if (_source == DamageSource.Dunk |_source == DamageSource.RedBarrelExplosion)
+        if (_source == DamageSource.Dunk || _source == DamageSource.RedBarrelExplosion)
         {
             Destroy(gameObject);
         }

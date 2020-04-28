@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PuzzleDoor : PuzzleActivable
 {
@@ -8,19 +9,19 @@ public class PuzzleDoor : PuzzleActivable
     public GameObject destroyWhenOpened;
     public List<PuzzleActivator> activatorsToShutDown;
     public List<PuzzleActivable> activableToShutDown;
+    public UnityEvent eventOnActivation;
 
-    override public void WhenActivate()
+    override public void Activate()
     {
-        // Debug.Log("Activate a door");
         isActivated = true;
         UpdateLights();
         foreach (var item in activatorsToShutDown)
         {
-            item.shutDownPuzzleActivator();
+            item.ShutDownPuzzleActivator();
         }
         foreach (var item in activableToShutDown)
         {
-            item.shutDownPuzzle();
+            item.ShutDownPuzzle();
         }
         DestroyTheDoor();
     }
@@ -30,6 +31,7 @@ public class PuzzleDoor : PuzzleActivable
         if (!open)
         {
             FeedbackManager.SendFeedback("event.PuzzleDoorOpen", this, transform.position, Vector3.zero, Vector3.zero);
+            eventOnActivation.Invoke();
         }
 
         open = true;
@@ -41,10 +43,6 @@ public class PuzzleDoor : PuzzleActivable
         if (destroyWhenOpened != null)
         {
             Destroy(destroyWhenOpened);
-            //FXManager.InstantiateFX(puzzleData.linked, Vector3.up * 2, true, Vector3.zero, Vector3.one);
         }
     }
-
-
-
 }

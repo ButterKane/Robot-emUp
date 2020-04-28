@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class ToxicAreaManager : MonoBehaviour
 {
+    public static ToxicAreaManager toxicAreaManager;
     public bool areaActivated = false;
-    public bool accelerateDepoisened = false;
+    public bool accelerateDepoisoned = false;
     public float decay_multiplier;
     public float damageWhenPoisened_multiplier;
     public float toxicValue_P1;
@@ -23,11 +24,22 @@ public class ToxicAreaManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        toxicAreaManager = this;
+
         playerOneToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
         playerTwoToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
 
-        playerOneToxicBar.SetParent(GameManager.playerOne.GetComponent<PlayerUI>().playerCanvasLateralRectTransform.transform);
-        playerTwoToxicBar.SetParent(GameManager.playerTwo.GetComponent<PlayerUI>().playerCanvasLateralRectTransform.transform);
+        PlayerUI player1UI = GameManager.playerOne.GetComponent<PlayerUI>();
+        PlayerUI player2UI = GameManager.playerTwo.GetComponent<PlayerUI>();
+
+        if (player1UI.playerCanvasLateralRectTransform != null)
+        {
+            playerOneToxicBar.SetParent(player1UI.playerCanvasLateralRectTransform.transform);
+        }
+        if (player2UI.playerCanvasLateralRectTransform != null)
+        {
+            playerTwoToxicBar.SetParent(player2UI.playerCanvasLateralRectTransform.transform);
+        }
 
         playerOneToxicBar.transform.localScale = Vector3.one;
         playerTwoToxicBar.transform.localScale = Vector3.one;
@@ -39,80 +51,75 @@ public class ToxicAreaManager : MonoBehaviour
 
         playerOneToxicBar.gameObject.SetActive(false);
         playerTwoToxicBar.gameObject.SetActive(false);
-        NewMethod();
-    }
-
-    private void NewMethod()
-    {
-       // poisonedSprite_P1.gameObject.SetActive(false);
-       // poisonedSprite_P2.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        //Update slider values
-        playerOneToxicBarSlider.value = toxicValue_P1;
-        playerTwoToxicBarSlider.value = toxicValue_P2;
-        if (toxicValue_P1 >= 1)
+        if (areaActivated)
         {
-            isPoisened_P1 = true;
-            toxicValue_P1 = 1;
-        }
-
-        if (toxicValue_P1 <= 0)
-        {
-            toxicValue_P1 = 0;
-            isPoisened_P1 = false;
-        }
-
-
-        if (toxicValue_P2 >= 1)
-        {
-            toxicValue_P2 = 1;
-            isPoisened_P2 = true;
-        }
-
-        if (toxicValue_P2 <= 0)
-        {
-            toxicValue_P2 = 0;
-            isPoisened_P2 = false;
-        }
-
-        toxicValue_P1 -= Time.deltaTime * decay_multiplier;
-        toxicValue_P2 -= Time.deltaTime * decay_multiplier;
-
-
-        if (isPoisened_P1)
-        {
-           // poisonedSprite_P1.gameObject.SetActive(true);
-
-            GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
-            if (accelerateDepoisened)
+            //Update slider values
+            playerOneToxicBarSlider.value = toxicValue_P1;
+            playerTwoToxicBarSlider.value = toxicValue_P2;
+            if (toxicValue_P1 >= 1)
             {
-                toxicValue_P1 -= Time.deltaTime * decay_multiplier * 3;
+                isPoisened_P1 = true;
+                toxicValue_P1 = 1;
             }
-        }
-        else
-        {
-           // poisonedSprite_P1.gameObject.SetActive(false);
-        }
 
-
-        if (isPoisened_P2)
-        {
-          //  poisonedSprite_P2.gameObject.SetActive(true);
-
-            GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
-            if (accelerateDepoisened)
+            if (toxicValue_P1 <= 0)
             {
-                toxicValue_P2 -= Time.deltaTime * decay_multiplier * 3;
+                toxicValue_P1 = 0;
+                isPoisened_P1 = false;
             }
-        }
-        else
-        {
-         //   poisonedSprite_P2.gameObject.SetActive(false);
+
+
+            if (toxicValue_P2 >= 1)
+            {
+                toxicValue_P2 = 1;
+                isPoisened_P2 = true;
+            }
+
+            if (toxicValue_P2 <= 0)
+            {
+                toxicValue_P2 = 0;
+                isPoisened_P2 = false;
+            }
+
+            toxicValue_P1 -= Time.deltaTime * decay_multiplier;
+            toxicValue_P2 -= Time.deltaTime * decay_multiplier;
+
+
+            if (isPoisened_P1 && GameManager.alivePlayers.Contains(GameManager.playerOne))
+            {
+                // poisonedSprite_P1.gameObject.SetActive(true);
+
+                GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
+                if (accelerateDepoisoned)
+                {
+                    toxicValue_P1 -= Time.deltaTime * decay_multiplier * 3;
+                }
+            }
+            else
+            {
+                // poisonedSprite_P1.gameObject.SetActive(false);
+            }
+
+
+            if (isPoisened_P2 && GameManager.alivePlayers.Contains(GameManager.playerTwo))
+            {
+                //  poisonedSprite_P2.gameObject.SetActive(true);
+
+                GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
+                if (accelerateDepoisoned)
+                {
+                    toxicValue_P2 -= Time.deltaTime * decay_multiplier * 3;
+                }
+            }
+            else
+            {
+                //   poisonedSprite_P2.gameObject.SetActive(false);
+            }
         }
     }
 

@@ -6,10 +6,13 @@ using UnityEngine.UI;
 
 public class ToggleUI : UIBehaviour
 {
-    public bool defaultValueIsYes = true;
-    public bool buttonIsYes = true;
+    [Separator("References (don't touch)")]
     public Image yesButton;
     public Image noButton;
+
+    [Separator("Tweakable Variables")]
+    public bool defaultValueIsYes = true;
+    [ReadOnly] public bool buttonIsYes = true;
     public Color selectedButtonColor = new Color(0.5f, 0.5f, 1f, 1);
     public Color normalButtonColor = new Color(0.1f, 0.1f, 0.1f, 1);
 

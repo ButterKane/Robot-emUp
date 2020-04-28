@@ -92,14 +92,14 @@ public class PuzzleForceField : PuzzleActivable, IHitable
     }
 
 
-    public override void WhenDesactivate()
+    public override void Desactivate()
     {
 		FeedbackManager.SendFeedback("event.PuzzleForceFieldDesactivation", this);
         isActivated = false;
         ChangeState();
     }
     
-    public override void WhenActivate()
+    public override void Activate()
     {
 		FeedbackManager.SendFeedback("event.PuzzleForceFieldActivation", this);
         isActivated = true;

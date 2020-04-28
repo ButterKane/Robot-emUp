@@ -42,7 +42,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 654a271875ceeea4f89763777fc3ebb1,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 3a00d7a32fc77b240a8e63b928deca59, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -139,13 +139,13 @@ GameObject:
   - component: {fileID: 5253247827333039776}
   - component: {fileID: 5253247827333039779}
   - component: {fileID: 5253247827333039778}
-  - component: {fileID: 5253247827333039789}
   - component: {fileID: 1483543552}
   - component: {fileID: 1483543558}
   - component: {fileID: 5253247825595659276}
   - component: {fileID: 8126601537515546756}
   - component: {fileID: 3897057396212220960}
   - component: {fileID: 4637012694845503552}
+  - component: {fileID: 8153805115754326338}
   m_Layer: 0
   m_Name: P_Managers
   m_TagString: Untagged
@@ -166,6 +166,7 @@ Transform:
   m_Children:
   - {fileID: 8976361304317447470}
   - {fileID: 6233425587933275912}
+  - {fileID: 4988049278694802096}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -186,6 +187,10 @@ MonoBehaviour:
     type: 3}
   ballPrefab: {fileID: 312656209842447024, guid: 739fbb2b237f4614580ae2925bc3cbc4,
     type: 3}
+  gameSpeed: 1
+  damageTakenSettingsMod: 1
+  aimAssistanceSettingsMod: 0
+  enemiesAgressivity: 1
 --- !u!114 &5253247827333039778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,18 +251,6 @@ MonoBehaviour:
         m_Calls: []
     p1Input: 10
     p2Input: 10
---- !u!114 &5253247827333039789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5253247827333039788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ceb77fbc23c46742a2ed0933de16bfc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1483543552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,7 +326,7 @@ MonoBehaviour:
   dialogueBoxPrefab: {fileID: 4198591106925812, guid: 49e92541cd71c004c8293e57d6bde58a,
     type: 3}
   typingSpeed: 20
-  narrativeElementsInRange: []
+  subImage: {fileID: 0}
   timeBetweenRangeCheck: 0.3
   player1Transform: {fileID: 0}
   player2Transform: {fileID: 0}
@@ -349,6 +342,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4b35791e66ab44aa68f35dfbc8d322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8153805115754326338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1bd662f64d039a4d8c4612033ea3ccb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  areaActivated: 0
+  accelerateDepoisoned: 0
+  decay_multiplier: 0.08
+  damageWhenPoisened_multiplier: 30
+  toxicValue_P1: 0
+  toxicValue_P2: 0
+  isPoisened_P1: 0
+  isPoisened_P2: 0
+  poisonedSprite_P1: {fileID: 0}
+  poisonedSprite_P2: {fileID: 0}
+--- !u!1 &5966096648677660823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4988049278694802096}
+  - component: {fileID: 3373937365054019397}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4988049278694802096
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966096648677660823}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5253247827333039776}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3373937365054019397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966096648677660823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c32b2f6cf606be2409740e59be7f39b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDelayBeforeChangingMusic: 1
 --- !u!1001 &1547541213301003501
 PrefabInstance:
   m_ObjectHideFlags: 0

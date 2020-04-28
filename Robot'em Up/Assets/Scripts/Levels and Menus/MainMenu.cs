@@ -12,7 +12,7 @@ public class MainMenu : MonoBehaviour
 
     public bool isMainMenuActive = true;
     public List<Button> menuButtons = new List<Button>();
-    [SerializeField] private GameObject optionMenuPrefab;
+    public GameObject optionMenuPrefab;
     private GameObject optionMenu;
     private Button selectedButton;
 	public Image selectorArrow;
@@ -29,81 +29,21 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        optionMenu = Instantiate(optionMenuPrefab);
-        optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
-        optionMenu.SetActive(false);
+        buttons = menuButtons;
+        waitForAResetOne = true;
+        waitForAResetTwo = true;
+        if (sceneList != null) { sceneList.gameObject.SetActive(false); }
+        SelectButton(buttons[0]);
+        GameManager gm = GameManager.i; ;
+        if (gm != null) { enableRBandRTButtons = true; }
+        if (optionMenuPrefab != null)
+        {
+            optionMenu = Instantiate(optionMenuPrefab);
+            optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
+            optionMenu.SetActive(false);
+        }
         SelectButton(menuButtons[0]);
     }
-
-    void SelectButton(Button _button)
-	{
-		selectedButton = _button;
-		RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
-		if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), i_buttonTransform); }
-		selectorArrow.rectTransform.position = _button.transform.position + ((Vector3.right * i_buttonTransform.sizeDelta.x / 2 * i_buttonTransform.localScale.x) + Vector3.right * (100 * selectorArrow.transform.localScale.x)) * transform.localScale.x;
-		selectorOutline.rectTransform.position = i_buttonTransform.position;
-		selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x * (i_buttonTransform.localScale.x / selectorOutline.rectTransform.localScale.x) * 0.8f, i_buttonTransform.sizeDelta.y * (i_buttonTransform.localScale.y / selectorOutline.rectTransform.localScale.y) * 0.6f);
-		selectedButtonIndex = buttons.IndexOf(_button);
-	}
-
-	public void Close()
-	{
-        FeedbackManager.SendFeedback("event.ClosePauseMenu", this);
-        GameManager.CloseLevelMenu();
-	}
-
-	public void QuitGame ()
-	{
-		Application.Quit();
-	}
-
-	public void OpenMenu()
-	{
-        FeedbackManager.SendFeedback("event.OpenPauseMenu", this);
-        GameManager.LoadSceneByIndex(0);
-	}
-
-	public void OpenLevelSelector()
-	{
-		sceneList.gameObject.SetActive(true);
-		LevelSelector lselector = sceneList.GetComponent<LevelSelector>();
-		buttons = lselector.buttons;
-		SelectButton(buttons[0]);
-	}
-
-	public void CloseLevelSelector()
-	{
-        FeedbackManager.SendFeedback("event.PressExit", this);
-        sceneList.gameObject.SetActive(false);
-		buttons = menuButtons;
-		SelectButton(buttons[0]);
-	}
-
-	public void StartGame()
-	{
-        FeedbackManager.SendFeedback("event.PressPlay", this);
-        SceneManager.LoadScene(1);
-		Time.timeScale = 1f;
-	}
-
-    public void GoToSettings()
-    {
-        FeedbackManager.SendFeedback("event.PressSettings", this);
-        optionMenu.SetActive(true);
-        //SceneManager.LoadScene("OptionMenu", LoadSceneMode.Additive);
-        isMainMenuActive = false;
-    }
-
-	private void Awake ()
-	{
-		buttons = menuButtons;
-		waitForAResetOne = true;
-		waitForAResetTwo = true;
-		if (sceneList != null) { sceneList.gameObject.SetActive(false); }
-		SelectButton(buttons[0]);
-		GameManager gm = FindObjectOfType<GameManager>();
-		if (gm != null) { enableRBandRTButtons = true; }
-	}
 	private void Update ()
 	{
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
@@ -210,7 +150,66 @@ public class MainMenu : MonoBehaviour
         }
 	}
 
-	void SelectNextButton()
+
+    void SelectButton ( Button _button )
+    {
+        selectedButton = _button;
+        RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
+        if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), i_buttonTransform); }
+        selectorArrow.rectTransform.position = _button.transform.position + ((Vector3.right * i_buttonTransform.sizeDelta.x / 2 * i_buttonTransform.localScale.x) + Vector3.right * (100 * selectorArrow.transform.localScale.x)) * transform.localScale.x;
+        selectorOutline.rectTransform.position = i_buttonTransform.position;
+        selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x * (i_buttonTransform.localScale.x / selectorOutline.rectTransform.localScale.x) * 0.8f, i_buttonTransform.sizeDelta.y * (i_buttonTransform.localScale.y / selectorOutline.rectTransform.localScale.y) * 0.6f);
+        selectedButtonIndex = buttons.IndexOf(_button);
+    }
+
+    public void Close ()
+    {
+        FeedbackManager.SendFeedback("event.ClosePauseMenu", this);
+        GameManager.CloseLevelMenu();
+    }
+
+    public void QuitGame ()
+    {
+        Application.Quit();
+    }
+
+    public void OpenMainMenu ()
+    {
+        FeedbackManager.SendFeedback("event.OpenPauseMenu", this);
+        GameManager.LoadSceneByIndex(0);
+    }
+
+    public void OpenLevelSelector ()
+    {
+        sceneList.gameObject.SetActive(true);
+        LevelSelector lselector = sceneList.GetComponent<LevelSelector>();
+        buttons = lselector.buttons;
+        SelectButton(buttons[0]);
+    }
+
+    public void CloseLevelSelector ()
+    {
+        FeedbackManager.SendFeedback("event.PressExit", this);
+        sceneList.gameObject.SetActive(false);
+        buttons = menuButtons;
+        SelectButton(buttons[0]);
+        Time.timeScale = GameManager.i.gameSpeed;
+    }
+
+    public void StartGame ()
+    {
+        FeedbackManager.SendFeedback("event.PressPlay", this);
+        SceneManager.LoadScene(1);
+        Time.timeScale = GameManager.i.gameSpeed;
+    }
+
+    public void GoToSettings ()
+    {
+        FeedbackManager.SendFeedback("event.PressSettings", this);
+        optionMenu.SetActive(true);
+        isMainMenuActive = false;
+    }
+    void SelectNextButton()
 	{
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         selectedButtonIndex++;
@@ -253,11 +252,11 @@ public class MainMenu : MonoBehaviour
 			i_difference.y = 0f;
 		}
 
-		var normalizedDifference = new Vector2(
+		var i_normalizedDiff = new Vector2(
 			i_difference.x / (_scroll.content.rect.size.x - i_scrollTransform.rect.size.x),
 			i_difference.y / (_scroll.content.rect.size.y - i_scrollTransform.rect.size.y));
 
-		var newNormalizedPosition = _scroll.normalizedPosition - normalizedDifference;
+		var newNormalizedPosition = _scroll.normalizedPosition - i_normalizedDiff;
 		if (_scroll.movementType != ScrollRect.MovementType.Unrestricted)
 		{
 			newNormalizedPosition.x = Mathf.Clamp01(newNormalizedPosition.x);
@@ -270,12 +269,12 @@ public class MainMenu : MonoBehaviour
 	private Vector3 GetWidgetWorldPoint ( RectTransform _target )
 	{
 		//pivot position + item size has to be included
-		var pivotOffset = new Vector3(
+		var i_pivotOffset = new Vector3(
 			(0.5f - _target.pivot.x) * _target.rect.size.x,
 			(0.5f - _target.pivot.y) * _target.rect.size.y,
 			0f);
-		var localPosition = _target.localPosition + pivotOffset;
-		return _target.parent.TransformPoint(localPosition);
+		var i_localPosition = _target.localPosition + i_pivotOffset;
+		return _target.parent.TransformPoint(i_localPosition);
 	}
 	private Vector3 GetWorldPointInWidget ( RectTransform target, Vector3 worldPoint )
 	{

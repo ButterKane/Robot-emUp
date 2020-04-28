@@ -37,7 +37,7 @@ public class CameraBehaviour : MonoBehaviour
 	public float maxCameraDistance = 30;
 	public Transform pivot;
 
-	public static CameraBehaviour[] allCameras;
+	public static List<CameraBehaviour> allCameras = new List<CameraBehaviour>();
 
 	public void InitCamera ( CameraCustomType _type, CameraZone _zone)
 	{
@@ -79,45 +79,57 @@ public class CameraBehaviour : MonoBehaviour
 
 	private void Awake ()
 	{
-		if (pivot == null) { pivot = transform.parent; }
-		defaultRotation = pivot.transform.localRotation;
-		followPoint = new GameObject();
-		followPoint.transform.SetParent(this.transform);
-		followPoint.name = "FollowPoint";
+		if (Application.isPlaying)
+		{
+			if (allCameras == null) { allCameras = new List<CameraBehaviour>(); }
+			if (!allCameras.Contains(this))
+			{
+				allCameras.Add(this);
+			}
+			if (pivot == null) { pivot = transform.parent; }
+			defaultRotation = pivot.transform.localRotation;
+			followPoint = new GameObject();
+			followPoint.transform.SetParent(this.transform);
+			followPoint.name = "FollowPoint";
+		}
 	}
 
-	private void Update ()
+	private void LateUpdate ()
 	{
-		if (virtualCamera == null) { virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
-		if (virtualCamera == null) { virtualCamera = GetComponent<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
-
-		if (activated)
+		if (Application.isPlaying)
 		{
-			//Enable camera
-			virtualCamera.m_Priority = enabledPriority;
-			switch (type)
+			if (virtualCamera == null) { virtualCamera = GetComponentInChildren<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
+			if (virtualCamera == null) { virtualCamera = GetComponent<CinemachineVirtualCamera>(); defaultTranslation = virtualCamera.transform.localPosition; }
+
+			if (activated)
 			{
-				case CameraCustomType.Combat:
-					UpdateCombatCamera();
-					break;
-				case CameraCustomType.Circle:
-					UpdateCircleCamera();
-					break;
-				case CameraCustomType.Adventure:
-					UpdateAdventureCamera();
-					break;
-			}
+				//Enable camera
+				virtualCamera.m_Priority = enabledPriority;
+				switch (type)
+				{
+					case CameraCustomType.Combat:
+						UpdateCombatCamera();
+						break;
+					case CameraCustomType.Circle:
+						UpdateCircleCamera();
+						break;
+					case CameraCustomType.Adventure:
+						UpdateAdventureCamera();
+						break;
+				}
 
-		} else
-		{
-			//Disable camera
-			virtualCamera.m_Priority = defaultPriority;
+			}
+			else
+			{
+				//Disable camera
+				virtualCamera.m_Priority = defaultPriority;
+			}
 		}
 	}
 
 	void UpdateAdventureCamera()
 	{
-		Vector3 i_middlePosition = Vector3.zero;
+		Vector3 i_middlePosition;
 		if (GameManager.deadPlayers.Count > 0)
 		{
 			if (GameManager.alivePlayers.Count > 0)
@@ -182,7 +194,7 @@ public class CameraBehaviour : MonoBehaviour
 
 	void UpdateCircleCamera()
 	{
-		Vector3 i_middlePosition = Vector3.zero;
+		Vector3 i_middlePosition;
 		if (GameManager.deadPlayers.Count > 0)
 		{
 			if (GameManager.alivePlayers.Count > 0)
