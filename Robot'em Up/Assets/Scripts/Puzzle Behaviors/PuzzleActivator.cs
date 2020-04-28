@@ -56,31 +56,41 @@ public class PuzzleActivator : MonoBehaviour
 
         foreach (var item in i_activables)
         {
-            if (item.needAllConditions == false)
+            if (item.isActivated && item.needAllConditionsToFalseForDesactivation)
             {
-                if (item.puzzleActivators.Contains(this))
-                {
-                    item.Activate();
-                }
-                if (item.puzzleDesactivator.Contains(this))
+                if (!item.puzzleActivationsBool.Contains(true))
                 {
                     item.Desactivate();
                 }
             }
             else
             {
-                item.UpdateListBool();
-                if (!item.puzzleActivationsBool.Contains(false))
+                if (item.needAllConditions == false)
                 {
-                    item.Activate();
+                    if (item.puzzleActivators.Contains(this))
+                    {
+                        item.Activate();
+                    }
+                    if (item.puzzleDesactivator.Contains(this))
+                    {
+                        item.Desactivate();
+                    }
                 }
-
-                if (!item.puzzleActivationsBool.Contains(true))
+                else
                 {
-                    item.Desactivate();
-                }
+                    item.UpdateListBool();
+                    if (!item.puzzleActivationsBool.Contains(false))
+                    {
+                        item.Activate();
+                    }
 
-                item.UpdateLights();
+                    if (!item.puzzleActivationsBool.Contains(true))
+                    {
+                        item.Desactivate();
+                    }
+
+                    item.UpdateLights();
+                }
             }
         }
     }

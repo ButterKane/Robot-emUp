@@ -15,6 +15,7 @@ public class PlayerController : PawnController, IHitable
 	public float triggerTreshold = 0.1f;
 	public Color highlightedColor;
 	public Color highlightedSecondColor;
+	public bool forceInsideCameraView = false;
 	[SerializeField] private bool lockable;  public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] private float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
 	[SerializeField] private Vector3 lockSize3DModifier = Vector3.one; public Vector3 lockSize3DModifier_access { get { return lockSize3DModifier; } set { lockSize3DModifier = value; } }
@@ -66,9 +67,10 @@ public class PlayerController : PawnController, IHitable
 	//Other
 	private Coroutine freezeCoroutine;
 	private Coroutine disableInputCoroutine;
+    private bool canBeKilled = true;
 
-	//References
-	private DunkController dunkController;
+    //References
+    private DunkController dunkController;
 	private DashController dashController;
 	[HideInInspector] public ExtendingArmsController extendingArmsController;
 	public static Transform middlePoint;
@@ -192,16 +194,18 @@ public class PlayerController : PawnController, IHitable
 		revivablePlayers = i_newRevivablePlayers;
 		GameManager.deadPlayers.Remove(_player);
 		GameManager.alivePlayers.Add(_player);
+        canBeKilled = true;
 	}
 	public void KillWithoutCorePart ()
 	{
+        canBeKilled = false;
 		if (moveState == MoveState.Dead) { return; }
-		Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
+        SetUntargetable();
+        Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		dunkController.StopDunk();
 		moveState = MoveState.Dead;
 		animator.SetTrigger("Dead");
 		passController.DropBall();
-		SetUntargetable();
 		Freeze();
 		DisableInput();
 		StartCoroutine(HideAfterDelay_C(0.5f));
@@ -229,8 +233,11 @@ public class PlayerController : PawnController, IHitable
 	} //Debug function to push every pawn in scene
 	public override void Kill ()
 	{
-		KillWithoutCorePart();
-		StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
+        if (canBeKilled)
+        {
+            KillWithoutCorePart();
+            StartCoroutine(GenerateRevivePartsAfterDelay_C(0.4f));
+        }
 	}
 	public override void Heal ( int _amount )
 	{
@@ -316,7 +323,7 @@ public class PlayerController : PawnController, IHitable
 	}
 	private void UpdateWhenOutOfCamera ()
 	{
-		if (GameManager.timeInZone < 1f || !Application.isPlaying) { return; }
+		if (GameManager.timeInZone < 1f || !Application.isPlaying || !forceInsideCameraView) { return; }
 		Vector3 i_viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
 		float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
 		if (i_viewPortPosition.x > 1 + extents || i_viewPortPosition.x < -extents || i_viewPortPosition.y > 1 + extents || i_viewPortPosition.y < -extents) {
