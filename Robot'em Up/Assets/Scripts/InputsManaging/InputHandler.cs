@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using XInputDotNetPure;
 
@@ -22,10 +23,18 @@ public struct SingleButton
 {
     public CustomKeyCode key;
     [NonSerialized] public PlayerIndex index;
-    public ButtonState? keyState => InputHandler.instance.GetState(key,index);
+    public ButtonState? keyState => InputHandler.instance.GetButtonState(key,index);
 }
 
 [System.Serializable]
+public struct SingleKeyedAxis
+{
+    public CustomAxisCode key;
+    [NonSerialized] public PlayerIndex index;
+    public float? axisState => InputHandler.instance.GetAxisState(key, index);
+}
+
+    [System.Serializable]
 public class ButtonAction
 {
     public SingleButton[] buttons; // All the buttons assigned to this action
@@ -73,10 +82,10 @@ public class ButtonAction
 }
 
 [System.Serializable]
-public struct KeyBindingStruct
+public class KeyBindingStruct
 {
     //public AxisAction moveX, moveY, aimX, aimY;
-    public ButtonAction dunk, throwBall, interact, grapple, detectBall; 
+    public ButtonAction dunk, throwBall, interact, grapple, detectBall;
 }
 
 public class InputHandler : MonoBehaviour
@@ -107,7 +116,7 @@ public class InputHandler : MonoBehaviour
     }
 
     // Makes transition between serialized keys in inspector and XInput 
-    public ButtonState? GetState(CustomKeyCode _ck, PlayerIndex _index)
+    public ButtonState? GetButtonState(CustomKeyCode _ck, PlayerIndex _index)
     {
         GamePadState i_state = GamePad.GetState(_index);
         switch (_ck)
@@ -124,16 +133,51 @@ public class InputHandler : MonoBehaviour
                 return i_state.Buttons.LeftShoulder;
             case CustomKeyCode.RB:
                 return i_state.Buttons.RightShoulder;
+            case CustomKeyCode.PadUp:
+                return i_state.DPad.Up;
+            case CustomKeyCode.PadDown:
+                return i_state.DPad.Down;
+            case CustomKeyCode.PadLeft:
+                return i_state.DPad.Left;
+            case CustomKeyCode.PadRight:
+                return i_state.DPad.Right;
+            case CustomKeyCode.L3:
+                return i_state.Buttons.LeftStick;
+            case CustomKeyCode.R3:
+                return i_state.Buttons.RightStick;
             case CustomKeyCode.Start:
                 return i_state.Buttons.Start;
             case CustomKeyCode.Back:
                 return i_state.Buttons.Back;
+            
             default:
                 return null;
         }
     }
 
-    public void ResetUnusedButtons(ButtonAction _buttonAction)
+    public float? GetAxisState(CustomAxisCode _ca, PlayerIndex _index)
+    {
+        GamePadState i_state = GamePad.GetState(_index);
+        switch (_ca)
+        {
+            case CustomAxisCode.LT:
+                return i_state.Triggers.Left;
+            case CustomAxisCode.RT:
+                return i_state.Triggers.Right;
+            case CustomAxisCode.LeftJoystickX:
+                return i_state.ThumbSticks.Left.X;
+            case CustomAxisCode.LeftJoystickY:
+                return i_state.ThumbSticks.Left.Y;
+            case CustomAxisCode.RightJoytickX:
+                return i_state.ThumbSticks.Right.X;
+            case CustomAxisCode.RightJoystickY:
+                return i_state.ThumbSticks.Right.Y;
+            default:
+                return null;
+        }
+    }
+
+    private void ResetUnusedButtons(ButtonAction _buttonAction)
     {
         foreach(var button in _buttonAction.buttons)
         {
@@ -144,6 +188,12 @@ public class InputHandler : MonoBehaviour
             }
             else { _buttonAction.isPressed = false; }
         }
+    }
+
+    public void AssignNewInputToAction(ButtonAction _concernedAction, CustomKeyCode _newKey, int _whichInputIndex)
+    {
+        _concernedAction.buttons[_whichInputIndex].key = _newKey;
+        // make a check on all others input to see if there are multiples
     }
 }
 
@@ -156,8 +206,24 @@ public enum CustomKeyCode
     X,
     LB,
     RB,
+    PadUp,
+    PadDown,
+    PadLeft,
+    PadRight,
+    L3,
+    R3,
     Start,
     Back
+}
+
+public enum CustomAxisCode
+{
+    LT,
+    RT,
+    LeftJoystickX,
+    LeftJoystickY,
+    RightJoytickX,
+    RightJoystickY
 }
 
 
