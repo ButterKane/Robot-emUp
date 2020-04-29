@@ -99,10 +99,15 @@ public class DashController : MonoBehaviour
 	{
 		return currentStackAmount;
 	}
-	#endregion
 
-	#region Private functions
-	private void UpdateStackAmount()
+    public void RecoverAllStackAmount()
+    {
+        currentStackAmount = maxStackAmount;
+    }
+    #endregion
+
+    #region Private functions
+    private void UpdateStackAmount()
 	{
 		if (currentStackAmount < maxStackAmount)
 		{
