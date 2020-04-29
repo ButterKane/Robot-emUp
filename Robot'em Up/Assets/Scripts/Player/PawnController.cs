@@ -116,6 +116,7 @@ public class PawnController : MonoBehaviour
 	[HideInInspector] public float climbingDelay;
 	private bool isPlayer;
 	protected bool targetable;
+	private List<Renderer> hiddenRenderers = new List<Renderer>();
 	protected NavMeshAgent navMeshAgent;
 
 	//State system variables
@@ -345,12 +346,16 @@ public class PawnController : MonoBehaviour
 	{
 		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
 		{
-			renderer.enabled = false;
+			if (renderer.enabled)
+			{
+				hiddenRenderers.Add(renderer);
+				renderer.enabled = false;
+			}
 		}
 	}
 	public void UnHide()
 	{
-		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		foreach (Renderer renderer in hiddenRenderers)
 		{
 			renderer.enabled = true;
 		}
