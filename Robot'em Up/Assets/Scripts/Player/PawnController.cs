@@ -92,8 +92,8 @@ public class PawnController : MonoBehaviour
 
 	//Movement variables
 	[System.NonSerialized] public MoveState moveState;
-	protected Vector3 moveInput;
-	protected Vector3 lookInput;
+	public Vector3 moveInput;
+    public Vector3 lookInput;
     private Quaternion turnRotation;
 	private float customDrag;
 	private float customGravity;
@@ -260,6 +260,12 @@ public class PawnController : MonoBehaviour
 	{
 		return maxHealth;
 	}
+    public float GetCurrentSpeed()
+    {
+        return currentSpeed;
+    }
+
+
     public float GetSpeedCoef()
     {
         float i_speedCoef = 1;

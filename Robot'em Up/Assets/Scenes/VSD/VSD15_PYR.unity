@@ -338,11 +338,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 352126982178166004, guid: c41603ab4f7f63848b8d92f7e57eca2e,
-        type: 3}
-      propertyPath: field of view
-      value: 60
-      objectReference: {fileID: 0}
     - target: {fileID: 4826689230382229141, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -392,6 +387,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0.20789666
+      objectReference: {fileID: 0}
+    - target: {fileID: 352126982178166004, guid: c41603ab4f7f63848b8d92f7e57eca2e,
+        type: 3}
+      propertyPath: field of view
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 795772360531808961, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
@@ -1559,6 +1559,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1623,31 +1648,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -1973,6 +1973,36 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivationsBool.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2037,36 +2067,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivationsBool.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -2369,7 +2369,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120982
+  m_Name: pb_Mesh91384
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -2634,21 +2634,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 520271209}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2724,6 +2709,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: -358681
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 520271209}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &253054195 stripped
@@ -2981,21 +2981,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (5)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 1535490840}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3071,6 +3056,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 1e-45
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 1535490840}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &274553861 stripped
@@ -3236,7 +3236,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 277548328}
   m_LocalRotation: {x: 0.23499392, y: 0.047600273, z: 0.0025155244, w: 0.97082734}
-  m_LocalPosition: {x: 492.43002, y: 51.097977, z: 2554.73}
+  m_LocalPosition: {x: -38, y: 51.097977, z: 2909}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1842882472}
@@ -3250,7 +3250,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120810
+  m_Name: pb_Mesh91212
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3511,6 +3511,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_EletricPlate (17)
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3571,41 +3606,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 7.67
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -3689,6 +3689,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_EletricPlate (16)
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3749,41 +3784,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 7.67
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -3821,6 +3821,31 @@ PrefabInstance:
     - target: {fileID: 1260329285050522132, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -3887,31 +3912,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -4033,7 +4033,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120744
+  m_Name: pb_Mesh91146
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4526,7 +4526,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120214
+  m_Name: pb_Mesh90616
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4698,7 +4698,7 @@ PrefabInstance:
     - target: {fileID: 4918866794418339669, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 501.69
+      value: -28.74002
       objectReference: {fileID: 0}
     - target: {fileID: 4918866794418339669, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
@@ -4708,7 +4708,7 @@ PrefabInstance:
     - target: {fileID: 4918866794418339669, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2610.1597
+      value: 2964.4297
       objectReference: {fileID: 0}
     - target: {fileID: 4918866794418339669, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
@@ -4854,7 +4854,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423984749}
   m_LocalRotation: {x: 0.23499392, y: 0.047600273, z: 0.0025155244, w: 0.97082734}
-  m_LocalPosition: {x: 499.2, y: 41.5, z: 2707.4}
+  m_LocalPosition: {x: -31.230011, y: 41.5, z: 3061.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 402145906}
@@ -4874,11 +4874,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (6)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 2042828181}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4954,6 +4949,11 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 1e-45
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 2042828181}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &443134251 stripped
@@ -5155,6 +5155,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5219,31 +5244,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -5691,7 +5691,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh121060
+  m_Name: pb_Mesh91462
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6320,6 +6320,27 @@ PrefabInstance:
       propertyPath: m_Name
       value: Air spawner (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: enemyToSpawn
+      value: 
+      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
+        type: 3}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.x
+      value: -59.39183
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.y
+      value: -0.22027898
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.z
+      value: 1724.5573
+      objectReference: {fileID: 0}
     - target: {fileID: 6307279104845220790, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6419,27 +6440,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.000082877115
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: enemyToSpawn
-      value: 
-      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
-        type: 3}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.x
-      value: -59.39183
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.y
-      value: -0.22027898
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 1724.5573
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49089126e303b284bba86e62bf780191, type: 3}
@@ -6630,7 +6630,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120572
+  m_Name: pb_Mesh90976
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6881,16 +6881,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_RenderMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_RenderMode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4125511052284230322, guid: 832d0ae161ab7db4dbcc60acd46bf948,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6995,36 +6985,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_ReferenceResolution.x
-      value: 1920
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_ReferenceResolution.y
-      value: 1080
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_ReferenceResolution.x
-      value: 1920
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
-        type: 3}
-      propertyPath: m_ReferenceResolution.y
-      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 4125511053235310956, guid: 832d0ae161ab7db4dbcc60acd46bf948,
         type: 3}
@@ -7255,6 +7215,46 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230323, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125511052284230320, guid: 832d0ae161ab7db4dbcc60acd46bf948,
+        type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 832d0ae161ab7db4dbcc60acd46bf948, type: 3}
@@ -7697,21 +7697,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 1406524418}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7787,6 +7772,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 1e-45
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 1406524418}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &847936107 stripped
@@ -8729,21 +8729,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (4)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 1847487786}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8819,6 +8804,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: -3.1006962e-27
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 1847487786}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &932068844 stripped
@@ -9342,6 +9342,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9406,31 +9431,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -9648,21 +9648,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (7)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 84494321}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9738,6 +9723,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 84494321}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &1078904019 stripped
@@ -10279,6 +10279,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10344,31 +10369,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -10403,21 +10403,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (8)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 1174837655}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10493,6 +10478,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 0.00000008940697
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 1174837655}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &1218295124 stripped
@@ -10525,6 +10525,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_EletricPlate (18)
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10585,41 +10620,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 7.67
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -10841,6 +10841,27 @@ PrefabInstance:
       propertyPath: m_Name
       value: Air spawner
       objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: enemyToSpawn
+      value: 
+      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
+        type: 3}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.x
+      value: -59.39183
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.y
+      value: -0.22027898
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.z
+      value: 1724.5573
+      objectReference: {fileID: 0}
     - target: {fileID: 6307279104845220790, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10940,27 +10961,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.00021817803
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: enemyToSpawn
-      value: 
-      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
-        type: 3}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.x
-      value: -59.39183
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.y
-      value: -0.22027898
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 1724.5573
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49089126e303b284bba86e62bf780191, type: 3}
@@ -12018,6 +12018,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12083,31 +12108,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -12142,7 +12142,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120924
+  m_Name: pb_Mesh91326
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -12990,21 +12990,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 1778000750}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13080,6 +13065,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 1e-45
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 1778000750}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &1442321270 stripped
@@ -13106,21 +13106,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_Link
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: _lockable
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: wire
-      value: 
-      objectReference: {fileID: 2134745147}
     - target: {fileID: 826081212846633662, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13196,6 +13181,21 @@ PrefabInstance:
       propertyPath: m_BoundingSphereOverride.w
       value: 1e-45
       objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: _lockable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: wire
+      value: 
+      objectReference: {fileID: 2134745147}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
 --- !u!114 &1475049732 stripped
@@ -13225,6 +13225,31 @@ PrefabInstance:
     - target: {fileID: 1260329285050522132, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -13292,31 +13317,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -13360,6 +13360,31 @@ PrefabInstance:
     - target: {fileID: 1260329285050522132, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
@@ -13426,31 +13451,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -13858,6 +13858,27 @@ PrefabInstance:
       propertyPath: m_Name
       value: Air spawner (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: enemyToSpawn
+      value: 
+      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
+        type: 3}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.x
+      value: -59.39183
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.y
+      value: -0.22027898
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.z
+      value: 1724.5573
+      objectReference: {fileID: 0}
     - target: {fileID: 6307279104845220790, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13957,27 +13978,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.000042752727
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: enemyToSpawn
-      value: 
-      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
-        type: 3}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.x
-      value: -59.39183
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.y
-      value: -0.22027898
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 1724.5573
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49089126e303b284bba86e62bf780191, type: 3}
@@ -14649,7 +14649,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1640863862}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 503.9, y: 10.1, z: 2652.3}
+  m_LocalPosition: {x: -26.53003, y: 10.1, z: 3006.57}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 59743997}
@@ -14673,6 +14673,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_EletricPlate (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14733,41 +14768,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 7.67
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -16380,6 +16380,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16444,31 +16469,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -16712,7 +16712,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120556
+  m_Name: pb_Mesh90960
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -16886,6 +16886,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1999753395}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16950,31 +16975,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1999753395}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
@@ -17059,7 +17059,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120608
+  m_Name: pb_Mesh91012
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -17228,7 +17228,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh120874
+  m_Name: pb_Mesh91276
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -17659,6 +17659,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puzzle_EletricPlate (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: isActivated
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[0]
+      value: 
+      objectReference: {fileID: 1704213112}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleDesactivator.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
+    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
+        type: 3}
+      propertyPath: puzzleActivators.Array.data[1]
+      value: 
+      objectReference: {fileID: 1426717211}
     - target: {fileID: 1260329285050522120, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -17719,41 +17754,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 7.67
       objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: isActivated
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[0]
-      value: 
-      objectReference: {fileID: 1704213112}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleDesactivator.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
-    - target: {fileID: 1260329285050522121, guid: a8988fa4423b901448c6dd647fc2fadc,
-        type: 3}
-      propertyPath: puzzleActivators.Array.data[1]
-      value: 
-      objectReference: {fileID: 1426717211}
     - target: {fileID: 1656167140833794362, guid: a8988fa4423b901448c6dd647fc2fadc,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -18171,6 +18171,11 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: speedChange
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8898391501262450084, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -18226,16 +18231,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4638578598619643652, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: speedChange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893832934685837645, guid: 7675eab0145b2d448a61707733b50899,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
-      objectReference: {fileID: 0}
     - target: {fileID: 3384318069634552629, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
       propertyPath: m_Mesh
@@ -18265,6 +18260,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8893832934685837645, guid: 7675eab0145b2d448a61707733b50899,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 881686575211353213, guid: 7675eab0145b2d448a61707733b50899,
         type: 3}
