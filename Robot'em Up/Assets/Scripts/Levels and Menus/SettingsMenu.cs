@@ -525,19 +525,20 @@ public class SettingsMenu : MonoBehaviour
         // 0 to 100
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
-
+            MomentumManager.instance.postProcessSettingsMod = ((float)valueContrast) / 100;
+            // It's post process wesh
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("SFX Volume", out int valueSfxVolume))
         {
-
+            FeedbackManager.fXVolumeSettingsMod = ((float)valueSfxVolume) / 100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Dialogue Volume", out int valueDialogueVolume))
         {
-
+            NarrationManager.narrationManager.dialogueVolumeSettingsMod = ((float)valueDialogueVolume) / 100;
         }
 
         // 0 to 100
@@ -549,7 +550,7 @@ public class SettingsMenu : MonoBehaviour
         // 0 to 100
         if (sliderSettings.TryGetValue("Music Volume", out int valueMusicVolume))
         {
-
+            MusicManager.ChangeVolume(((float)valueMusicVolume) / 100);
         }
 
 
@@ -558,31 +559,30 @@ public class SettingsMenu : MonoBehaviour
         // Adaptative - Easy - Medium - Difficult
         if (multiChoiceSettings.TryGetValue("Overall Difficulty", out int valueDifficulty))
         {
-            switch(valueDifficulty)
+            if (valueDifficulty == 0)
             {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
+                GameManager.i.isDifficultyAdaptative = true;
+            }
+            else
+            {
+                GameManager.i.isDifficultyAdaptative = false;
+                switch (valueDifficulty)
+                {
+                    // Something with damage dealt/taken? Or with the amount of energy you get? Or the number of enemies?
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
             }
         }
 
         // Gentle - Classic - Aggressive
         if (multiChoiceSettings.TryGetValue("Enemies Agressivity", out int valueEnemiesAgressivity))
         {
-            switch (valueDifficulty)
-            {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-            }
+            EnemyManager.i.ChangeEnemiesAgressivity(valueEnemiesAgressivity);
         }
 
         // White - Yellow - Blue - Green - Red
@@ -590,15 +590,20 @@ public class SettingsMenu : MonoBehaviour
         {
             switch (valueDifficulty)
             {
-                case 0:
+                case 0://white
+                    NarrationManager.narrationManager.textColor = Color.white;
                     break;
-                case 1:
+                case 1://yellow
+                    NarrationManager.narrationManager.textColor = Color.yellow;
                     break;
-                case 2:
+                case 2://blue
+                    NarrationManager.narrationManager.textColor = Color.blue;
                     break;
-                case 3:
+                case 3://green
+                    NarrationManager.narrationManager.textColor = Color.green;
                     break;
-                case 4:
+                case 4://red
+                    NarrationManager.narrationManager.textColor = Color.red;
                     break;
             }
         }
@@ -608,13 +613,17 @@ public class SettingsMenu : MonoBehaviour
         {
             switch (valueDifficulty)
             {
-                case 0:
+                case 0://small
+                    NarrationManager.narrationManager.textSize = 14;
                     break;
-                case 1:
+                case 1://regular
+                    NarrationManager.narrationManager.textSize = 20;
                     break;
-                case 2:
+                case 2://big
+                    NarrationManager.narrationManager.textSize = 30;
                     break;
-                case 3:
+                case 3://very big
+                    NarrationManager.narrationManager.textSize = 40;
                     break;
             }
         }
@@ -629,17 +638,33 @@ public class SettingsMenu : MonoBehaviour
 
         if (toggleSettings.TryGetValue("FullScreen/Window", out bool valueFullScreen))
         {
-
+            if (valueFullScreen)
+            {
+                Screen.fullScreen = true;
+            }
+            else
+            {
+                Screen.fullScreen = false;
+            }
         }
 
         if (toggleSettings.TryGetValue("Background Animation", out bool valueBackground))
         {
-
+            // Change if the grass is moving or this kind of things
         }
 
         if (toggleSettings.TryGetValue("Stylized In-Game Text Font", out bool valueStylizedFont))
         {
-
+            if (valueStylizedFont)
+            {
+                NarrationManager.narrationManager.selectedFont = NarrationManager.narrationManager.stylizedTextFont;
+            }
+            else
+            {
+                NarrationManager.narrationManager.selectedFont = NarrationManager.narrationManager.robotoTextFont;
+            }
+            // Yes = Pas Roboto
+            // No = Roboto
         }
     }
 }

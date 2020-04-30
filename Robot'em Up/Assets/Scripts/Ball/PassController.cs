@@ -159,7 +159,7 @@ public class PassController : MonoBehaviour
 		_lookDirection.y = 0;
 
 		Vector3 i_firstPoint = i_startPosition;
-		Vector3 i_firstHandle = i_startPosition + _lookDirection.normalized * hanseLength;
+		Vector3 i_firstHandle = i_startPosition + _lookDirection * hanseLength;
 		Vector3 i_secondPoint = i_endPosition;
 		totalLength = 0;
 		for (int i = 0; i < curveRaycastIteration; i++)
@@ -212,6 +212,15 @@ public class PassController : MonoBehaviour
 			}
 		}
 		return i_coordinates;
+	}
+
+	public bool IsAiming()
+	{
+		if (passState == PassState.Aiming)
+		{
+			return true;
+		}
+		return false;
 	}
 	public void Aim ()
 	{
@@ -357,8 +366,8 @@ public class PassController : MonoBehaviour
 				if (perfectReceptionShoot)
 				{
 					animator.ResetTrigger("ShootingMissedTrigger");
-					animator.SetTrigger("PrepareShootingTrigger");
-					animator.SetTrigger("ShootingTrigger");
+					animator.ResetTrigger("PrepareShootingTrigger");
+					animator.SetTrigger("PerfectReceptionShootTrigger");
 				}
 				else
 				{

@@ -84,6 +84,8 @@ public class GameManager : MonoBehaviour
     [ReadOnly] public float damageTakenSettingsMod = 1;
     [ReadOnly] public float aimAssistanceSettingsMod = 0;
     [ReadOnly] public int enemiesAgressivity = 1;
+    [ReadOnly] public bool isDifficultyAdaptative = true;
+    [ReadOnly] public int currentDifficultySetting = 0;
 
     private void Awake()
     {

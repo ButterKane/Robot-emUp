@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class SceneLoader : MonoBehaviour
 {
 	private int buildIndex;
-
 	private void Awake ()
 	{
 		int countLoaded = SceneManager.sceneCount;
@@ -37,7 +36,7 @@ public class SceneLoader : MonoBehaviour
 		{
 			StartCoroutine(UnloadLevelAsynchronously_C(buildIndex - 1, UnloadSceneOptions.None));
 		}
-		Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
+		//Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
 		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex + 1));
 	}
 
@@ -71,11 +70,9 @@ public class SceneLoader : MonoBehaviour
 	IEnumerator UnloadLevelAsynchronously_C ( int _buildIndex, UnloadSceneOptions _mode )
 	{
 		AsyncOperation asyncLoad = SceneManager.UnloadSceneAsync(_buildIndex, _mode);
-
-		// Wait until the asynchronous scene fully loads
 		while (!asyncLoad.isDone)
 		{
-			yield return new WaitForSeconds(1);
+			yield return null;
 		}
 	}
 }
