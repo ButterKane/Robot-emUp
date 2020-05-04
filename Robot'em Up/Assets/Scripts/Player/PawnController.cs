@@ -92,8 +92,8 @@ public class PawnController : MonoBehaviour
 
 	//Movement variables
 	[System.NonSerialized] public MoveState moveState;
-	protected Vector3 moveInput;
-	protected Vector3 lookInput;
+	public Vector3 moveInput;
+    public Vector3 lookInput;
     private Quaternion turnRotation;
 	private float customDrag;
 	private float customGravity;
@@ -116,6 +116,7 @@ public class PawnController : MonoBehaviour
 	[HideInInspector] public float climbingDelay;
 	private bool isPlayer;
 	protected bool targetable;
+	private List<Renderer> hiddenRenderers = new List<Renderer>();
 	protected NavMeshAgent navMeshAgent;
 
 	//State system variables
@@ -259,6 +260,12 @@ public class PawnController : MonoBehaviour
 	{
 		return maxHealth;
 	}
+    public float GetCurrentSpeed()
+    {
+        return currentSpeed;
+    }
+
+
     public float GetSpeedCoef()
     {
         float i_speedCoef = 1;
@@ -345,12 +352,16 @@ public class PawnController : MonoBehaviour
 	{
 		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
 		{
-			renderer.enabled = false;
+			if (renderer.enabled)
+			{
+				hiddenRenderers.Add(renderer);
+				renderer.enabled = false;
+			}
 		}
 	}
 	public void UnHide()
 	{
-		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		foreach (Renderer renderer in hiddenRenderers)
 		{
 			renderer.enabled = true;
 		}

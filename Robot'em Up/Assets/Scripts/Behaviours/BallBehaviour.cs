@@ -11,7 +11,9 @@ public enum BallState {
 }
 public class BallBehaviour : MonoBehaviour
 {
-	public class BallInformations
+
+    public bool isGhostBall = false;
+    public class BallInformations
 	{
 		public Vector3 direction;
 		public float maxDistance;
@@ -67,7 +69,10 @@ public class BallBehaviour : MonoBehaviour
 	{
 		UpdateBallPosition();
 		UpdateModifiers();
-		CheckIfOutOfScreen();
+        if (!isGhostBall)
+        {
+            CheckIfOutOfScreen();
+        }
 	}
 
 	#region Public functions
@@ -186,8 +191,12 @@ public class BallBehaviour : MonoBehaviour
 		return ballInformations.timeFlying;
 	}
 	public int GetCurrentDamages ()
-	{
-		float i_damages = ballInformations.ballDatas.damages;
+    {
+        if (isGhostBall)
+        {
+            return (0);
+        }
+        float i_damages = ballInformations.ballDatas.damages;
 		return Mathf.RoundToInt(i_damages * GetCurrentDamageModifier());
 	}
 	public float GetCurrentDamageModifier ()
