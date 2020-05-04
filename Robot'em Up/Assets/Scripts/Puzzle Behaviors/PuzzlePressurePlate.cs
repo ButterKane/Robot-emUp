@@ -7,6 +7,7 @@ public class PuzzlePressurePlate : PuzzleActivator
 {
     [ReadOnly] public bool pawnHere;
     private List<PawnController> pawnHereList = new List<PawnController>();
+    public Animator animator;
 
 
     private void OnTriggerEnter(Collider _other)
@@ -24,11 +25,12 @@ public class PuzzlePressurePlate : PuzzleActivator
                     FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
                 }
                 isActivated = true;
+                animator.SetBool("Activated", true);
                 ActivateLinkedObjects();
             }
         }
 
-        UpdateLight();
+        //UpdateLight();
     }
 
 
@@ -47,6 +49,8 @@ public class PuzzlePressurePlate : PuzzleActivator
                         FeedbackManager.SendFeedback("event.PuzzlePressurePlateDesactivation", this);
                     }
                     isActivated = false;
+                    animator.SetBool("Activated", false);
+
                     DesactiveLinkedObjects();
                     pawnHere = false;
                     transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
@@ -54,7 +58,7 @@ public class PuzzlePressurePlate : PuzzleActivator
             }
         }
 
-        UpdateLight();
+        //UpdateLight();
 
     }
 
@@ -63,5 +67,6 @@ public class PuzzlePressurePlate : PuzzleActivator
     {
         transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
         isActivated = false;
+        animator.SetBool("Activated", false);
     }
 }
