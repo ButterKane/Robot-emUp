@@ -5,13 +5,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
+public enum InputType { None, Button, Axis };
+
 [System.Serializable]
 public class InputDisplay
 {
     public string inputName;
-    public UnityEvent inputEvent;
-    public Inputs inputP1;
-    public Inputs inputP2;
+    public InputType inputType = InputType.None;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Button)] public CustomKeyCode keyCode;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Axis)] public CustomAxisCode axisCode;
 }
 
 [ExecuteInEditMode]
@@ -33,8 +35,8 @@ public class SettingsInputGroup : MonoBehaviour
     void UpdateTexts()
     {
         nameTMP.text = actionAndInputs.inputName;
-        inputP1TMP.text = actionAndInputs.inputP1.ToString();
-        inputP2TMP.text = actionAndInputs.inputP2.ToString();
+        //inputP1TMP.text = actionAndInputs.inputP1.ToString();
+        //inputP2TMP.text = actionAndInputs.inputP2.ToString();
     }
     
 }

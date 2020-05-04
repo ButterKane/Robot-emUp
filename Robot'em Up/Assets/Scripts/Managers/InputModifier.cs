@@ -8,8 +8,8 @@ public class InputModifier : MonoBehaviour
 {
     public SettingsInputGroup[] remappableInputs;
 
-    public Dictionary<Inputs, UnityEvent> dicoP1Inputs;
-    public Dictionary<Inputs, UnityEvent> dicoP2Inputs;
+    //public Dictionary<Inputs, UnityEvent> dicoP1Inputs;
+    //public Dictionary<Inputs, UnityEvent> dicoP2Inputs;
 
     private InputManager manager;
 
@@ -34,12 +34,12 @@ public class InputModifier : MonoBehaviour
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (i_state.Buttons.B == ButtonState.Pressed)
         {
-            if (!CheckIfError())
-            {
-                FillInputDicos();
-                AssignNewInputsInManager();
-                ///Close input window
-            }
+            //if (!CheckIfError())
+            //{
+            //    FillInputDicos();
+            //    AssignNewInputsInManager();
+            //    ///Close input window
+            //}
         }
         if (i_state.Buttons.A == ButtonState.Pressed)
         {
@@ -102,17 +102,17 @@ public class InputModifier : MonoBehaviour
                 if (i == j) { continue; }
                 else
                 {
-                    if (remappableInputs[i].actionAndInputs.inputP1 == remappableInputs[j].actionAndInputs.inputP1)
-                    {
-                        // There is a duplicate
-                        i_isInputNotSingle = true;
-                    }
+                    //if (remappableInputs[i].actionAndInputs.inputP1 == remappableInputs[j].actionAndInputs.inputP1)
+                    //{
+                    //    // There is a duplicate
+                    //    i_isInputNotSingle = true;
+                    //}
 
-                    if (remappableInputs[i].actionAndInputs.inputP2 == remappableInputs[j].actionAndInputs.inputP2)
-                    {
-                        // There is a duplicate
-                        i_isInputNotSingle = true;
-                    }
+                    //if (remappableInputs[i].actionAndInputs.inputP2 == remappableInputs[j].actionAndInputs.inputP2)
+                    //{
+                    //    // There is a duplicate
+                    //    i_isInputNotSingle = true;
+                    //}
                 }
             }
         }
@@ -122,18 +122,18 @@ public class InputModifier : MonoBehaviour
 
     public void FillInputDicos()
     {
-        dicoP1Inputs.Clear();
-        dicoP2Inputs.Clear();
-        foreach (var group in remappableInputs)
-        {
-            dicoP1Inputs.Add(group.actionAndInputs.inputP1, group.actionAndInputs.inputEvent);
-            dicoP2Inputs.Add(group.actionAndInputs.inputP2, group.actionAndInputs.inputEvent);
-        }
+        //dicoP1Inputs.Clear();
+        //dicoP2Inputs.Clear();
+        //foreach (var group in remappableInputs)
+        //{
+        //    dicoP1Inputs.Add(group.actionAndInputs.inputP1, group.actionAndInputs.inputEvent);
+        //    dicoP2Inputs.Add(group.actionAndInputs.inputP2, group.actionAndInputs.inputEvent);
+        //}
     }
 
     public void AssignNewInputsInManager()
     {
-        InputManager.i.BButtonEvent = dicoP1Inputs[Inputs.BButton];
+       
     }
 
     public void LaunchDash()

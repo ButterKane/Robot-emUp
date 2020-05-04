@@ -5,18 +5,6 @@ using System.Reflection;
 using UnityEngine;
 using XInputDotNetPure;
 
-//[System.Serializable]
-//public struct SingleAxis
-//{
-//    public string axisName;
-//    public float axisValue => Input.GetAxis(axisName);
-//}
-
-//[System.Serializable]
-//public struct AxisAction
-//{
-//    SingleAxis[] axis;
-//}
 
 [System.Serializable]
 public struct SingleButton
@@ -27,14 +15,14 @@ public struct SingleButton
 }
 
 [System.Serializable]
-public struct SingleKeyedAxis
+public struct SingleAxis
 {
     public CustomAxisCode key;
     [NonSerialized] public PlayerIndex index;
     public float? axisState => InputHandler.instance.GetAxisState(key, index);
 }
 
-    [System.Serializable]
+[System.Serializable]
 public class ButtonAction
 {
     public SingleButton[] buttons; // All the buttons assigned to this action
@@ -82,10 +70,58 @@ public class ButtonAction
 }
 
 [System.Serializable]
+public class AxisAction
+{
+    public SingleAxis[] axis;
+    // The float value of the axis
+    public float axisValue
+    {
+        get
+        {
+            for (int i = 0; i < axis.Length; i++)
+            {
+                if (axis[i].axisState == null) { return 0; } else { return (float)axis[i].axisState; }
+            }
+            return 0;
+        }
+    }
+    // Are we at the positive extreme value of the axis
+    public bool axisPlus
+    {
+        get
+        {
+            for (int i = 0; i < axis.Length; i++)
+            {
+                if (axis[i].axisState == null) { continue; }
+                else if ((float)axis[i].axisState == 1) { return true; }
+            }
+            return false;
+        }
+    }
+    // Are we at the negative extreme value of the axis
+    public bool axisMinus
+    {
+        get
+        {
+            for (int i = 0; i < axis.Length; i++)
+            {
+                if (axis[i].axisState == null) { continue; }
+                else if ((float)axis[i].axisState == -1) { return true; }
+            }
+            return false;
+        }
+    }
+}
+
+[System.Serializable]
 public class KeyBindingStruct
 {
-    //public AxisAction moveX, moveY, aimX, aimY;
+    public AxisAction moveX, moveY, aimX, aimY;
     public ButtonAction dunk, throwBall, interact, grapple, detectBall;
+
+    // Shortcuts
+    public Vector2 moveStickVector => new Vector2(moveX.axisValue, moveY.axisValue);
+    public Vector2 aimStickVector => new Vector2(aimX.axisValue, aimY.axisValue);
 }
 
 public class InputHandler : MonoBehaviour
@@ -133,6 +169,54 @@ public class InputHandler : MonoBehaviour
                 return i_state.Buttons.LeftShoulder;
             case CustomKeyCode.RB:
                 return i_state.Buttons.RightShoulder;
+            case CustomKeyCode.LT:
+                if (_index == PlayerIndex.One)
+                {
+                    if (i_state.Triggers.Left > GameManager.playerOne.triggerTreshold)
+                    {
+                        return ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        return ButtonState.Released;
+                    }
+                }
+                else if (_index == PlayerIndex.Two)
+                {
+                    if (i_state.Triggers.Left > GameManager.playerTwo.triggerTreshold)
+                    {
+                        return ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        return ButtonState.Released;
+                    }
+                }
+                return null;
+            case CustomKeyCode.RT:
+                if (_index == PlayerIndex.One)
+                {
+                    if (i_state.Triggers.Right > GameManager.playerOne.triggerTreshold)
+                    {
+                        return ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        return ButtonState.Released;
+                    }
+                }
+                else if (_index == PlayerIndex.Two)
+                {
+                    if (i_state.Triggers.Right > GameManager.playerTwo.triggerTreshold)
+                    {
+                        return ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        return ButtonState.Released;
+                    }
+                }
+                return null;
             case CustomKeyCode.PadUp:
                 return i_state.DPad.Up;
             case CustomKeyCode.PadDown:
@@ -160,10 +244,6 @@ public class InputHandler : MonoBehaviour
         GamePadState i_state = GamePad.GetState(_index);
         switch (_ca)
         {
-            case CustomAxisCode.LT:
-                return i_state.Triggers.Left;
-            case CustomAxisCode.RT:
-                return i_state.Triggers.Right;
             case CustomAxisCode.LeftJoystickX:
                 return i_state.ThumbSticks.Left.X;
             case CustomAxisCode.LeftJoystickY:
@@ -206,6 +286,8 @@ public enum CustomKeyCode
     X,
     LB,
     RB,
+    LT,
+    RT,
     PadUp,
     PadDown,
     PadLeft,
@@ -218,8 +300,6 @@ public enum CustomKeyCode
 
 public enum CustomAxisCode
 {
-    LT,
-    RT,
     LeftJoystickX,
     LeftJoystickY,
     RightJoytickX,
