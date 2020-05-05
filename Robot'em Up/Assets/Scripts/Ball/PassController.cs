@@ -317,6 +317,20 @@ public class PassController : MonoBehaviour
 	public void Receive ( BallBehaviour _ball )
 	{
 		if (!canReceive) { return; }
+        if (_ball.isGhostBall == true)
+        {
+            if (!GetComponent<PlayerGhostAI>())
+            {
+                return;
+            }
+        }
+        else
+        {
+            if (!isPlayer)
+            {
+                return;
+            }
+        }
 		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPawn, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection(), !isPlayer);
 		if (isPlayer)
 		{

@@ -8,6 +8,8 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     [Header("Puzzle Link")]
     [Range(0.3f, 20)] public float nbSecondsLinkMaintained = 8f;
+    public float distanceBeforeAwaking = 20;
+    private bool completed = false;
     public MeshRenderer CompletionShader;
     public Animator myAnim;
 
@@ -24,6 +26,13 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
+        if (_ball != null)
+        {
+            if (_ball.isGhostBall)
+            {
+                return;
+            }
+        }
         if ((_source == DamageSource.Ball | _source == DamageSource.Dunk) & !shutDown)
         {
             if (MomentumManager.GetMomentum() >= puzzleData.nbMomentumNeededToLink)
@@ -48,7 +57,8 @@ public class PuzzleLink : PuzzleActivator, IHitable
                 MomentumManager.DecreaseMomentum(puzzleData.nbMomentumLooseWhenLink);
                 chargingTime = nbSecondsLinkMaintained;
                 isActivated = true;
-                myAnim.SetTrigger("ActivatingTrigger");
+                myAnim.SetBool("Awaken", true);
+                myAnim.SetBool("IsActivated", true);
 
                 ActivateLinkedObjects();
             }
@@ -71,6 +81,8 @@ public class PuzzleLink : PuzzleActivator, IHitable
         if (chargingTime <= 0 && isActivated)
         {
             isActivated = false;
+            CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
+            myAnim.SetBool("IsActivated", false);
             fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
             if (fX_Activation != null)
             {
@@ -82,14 +94,24 @@ public class PuzzleLink : PuzzleActivator, IHitable
             }
             DesactiveLinkedObjects();
         }
+        if (Vector3.Distance(transform.position, PlayerController.GetNearestPlayer(transform.position).transform.position) < distanceBeforeAwaking && !completed)
+        {
+            myAnim.SetBool("Awaken", true);
+        } else if (!isActivated || completed)
+        {
+            myAnim.SetBool("Awaken", false);
+            CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
+        }
     }
 
 
     override public void CustomShutDown()
     {
-        myAnim.SetTrigger("ClosingTrigger");
+        completed = true;
         CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
         isActivated = false;
+        myAnim.SetBool("Awaken", false);
+        myAnim.SetBool("IsActivated", false);
 
 
         fX_LinkEnd = FeedbackManager.SendFeedback("event.PuzzleLinkDesactivation", this).GetVFX();
