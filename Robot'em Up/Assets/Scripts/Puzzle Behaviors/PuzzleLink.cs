@@ -26,9 +26,12 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        if (_ball.isGhostBall)
+        if (_ball != null)
         {
-            return;
+            if (_ball.isGhostBall)
+            {
+                return;
+            }
         }
         if ((_source == DamageSource.Ball | _source == DamageSource.Dunk) & !shutDown)
         {
