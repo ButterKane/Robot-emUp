@@ -348,25 +348,27 @@ public class PlayerController : PawnController, IHitable
     private void GamepadInput()
     {
         state = GamePad.GetState(playerIndex);
-        //GetMoveAndLookInput(out moveInput, out lookInput);
-        //CheckRightStick();
-        //CheckLeftStick();
-        //CheckButtons();
-        //CheckRightTrigger();
-        //CheckLeftTrigger();
-        //CheckRightShoulder();
-        //CheckLeftShoulder();
-        //CheckBothTriggers();
+        GetMoveAndLookInput(out moveInput, out lookInput);
+        CheckRightStick();
+        CheckLeftStick();
+        CheckButtons();
+        CheckRightTrigger();
+        CheckLeftTrigger();
+        CheckRightShoulder();
+        CheckLeftShoulder();
+        CheckBothTriggers();
 
-        CheckMoveAndLook(out moveInput, out lookInput);
-        CheckAim();
-        CheckDunk();
-        CheckPass();
-        CheckDash();
-        CheckGrapple();
-        CheckDetectBall();
-        CheckInteraction();
+        //CheckMoveAndLook(out moveInput, out lookInput);
+        //CheckAim();
+        //CheckDunk();
+        //CheckPass();
+        //CheckDash();
+        //CheckGrapple();
+        //CheckDetectBall();
+        //CheckInteraction();
     }
+
+    // Old input system
     private void GetMoveAndLookInput(out Vector3 _moveInput, out Vector3 _lookInput)
     {
         _lookInput = lookInput;
