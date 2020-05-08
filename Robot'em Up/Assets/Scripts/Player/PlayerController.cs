@@ -317,6 +317,7 @@ public class PlayerController : PawnController, IHitable
             DontDestroyOnLoad(middlePoint.gameObject);
             GameManager.DDOL.Add(middlePoint.gameObject);
             SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
+            col.radius = 3f;
             col.isTrigger = true;
         }
     }
