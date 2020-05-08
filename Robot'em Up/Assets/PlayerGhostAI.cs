@@ -7,7 +7,8 @@ public class PlayerGhostAI : MonoBehaviour
 {
 
 
-    public enum GhostType { Moving, Dashing, Passing, CurvedPassing, Dunk }
+    public enum GhostType { Moving, Dashing, Passing, CurvedPassing, Dunk };
+    public enum DunkType { Passing, Dunking };
 
     public GhostType ghostType;
 
@@ -19,13 +20,15 @@ public class PlayerGhostAI : MonoBehaviour
 
     public float actionCooldown = 5;
     private float currentCooldown;
+    private bool jumpCooldown;
 
     private DashController dashController;
     private DunkController dunkController;
     private PassController passController;
     private PawnController pawnController;
 
-    [ConditionalField(nameof(ghostType), false, GhostType.Passing)]  public PawnController passTarget;
+    [ConditionalField(nameof(ghostType), false, GhostType.Passing, GhostType.Dunk)]  public PawnController passTarget;
+    [ConditionalField(nameof(ghostType), false, GhostType.Dunk)] public DunkType myDunkType;
 
     private void Awake ()
     {
@@ -95,7 +98,6 @@ public class PlayerGhostAI : MonoBehaviour
                 break;
             case GhostType.Passing:
                 pawnController.canMove = false;
-                pawnController.moveState = MoveState.Idle;
                 if (currentCooldown <= 0)
                 {
                     transform.LookAt(passTarget.transform.position);
@@ -105,13 +107,34 @@ public class PlayerGhostAI : MonoBehaviour
                 else
                 {
                     passController.Aim();
-                    passController.SetLookDirection(transform.right);
+                   // passController.SetLookDirection(Vector3.MoveTowards(transform.position,passTarget.transform.position, 100));
                     currentCooldown -= Time.deltaTime;
                 }
                 break;
             case GhostType.CurvedPassing:
                 break;
             case GhostType.Dunk:
+
+                pawnController.canMove = false;
+                if (currentCooldown <= 0.5f && myDunkType == DunkType.Dunking && jumpCooldown && !passController.CanShoot())
+                {
+                    dunkController.ForceDunk();
+                    jumpCooldown = false;
+                }
+                if (currentCooldown <= 0)
+                {
+                    transform.LookAt(passTarget.transform.position);
+                    passController.Shoot();
+                    currentCooldown = actionCooldown;
+                    jumpCooldown = true;
+                }
+                else
+                {
+                    passController.Aim();
+                    // passController.SetLookDirection(Vector3.MoveTowards(transform.position,passTarget.transform.position, 100));
+                    currentCooldown -= Time.deltaTime;
+                }
+
                 break;
         }
     }
