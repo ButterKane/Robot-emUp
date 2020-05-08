@@ -117,7 +117,7 @@ public class AxisAction
 public class KeyBindingStruct
 {
     public AxisAction moveX, moveY, aimX, aimY;
-    public ButtonAction dunk, throwBall, interact, grapple, detectBall;
+    public ButtonAction dunk, dash, throwBall, interact, grapple, detectBall;
 
     // Shortcuts
     public Vector2 moveStickVector => new Vector2(moveX.axisValue, moveY.axisValue);
@@ -134,18 +134,23 @@ public class InputHandler : MonoBehaviour
     void Awake()
     {
         if (instance == null) { instance = this; }
+        AssignPlayerIndexToBindings();
     }
 
     private void Update()
     {
         //For player1
         ResetUnusedButtons(bindingP1.dunk);
+        ResetUnusedButtons(bindingP1.dash);
+        ResetUnusedButtons(bindingP1.interact);
         ResetUnusedButtons(bindingP1.throwBall);
         ResetUnusedButtons(bindingP1.grapple);
         ResetUnusedButtons(bindingP1.detectBall);
 
         //For player2
         ResetUnusedButtons(bindingP2.dunk);
+        ResetUnusedButtons(bindingP2.dash);
+        ResetUnusedButtons(bindingP2.interact);
         ResetUnusedButtons(bindingP2.throwBall);
         ResetUnusedButtons(bindingP2.grapple);
         ResetUnusedButtons(bindingP2.detectBall);
@@ -248,7 +253,7 @@ public class InputHandler : MonoBehaviour
                 return i_state.ThumbSticks.Left.X;
             case CustomAxisCode.LeftJoystickY:
                 return i_state.ThumbSticks.Left.Y;
-            case CustomAxisCode.RightJoytickX:
+            case CustomAxisCode.RightJoystickX:
                 return i_state.ThumbSticks.Right.X;
             case CustomAxisCode.RightJoystickY:
                 return i_state.ThumbSticks.Right.Y;
@@ -274,6 +279,34 @@ public class InputHandler : MonoBehaviour
     {
         _concernedAction.buttons[_whichInputIndex].key = _newKey;
         // make a check on all others input to see if there are multiples
+    }
+
+    //Badly wrote. TODO: generalize
+    public void AssignPlayerIndexToBindings()
+    {
+        // For player 1
+        for (int i = 0; i < bindingP1.dunk.buttons.Length; i++) { bindingP1.dunk.buttons[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.dash.buttons.Length; i++) { bindingP1.dash.buttons[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.throwBall.buttons.Length; i++) { bindingP1.throwBall.buttons[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.grapple.buttons.Length; i++) { bindingP1.grapple.buttons[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.interact.buttons.Length; i++) { bindingP1.interact.buttons[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.detectBall.buttons.Length; i++) { bindingP1.detectBall.buttons[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.moveX.axis.Length; i++) { bindingP1.moveX.axis[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.moveY.axis.Length; i++) { bindingP1.moveY.axis[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.aimX.axis.Length; i++) { bindingP1.aimX.axis[i].index = PlayerIndex.One; }
+        for (int i = 0; i < bindingP1.aimY.axis.Length; i++) { bindingP1.aimY.axis[i].index = PlayerIndex.One; }
+
+        // For player 2
+        for (int i = 0; i < bindingP2.dunk.buttons.Length; i++) { bindingP2.dunk.buttons[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.dash.buttons.Length; i++) { bindingP2.dash.buttons[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.throwBall.buttons.Length; i++) { bindingP2.throwBall.buttons[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.grapple.buttons.Length; i++) { bindingP2.grapple.buttons[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.interact.buttons.Length; i++) { bindingP2.interact.buttons[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.detectBall.buttons.Length; i++) { bindingP2.detectBall.buttons[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.moveX.axis.Length; i++) { bindingP2.moveX.axis[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.moveY.axis.Length; i++) { bindingP2.moveY.axis[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.aimX.axis.Length; i++) { bindingP2.aimX.axis[i].index = PlayerIndex.Two; }
+        for (int i = 0; i < bindingP2.aimY.axis.Length; i++) { bindingP2.aimY.axis[i].index = PlayerIndex.Two; }
     }
 }
 
@@ -302,7 +335,7 @@ public enum CustomAxisCode
 {
     LeftJoystickX,
     LeftJoystickY,
-    RightJoytickX,
+    RightJoystickX,
     RightJoystickY
 }
 
