@@ -83,10 +83,10 @@ public class PlayerController : PawnController, IHitable
     {
         base.Awake();
         if (!Application.isPlaying) { return; }
-
+        /*
         if (playerIndex == PlayerIndex.One) { bindings = InputHandler.instance.bindingP1; }
         if (playerIndex == PlayerIndex.Two) { bindings = InputHandler.instance.bindingP2; }
-
+        */
         //References initialization
         mainCollider = GetComponent<Collider>();
         cam = Camera.main;
