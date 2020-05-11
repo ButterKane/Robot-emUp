@@ -320,31 +320,34 @@ public class FeedbackEditor : Editor
 									RemoveSound(i_feedbackData);
 								}
 
-								for (int y = 0; y < soundData.soundList.Count; y++)
+								if (soundData.soundList != null)
 								{
-									GUILayout.BeginHorizontal();
+									for (int y = 0; y < soundData.soundList.Count; y++)
 									{
-										GUILayout.Label("Clip", GUILayout.Width(100));
-										soundData.soundList[y].clip = (AudioClip)EditorGUILayout.ObjectField(soundData.soundList[y].clip, typeof(AudioClip), false, GUILayout.Width(150));
+										GUILayout.BeginHorizontal();
+										{
+											GUILayout.Label("Clip", GUILayout.Width(100));
+											soundData.soundList[y].clip = (AudioClip)EditorGUILayout.ObjectField(soundData.soundList[y].clip, typeof(AudioClip), false, GUILayout.Width(150));
 
-										if (GUILayout.Button(EditorGUIUtility.IconContent("Animation.Play"), GUILayout.Width(20), GUILayout.Height(20)))
-										{
-											SoundManager.PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
+											if (GUILayout.Button(EditorGUIUtility.IconContent("Animation.Play"), GUILayout.Width(20), GUILayout.Height(20)))
+											{
+												SoundManager.PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
+											}
+											GUILayout.Label("Play Chances", GUILayout.Width(100));
+											EditorGUI.BeginChangeCheck();
+											float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(soundData.soundList[y].playChances * 100f) / 100f, 0f, 1f);
+											if (EditorGUI.EndChangeCheck())
+											{
+												soundData.SetPlayProbability(soundData.soundList[y], probaSliderValue);
+											}
+											if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
+											{
+												soundData.RemoveSound(soundData.soundList[y]);
+												return;
+											}
 										}
-										GUILayout.Label("Play Chances", GUILayout.Width(100));
-										EditorGUI.BeginChangeCheck();
-										float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(soundData.soundList[y].playChances * 100f) / 100f, 0f, 1f);
-										if (EditorGUI.EndChangeCheck())
-										{
-											soundData.SetPlayProbability(soundData.soundList[y], probaSliderValue);
-										}
-										if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
-										{
-											soundData.RemoveSound(soundData.soundList[y]);
-											return;
-										}
+										GUILayout.EndHorizontal();
 									}
-									GUILayout.EndHorizontal();
 								}
 
 								GUILayout.BeginHorizontal();
