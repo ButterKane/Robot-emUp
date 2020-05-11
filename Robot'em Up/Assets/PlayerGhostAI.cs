@@ -20,6 +20,7 @@ public class PlayerGhostAI : MonoBehaviour
 
     public float actionCooldown = 5;
     private float currentCooldown;
+    private float curvedCooldown;
     private bool jumpCooldown;
 
     private DashController dashController;
@@ -27,7 +28,7 @@ public class PlayerGhostAI : MonoBehaviour
     private PassController passController;
     private PawnController pawnController;
 
-    [ConditionalField(nameof(ghostType), false, GhostType.Passing, GhostType.Dunk)]  public PawnController passTarget;
+    [ConditionalField(nameof(ghostType), false, GhostType.Passing, GhostType.Dunk, GhostType.CurvedPassing)]  public PawnController passTarget;
     [ConditionalField(nameof(ghostType), false, GhostType.Dunk)] public DunkType myDunkType;
 
     private void Awake ()
@@ -36,7 +37,7 @@ public class PlayerGhostAI : MonoBehaviour
         passController = GetComponent<PassController>();
         dunkController = GetComponent<DunkController>();
         pawnController = GetComponent<PawnController>();
-
+        curvedCooldown = 0;
 
         if (passController) { passController.SetTargetedPawn(passTarget); }
     }
@@ -112,6 +113,22 @@ public class PlayerGhostAI : MonoBehaviour
                 }
                 break;
             case GhostType.CurvedPassing:
+                pawnController.canMove = false;
+                if (currentCooldown <= 0)
+                {
+                    transform.LookAt(passTarget.transform.position);
+                    passController.Shoot();
+                    currentCooldown = actionCooldown;
+                    curvedCooldown = 0;
+                }
+                else
+                {
+                    passController.Aim();
+                    curvedCooldown += Time.deltaTime;
+                    passController.SetLookDirection(new Vector3(0.2f, 0, - curvedCooldown * 0.2f));
+                    // passController.SetLookDirection(Vector3.MoveTowards(transform.position,passTarget.transform.position, 100));
+                    currentCooldown -= Time.deltaTime;
+                }
                 break;
             case GhostType.Dunk:
 
