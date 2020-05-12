@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ToxicAreaManager : MonoBehaviour
 {
-    public static ToxicAreaManager toxicAreaManager;
+    public static ToxicAreaManager i;
     public bool areaActivated = false;
     public bool accelerateDepoisoned = false;
     public float decay_multiplier;
@@ -22,9 +22,14 @@ public class ToxicAreaManager : MonoBehaviour
     private Slider playerTwoToxicBarSlider;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        toxicAreaManager = this;
+        i = this;
+
+    }
+
+        void Start()
+    {
 
         playerOneToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
         playerTwoToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
