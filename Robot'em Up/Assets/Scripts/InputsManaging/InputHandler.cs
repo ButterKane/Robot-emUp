@@ -33,11 +33,13 @@ public class ButtonAction
     {
         get
         {
+            int i_inputToValidate = 0;
             for (int i = 0; i < buttons.Length; i++)
             {
                 if (buttons[i].keyState == ButtonState.Pressed && isPressed == false)
-                { Debug.Log("pressingButton"); return true; }
+                { i_inputToValidate++; }
             }
+            if(i_inputToValidate == buttons.Length) { return true; }
             return false;
         }
     }
