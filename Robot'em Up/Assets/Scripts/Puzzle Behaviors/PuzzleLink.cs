@@ -94,13 +94,17 @@ public class PuzzleLink : PuzzleActivator, IHitable
             }
             DesactiveLinkedObjects();
         }
-        if (Vector3.Distance(transform.position, PlayerController.GetNearestPlayer(transform.position).transform.position) < distanceBeforeAwaking && !completed)
+        if (GameManager.alivePlayers.Count>0)
         {
-            myAnim.SetBool("Awaken", true);
-        } else if (!isActivated || completed)
-        {
-            myAnim.SetBool("Awaken", false);
-            CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
+            if (Vector3.Distance(transform.position, PlayerController.GetNearestPlayer(transform.position).transform.position) < distanceBeforeAwaking && !completed)
+            {
+                myAnim.SetBool("Awaken", true);
+            }
+            else if (!isActivated || completed)
+            {
+                myAnim.SetBool("Awaken", false);
+                CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
+            }
         }
     }
 

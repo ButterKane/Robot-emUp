@@ -100,7 +100,7 @@ public class ToxicAreaManager : MonoBehaviour
                 GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
                 if (accelerateDepoisoned)
                 {
-                    toxicValue_P1 -= Time.deltaTime * decay_multiplier * 3;
+                    toxicValue_P1 -= Time.deltaTime * decay_multiplier * 4;
                 }
             }
             else
@@ -116,7 +116,7 @@ public class ToxicAreaManager : MonoBehaviour
                 GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
                 if (accelerateDepoisoned)
                 {
-                    toxicValue_P2 -= Time.deltaTime * decay_multiplier * 3;
+                    toxicValue_P2 -= Time.deltaTime * decay_multiplier * 4;
                 }
             }
             else

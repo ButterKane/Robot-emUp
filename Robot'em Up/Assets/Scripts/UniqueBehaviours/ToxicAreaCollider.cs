@@ -17,7 +17,6 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     void Start()
     {
         manager = ToxicAreaManager.i;
-        ToxicAreaManager.i.ToxicAreaEntry();
     }
 
     // Update is called once per frame
