@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ToxicAreaManager : MonoBehaviour
 {
-    public static ToxicAreaManager toxicAreaManager;
+    public static ToxicAreaManager i;
     public bool areaActivated = false;
     public bool accelerateDepoisoned = false;
     public float decay_multiplier;
@@ -16,20 +16,22 @@ public class ToxicAreaManager : MonoBehaviour
     public bool isPoisened_P2;
     public Image poisonedSprite_P1;
     public Image poisonedSprite_P2;
-    private Transform playerOneToxicBar;
-    private Transform playerTwoToxicBar;
+    public Transform playerOneToxicBar;
+    public Transform playerTwoToxicBar;
     private Slider playerOneToxicBarSlider;
     private Slider playerTwoToxicBarSlider;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        toxicAreaManager = this;
-
+        i = this;
         playerOneToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
         playerTwoToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
+    }
 
-        PlayerUI player1UI = GameManager.playerOne.GetComponent<PlayerUI>();
+        void Start()
+        {
+            PlayerUI player1UI = GameManager.playerOne.GetComponent<PlayerUI>();
         PlayerUI player2UI = GameManager.playerTwo.GetComponent<PlayerUI>();
 
         if (player1UI.playerCanvasLateralRectTransform != null)
@@ -52,6 +54,7 @@ public class ToxicAreaManager : MonoBehaviour
         playerOneToxicBar.gameObject.SetActive(false);
         playerTwoToxicBar.gameObject.SetActive(false);
     }
+
 
     // Update is called once per frame
     void Update()
