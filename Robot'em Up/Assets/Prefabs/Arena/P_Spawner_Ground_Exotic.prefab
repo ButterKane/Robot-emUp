@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4973093823889768890}
   m_Layer: 0
-  m_Name: SpawnerUniqueTurret
+  m_Name: P_Spawner_Ground_Exotic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onExit: 0
   singleUse: 1
-  useDirection: 0
+  oneWayOnly: 0
   triggerCondition: 0
   onTriggerEnterAction:
     m_PersistentCalls:
@@ -225,6 +225,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 797739327915659025, guid: 2e130dd6770cfc6448d9182dcef8733a,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.8499997
+      objectReference: {fileID: 0}
+    - target: {fileID: 797739327915659025, guid: 2e130dd6770cfc6448d9182dcef8733a,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -82.21
+      objectReference: {fileID: 0}
+    - target: {fileID: 797739327915659025, guid: 2e130dd6770cfc6448d9182dcef8733a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1158.51
+      objectReference: {fileID: 0}
     - target: {fileID: 797739329097034684, guid: 2e130dd6770cfc6448d9182dcef8733a,
         type: 3}
       propertyPath: enemyToSpawn
@@ -248,17 +263,17 @@ PrefabInstance:
     - target: {fileID: 797739329097034685, guid: 2e130dd6770cfc6448d9182dcef8733a,
         type: 3}
       propertyPath: m_Positions.Array.data[0].x
-      value: -24.668884
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 797739329097034685, guid: 2e130dd6770cfc6448d9182dcef8733a,
         type: 3}
       propertyPath: m_Positions.Array.data[0].y
-      value: -8.955917
+      value: -1.2
       objectReference: {fileID: 0}
     - target: {fileID: 797739329097034685, guid: 2e130dd6770cfc6448d9182dcef8733a,
         type: 3}
       propertyPath: m_Positions.Array.data[0].z
-      value: 1362.6355
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 797739329097034685, guid: 2e130dd6770cfc6448d9182dcef8733a,
         type: 3}
@@ -274,21 +289,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Positions.Array.data[1].z
       value: 1158.51
-      objectReference: {fileID: 0}
-    - target: {fileID: 797739327915659025, guid: 2e130dd6770cfc6448d9182dcef8733a,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 8.605917
-      objectReference: {fileID: 0}
-    - target: {fileID: 797739327915659025, guid: 2e130dd6770cfc6448d9182dcef8733a,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -57.541115
-      objectReference: {fileID: 0}
-    - target: {fileID: 797739327915659025, guid: 2e130dd6770cfc6448d9182dcef8733a,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -204.12549
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e130dd6770cfc6448d9182dcef8733a, type: 3}
