@@ -71,7 +71,14 @@ public class PlayerUI : MonoBehaviour
 	public RectTransform playerCanvasRectTransform;
 	public RectTransform playerCanvasLateralRectTransform;
 
-	private void Start ()
+
+    private void Awake()
+    {
+        GenerateCanvas();
+    }
+
+
+        private void Start ()
 	{
 		pawnController = GetComponent<PawnController>();
 		dashController = GetComponent<DashController>();
@@ -82,7 +89,6 @@ public class PlayerUI : MonoBehaviour
 
 		if (!pawnController) { Debug.LogWarning("No pawnController found"); return; }
 
-		GenerateCanvas();
 		GenerateHealthPanel();
 		GenerateHealthBar();
 		if (dashController)

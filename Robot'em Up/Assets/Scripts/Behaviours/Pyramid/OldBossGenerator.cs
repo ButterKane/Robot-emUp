@@ -8,6 +8,7 @@ public class OldBossGenerator : MonoBehaviour
 {
     public float waitingTimeForNextEnemy;
     public float randomLenghtTime;
+    public float startTime = 0;
     public List<GameObject> listOfEnemiesPrefabToSpawn;
     public UnityEvent SpawnerToTrigger;
 
@@ -16,7 +17,7 @@ public class OldBossGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentTimer = waitingTimeForNextEnemy;
+        currentTimer = startTime;
     }
 
     // Update is called once per frame

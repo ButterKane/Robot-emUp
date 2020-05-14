@@ -26,9 +26,12 @@ public class PuzzleLink : PuzzleActivator, IHitable
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default(Vector3))
     {
-        if (_ball.isGhostBall)
+        if (_ball != null)
         {
-            return;
+            if (_ball.isGhostBall)
+            {
+                return;
+            }
         }
         if ((_source == DamageSource.Ball | _source == DamageSource.Dunk) & !shutDown)
         {
@@ -91,13 +94,17 @@ public class PuzzleLink : PuzzleActivator, IHitable
             }
             DesactiveLinkedObjects();
         }
-        if (Vector3.Distance(transform.position, PlayerController.GetNearestPlayer(transform.position).transform.position) < distanceBeforeAwaking && !completed)
+        if (GameManager.alivePlayers.Count>0)
         {
-            myAnim.SetBool("Awaken", true);
-        } else if (!isActivated || completed)
-        {
-            myAnim.SetBool("Awaken", false);
-            CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
+            if (Vector3.Distance(transform.position, PlayerController.GetNearestPlayer(transform.position).transform.position) < distanceBeforeAwaking && !completed)
+            {
+                myAnim.SetBool("Awaken", true);
+            }
+            else if (!isActivated || completed)
+            {
+                myAnim.SetBool("Awaken", false);
+                CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
+            }
         }
     }
 
