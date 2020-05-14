@@ -11,7 +11,7 @@ public class SoundData
 {
 	public string soundName;
 	public float delay = 0;
-	public List<Sound> soundList;
+	public List<Sound> soundList = new List<Sound>();
 	[Range(0f, 1f)] public float volumeMultiplier = 1f;
 
 	public void SetPlayProbability(Sound _sound, float _newProbability)

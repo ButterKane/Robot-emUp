@@ -16,6 +16,7 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     // Start is called before the first frame update
     void Start()
     {
+        manager = ToxicAreaManager.i;
     }
 
     // Update is called once per frame
@@ -37,11 +38,11 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         {
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
-                ToxicAreaManager.toxicAreaManager.toxicValue_P1 += Time.deltaTime * multiplicator;
+                ToxicAreaManager.i.toxicValue_P1 += Time.deltaTime * multiplicator;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
-                ToxicAreaManager.toxicAreaManager.toxicValue_P2 += Time.deltaTime * multiplicator;
+                ToxicAreaManager.i.toxicValue_P2 += Time.deltaTime * multiplicator;
             }
         }
   }
