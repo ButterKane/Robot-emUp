@@ -330,7 +330,8 @@ public enum CustomKeyCode
     L3,
     R3,
     Start,
-    Back
+    Back,
+    Null
 }
 
 public enum CustomAxisCode
@@ -338,7 +339,8 @@ public enum CustomAxisCode
     LeftJoystickX,
     LeftJoystickY,
     RightJoystickX,
-    RightJoystickY
+    RightJoystickY,
+    Null
 }
 
 

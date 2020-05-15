@@ -30,6 +30,7 @@ public class SettingsMenu : MonoBehaviour
     [ReadOnly] public string selectedSettingName;
     public float normalRestTimeOfJoystick = 0.5f;
     public MainMenu scriptLinkedToThisOne;
+    public InputRemapper inputRemapper;
 
     [Separator("Slider variables")]
     public Vector2 minMaxTimeBeforeReset = new Vector2(0.2f, 0.5f);
