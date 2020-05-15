@@ -16,6 +16,7 @@ public class CameraBehaviour : MonoBehaviour
 	public float translationSpeed = 1;
 
 	public Transform focusPoint;
+	public bool staticCamera = false;
 	[Range(0f, 1f)] public float focusImportance;
 
 	public bool enableTranslation = true;
@@ -68,7 +69,10 @@ public class CameraBehaviour : MonoBehaviour
 			transposer.m_MinimumDistance = minCameraDistance;
 			transposer.m_MaximumDistance = maxCameraDistance;
 		}
-		virtualCamera.m_Follow = followPoint.transform;
+		if (!staticCamera)
+		{
+			virtualCamera.m_Follow = followPoint.transform;
+		}
 		virtualCamera.m_LookAt = followPoint.transform;
 	}
 

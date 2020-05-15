@@ -23,6 +23,7 @@ public class DestroyableWall : MonoBehaviour, IHitable
 
     public void DestroyTheObject ()
     {
+        destroyed = true;
         FeedbackManager.SendFeedback("event.DestrObjectDeath", this, transform.position, transform.up, transform.up);
         visualsToHideWhenDestroyed.SetActive(false);
         destroyedVisuals.SetActive(true);
