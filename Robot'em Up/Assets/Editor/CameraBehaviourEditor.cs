@@ -67,6 +67,12 @@ public class CameraBehaviourEditor : Editor
 			GUILayout.Label("Max Cam Distance: ", GUILayout.Width(120));
 			EditorGUILayout.PropertyField(m_maxDistance, GUIContent.none);
 			EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.BeginHorizontal();
+			SerializedProperty m_static = serializedObject.FindProperty("staticCamera");
+			GUILayout.Label("Set static camera: ", GUILayout.Width(120));
+			EditorGUILayout.PropertyField(m_static, GUIContent.none);
+			EditorGUILayout.EndHorizontal();
 		}
 
 		GUILayout.Space(10);

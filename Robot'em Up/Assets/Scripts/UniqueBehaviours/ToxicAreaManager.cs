@@ -20,6 +20,8 @@ public class ToxicAreaManager : MonoBehaviour
     public Transform playerTwoToxicBar;
     private Slider playerOneToxicBarSlider;
     private Slider playerTwoToxicBarSlider;
+    private float inflictDamage_P1;
+    private float inflictDamage_P2;
 
     // Start is called before the first frame update
     void Awake()
@@ -91,16 +93,17 @@ public class ToxicAreaManager : MonoBehaviour
 
             toxicValue_P1 -= Time.deltaTime * decay_multiplier;
             toxicValue_P2 -= Time.deltaTime * decay_multiplier;
+            inflictDamage_P1 -= Time.deltaTime;
+            inflictDamage_P2 -= Time.deltaTime;
 
-
-            if (isPoisened_P1 && GameManager.alivePlayers.Contains(GameManager.playerOne))
+            if (isPoisened_P1 && GameManager.alivePlayers.Contains(GameManager.playerOne) && inflictDamage_P1<0)
             {
                 // poisonedSprite_P1.gameObject.SetActive(true);
-
-                GameManager.playerOne.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
+                inflictDamage_P1 = 0.5f;
+                GameManager.playerOne.Damage(0.5f * damageWhenPoisened_multiplier);
                 if (accelerateDepoisoned)
                 {
-                    toxicValue_P1 -= Time.deltaTime * decay_multiplier * 3;
+                    toxicValue_P1 -= Time.deltaTime * decay_multiplier * 4;
                 }
             }
             else
@@ -109,14 +112,15 @@ public class ToxicAreaManager : MonoBehaviour
             }
 
 
-            if (isPoisened_P2 && GameManager.alivePlayers.Contains(GameManager.playerTwo))
+            if (isPoisened_P2 && GameManager.alivePlayers.Contains(GameManager.playerTwo) && inflictDamage_P2 < 0)
             {
                 //  poisonedSprite_P2.gameObject.SetActive(true);
+                inflictDamage_P2 = 0.5f;
 
                 GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
                 if (accelerateDepoisoned)
                 {
-                    toxicValue_P2 -= Time.deltaTime * decay_multiplier * 3;
+                    toxicValue_P2 -= Time.deltaTime * decay_multiplier * 4;
                 }
             }
             else
