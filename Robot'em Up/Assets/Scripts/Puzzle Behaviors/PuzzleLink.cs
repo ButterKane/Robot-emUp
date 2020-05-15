@@ -100,11 +100,13 @@ public class PuzzleLink : PuzzleActivator, IHitable
             {
                 myAnim.SetBool("Awaken", true);
             }
+            /*
             else if (!isActivated || completed)
             {
                 myAnim.SetBool("Awaken", false);
                 CompletionShader.material.SetFloat("_AddToCompleteCircle", 0);
             }
+            */
         }
     }
 
