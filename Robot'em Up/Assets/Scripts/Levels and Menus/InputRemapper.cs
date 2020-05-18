@@ -6,6 +6,9 @@ using XInputDotNetPure;
 public class InputRemapper : MonoBehaviour
 {
     [Range(0, 1)] public float joystickTreshold = 0.6f;
+    public GameObject[] remappableActions;
+    private SettingsInputGroup[] remappableActionsGroups;
+
 
     private bool isInNavigation = true;
     private bool isInRemappingMode = false;
@@ -17,8 +20,18 @@ public class InputRemapper : MonoBehaviour
     private bool waitForRightShoulderReset;
     private bool waitForLeftShoulderReset;
     private bool waitForAReset;
-    private int categoryNumber;
     private bool isInputChangingOpen;
+
+    private int focusedLineIndex;
+    private int focusedColumnIndex;
+
+    private ButtonAction currentAction;
+    private PlayerIndex whichPlayerIndex;
+
+    private bool assigningNewInput;
+    private float allocatedTimeToInput = 1;
+    private float timeLeftToInput;
+    private List<CustomKeyCode> sentInputs;
 
 
     void Update()
@@ -43,7 +56,6 @@ public class InputRemapper : MonoBehaviour
                     MoveBelow();
                     waitForJoystickYReset = true;
                 }
-
             }
             else
             {
@@ -121,7 +133,7 @@ public class InputRemapper : MonoBehaviour
             // Managing Up and Down
             if (i_state.ThumbSticks.Left.Y > joystickTreshold)
             {
-                RemapUsingJoystick();
+                RemapUsingJoystick(CustomAxisCode.LeftJoystickY);
             }
             else if (i_state.ThumbSticks.Left.Y < -joystickTreshold)
             {
@@ -131,32 +143,32 @@ public class InputRemapper : MonoBehaviour
             // Managing Left and Right
             if (i_state.ThumbSticks.Left.X > joystickTreshold)
             {
-                RemapUsingJoystick();
+                RemapUsingJoystick(CustomAxisCode.LeftJoystickX);
             }
             else if (i_state.ThumbSticks.Left.X < -joystickTreshold)
             {
-                RemapUsingJoystick();
+                RemapUsingJoystick(CustomAxisCode.LeftJoystickX);
             }
 
             // Right Joystick
             // Managing Up and Down
             if (i_state.ThumbSticks.Right.Y > joystickTreshold)
             {
-                RemapUsingJoystick();
+                RemapUsingJoystick(CustomAxisCode.RightJoystickY);
             }
             else if (i_state.ThumbSticks.Right.Y < -joystickTreshold)
             {
-                RemapUsingJoystick(CustomAxisCode.LeftJoystickY);
+                RemapUsingJoystick(CustomAxisCode.RightJoystickY);
             }
 
             // Managing Left and Right
             if (i_state.ThumbSticks.Right.X > joystickTreshold)
             {
-                RemapUsingJoystick();
+                RemapUsingJoystick(CustomAxisCode.RightJoystickX);
             }
             else if (i_state.ThumbSticks.Right.X < -joystickTreshold)
             {
-                RemapUsingJoystick();
+                RemapUsingJoystick(CustomAxisCode.RightJoystickX);
             }
 
             // D Pad 
@@ -176,7 +188,7 @@ public class InputRemapper : MonoBehaviour
             {
                 RemapUsingButton(CustomKeyCode.PadLeft);
             }
-            
+
             // Buttons
             if (i_state.Buttons.A == ButtonState.Pressed)
             {
@@ -218,26 +230,51 @@ public class InputRemapper : MonoBehaviour
                 RemapUsingButton(CustomKeyCode.Back);
             }
         }
+
+        //Timer for new inputs
+        if (assigningNewInput)
+        {
+            timeLeftToInput -= Time.unscaledDeltaTime;
+            if (timeLeftToInput < 0) { sentInputs.Clear(); InputHandler.instance.AssignNewInputsToAction(currentAction, sentInputs, whichPlayerIndex); assigningNewInput = false; }
+        }
+
     }
 
     public void MoveAbove()
     {
-
+        if (focusedLineIndex-1 >=0) { focusedLineIndex--; }
+        else
+        { 
+            //Play "impossible" feedback;
+        }
+        
     }
 
     public void MoveBelow()
     {
-
+        if (focusedLineIndex + 1 <= remappableActions.Length) { focusedLineIndex++; }
+        else
+        {
+            //Play "impossible" feedback;
+        }
     }
 
     public void MoveRight()
     {
-
+        if (focusedColumnIndex == 0) { focusedColumnIndex = 1; }
+        else
+        {
+            //Play "impossible" feedback;
+        }
     }
 
     public void MoveLeft()
     {
-
+        if (focusedColumnIndex == 1) { focusedColumnIndex = 0; }
+        else
+        {
+            //Play "impossible" feedback;
+        }
     }
 
     void OpenInputWindow()
@@ -254,6 +291,7 @@ public class InputRemapper : MonoBehaviour
     {
         isInNavigation = false;
         isInRemappingMode = true;
+        IdentifyTheFocusedInputInMatrix();
         // Greys everything else
         // Removes the current input text
         // Waits until an input is pressed
@@ -264,17 +302,32 @@ public class InputRemapper : MonoBehaviour
 
     public void RemapUsingButton(CustomKeyCode keyCode = CustomKeyCode.Null)
     {
-        if (keyCode != CustomKeyCode.Null)
-        {
+        if (keyCode == CustomKeyCode.Null) { return; }
 
+        if (!assigningNewInput)
+        {
+            assigningNewInput = true;
+            timeLeftToInput = allocatedTimeToInput;
+        }
+
+        if (timeLeftToInput > 0)
+        {
+            sentInputs.Add(keyCode);
         }
     }
 
     public void RemapUsingJoystick(CustomAxisCode axisCode = CustomAxisCode.Null)
     {
-        if (axisCode != CustomAxisCode.Null)
-        {
+        if (axisCode == CustomAxisCode.Null) { return; }
 
+        if (axisCode == CustomAxisCode.LeftJoystickX || axisCode == CustomAxisCode.RightJoystickX)
+        {
+            // Change joystick action to left joystick (so X and Y)
+        }
+
+        if (axisCode == CustomAxisCode.RightJoystickX || axisCode == CustomAxisCode.RightJoystickX)
+        {
+            // Change joystick action to right joystick (so X and Y)
         }
     }
 
@@ -286,5 +339,13 @@ public class InputRemapper : MonoBehaviour
     public void ResetToDefaultInputs()
     {
 
+    }
+
+    public void IdentifyTheFocusedInputInMatrix()
+    {
+        currentAction = remappableActionsGroups[focusedLineIndex].actionAndInputs.buttonInfo;
+
+        if (focusedColumnIndex == 0) { whichPlayerIndex = PlayerIndex.One; }
+        else if (focusedColumnIndex == 1) { whichPlayerIndex = PlayerIndex.Two; }
     }
 }

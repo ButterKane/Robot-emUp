@@ -10,7 +10,7 @@ using XInputDotNetPure;
 public struct SingleButton
 {
     public CustomKeyCode key;
-    [NonSerialized] public PlayerIndex index;
+    public PlayerIndex index;
     public ButtonState? keyState => InputHandler.instance.GetButtonState(key,index);
 }
 
@@ -18,7 +18,7 @@ public struct SingleButton
 public struct SingleAxis
 {
     public CustomAxisCode key;
-    [NonSerialized] public PlayerIndex index;
+    public PlayerIndex index;
     public float? axisState => InputHandler.instance.GetAxisState(key, index);
 }
 
@@ -48,11 +48,13 @@ public class ButtonAction
     {
         get
         {
+            int i_inputToValidate = 0;
             for (int i = 0; i < buttons.Length; i++)
             {
                 if (buttons[i].keyState == ButtonState.Released && isReleasable == true)
-                { Debug.Log("releasingButton"); isReleasable = false; return true; }
+                { i_inputToValidate++; }
             }
+            if (i_inputToValidate == buttons.Length) { return true; }
             return false;
         }
     }
@@ -61,11 +63,13 @@ public class ButtonAction
     {
         get
         {
+            int i_inputToValidate = 0;
             for (int i = 0; i < buttons.Length; i++)
             {
                 if (buttons[i].keyState == ButtonState.Pressed)
-                { Debug.Log("holdingButton"); isPressed = true; return true; }
+                { i_inputToValidate++; }
             }
+            if (i_inputToValidate == buttons.Length) { return true; }
             return false;
         }
     }
@@ -277,38 +281,39 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    public void AssignNewInputToAction(ButtonAction _concernedAction, CustomKeyCode _newKey, int _whichInputIndex)
+    public void AssignNewInputsToAction(ButtonAction _concernedAction, List<CustomKeyCode> _newKeyList, PlayerIndex _whichInputIndex)
     {
-        _concernedAction.buttons[_whichInputIndex].key = _newKey;
+        //_concernedAction.buttons[_whichInputIndex].key = _newKey;
         // make a check on all others input to see if there are multiples
     }
 
     //Badly wrote. TODO: generalize
     public void AssignPlayerIndexToBindings()
     {
-        // For player 1
-        for (int i = 0; i < bindingP1.dunk.buttons.Length; i++) { bindingP1.dunk.buttons[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.dash.buttons.Length; i++) { bindingP1.dash.buttons[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.throwBall.buttons.Length; i++) { bindingP1.throwBall.buttons[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.grapple.buttons.Length; i++) { bindingP1.grapple.buttons[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.interact.buttons.Length; i++) { bindingP1.interact.buttons[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.detectBall.buttons.Length; i++) { bindingP1.detectBall.buttons[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.moveX.axis.Length; i++) { bindingP1.moveX.axis[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.moveY.axis.Length; i++) { bindingP1.moveY.axis[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.aimX.axis.Length; i++) { bindingP1.aimX.axis[i].index = PlayerIndex.One; }
-        for (int i = 0; i < bindingP1.aimY.axis.Length; i++) { bindingP1.aimY.axis[i].index = PlayerIndex.One; }
+        //// For player 1
+        //foreach(var button in bindingP1.dunk.buttons) { button.index = PlayerIndex.One; } // Pas possible aprce que c'est une struct. La remplecer c'est détruire et reconstruire. Or on détruit pas un objet d'une liste
+        //for (int i = 0; i < bindingP1.dunk.buttons.Count; i++) { bindingP1.dunk.buttons[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.dash.buttons.Count; i++) { bindingP1.dash.buttons[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.throwBall.buttons.Count; i++) { bindingP1.throwBall.buttons[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.grapple.buttons.Count; i++) { bindingP1.grapple.buttons[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.interact.buttons.Count; i++) { bindingP1.interact.buttons[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.detectBall.buttons.Count; i++) { bindingP1.detectBall.buttons[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.moveX.axis.Length; i++) { bindingP1.moveX.axis[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.moveY.axis.Length; i++) { bindingP1.moveY.axis[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.aimX.axis.Length; i++) { bindingP1.aimX.axis[i].index = PlayerIndex.One; }
+        //for (int i = 0; i < bindingP1.aimY.axis.Length; i++) { bindingP1.aimY.axis[i].index = PlayerIndex.One; }
 
-        // For player 2
-        for (int i = 0; i < bindingP2.dunk.buttons.Length; i++) { bindingP2.dunk.buttons[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.dash.buttons.Length; i++) { bindingP2.dash.buttons[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.throwBall.buttons.Length; i++) { bindingP2.throwBall.buttons[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.grapple.buttons.Length; i++) { bindingP2.grapple.buttons[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.interact.buttons.Length; i++) { bindingP2.interact.buttons[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.detectBall.buttons.Length; i++) { bindingP2.detectBall.buttons[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.moveX.axis.Length; i++) { bindingP2.moveX.axis[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.moveY.axis.Length; i++) { bindingP2.moveY.axis[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.aimX.axis.Length; i++) { bindingP2.aimX.axis[i].index = PlayerIndex.Two; }
-        for (int i = 0; i < bindingP2.aimY.axis.Length; i++) { bindingP2.aimY.axis[i].index = PlayerIndex.Two; }
+        //// For player 2
+        //for (int i = 0; i < bindingP2.dunk.buttons.Count; i++) { bindingP2.dunk.buttons[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.dash.buttons.Count; i++) { bindingP2.dash.buttons[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.throwBall.buttons.Count; i++) { bindingP2.throwBall.buttons[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.grapple.buttons.Count; i++) { bindingP2.grapple.buttons[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.interact.buttons.Count; i++) { bindingP2.interact.buttons[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.detectBall.buttons.Count; i++) { bindingP2.detectBall.buttons[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.moveX.axis.Length; i++) { bindingP2.moveX.axis[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.moveY.axis.Length; i++) { bindingP2.moveY.axis[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.aimX.axis.Length; i++) { bindingP2.aimX.axis[i].index = PlayerIndex.Two; }
+        //for (int i = 0; i < bindingP2.aimY.axis.Length; i++) { bindingP2.aimY.axis[i].index = PlayerIndex.Two; }
     }
 }
 
