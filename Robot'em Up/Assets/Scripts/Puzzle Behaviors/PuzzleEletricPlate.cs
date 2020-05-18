@@ -11,9 +11,10 @@ public class PuzzleEletricPlate : PuzzleActivable
     [ReadOnly]
     public List<PawnController> pawnTrapped;
     public List<GameObject> IdleFx;
+    public List<ParticleSystem> FXs;
     public float speedModifier = 0.5f;
+
     private MeshRenderer meshRenderer;
-    private GameObject myFx;
 
     // Update is called once per frame
     void Awake()
@@ -103,9 +104,10 @@ public class PuzzleEletricPlate : PuzzleActivable
             UpdateLights();
             meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
 
-            if (myFx != null)
+            foreach (ParticleSystem ps in FXs)
             {
-                Destroy(myFx);
+                ParticleSystem.EmissionModule em = ps.emission;
+                em.enabled = false;
             }
         }
 
@@ -141,20 +143,22 @@ public class PuzzleEletricPlate : PuzzleActivable
         UpdateLights();
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
 
-        Destroy(myFx);
-
-        if (myFx != null)
+        foreach (ParticleSystem ps in FXs)
         {
-            Destroy(myFx);
+            ParticleSystem.EmissionModule em = ps.emission;
+            em.enabled = true;
         }
-        myFx = FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this).GetVFX();
-        myFx.transform.parent = transform;
+        FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this);
     }
 
 
     public override void CustomShutDown()
     {
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate_ShutDown;
-        Destroy(myFx);
+        foreach (ParticleSystem ps in FXs)
+        {
+            ParticleSystem.EmissionModule em = ps.emission;
+            em.enabled = false;
+        }
     }
 }
