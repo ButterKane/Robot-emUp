@@ -113,6 +113,8 @@ public class EnemyBehaviour : PawnController, IHitable
     [Header("Spawn")]
     public float spawnImpactRadius = 1f;
     public int spawnImpactDamages = 1;
+    public float spawningAnimDuration = 1f;
+    private float currentSpawningAnimDuration;
 
     [Space(3)]
     [Header("Death")]
@@ -140,7 +142,7 @@ public class EnemyBehaviour : PawnController, IHitable
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
 
-        ChangeState(EnemyState.Idle);
+        ChangeState(EnemyState.Deploying);
     }
 
     protected void Update()
@@ -204,7 +206,8 @@ public class EnemyBehaviour : PawnController, IHitable
             case EnemyState.Spawning:
                 break;
             case EnemyState.Deploying:
-                // is played automatically in the animator. See "isFastDeployment" bool to manage aniamtions
+                animator.SetTrigger("DeployTrigger");
+                currentSpawningAnimDuration = spawningAnimDuration;
                 break;
         }
     }
@@ -322,6 +325,13 @@ public class EnemyBehaviour : PawnController, IHitable
                 if (currentDeathWaitTime < 0)
                 {
                     Kill();
+                }
+                break;
+            case EnemyState.Deploying:
+                currentSpawningAnimDuration -= Time.deltaTime;
+                if (currentSpawningAnimDuration < 0)
+                {
+                    ChangeState(EnemyState.Idle);
                 }
                 break;
         }
