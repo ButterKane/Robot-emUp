@@ -90,11 +90,11 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
             case TurretState.Hiding:
                 break;
             case TurretState.GettingOutOfGround:
-                animator.ResetTrigger("GettingOutOfGroundTrigger");
+                animator.ResetTrigger("DeployTrigger");
                 break;
             case TurretState.Hidden:
-                animator.SetTrigger("GettingOutOfGroundTrigger");
-                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger"); }
+                animator.SetTrigger("DeployTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("DeployTrigger"); }
                 break;
             case TurretState.Dying:
                 break;
@@ -118,6 +118,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
                 //VARIABLES FXs--------------------------------------
+                ChangeAimingRedDotState(AimingRedDotState.Following);
                 if (FXChargingParticlesInstance & FXChargingMainLaserInstance) { PlayChargingFxs(); } // Play the Charging Fxs
 
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
@@ -168,6 +169,17 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
 
     protected override void AttackingUpdateState()
     {
+        //Adapt aimCube Scale and Position
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
+        {
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
+        }
+        else
+        {
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, 50);
+        }
+
         switch (attackState)
         {
             //-------------------------------------------------------
