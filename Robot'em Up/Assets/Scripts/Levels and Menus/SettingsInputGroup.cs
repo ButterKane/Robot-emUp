@@ -12,8 +12,8 @@ public class InputDisplay
 {
     public string inputName;
     public InputType inputType = InputType.None;
-    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Button)] public CustomKeyCode keyCode;
-    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Axis)] public CustomAxisCode axisCode;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Button)] public ButtonAction buttonInfo;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Axis)] public AxisAction axisInfo;
 }
 
 [ExecuteInEditMode]
