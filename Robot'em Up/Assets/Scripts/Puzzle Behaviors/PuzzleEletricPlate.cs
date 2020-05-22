@@ -23,6 +23,7 @@ public class PuzzleEletricPlate : PuzzleActivable
         meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
         pawnTrapped.Clear();
+
     }
 
     void FixedUpdate()

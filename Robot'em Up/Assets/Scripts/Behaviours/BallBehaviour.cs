@@ -458,7 +458,7 @@ public class BallBehaviour : MonoBehaviour
 						}
 
 						IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
-						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
+						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound) && isGhostBall == false)
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, ballInformations.direction * ballInformations.moveSpeed, ballInformations.thrower, GetCurrentDamages(), DamageSource.Ball);
