@@ -67,6 +67,7 @@ public class SliderUI : UIBehaviour
         else
         {
             slider.value = _valueToAdd;
+            Debug.Log("new slider value is " + slider.value);
             currentValue = (int)slider.value;
             currentTimeProgressionBeforeValueChange = 0;
         }

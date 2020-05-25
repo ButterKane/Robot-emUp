@@ -193,20 +193,21 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(false);
         buttons = menuButtons;
         SelectButton(buttons[0]);
-        Time.timeScale = GameManager.i.gameSpeed;
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
     public void StartGame ()
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
         SceneManager.LoadScene(1);
-        Time.timeScale = GameManager.i.gameSpeed;
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
     public void GoToSettings ()
     {
         FeedbackManager.SendFeedback("event.PressSettings", this);
         optionMenu.SetActive(true);
+        optionMenu.GetComponent<SettingsMenu>().FillSettingsDisplayWithPlayerPrefs();
         isMainMenuActive = false;
     }
     void SelectNextButton()

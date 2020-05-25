@@ -9,8 +9,8 @@ using XInputDotNetPure;
 public class SettingsMenu : MonoBehaviour
 {
     public static Dictionary<string, int> sliderSettings = new Dictionary<string, int>();
-    public static Dictionary<string, int> multiChoiceSettings =  new Dictionary<string, int>();
-    public static Dictionary<string, bool> toggleSettings =  new Dictionary<string, bool>();
+    public static Dictionary<string, int> multiChoiceSettings = new Dictionary<string, int>();
+    public static Dictionary<string, bool> toggleSettings = new Dictionary<string, bool>();
 
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
@@ -51,12 +51,12 @@ public class SettingsMenu : MonoBehaviour
     private bool waitForAReset;
     private int categoryNumber;
     private bool isInputChangingOpen;
-    
+
 
     void Awake()
     {
         ComputeSettings();
-        foreach(var category in menuCategories)
+        foreach (var category in menuCategories)
         {
             category.SetActive(true);
         }
@@ -72,6 +72,7 @@ public class SettingsMenu : MonoBehaviour
         {
             Debug.Log("Current setting " + toggle.Key + " with value " + toggle.Value);
         }
+
     }
 
     // Start is called before the first frame update
@@ -117,7 +118,7 @@ public class SettingsMenu : MonoBehaviour
             LBImage.SetAlpha(unselectedCategoryTitleOpacity);
         }
 
-        if (selectedCategoryIndex >= menuCategories.Count-1)
+        if (selectedCategoryIndex >= menuCategories.Count - 1)
         {
             RBImage.SetAlpha(unselectedCategoryTitleOpacity);
         }
@@ -224,7 +225,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         currentRestTimeOfJoystickX -= Time.unscaledDeltaTime;
-        
+
 
         // Managing Buttons
         if (i_state.Buttons.A == ButtonState.Pressed)
@@ -243,7 +244,7 @@ public class SettingsMenu : MonoBehaviour
                 CloseInputChanging();
             }
             else
-            { 
+            {
                 ReturnToMainMenu();
             }
         }
@@ -352,16 +353,16 @@ public class SettingsMenu : MonoBehaviour
 
     void ReturnToMainMenu()
     {
-       FeedbackManager.SendFeedback("event.MenuBack", this);
-       ComputeSettings();
-       ModifyActualGameValues();
+        FeedbackManager.SendFeedback("event.MenuBack", this);
+        ComputeSettings();
+        ModifyActualGameValues();
 
-       Time.timeScale = 0; // make sure it is still stopped
+        Time.timeScale = 0; // make sure it is still stopped
 
-       scriptLinkedToThisOne.waitForBResetOne = true;
-       scriptLinkedToThisOne.isMainMenuActive = true;
+        scriptLinkedToThisOne.waitForBResetOne = true;
+        scriptLinkedToThisOne.isMainMenuActive = true;
 
-       gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     void OpenInputChanging()
@@ -417,18 +418,18 @@ public class SettingsMenu : MonoBehaviour
     // Display all the values saved for the settings, keyed with their names, as Debug Logs
     public void DisplaySettingsValues()
     {
-        foreach (var slider in sliderSettings)
-        {
-            Debug.Log("Computed setting " + slider.Key + " with value " + slider.Value);
-        }
-        foreach (var multiChoice in multiChoiceSettings)
-        {
-            Debug.Log("Computed setting " + multiChoice.Key + " with value " + multiChoice.Value);
-        }
-        foreach (var toggle in toggleSettings)
-        {
-            Debug.Log("Computed setting " + toggle.Key + " with value " + toggle.Value);
-        }
+        //foreach (var slider in sliderSettings)
+        //{
+        //    Debug.Log("Computed setting " + slider.Key + " with value " + slider.Value);
+        //}
+        //foreach (var multiChoice in multiChoiceSettings)
+        //{
+        //    Debug.Log("Computed setting " + multiChoice.Key + " with value " + multiChoice.Value);
+        //}
+        //foreach (var toggle in toggleSettings)
+        //{
+        //    Debug.Log("Computed setting " + toggle.Key + " with value " + toggle.Value);
+        //}
     }
 
     // Assign saved salues to settings
@@ -446,7 +447,7 @@ public class SettingsMenu : MonoBehaviour
                 {
                     SliderUI i_sliderRef = i_thisSetting as SliderUI;
 
-                    foreach(var savedSetting in sliderSettings)
+                    foreach (var savedSetting in sliderSettings)
                     {
                         if (savedSetting.Key == i_sliderRef.name)
                         {
@@ -489,69 +490,79 @@ public class SettingsMenu : MonoBehaviour
         // 0 to 100
         if (sliderSettings.TryGetValue("Screenshake_intensity", out int valueScreenShake))
         {
-            CameraShaker.shakeSettingsMod = ((float)valueScreenShake) / 100;
+            PlayerPrefs.SetFloat("REU_Screenshake_intensity", valueScreenShake);
+            //CameraShaker.shakeSettingsMod = ((float)valueScreenShake) / 100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Haptic_intensity", out int valueVibrations))
         {
-            VibrationManager.vibrationSettingsMod = ((float)valueVibrations)/50; // Only divided by 50 because 50 is the base value. We want it to be stronger if we go above 50
+            PlayerPrefs.SetFloat("REU_Haptic_intensity", valueVibrations);
+            //VibrationManager.vibrationSettingsMod = ((float)valueVibrations)/50; // Only divided by 50 because 50 is the base value. We want it to be stronger if we go above 50
         }
 
         // 20 to 100
         if (sliderSettings.TryGetValue("GameSpeed", out int valueGameSpeed))
         {
-            GameManager.i.gameSpeed = ((float)valueGameSpeed) / 100;
+            PlayerPrefs.SetFloat("REU_GameSpeed", valueGameSpeed);
+            //GameManager.i.gameSpeed = ((float)valueGameSpeed) / 100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Damage Taken", out int valueDamageTaken))
         {
-            GameManager.i.damageTakenSettingsMod = ((float)valueDamageTaken)/100;
+            PlayerPrefs.SetFloat("REU_Damage Taken", valueDamageTaken);
+            //GameManager.i.damageTakenSettingsMod = ((float)valueDamageTaken)/100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Assisting Aim", out int valueAimAssistance))
         {
-            GameManager.i.aimAssistanceSettingsMod = ((float)valueAimAssistance)/100;
+            PlayerPrefs.SetFloat("REU_Assisting Aim", valueAimAssistance);
+            //GameManager.i.aimAssistanceSettingsMod = ((float)valueAimAssistance)/100;
         }
 
         // 10 to 100
         if (sliderSettings.TryGetValue("Trigger_Treshold", out int valueTriggerTreshold))
         {
-            GameManager.playerOne.triggerTreshold = ((float)valueTriggerTreshold)/100;
-            GameManager.playerTwo.triggerTreshold = ((float)valueTriggerTreshold)/100; 
+            PlayerPrefs.SetFloat("REU_Trigger_Treshold", valueTriggerTreshold);
+            //GameManager.playerOne.triggerTreshold = ((float)valueTriggerTreshold)/100;
+            //GameManager.playerTwo.triggerTreshold = ((float)valueTriggerTreshold)/100; 
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
-            MomentumManager.instance.postProcessSettingsMod = ((float)valueContrast) / 100;
+            PlayerPrefs.SetFloat("REU_Contrast", valueContrast);
+            //MomentumManager.instance.postProcessSettingsMod = ((float)valueContrast) / 100;
             // It's post process wesh
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("SFX Volume", out int valueSfxVolume))
         {
-            FeedbackManager.fXVolumeSettingsMod = ((float)valueSfxVolume) / 100;
+            PlayerPrefs.SetFloat("REU_SFX Volume", valueSfxVolume);
+            //FeedbackManager.fXVolumeSettingsMod = ((float)valueSfxVolume) / 100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Dialogue Volume", out int valueDialogueVolume))
         {
-            NarrationManager.narrationManager.dialogueVolumeSettingsMod = ((float)valueDialogueVolume) / 100;
+            PlayerPrefs.SetFloat("REU_Dialogue Volume", valueDialogueVolume);
+            //NarrationManager.narrationManager.dialogueVolumeSettingsMod = ((float)valueDialogueVolume) / 100;
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Ambiance Volume", out int valueAmbianceVolume))
         {
-
+            PlayerPrefs.SetFloat("REU_Ambiance Volume", valueAmbianceVolume); // there's no "ambiance sound" yet, but it's ready
         }
 
         // 0 to 100
         if (sliderSettings.TryGetValue("Music Volume", out int valueMusicVolume))
         {
-            MusicManager.ChangeVolume(((float)valueMusicVolume) / 100);
+            PlayerPrefs.SetFloat("REU_Music Volume", valueMusicVolume); // Saving in prefs
+            MusicManager.ChangeVolume(valueMusicVolume); // actually changing the value
         }
 
 
@@ -560,73 +571,34 @@ public class SettingsMenu : MonoBehaviour
         // Adaptative - Easy - Medium - Difficult
         if (multiChoiceSettings.TryGetValue("Overall Difficulty", out int valueDifficulty))
         {
-            if (valueDifficulty == 0)
+            PlayerPrefs.SetInt("REU_Overall Difficulty", valueDifficulty);
+
+            if (GameManager.i != null)
             {
-                GameManager.i.isDifficultyAdaptative = true;
-            }
-            else
-            {
-                GameManager.i.isDifficultyAdaptative = false;
-                switch (valueDifficulty)
-                {
-                    // Something with damage dealt/taken? Or with the amount of energy you get? Or the number of enemies?
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                }
+                if (valueDifficulty == 0) { GameManager.ChangeDifficulty(true, valueDifficulty); }
+                else { GameManager.ChangeDifficulty(false, valueDifficulty); }
             }
         }
 
         // Gentle - Classic - Aggressive
         if (multiChoiceSettings.TryGetValue("Enemies Agressivity", out int valueEnemiesAgressivity))
         {
-            EnemyManager.i.ChangeEnemiesAgressivity(valueEnemiesAgressivity);
+            PlayerPrefs.SetInt("REU_Enemies Agressivity", valueEnemiesAgressivity);
+            if (EnemyManager.i != null) { EnemyManager.i.ChangeEnemiesAgressivity(valueEnemiesAgressivity); }
         }
 
         // White - Yellow - Blue - Green - Red
         if (multiChoiceSettings.TryGetValue("In-Game Text Color", out int valueTextColor))
         {
-            switch (valueDifficulty)
-            {
-                case 0://white
-                    NarrationManager.narrationManager.textColor = Color.white;
-                    break;
-                case 1://yellow
-                    NarrationManager.narrationManager.textColor = Color.yellow;
-                    break;
-                case 2://blue
-                    NarrationManager.narrationManager.textColor = Color.blue;
-                    break;
-                case 3://green
-                    NarrationManager.narrationManager.textColor = Color.green;
-                    break;
-                case 4://red
-                    NarrationManager.narrationManager.textColor = Color.red;
-                    break;
-            }
+            PlayerPrefs.SetInt("REU_In-Game Text Color", valueTextColor);
+            if (NarrationManager.narrationManager != null) { NarrationManager.narrationManager.ChangeTextColor(valueTextColor); }
         }
 
         // Small - Regular - Big - Very Big
         if (multiChoiceSettings.TryGetValue("In-Game Text Size", out int valueTextSize))
         {
-            switch (valueDifficulty)
-            {
-                case 0://small
-                    NarrationManager.narrationManager.textSize = 14;
-                    break;
-                case 1://regular
-                    NarrationManager.narrationManager.textSize = 20;
-                    break;
-                case 2://big
-                    NarrationManager.narrationManager.textSize = 30;
-                    break;
-                case 3://very big
-                    NarrationManager.narrationManager.textSize = 40;
-                    break;
-            }
+            PlayerPrefs.SetInt("REU_In-Game Text Size", valueTextSize);
+            if (NarrationManager.narrationManager != null) { NarrationManager.narrationManager.ChangeTextSize(valueTextSize); }
         }
 
 
@@ -634,11 +606,15 @@ public class SettingsMenu : MonoBehaviour
 
         if (toggleSettings.TryGetValue("Hold Down Input", out bool valueHoldDown))
         {
-
+            if (valueHoldDown) { PlayerPrefs.SetString("REU_Hold Down Input", "true"); }
+            else { PlayerPrefs.SetString("REU_Hold Down Input", "false"); }
         }
 
         if (toggleSettings.TryGetValue("FullScreen/Window", out bool valueFullScreen))
         {
+            if (valueFullScreen) { PlayerPrefs.SetString("REU_FullScreen/Window", "true"); }
+            else { PlayerPrefs.SetString("REU_FullScreen/Window", "false"); }
+
             if (valueFullScreen)
             {
                 Screen.fullScreen = true;
@@ -651,21 +627,52 @@ public class SettingsMenu : MonoBehaviour
 
         if (toggleSettings.TryGetValue("Background Animation", out bool valueBackground))
         {
+            if (valueBackground) { PlayerPrefs.SetString("REU_Background Animation", "true"); }
+            else { PlayerPrefs.SetString("REU_Background Animation", "false"); }
             // Change if the grass is moving or this kind of things
         }
 
         if (toggleSettings.TryGetValue("Stylized In-Game Text Font", out bool valueStylizedFont))
         {
-            if (valueStylizedFont)
+            if (valueStylizedFont) { PlayerPrefs.SetString("REU_Stylized In-Game Text Font", "true"); }
+            else { PlayerPrefs.SetString("REU_Stylized In-Game Text Font", "false"); }
+
+            if (NarrationManager.narrationManager != null) { NarrationManager.narrationManager.ChangeSelectedFont(valueStylizedFont); }
+        }
+
+        PlayerPrefs.Save();
+    }
+
+    public void FillSettingsDisplayWithPlayerPrefs()
+    {
+        for (int i = 0; i < menuCategories.Count; i++)
+        {
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+
+            for (int j = 0; j < i_settingsRef.Length; j++)
             {
-                NarrationManager.narrationManager.selectedFont = NarrationManager.narrationManager.stylizedTextFont;
+                UIBehaviour i_thisSetting = i_settingsRef[j].GetComponent<UIBehaviour>();
+
+                if (i_thisSetting is SliderUI)
+                {
+                    SliderUI i_sliderRef = i_thisSetting as SliderUI;
+
+                    Debug.Log("savedSettingKey is " + i_sliderRef.name + " and the playerpref value is " + PlayerPrefs.GetFloat("REU_" + i_sliderRef.name));
+                    i_sliderRef.ForceModifyValue(Mathf.RoundToInt(PlayerPrefs.GetFloat("REU_" + i_sliderRef.name)));
+                }
+                else if (i_thisSetting is MultichoiceUI)
+                {
+                    MultichoiceUI i_multiChoiceRef = i_thisSetting as MultichoiceUI;
+
+                    i_multiChoiceRef.ForceModifyValue(PlayerPrefs.GetInt("REU_" + i_multiChoiceRef.name));
+                }
+                else if (i_thisSetting is ToggleUI)
+                {
+                    ToggleUI i_toggleRef = i_thisSetting as ToggleUI;
+
+                    i_toggleRef.ForceModifyValue(SwissArmyKnife.ConvertPlayerPrefStringAsBool(PlayerPrefs.GetString("REU_" + i_toggleRef.name)));
+                }
             }
-            else
-            {
-                NarrationManager.narrationManager.selectedFont = NarrationManager.narrationManager.robotoTextFont;
-            }
-            // Yes = Pas Roboto
-            // No = Roboto
         }
     }
 }
