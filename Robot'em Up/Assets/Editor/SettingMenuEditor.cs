@@ -33,14 +33,14 @@ public class SettingMenuEditor : Editor
             myScript.DisplaySettingsValues();
         }
 
-        if (GUILayout.Button("Assign saved settings values"))
-        {
-            myScript.AssignSavedValuesInSettings();
-        }
+        //if (GUILayout.Button("Assign saved settings values"))
+        //{
+        //    myScript.AssignSavedValuesInSettings();
+        //}
 
         if (GUILayout.Button("Link Settings values to Game"))
         {
-            myScript.ModifyActualGameValues();
+            myScript.ModifyPlayerPrefsValues();
         }
 
     }

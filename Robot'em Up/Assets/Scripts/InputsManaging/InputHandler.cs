@@ -183,7 +183,7 @@ public class InputHandler : MonoBehaviour
             case CustomKeyCode.LT:
                 if (_index == PlayerIndex.One)
                 {
-                    if (i_state.Triggers.Left > GameManager.playerOne.triggerTreshold)
+                    if (i_state.Triggers.Left > PlayerPrefs.GetFloat("REU_Trigger_Treshold", GameManager.playerOne.triggerTreshold))
                     {
                         return ButtonState.Pressed;
                     }
@@ -194,7 +194,7 @@ public class InputHandler : MonoBehaviour
                 }
                 else if (_index == PlayerIndex.Two)
                 {
-                    if (i_state.Triggers.Left > GameManager.playerTwo.triggerTreshold)
+                    if (i_state.Triggers.Left > PlayerPrefs.GetFloat("REU_Trigger_Treshold", GameManager.playerOne.triggerTreshold))
                     {
                         return ButtonState.Pressed;
                     }
@@ -207,7 +207,7 @@ public class InputHandler : MonoBehaviour
             case CustomKeyCode.RT:
                 if (_index == PlayerIndex.One)
                 {
-                    if (i_state.Triggers.Right > GameManager.playerOne.triggerTreshold)
+                    if (i_state.Triggers.Right > PlayerPrefs.GetFloat("REU_Trigger_Treshold", GameManager.playerOne.triggerTreshold))
                     {
                         return ButtonState.Pressed;
                     }
