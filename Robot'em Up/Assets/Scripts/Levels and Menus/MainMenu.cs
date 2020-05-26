@@ -14,6 +14,7 @@ public class MainMenu : MonoBehaviour
     public List<Button> menuButtons = new List<Button>();
     public GameObject optionMenuPrefab;
     private GameObject optionMenu;
+    private Canvas optionMenuCanvas;
     private Button selectedButton;
 	public Image selectorArrow;
 	public Image selectorOutline;
@@ -40,7 +41,8 @@ public class MainMenu : MonoBehaviour
         {
             optionMenu = Instantiate(optionMenuPrefab);
             optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
-            optionMenu.SetActive(false);
+            optionMenuCanvas = optionMenu.GetComponent<Canvas>();
+            optionMenuCanvas.enabled = false;
         }
         SelectButton(menuButtons[0]);
     }
@@ -193,20 +195,21 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(false);
         buttons = menuButtons;
         SelectButton(buttons[0]);
-        Time.timeScale = GameManager.i.gameSpeed;
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
     public void StartGame ()
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
         SceneManager.LoadScene(1);
-        Time.timeScale = GameManager.i.gameSpeed;
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
     public void GoToSettings ()
     {
         FeedbackManager.SendFeedback("event.PressSettings", this);
-        optionMenu.SetActive(true);
+        optionMenuCanvas.enabled = true;
+        optionMenu.GetComponent<SettingsMenu>().FillSettingsDisplayWithPlayerPrefs();
         isMainMenuActive = false;
     }
     void SelectNextButton()
