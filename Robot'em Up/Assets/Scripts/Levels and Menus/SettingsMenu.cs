@@ -355,14 +355,14 @@ public class SettingsMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.MenuBack", this);
         ComputeSettings();
-        ModifyActualGameValues();
+        ModifyPlayerPrefsValues();
 
         Time.timeScale = 0; // make sure it is still stopped
 
         scriptLinkedToThisOne.waitForBResetOne = true;
         scriptLinkedToThisOne.isMainMenuActive = true;
 
-        gameObject.SetActive(false);
+        GetComponent<Canvas>().enabled = false;
     }
 
     void OpenInputChanging()
@@ -411,25 +411,25 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
-        DisplaySettingsValues();
+        //DisplaySettingsValues();
 
     }
 
     // Display all the values saved for the settings, keyed with their names, as Debug Logs
     public void DisplaySettingsValues()
     {
-        //foreach (var slider in sliderSettings)
-        //{
-        //    Debug.Log("Computed setting " + slider.Key + " with value " + slider.Value);
-        //}
-        //foreach (var multiChoice in multiChoiceSettings)
-        //{
-        //    Debug.Log("Computed setting " + multiChoice.Key + " with value " + multiChoice.Value);
-        //}
-        //foreach (var toggle in toggleSettings)
-        //{
-        //    Debug.Log("Computed setting " + toggle.Key + " with value " + toggle.Value);
-        //}
+        foreach (var slider in sliderSettings)
+        {
+            Debug.Log("Computed setting " + slider.Key + " with value " + slider.Value);
+        }
+        foreach (var multiChoice in multiChoiceSettings)
+        {
+            Debug.Log("Computed setting " + multiChoice.Key + " with value " + multiChoice.Value);
+        }
+        foreach (var toggle in toggleSettings)
+        {
+            Debug.Log("Computed setting " + toggle.Key + " with value " + toggle.Value);
+        }
     }
 
     // Assign saved salues to settings
@@ -451,7 +451,6 @@ public class SettingsMenu : MonoBehaviour
                     {
                         if (savedSetting.Key == i_sliderRef.name)
                         {
-                            Debug.Log(savedSetting.Key + " new value is " + savedSetting.Value);
                             i_sliderRef.ForceModifyValue(savedSetting.Value);
                         }
                     }
@@ -483,7 +482,7 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
-    public void ModifyActualGameValues()
+    public void ModifyPlayerPrefsValues()
     {
         // SLIDER SECTION ------------------------------------
 
@@ -656,9 +655,8 @@ public class SettingsMenu : MonoBehaviour
                 if (i_thisSetting is SliderUI)
                 {
                     SliderUI i_sliderRef = i_thisSetting as SliderUI;
-
-                    Debug.Log("savedSettingKey is " + i_sliderRef.name + " and the playerpref value is " + PlayerPrefs.GetFloat("REU_" + i_sliderRef.name));
-                    i_sliderRef.ForceModifyValue(Mathf.RoundToInt(PlayerPrefs.GetFloat("REU_" + i_sliderRef.name)));
+                    int value = Mathf.RoundToInt(PlayerPrefs.GetFloat("REU_" + i_sliderRef.name));
+                    i_sliderRef.ForceModifyValue(value);
                 }
                 else if (i_thisSetting is MultichoiceUI)
                 {

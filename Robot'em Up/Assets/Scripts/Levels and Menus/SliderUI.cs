@@ -60,17 +60,16 @@ public class SliderUI : UIBehaviour
                 slider.value = Mathf.RoundToInt(slider.value);
                 currentValue = (int)slider.value;
                 currentTimeProgressionBeforeValueChange = defaultTimeBetweenChangeValue;
-                UpdateSliderText();
             }
             currentTimeProgressionBeforeValueChange -= Time.unscaledDeltaTime;
         }
         else
         {
             slider.value = _valueToAdd;
-            Debug.Log("new slider value is " + slider.value);
             currentValue = (int)slider.value;
             currentTimeProgressionBeforeValueChange = 0;
         }
+        UpdateSliderText();
     }
 
     public override void IncreaseValue()
