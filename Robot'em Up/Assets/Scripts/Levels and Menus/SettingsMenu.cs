@@ -81,6 +81,7 @@ public class SettingsMenu : MonoBehaviour
         restTimeOfJoystickX = normalRestTimeOfJoystick;
         selectedCategoryIndex = 0;
         ChangeCategory(0);
+        CheckDefaultValueOrNot();
     }
 
     void ChangeCategory(int _plusOrMinus)
@@ -374,6 +375,54 @@ public class SettingsMenu : MonoBehaviour
     {
         Debug.Log("Closing input changing");
         isInputChangingOpen = false;
+    }
+
+    public void CheckListWhenLaunchingSettings()
+    {
+        FillSettingsDisplayWithPlayerPrefs();
+        //CheckDefaultValueOrNot();
+    }
+
+
+    void CheckDefaultValueOrNot()
+    {
+        for (int i = 0; i < menuCategories.Count; i++)
+        {
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+
+            for (int j = 0; j < i_settingsRef.Length; j++)
+            {
+                UIBehaviour i_thisSetting = i_settingsRef[j].GetComponent<UIBehaviour>();
+
+                if (i_thisSetting is SliderUI)
+                {
+                    SliderUI i_sliderRef = i_thisSetting as SliderUI;
+                    if (i_sliderRef.currentValue != i_sliderRef.defaultValue)
+                    {
+                        i_sliderRef.ToggleChangeIcon(true);
+                    }
+                    else { i_sliderRef.ToggleChangeIcon(false);}
+                }
+                else if (i_thisSetting is MultichoiceUI)
+                {
+                    MultichoiceUI i_multiChoiceRef = i_thisSetting as MultichoiceUI;
+                    if (i_multiChoiceRef.selectedChoiceIndex != i_multiChoiceRef.defaultValue)
+                    {
+                        i_multiChoiceRef.ToggleChangeIcon(true);
+                    }
+                    else { i_multiChoiceRef.ToggleChangeIcon(false); }
+                }
+                else if (i_thisSetting is ToggleUI)
+                {
+                    ToggleUI i_toggleRef = i_thisSetting as ToggleUI;
+                    if (i_toggleRef.buttonIsYes != i_toggleRef.defaultValueIsYes)
+                    {
+                        i_toggleRef.ToggleChangeIcon(true);
+                    }
+                    else { i_toggleRef.ToggleChangeIcon(false); }
+                }
+            }
+        }
     }
 
     // Get all settings in the option menu and save their names + current value in matching dictionaries (one for the sliders, one for multichoices and one for toggles)

@@ -66,11 +66,11 @@ public class UIBehaviour : MonoBehaviour
     {
         if (!_activate)
         {
-            changeIcon.SetAlpha(0);
+            changeIcon.enabled = false;
         }
         else
         {
-            changeIcon.SetAlpha(1);
+            changeIcon.enabled = true;
         }
     }
 }
