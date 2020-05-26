@@ -41,7 +41,6 @@ public class ArenaClusterCubes : MonoBehaviour
     private void Start()
     {
         SpawnClusterCubes();
-        ActivateNewLayout();
         layoutState = 0;
     }
 
@@ -179,7 +178,7 @@ public class ArenaClusterCubes : MonoBehaviour
         }
     }
 
-    void ActivateNewLayout()
+    public void ActivateNewLayout()
     {
         for (int j = 0; j < row.Length; j++)
         {
