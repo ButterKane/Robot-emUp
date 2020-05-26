@@ -209,7 +209,7 @@ public class MainMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.PressSettings", this);
         optionMenuCanvas.enabled = true;
-        optionMenu.GetComponent<SettingsMenu>().FillSettingsDisplayWithPlayerPrefs();
+        optionMenu.GetComponent<SettingsMenu>().CheckListWhenLaunchingSettings();
         isMainMenuActive = false;
     }
     void SelectNextButton()
