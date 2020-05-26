@@ -34,7 +34,7 @@ public class SliderUI : UIBehaviour
 
     private void Update()
     {
-        if (System.Math.Round(slider.value, 2) != System.Math.Round((float)defaultValue / 100, 2))
+        if (currentValue != defaultValue)
         {
             ToggleChangeIcon(true);
         }
