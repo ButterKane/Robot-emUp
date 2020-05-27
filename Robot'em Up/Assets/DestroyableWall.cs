@@ -14,10 +14,13 @@ public class DestroyableWall : MonoBehaviour, IHitable
 
     public void OnHit ( BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default )
     {
-        if (!destroyed)
+        if (!destroyed && _ball !=null)
         {
-            FeedbackManager.SendFeedback("event.DestrObjectHit", this, transform.position, _impactVector, _impactVector);
-            DestroyTheObject();
+            if (!_ball.isGhostBall)
+            {
+                FeedbackManager.SendFeedback("event.DestrObjectHit", this, transform.position, _impactVector, _impactVector);
+                DestroyTheObject();
+            }
         }
     }
 
