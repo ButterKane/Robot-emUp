@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
 
 
     // Settings variables
-    [ReadOnly] public float gameSpeed = 1;
+    [ReadOnly] public float gameSpeed = 100; // as in 100% of normal speed
     [ReadOnly] public float damageTakenSettingsMod = 1;
     [ReadOnly] public float aimAssistanceSettingsMod = 0; // Get PlayerPrefs.GetFloat("REU_Assisting Aim", aimAssistanceSettingsMod);
     [ReadOnly] public int enemiesAgressivity = 1;
@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
 
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed); 
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed)/100; 
         ChangeDifficulty(null, null); // initialisation, with base  
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
@@ -189,7 +189,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(index);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed); ;
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
     }
 
     public static void LoadNextScene()
@@ -197,7 +197,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed); ;
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -241,7 +241,7 @@ public class GameManager : MonoBehaviour
         {
             p.EnableInput();
         }
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed);
+        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100;
         mainMenu.gameObject.SetActive(false);
     }
 

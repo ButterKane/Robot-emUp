@@ -47,7 +47,7 @@ public class PauseManager : MonoBehaviour
         if (initialTimeScale != 0)
             Time.timeScale = initialTimeScale;
         else
-            Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed);
+            Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100;
     }
 
 }
