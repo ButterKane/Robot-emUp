@@ -536,21 +536,21 @@ public class PawnController : MonoBehaviour
 	}
 	private void CheckIfGrounded ()
 	{
-		if (!grounded)
+		if (!Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 1f, LayerMask.GetMask("Environment")))
 		{
 			timeInAir += Time.deltaTime;
-			if (timeInAir >= 0.2f)
+			grounded = false;
+		} else if (timeInAir > 0.2f) { 
+			FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
+			if (isPlayer)
 			{
-				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
-				{
-					FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
-					grounded = true;
-					timeInAir = 0;
-					if (moveState == MoveState.Jumping)
-					{
-						moveState = MoveState.Idle;
-					}
-				}
+				animator.SetTrigger("BackOnGroundTrigger");
+			}
+			grounded = true;
+			timeInAir = 0;
+			if (moveState == MoveState.Jumping)
+			{
+				moveState = MoveState.Idle;
 			}
 		}
 	}

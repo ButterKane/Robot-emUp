@@ -44,6 +44,7 @@ public class EnemyManager : MonoBehaviour
     {
         playerOne = GameManager.playerOne;
         playerTwo = GameManager.playerTwo;
+        ChangeEnemiesAgressivity(PlayerPrefs.GetInt("REU_Enemies Agressivity", 1));
     }
 
     private void Update()

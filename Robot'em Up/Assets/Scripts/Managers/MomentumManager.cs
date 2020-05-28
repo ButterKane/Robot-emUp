@@ -76,16 +76,16 @@ public class MomentumManager: MonoBehaviour
 	private void UpdatePostProcess ()
 	{
 		//Updates bloom
-		bloom.intensity.value = GetValue(datas.minMaxBloom)* postProcessSettingsMod;
+		bloom.intensity.value = GetValue(datas.minMaxBloom)* PlayerPrefs.GetFloat("REU_Contrast", postProcessSettingsMod); 
 
 		//Updates color grading
-		colorGrading.temperature.value = GetValue(datas.minMaxTemperature)* postProcessSettingsMod;
+		colorGrading.temperature.value = GetValue(datas.minMaxTemperature)* PlayerPrefs.GetFloat("REU_Contrast", postProcessSettingsMod);
 
-		//Updates chromatic aberration
-		chromaticAberration.intensity.value = GetValue(datas.minMaxChromaticAberration)* postProcessSettingsMod;
+        //Updates chromatic aberration
+        chromaticAberration.intensity.value = GetValue(datas.minMaxChromaticAberration)* PlayerPrefs.GetFloat("REU_Contrast", postProcessSettingsMod);
 
         //Updates grain
-        grain.intensity.value = GetValue(datas.minMaxGrain)* postProcessSettingsMod;
+        grain.intensity.value = GetValue(datas.minMaxGrain)* PlayerPrefs.GetFloat("REU_Contrast", postProcessSettingsMod);
     }
 
 	public static float GetMomentum()

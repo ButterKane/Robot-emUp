@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 //[CustomEditor(typeof(InputHandler))]
+#if UNITY_EDITOR
 public class InputHandlerEditor : Editor
 {
     InputHandler parent;
@@ -93,4 +94,5 @@ public class InputHandlerEditor : Editor
         DrawDefaultInspector();
     }
 }
+#endif
 

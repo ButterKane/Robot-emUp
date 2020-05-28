@@ -34,7 +34,7 @@ public class SliderUI : UIBehaviour
 
     private void Update()
     {
-        if (System.Math.Round(slider.value, 2) != System.Math.Round((float)defaultValue / 100, 2))
+        if (currentValue != defaultValue)
         {
             ToggleChangeIcon(true);
         }
@@ -60,7 +60,6 @@ public class SliderUI : UIBehaviour
                 slider.value = Mathf.RoundToInt(slider.value);
                 currentValue = (int)slider.value;
                 currentTimeProgressionBeforeValueChange = defaultTimeBetweenChangeValue;
-                UpdateSliderText();
             }
             currentTimeProgressionBeforeValueChange -= Time.unscaledDeltaTime;
         }
@@ -70,6 +69,7 @@ public class SliderUI : UIBehaviour
             currentValue = (int)slider.value;
             currentTimeProgressionBeforeValueChange = 0;
         }
+        UpdateSliderText();
     }
 
     public override void IncreaseValue()
