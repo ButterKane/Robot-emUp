@@ -1073,6 +1073,7 @@ public class PawnController : MonoBehaviour
         // After the whole bump-fly-fall sequence
         if (damageAfterBump > 0)
         {
+            if ((currentHealth - damageAfterBump) <= 0) { DeathOverrideWithBump();}
             Damage(damageAfterBump);
         }
 
@@ -1141,5 +1142,10 @@ public class PawnController : MonoBehaviour
 		}
 		moveState = MoveState.Idle;
 	}
-	#endregion
+
+    public virtual void DeathOverrideWithBump()
+    {
+
+    }
+    #endregion
 }
