@@ -689,6 +689,13 @@ public class EnemyBehaviour : PawnController, IHitable
         }
         base.Kill();
     }
+
+    public override void DeathOverrideWithBump()
+    {
+        deathValues.waitTimeBeforeDisappear = 0.2f;
+        currentDeathWaitTime = 0;
+        animator.SetBool("MustPlayDeathAnim", false);
+    }
     #endregion
 
     #region Coroutines
