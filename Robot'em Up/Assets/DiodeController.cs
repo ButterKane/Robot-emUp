@@ -36,7 +36,6 @@ public class DiodeController : MonoBehaviour
 			Color currentColor = d.sharedMaterial.GetColor("_EmissionColor");
 			Color minColor = new Color(currentColor.r, currentColor.g, currentColor.b - (Random.Range(blueRandomness, blueRandomness * 2f)), 1f);
 			Color maxColor = new Color(currentColor.r - (Random.Range(redRandomness, redRandomness * 2f)), currentColor.g, currentColor.b, 1f);
-			Debug.Log("Min: " + minColor + " Max: " + maxColor);
 			minColors[d] = minColor;
 			maxColors[d] = maxColor;
 			lerpSpeed[d] = Random.Range(minColorLerpSpeed, maxColorLerpSpeed);

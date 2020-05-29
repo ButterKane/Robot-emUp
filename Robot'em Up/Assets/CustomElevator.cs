@@ -9,7 +9,17 @@ public class CustomElevator : MonoBehaviour
     public float height = 10;
 
     private bool activated = false;
+    public Transform visuals;
+    public Transform emissiveVisuals;
 
+    private void Awake ()
+    {
+        emissiveVisuals.gameObject.SetActive(false);
+    }
+    public void EnableEmissive()
+    {
+        emissiveVisuals.gameObject.SetActive(true);
+    }
     public void Activate()
     {
         if (!activated)
@@ -21,14 +31,14 @@ public class CustomElevator : MonoBehaviour
 
     IEnumerator Activate_C()
     {
-        Vector3 startPosition = transform.position;
+        Vector3 startPosition = visuals.transform.position;
         Vector3 endPosition = startPosition + (Vector3.up * height);
 
         for (float i = 0; i < height; i+= Time.deltaTime * moveSpeed)
         {
-            transform.position = Vector3.Lerp(startPosition, endPosition, i / height);
+            visuals.transform.position = Vector3.Lerp(startPosition, endPosition, i / height);
             yield return null;
         }
-        transform.position = endPosition;
+        visuals.transform.position = endPosition;
     }
 }
