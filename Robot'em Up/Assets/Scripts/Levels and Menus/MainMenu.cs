@@ -14,6 +14,9 @@ public class MainMenu : MonoBehaviour
     public List<Button> menuButtons = new List<Button>();
     public GameObject optionMenuPrefab;
     private GameObject optionMenu;
+    public GameObject abilitiesMenuPrefab;
+    private GameObject abilitiesMenu;
+    private Canvas abilitiesMenuCanvas;
     private Canvas optionMenuCanvas;
     private Button selectedButton;
 	public Image selectorArrow;
@@ -43,6 +46,13 @@ public class MainMenu : MonoBehaviour
             optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
             optionMenuCanvas = optionMenu.GetComponent<Canvas>();
             optionMenuCanvas.enabled = false;
+        }
+        if (abilitiesMenuPrefab != null)
+        {
+            abilitiesMenu = Instantiate(abilitiesMenuPrefab);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().scriptLinkedToThisOne = this;
+            abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
+            abilitiesMenuCanvas.enabled = false;
         }
         SelectButton(menuButtons[0]);
     }
@@ -212,6 +222,15 @@ public class MainMenu : MonoBehaviour
         optionMenu.GetComponent<SettingsMenu>().CheckListWhenLaunchingSettings();
         isMainMenuActive = false;
     }
+
+    public void OpenAbilitiesMenu()
+    {
+        FeedbackManager.SendFeedback("event.PressSettings", this);
+        abilitiesMenuCanvas.enabled = true;
+        abilitiesMenu.GetComponent<AbilityListNavigation>().ResetDisplay();
+        isMainMenuActive = false;
+    }
+
     void SelectNextButton()
 	{
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
