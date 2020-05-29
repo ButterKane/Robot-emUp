@@ -238,7 +238,10 @@ public class EnemyShield : EnemyBehaviour
     private IEnumerator DeactivateShieldForGivenTime(float _timeToDeactivate)
     {
         isShieldActivated_accesss = false;
+        animator.SetBool("DeactivateShield", true);
         yield return new WaitForSeconds(_timeToDeactivate);
+        animator.SetBool("DeactivateShield", false);
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); 
         isShieldActivated_accesss = true;
     }
     #endregion
