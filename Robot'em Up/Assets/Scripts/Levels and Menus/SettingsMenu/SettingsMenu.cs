@@ -320,7 +320,7 @@ public class SettingsMenu : MonoBehaviour
     void SelectNextSettings()
     {
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
-        if (selectedSettingIndex + 1 < settingsParentScript.childrenObjects.Length)
+        if (selectedSettingIndex + 1 < settingsParentScript.availableSettingsToOrganize.Count)
         {
             selectedSettingIndex++;
             selectedSetting = settingsParentScript.SelectSetting(selectedSettingIndex);
@@ -350,6 +350,7 @@ public class SettingsMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.SettingsResetToDefault", this);
         selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
+        CheckDefaultValueOrNot();
     }
 
     void ReturnToMainMenu()
