@@ -350,6 +350,7 @@ public class SettingsMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.SettingsResetToDefault", this);
         selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
+        CheckDefaultValueOrNot();
     }
 
     void ReturnToMainMenu()

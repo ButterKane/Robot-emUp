@@ -85,6 +85,7 @@ public class SliderUI : UIBehaviour
     public override void ResetValueToDefault()
     {
         slider.value = defaultValue;
+        currentValue = defaultValue;
         currentTimeProgressionBeforeValueChange = 0;
         UpdateSliderText();
     }
