@@ -288,7 +288,7 @@ public class PlayerController : PawnController, IHitable
             {
                 ui.DisplayHealth(HealthAnimationType.Loss);
             }
-            base.Damage(_amount * PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.damageTakenSettingsMod), _enableInvincibilityFrame);   // manages the recovery time as well
+            base.Damage(_amount * (PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.damageTakenSettingsMod)/100), _enableInvincibilityFrame);   // manages the recovery time as well
         }
     }
     #endregion
@@ -814,26 +814,25 @@ public class PlayerController : PawnController, IHitable
     {
         Analytics.CustomEvent("PlayerDamage", new Dictionary<string, object> { { "Source", _source } });
         Vector3 i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
-        float i_actualDamages = _damages * PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.damageTakenSettingsMod);
-
+        
         switch (_source)
         {
             case DamageSource.RedBarrelExplosion:
                 BumpMe(i_normalizedImpactVector, BumpForce.Force2);
-                Damage(i_actualDamages);
+                Damage(_damages);
                 break;
 
             case DamageSource.EnemyContact:
-                Damage(i_actualDamages);
+                Damage(_damages);
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
 
             case DamageSource.Laser:
-                Damage(i_actualDamages, false);
+                Damage(_damages, false);
                 break;
 
             case DamageSource.SpawnImpact:
-                Damage(i_actualDamages);
+                Damage(_damages);
                 Push(PushType.Light, _impactVector, PushForce.Force1);
                 break;
         }
