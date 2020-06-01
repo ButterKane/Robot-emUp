@@ -23,7 +23,7 @@ public class CameraShaker : MonoBehaviour
 			cameraShaker = new GameObject().AddComponent<ShakeEffect>();
 			cameraShaker.gameObject.name = "Camera Shaker";
 		}
-		ShakeData i_shakeData = new ShakeData(_intensity * PlayerPrefs.GetFloat("REU_Screenshake_intensity", 1), _duration, _frequency);
+		ShakeData i_shakeData = new ShakeData(_intensity * (PlayerPrefs.GetFloat("REU_Screenshake_intensity", 100)/100), _duration, _frequency);
 		i_shakeData.intensityCurve = _intensityCurve;
 		if (currentShake != null)
 		{
