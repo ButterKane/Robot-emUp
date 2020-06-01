@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using XInputDotNetPure;
@@ -8,6 +9,9 @@ public class InputRemapper : MonoBehaviour
     [Range(0, 1)] public float joystickTreshold = 0.6f;
     public GameObject[] remappableActions;
     private SettingsInputGroup[] remappableActionsGroups;
+
+    [NonSerialized] public MainMenu scriptLinkedToThisOne;
+    public GameObject highlightObject;
 
 
     private bool isInNavigation = true;
@@ -25,7 +29,8 @@ public class InputRemapper : MonoBehaviour
     private int focusedLineIndex;
     private int focusedColumnIndex;
 
-    private ButtonAction currentAction;
+    private ButtonAction currentButtonAction;
+    private AxisAction currentAxisAction;
     private PlayerIndex whichPlayerIndex;
 
     private bool assigningNewInput;
@@ -33,6 +38,18 @@ public class InputRemapper : MonoBehaviour
     private float timeLeftToInput;
     private List<CustomKeyCode> sentInputs;
 
+    private void Start()
+    {
+        remappableActionsGroups = new SettingsInputGroup[remappableActions.Length];
+        for (int i = 0; i < remappableActions.Length; i++)
+        {
+            remappableActionsGroups[i] = remappableActions[i].GetComponent<SettingsInputGroup>();
+        }
+        focusedLineIndex = 0;
+        focusedColumnIndex = 0;
+        HighlightCurrentCase();
+
+    }
 
     void Update()
     {
@@ -235,14 +252,14 @@ public class InputRemapper : MonoBehaviour
         if (assigningNewInput)
         {
             timeLeftToInput -= Time.unscaledDeltaTime;
-            if (timeLeftToInput < 0) { sentInputs.Clear(); InputHandler.instance.AssignNewInputsToAction(currentAction, sentInputs, whichPlayerIndex); assigningNewInput = false; }
+            if (timeLeftToInput < 0) { sentInputs.Clear(); InputHandler.instance.AssignNewInputsToAction(currentButtonAction, sentInputs, whichPlayerIndex); assigningNewInput = false; }
         }
 
     }
 
     public void MoveAbove()
     {
-        if (focusedLineIndex-1 >=0) { focusedLineIndex--; }
+        if (focusedLineIndex-1 >=0) { focusedLineIndex--; HighlightCurrentCase(); }
         else
         { 
             //Play "impossible" feedback;
@@ -252,7 +269,7 @@ public class InputRemapper : MonoBehaviour
 
     public void MoveBelow()
     {
-        if (focusedLineIndex + 1 <= remappableActions.Length) { focusedLineIndex++; }
+        if (focusedLineIndex + 1 <= remappableActions.Length-1 ) { focusedLineIndex++; HighlightCurrentCase(); }
         else
         {
             //Play "impossible" feedback;
@@ -261,7 +278,7 @@ public class InputRemapper : MonoBehaviour
 
     public void MoveRight()
     {
-        if (focusedColumnIndex == 0) { focusedColumnIndex = 1; }
+        if (focusedColumnIndex == 0) { focusedColumnIndex = 1; HighlightCurrentCase(); }
         else
         {
             //Play "impossible" feedback;
@@ -270,11 +287,17 @@ public class InputRemapper : MonoBehaviour
 
     public void MoveLeft()
     {
-        if (focusedColumnIndex == 1) { focusedColumnIndex = 0; }
+        if (focusedColumnIndex == 1) { focusedColumnIndex = 0; HighlightCurrentCase(); }
         else
         {
             //Play "impossible" feedback;
         }
+    }
+
+    private void HighlightCurrentCase()
+    {
+        if (focusedColumnIndex == 0) { highlightObject.transform.position = remappableActionsGroups[focusedLineIndex].inputP1TMP.gameObject.transform.position; }
+        else if (focusedColumnIndex == 1) { highlightObject.transform.position = remappableActionsGroups[focusedLineIndex].inputP2TMP.gameObject.transform.position; }
     }
 
     void OpenInputWindow()
@@ -284,7 +307,14 @@ public class InputRemapper : MonoBehaviour
 
     public void ReturnToSettings()
     {
+        FeedbackManager.SendFeedback("event.MenuBack", this);
 
+        Time.timeScale = 0; // make sure it is still stopped
+
+        scriptLinkedToThisOne.waitForBResetOne = true;
+        scriptLinkedToThisOne.isMainMenuActive = true;
+
+        GetComponent<Canvas>().enabled = false;
     }
 
     public void OpenRemapInput()
@@ -343,7 +373,8 @@ public class InputRemapper : MonoBehaviour
 
     public void IdentifyTheFocusedInputInMatrix()
     {
-        currentAction = remappableActionsGroups[focusedLineIndex].actionAndInputs.buttonInfo;
+        if (remappableActionsGroups[focusedLineIndex].actionAndInputs.inputType == InputType.Button) { currentButtonAction = remappableActionsGroups[focusedLineIndex].actionAndInputs.buttonInfoPlayer1; }
+        if (remappableActionsGroups[focusedLineIndex].actionAndInputs.inputType == InputType.Axis) { currentAxisAction = remappableActionsGroups[focusedLineIndex].actionAndInputs.axisInfoPlayer1; }
 
         if (focusedColumnIndex == 0) { whichPlayerIndex = PlayerIndex.One; }
         else if (focusedColumnIndex == 1) { whichPlayerIndex = PlayerIndex.Two; }

@@ -12,8 +12,10 @@ public class InputDisplay
 {
     public string inputName;
     public InputType inputType = InputType.None;
-    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Button)] public ButtonAction buttonInfo;
-    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Axis)] public AxisAction axisInfo;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Button)] public ButtonAction buttonInfoPlayer1;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Button)] public ButtonAction buttonInfoPlayer2;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Axis)] public AxisAction axisInfoPlayer1;
+    [ConditionalFieldAttribute(nameof(inputType), false, InputType.Axis)] public AxisAction axisInfoPlayer2;
 }
 
 [ExecuteInEditMode]
