@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Decal_Text_Section042
-  m_Shader: {fileID: 4800000, guid: df4322f26a7e85a4ab3b10f8acea75d6, type: 3}
+  m_Name: M_Sci fi wall510_01
+  m_Shader: {fileID: 4800000, guid: 767f5279139608d4688d98b60f1cab19, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -19,6 +19,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _51612536_553196668424338_6330084407579246592_n:
+        m_Texture: {fileID: 2800000, guid: d1de0461b9b9d334c9d421236bf89809, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -40,11 +44,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 3c1349a4f7ee6ce4f8cac39dde841d48, type: 3}
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Marktexture:
+        m_Texture: {fileID: 2800000, guid: b86bafba4af6d1342ba0b1f1bdd6fd5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseFFloor:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseMark:
+        m_Texture: {fileID: 2800000, guid: 83000690fe236344696bad705099f3dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -55,40 +71,47 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SpecularMap:
+    - _TextureSample0:
+        m_Texture: {fileID: 2800000, guid: a8d2541ae14a15e42b3830ac3a68a0d8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextureSample1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BlendNormals: 0.5
     - _BumpScale: 1
-    - _ClipNormals: 0.1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _Float0: 5.05
+    - _Float1: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NoExclusionMask: 0
-    - _NormalBlendOrClip: 0
-    - _NormalEdgeBlending: 0
-    - _NormalScale: 1
-    - _NormalsMask: 0
+    - _NoiseFloorSharpness: 2.23
+    - _NoiseFloorTiling: 73.5
+    - _NoiseMarkInt: 0.56
+    - _NoiseMarkSharpness: 1.26
+    - _NoiuseMarkingTiling: 42.93
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TerrainClipHeight: 0.001
-    - _TerrainClipHeightPower: 1
-    - _TerrainDecal: 0
     - _UVSec: 0
     - _ZWrite: 1
+    - __dirty: 0
+    - _noiseFloorint: 0.82
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DetailMaskCOlor: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Tint: {r: 1, g: 1, b: 1, a: 1}
-    - _UV: {r: 1, g: 1, b: 0, a: 0}
+    - _FlorCOlor: {r: 0.008143486, g: 0.008143486, b: 0.009433985, a: 0}
+    - _MarkingCOlor: {r: 1, g: 0.8928459, b: 0.33490568, a: 0}
