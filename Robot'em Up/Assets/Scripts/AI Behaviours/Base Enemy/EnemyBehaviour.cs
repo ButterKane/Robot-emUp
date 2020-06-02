@@ -55,6 +55,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [SerializeField] protected Transform playerTwoTransform;
     protected PawnController playerTwoPawnController;
     [ReadOnly] public Collider selfCollider;
+    public float selfColliderSize;
 
     [Space(2)]
     [Separator("Tweakable variables")]
@@ -141,6 +142,8 @@ public class EnemyBehaviour : PawnController, IHitable
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
+
+        ChangeAimAssistance((PlayerPrefs.GetFloat("REU_Assisting Aim", 50) / 50));
 
         ChangeState(EnemyState.Deploying);
     }
@@ -491,10 +494,16 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
     }
+
+    public void ChangeAimAssistance(float _assistanceRatio)
+    {
+        SphereCollider i_collider = selfCollider as SphereCollider;
+        i_collider.radius = selfColliderSize * _assistanceRatio;
+    }
     #endregion
 
-    #region Private and protected methods
-    protected void CheckDistanceAndAdaptFocus()
+        #region Private and protected methods
+        protected void CheckDistanceAndAdaptFocus()
     {
         if (focusValues == null) { return; }
         //Checking who is in range

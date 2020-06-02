@@ -569,6 +569,7 @@ public class SettingsMenu : MonoBehaviour
         if (sliderSettings.TryGetValue("Assisting Aim", out int valueAimAssistance))
         {
             PlayerPrefs.SetFloat("REU_Assisting Aim", valueAimAssistance);
+            EnemyManager.i.ChangeAimAssistanceForAllEnemies(valueAimAssistance);
             //GameManager.i.aimAssistanceSettingsMod = ((float)valueAimAssistance)/100;
         }
 
