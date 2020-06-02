@@ -239,7 +239,7 @@ public class PassController : MonoBehaviour
 	{
 		if (passPreview)
 		{
-			if (previousState != PassState.Shooting)
+			if (previousState != PassState.Shooting && isPlayer)
 			{
 				LockManager.UnlockAll();
 			}
@@ -434,7 +434,10 @@ public class PassController : MonoBehaviour
 		{
 			pathCoordinates = GetCurvedPathCoordinates(handTransform.position, targetedPawn, lookDirection, out pathLength);
 			PreviewPath(pathCoordinates);
-			LockManager.LockTargetsInPath(pathCoordinates, 0);
+			if (isPlayer)
+			{
+				LockManager.LockTargetsInPath(pathCoordinates, 0);
+			}
 		}
 	}
 	private void UpdateBallTimeInHand()
