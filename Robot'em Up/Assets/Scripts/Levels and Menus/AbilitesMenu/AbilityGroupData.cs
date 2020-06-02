@@ -10,6 +10,7 @@ public class AbilityGroupData : MonoBehaviour
     public Image backgroundImage;
 
     [Separator("Ability Datas")]
+    public ConcernedAbility ability;
     public string abilityName;
     [TextArea(5, 10)]
     public string abilityDescription;
@@ -19,6 +20,9 @@ public class AbilityGroupData : MonoBehaviour
     public string upgrade2Description;
 
     public Sprite[] gifImages;
+    public bool isBaseUnlocked = true;
+    public bool isUpgrade1Unlocked = false;
+    public bool isUpgrade2unlocked = false;
 
     // Start is called before the first frame update
     void Start()

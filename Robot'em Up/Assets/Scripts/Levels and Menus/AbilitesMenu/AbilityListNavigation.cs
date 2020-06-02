@@ -26,10 +26,12 @@ public class AbilityListNavigation : MonoBehaviour
     private AbilityGroupData selectedAbility;
     [ReadOnly] public int selectedAbilityIndex;
     [ReadOnly] public string selectedAbilityName;
+    public AnimationCurve newUpgradeTextVariation;
 
     private bool waitForJoystickYReset;
     private Sprite[] gifImagesToPlay;
     private int currentGifImageIndex;
+    private bool isNavigationAllowed = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -40,28 +42,30 @@ public class AbilityListNavigation : MonoBehaviour
     void Update()
     {
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
-
-        // Managing Up and Down
-        if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
+        if (isNavigationAllowed)
         {
-            if (!waitForJoystickYReset)
+            // Managing Up and Down
+            if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
             {
-                ChangeAbility(-1);
-                waitForJoystickYReset = true;
+                if (!waitForJoystickYReset)
+                {
+                    ChangeAbility(-1);
+                    waitForJoystickYReset = true;
+                }
             }
-        }
-        else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
-        {
-            if (!waitForJoystickYReset)
+            else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
             {
-                ChangeAbility(1);
-                waitForJoystickYReset = true;
-            }
+                if (!waitForJoystickYReset)
+                {
+                    ChangeAbility(1);
+                    waitForJoystickYReset = true;
+                }
 
-        }
-        else
-        {
-            waitForJoystickYReset = false;
+            }
+            else
+            {
+                waitForJoystickYReset = false;
+            }
         }
 
         if (i_state.Buttons.B == ButtonState.Pressed) { ReturnToMainMenu(); }
@@ -97,6 +101,21 @@ public class AbilityListNavigation : MonoBehaviour
         }
     }
 
+    public void GotToSpecificAbilityByIndex(int _abilityIndex)
+    {
+        selectedAbilityIndex = _abilityIndex;
+        selectedAbility = abilitesData[selectedAbilityIndex];
+
+        ChangeSelectedColor();
+
+        DisplayAbility();
+    }
+
+    public void UnlockUpgrade(Upgrade _newAbilityLevel)
+    {
+        StartCoroutine(UpgradeSequence_C(_newAbilityLevel));
+    }
+
     public void DisplayAbility()
     {
         gifImagesToPlay = selectedAbility.gifImages;
@@ -106,6 +125,13 @@ public class AbilityListNavigation : MonoBehaviour
         descriptionMainText.text = selectedAbility.abilityDescription;
         descriptionUpgrade1.text = selectedAbility.upgrade1Description;
         descriptionUpgrade2.text = selectedAbility.upgrade2Description;
+
+        if (!selectedAbility.isBaseUnlocked) { descriptionMainText.alpha = 0.3f; }
+        else { descriptionMainText.alpha=1;}
+        if (!selectedAbility.isUpgrade1Unlocked) { descriptionUpgrade1.alpha = 0.3f; }
+        else { descriptionUpgrade1.alpha = 1; }
+        if (!selectedAbility.isUpgrade2unlocked) { descriptionUpgrade2.alpha = 0.3f; }
+        else { descriptionUpgrade2.alpha = 1; }
     }
 
     public void ChangeSelectedColor()
@@ -143,5 +169,59 @@ public class AbilityListNavigation : MonoBehaviour
         selectedAbility = abilitesData[selectedAbilityIndex];
         ChangeSelectedColor();
         DisplayAbility();
+    }
+
+    public void GoToSpecificAbility(ConcernedAbility _concernedAbility)
+    {
+        for (int i = 0; i < abilitesData.Length; i++)
+        {
+            if (abilitesData[i].ability == _concernedAbility)
+            {
+                GotToSpecificAbilityByIndex(i);
+            }
+        }
+    }
+
+    private IEnumerator UpgradeSequence_C(Upgrade _newAbilityLevel)
+    {
+        isNavigationAllowed = false;
+        Debug.Log("laucnhing coroutine with " + _newAbilityLevel);
+        yield return new WaitForSecondsRealtime(0.5f);
+        Debug.Log("coroutine step 2");
+
+        TextMeshProUGUI i_concernedtext = null;
+        switch (_newAbilityLevel)
+        {
+            case Upgrade.Base:
+                i_concernedtext = descriptionMainText;
+                selectedAbility.isBaseUnlocked = true;
+                break;
+            case Upgrade.Upgrade1:
+                i_concernedtext = descriptionUpgrade1;
+                selectedAbility.isUpgrade1Unlocked = true;
+                break;
+            case Upgrade.Upgrade2:
+                i_concernedtext = descriptionUpgrade2;
+                selectedAbility.isUpgrade2unlocked = true;
+                break;
+            default:
+                break;
+        }
+
+        i_concernedtext.alpha = 1;
+        float animTime = 1.5f;
+        while(animTime > 0)
+        {
+            Debug.Log("coroutine anim step");
+            i_concernedtext.outlineWidth = 0.3f * newUpgradeTextVariation.Evaluate(1 - (animTime / 1.5f));
+            animTime -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        i_concernedtext.outlineWidth = 0.147f;
+
+        DisplayAbility();
+        yield return new WaitForSecondsRealtime(0.5f);
+        isNavigationAllowed = true;
     }
 }

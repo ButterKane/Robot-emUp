@@ -253,6 +253,14 @@ public class MainMenu : MonoBehaviour
         isMainMenuActive = false;
     }
 
+    public void OpenAbilitiesMenuAtSpecificOne(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
+    {
+        abilitiesMenuCanvas.enabled = true;
+        abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+        abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
+        isMainMenuActive = false;
+    }
+
     void SelectNextButton()
 	{
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
