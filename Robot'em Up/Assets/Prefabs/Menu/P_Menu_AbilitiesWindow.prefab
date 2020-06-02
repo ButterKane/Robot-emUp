@@ -165,12 +165,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580335710366799}
+  ability: 4
   abilityName: Revive
   abilityDescription: Hey, it's a 2 players game ok? So don't be a dick and revive
     your pal
   upgrade1Description: Revive him I tell you!
   upgrade2Description: NO you CAN'T play alone!
   gifImages: []
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580335755071041
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,6 +685,39 @@ MonoBehaviour:
   scriptLinkedToThisOne: {fileID: 0}
   selectedAbilityIndex: 0
   selectedAbilityName: 
+  newUpgradeTextVariation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.000028872986
+      value: 0.9972897
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.49898344
+      value: 2.002252
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.000052
+      value: 0.99728847
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8177580335997893497
 GameObject:
   m_ObjectHideFlags: 0
@@ -1128,11 +1165,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580336329665604}
+  ability: 3
   abilityName: Perfect Reception
   abilityDescription: Wouh, you good at catching ball! (pun not intended)
   upgrade1Description: You ctach ball even better
   upgrade2Description: You're a master at catching balls
   gifImages: []
+  isBaseUnlocked: 0
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580336526970085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1980,6 +2021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580336790384186}
+  ability: 0
   abilityName: Pass
   abilityDescription: Oh well, the pass description is what it is. Thow the ball,
     you dingus!
@@ -2021,6 +2063,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: abd2239d43cfd7a4f94d9fc745df4e27, type: 3}
   - {fileID: 21300000, guid: 7f64cc1cffb0ee648adb72ae1868dffb, type: 3}
   - {fileID: 21300000, guid: 0a158ccc3cfa650458177c42523a7b00, type: 3}
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580336795726973
 GameObject:
   m_ObjectHideFlags: 0
@@ -2339,6 +2384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580336933251755}
+  ability: 2
   abilityName: Dunk
   abilityDescription: What about the dunk? Motherfucking big AoE, let's crowd control
     baby!
@@ -2465,6 +2511,9 @@ MonoBehaviour:
   - {fileID: -5021776841608870810, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
   - {fileID: -4911411148946476979, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
   - {fileID: -1973075786093798165, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580336939479605
 GameObject:
   m_ObjectHideFlags: 0
@@ -3629,6 +3678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580337391031743}
+  ability: 1
   abilityName: Dash
   abilityDescription: Here's the description for the dash
   upgrade1Description: And dash's first upgrade!
@@ -3659,6 +3709,9 @@ MonoBehaviour:
   - {fileID: -7299982079221094050, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
   - {fileID: 5262801672783224760, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
   - {fileID: -1043656696398758442, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580337450636739
 GameObject:
   m_ObjectHideFlags: 0
