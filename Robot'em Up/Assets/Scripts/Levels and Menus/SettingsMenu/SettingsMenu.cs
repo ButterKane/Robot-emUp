@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using XInputDotNetPure;
@@ -583,7 +584,7 @@ public class SettingsMenu : MonoBehaviour
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
             PlayerPrefs.SetFloat("REU_Contrast", valueContrast);
-            //MomentumManager.instance.postProcessSettingsMod = ((float)valueContrast) / 100;
+            PostProcessManager.i.UpdateContrastWithSettings();
             // It's post process wesh
         }
 
