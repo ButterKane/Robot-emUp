@@ -396,7 +396,7 @@ public class PlayerController : PawnController, IHitable
     }
     private void CheckRightStick()
     {
-        if (lookInput.magnitude > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold))
+        if (lookInput.magnitude > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold*100)/100)
         {
             passController.SetLookDirection(lookInput);
             if (!rightButtonWaitForRelease)

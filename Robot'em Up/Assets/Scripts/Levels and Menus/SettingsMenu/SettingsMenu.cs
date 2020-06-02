@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using XInputDotNetPure;
@@ -568,6 +569,7 @@ public class SettingsMenu : MonoBehaviour
         if (sliderSettings.TryGetValue("Assisting Aim", out int valueAimAssistance))
         {
             PlayerPrefs.SetFloat("REU_Assisting Aim", valueAimAssistance);
+            EnemyManager.i.ChangeAimAssistanceForAllEnemies(valueAimAssistance);
             //GameManager.i.aimAssistanceSettingsMod = ((float)valueAimAssistance)/100;
         }
 
@@ -583,7 +585,7 @@ public class SettingsMenu : MonoBehaviour
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
             PlayerPrefs.SetFloat("REU_Contrast", valueContrast);
-            //MomentumManager.instance.postProcessSettingsMod = ((float)valueContrast) / 100;
+            PostProcessManager.i.UpdateContrastWithSettings();
             // It's post process wesh
         }
 
@@ -705,20 +707,20 @@ public class SettingsMenu : MonoBehaviour
                 if (i_thisSetting is SliderUI)
                 {
                     SliderUI i_sliderRef = i_thisSetting as SliderUI;
-                    int value = Mathf.RoundToInt(PlayerPrefs.GetFloat("REU_" + i_sliderRef.name));
+                    int value = Mathf.RoundToInt(PlayerPrefs.GetFloat("REU_" + i_sliderRef.name, i_sliderRef.defaultValue));
                     i_sliderRef.ForceModifyValue(value);
                 }
                 else if (i_thisSetting is MultichoiceUI)
                 {
                     MultichoiceUI i_multiChoiceRef = i_thisSetting as MultichoiceUI;
 
-                    i_multiChoiceRef.ForceModifyValue(PlayerPrefs.GetInt("REU_" + i_multiChoiceRef.name));
+                    i_multiChoiceRef.ForceModifyValue(PlayerPrefs.GetInt("REU_" + i_multiChoiceRef.name, i_multiChoiceRef.defaultValue));
                 }
                 else if (i_thisSetting is ToggleUI)
                 {
                     ToggleUI i_toggleRef = i_thisSetting as ToggleUI;
 
-                    i_toggleRef.ForceModifyValue(SwissArmyKnife.ConvertPlayerPrefStringAsBool(PlayerPrefs.GetString("REU_" + i_toggleRef.name)));
+                    i_toggleRef.ForceModifyValue(SwissArmyKnife.ConvertPlayerPrefStringAsBool(PlayerPrefs.GetString("REU_" + i_toggleRef.name, i_toggleRef.defaultValueIsYes? "true":"false")));
                 }
             }
         }
