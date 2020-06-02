@@ -214,7 +214,7 @@ public class EnemyManager : MonoBehaviour
     {
         foreach(var enemy in enemies)
         {
-            enemy.ChangeAimAssistance((PlayerPrefs.GetFloat("REU_Assisting Aim", 50)/50));
+            enemy.ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50)/50), 0.4f));
         }
     }
     #endregion

@@ -143,7 +143,7 @@ public class EnemyBehaviour : PawnController, IHitable
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
 
-        ChangeAimAssistance((PlayerPrefs.GetFloat("REU_Assisting Aim", 50) / 50));
+        ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50) / 50), 0.4f));
 
         ChangeState(EnemyState.Deploying);
     }
