@@ -6,9 +6,24 @@ using XInputDotNetPure;
 using MyBox;
 using TMPro;
 
+public enum ConcernedAbility
+{
+    Pass,
+    Dash,
+    Dunk,
+    PerfectReception,
+    Revive
+}
+
+public enum Upgrade
+{
+    Base,
+    Upgrade1,
+    Upgrade2
+}
+
 public class Collectible : MonoBehaviour
 {
-
     [Header("References")]
     public Renderer myRend;
     public SphereCollider myCollider;
@@ -18,6 +33,7 @@ public class Collectible : MonoBehaviour
     public Animator myAnim;
     public GameObject aButtonPlayer1;
     public GameObject aButtonPlayer2;
+    public TextMeshPro tmp_field;
 
     [Header("Variables to tweak")]
     public float ratioBeforeTriggerOut;
@@ -32,8 +48,11 @@ public class Collectible : MonoBehaviour
     public AnimationCurve indicatorCurve;
     //UNITY EVENT
     public UnityEvent collectedEvent;
-
-
+    [TextArea(2, 5)]
+    public string displayedText;
+    public ConcernedAbility concernedAbility;
+    public Upgrade newAbilityLevel;
+    
     [Header("Read Only")]
     [ReadOnly] public PlayerIndex playerIndex1;
     [ReadOnly] public PlayerIndex playerIndex2;
@@ -58,6 +77,7 @@ public class Collectible : MonoBehaviour
         playerIndex2 = PlayerIndex.Two;
         state1 = GamePad.GetState(playerIndex1);
         state2 = GamePad.GetState(playerIndex2);
+        tmp_field.text = displayedText;
     }
 
     void Update()
@@ -111,7 +131,7 @@ public class Collectible : MonoBehaviour
         {
             //UPDATE RATIO COMPLETION
             state1 = GamePad.GetState(playerIndex1);
-            if (player1InRange && state1.Buttons.A == ButtonState.Pressed)
+            if (player1InRange && state1.Buttons.A == ButtonState.Pressed) // With new system => InteractButton 
             {
                 PlayerRatioUpdate(true, Mathf.Clamp01(player1PressRatio + Time.deltaTime / timeToPressA));
             }
@@ -121,7 +141,7 @@ public class Collectible : MonoBehaviour
             }
 
             state2 = GamePad.GetState(playerIndex2);
-            if (player2InRange && state2.Buttons.A == ButtonState.Pressed)
+            if (player2InRange && state2.Buttons.A == ButtonState.Pressed) // With new system => InteractButton 
             {
                 PlayerRatioUpdate(false, Mathf.Clamp01(player2PressRatio + Time.deltaTime / timeToPressA));
             }
@@ -131,7 +151,7 @@ public class Collectible : MonoBehaviour
             }
 
             //CHECK IF FULLY COMPLETED
-            if (player1PressRatio >= 1 && player2PressRatio >= 1)
+            if (player1PressRatio >= 1 && player2PressRatio >= 1 && collected == false)
             {
                 CollectedEvent();
             }
@@ -245,6 +265,7 @@ public class Collectible : MonoBehaviour
         myAnim.enabled = true;
         myAnim.SetTrigger("CollectedTrigger");
         collected = true;
+        GameManager.PickedUpAnUpgrade(concernedAbility, newAbilityLevel);
         collectedEvent.Invoke();
     }
 

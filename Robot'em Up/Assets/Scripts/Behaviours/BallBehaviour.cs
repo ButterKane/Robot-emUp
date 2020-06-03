@@ -317,6 +317,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableGravity();
 				EnableCollisions();
 				col.isTrigger = true;
+				col.enabled = true;
 				ballInformations.distanceTravelled = 0;
 				break;
 			case BallState.Held:

@@ -110,10 +110,6 @@ public class ArenaClusterCubes : MonoBehaviour
         //MOVEMENT
         while (movingTimer < movingTime)
         {
-            if (_up)
-                print("Up " + movingTimer);
-            else
-                print("Down " + movingTimer);
             movingTimer += Time.deltaTime;
             if(_up)
                 cubesArray[_row, _column].position = Vector3.Lerp(startPos, endPos, movingCubeUpCurve.Evaluate(movingTimer/movingTime));

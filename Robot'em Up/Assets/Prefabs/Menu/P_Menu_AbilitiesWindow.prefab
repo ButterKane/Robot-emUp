@@ -165,12 +165,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580335710366799}
+  ability: 4
   abilityName: Revive
-  abilityDescription: Hey, it's a 2 players game ok? So don't be a dick and revive
-    your pal
-  upgrade1Description: Revive him I tell you!
-  upgrade2Description: NO you CAN'T play alone!
+  abilityDescription: "When your buddy is dead, catch its body parts on the ground
+    and revive him! He\u2019ll come back to life healthier than ever, ready to take
+    down more enemies!"
+  upgrade1Description: Upgrade1
+  upgrade2Description: Upgrade2
   gifImages: []
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580335755071041
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,6 +686,39 @@ MonoBehaviour:
   scriptLinkedToThisOne: {fileID: 0}
   selectedAbilityIndex: 0
   selectedAbilityName: 
+  newUpgradeTextVariation:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.000028872986
+      value: 0.9972897
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.49898344
+      value: 2.002252
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.000052
+      value: 0.99728847
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8177580335997893497
 GameObject:
   m_ObjectHideFlags: 0
@@ -1128,11 +1166,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580336329665604}
+  ability: 3
   abilityName: Perfect Reception
-  abilityDescription: Wouh, you good at catching ball! (pun not intended)
-  upgrade1Description: You ctach ball even better
-  upgrade2Description: You're a master at catching balls
+  abilityDescription: Throw back the ball immediatly after receiving it to increase
+    its power! It deals more damage, and pushes enemies away from you!
+  upgrade1Description: Upgrade1
+  upgrade2Description: Upgrade2
   gifImages: []
+  isBaseUnlocked: 0
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580336526970085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1980,11 +2023,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580336790384186}
+  ability: 0
   abilityName: Pass
-  abilityDescription: Oh well, the pass description is what it is. Thow the ball,
-    you dingus!
-  upgrade1Description: hey, you can actually throw it!
-  upgrade2Description: And manage to do it WHILE running away! Congrats!
+  abilityDescription: Pass the Energy Core to your buddy! You can shoot it straight,
+    or with a curved trajectory, damaging all enemies on the way !
+  upgrade1Description: Upgrade1
+  upgrade2Description: Upgrade2
   gifImages:
   - {fileID: 21300000, guid: 17b67dfe5082ee747ba26867db7991df, type: 3}
   - {fileID: 21300000, guid: 39e8bee25feb7bc46880c123118ad77c, type: 3}
@@ -2021,6 +2065,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: abd2239d43cfd7a4f94d9fc745df4e27, type: 3}
   - {fileID: 21300000, guid: 7f64cc1cffb0ee648adb72ae1868dffb, type: 3}
   - {fileID: 21300000, guid: 0a158ccc3cfa650458177c42523a7b00, type: 3}
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580336795726973
 GameObject:
   m_ObjectHideFlags: 0
@@ -2339,11 +2386,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580336933251755}
+  ability: 2
   abilityName: Dunk
-  abilityDescription: What about the dunk? Motherfucking big AoE, let's crowd control
-    baby!
-  upgrade1Description: Ah?
-  upgrade2Description: Ok
+  abilityDescription: A move that requires synchronisation, and deals devastating
+    damage around you! Fill up the energy jauge by hitting enemies, jump, recieve
+    the ball from your pal, and violently dunk on the ground!
+  upgrade1Description: Upgrade1
+  upgrade2Description: Upgrade2
   gifImages:
   - {fileID: -634939176177036431, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
   - {fileID: 1291146559195552984, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
@@ -2465,6 +2514,9 @@ MonoBehaviour:
   - {fileID: -5021776841608870810, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
   - {fileID: -4911411148946476979, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
   - {fileID: -1973075786093798165, guid: 219865d857d223b4aaf730d9c5043623, type: 3}
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580336939479605
 GameObject:
   m_ObjectHideFlags: 0
@@ -3629,10 +3681,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 8177580337391031743}
+  ability: 1
   abilityName: Dash
-  abilityDescription: Here's the description for the dash
-  upgrade1Description: And dash's first upgrade!
-  upgrade2Description: Oh look, there a second one!
+  abilityDescription: "Perform a quick dash to evade immediate danger or to re-position
+    yourself and hit even more enemies ! Dash\u2019s stacks refills over time."
+  upgrade1Description: Ugrade1
+  upgrade2Description: Upgrade2
   gifImages:
   - {fileID: 5108601841118324724, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
   - {fileID: 763718201113852716, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
@@ -3659,6 +3713,9 @@ MonoBehaviour:
   - {fileID: -7299982079221094050, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
   - {fileID: 5262801672783224760, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
   - {fileID: -1043656696398758442, guid: e85eaee3f26bc9e408b70933dedd346f, type: 3}
+  isBaseUnlocked: 1
+  isUpgrade1Unlocked: 0
+  isUpgrade2unlocked: 0
 --- !u!1 &8177580337450636739
 GameObject:
   m_ObjectHideFlags: 0

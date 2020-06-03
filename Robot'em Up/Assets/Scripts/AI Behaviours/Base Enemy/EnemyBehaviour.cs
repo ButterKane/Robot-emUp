@@ -55,7 +55,6 @@ public class EnemyBehaviour : PawnController, IHitable
     [SerializeField] protected Transform playerTwoTransform;
     protected PawnController playerTwoPawnController;
     [ReadOnly] public Collider selfCollider;
-    public float selfColliderSize;
 
     [Space(2)]
     [Separator("Tweakable variables")]
@@ -123,6 +122,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
     private float currentDeathWaitTime;
     private HealthBar healthBar;
+    private float selfColliderDefaultSize;
 
     protected virtual void Start()
     {
@@ -498,7 +498,8 @@ public class EnemyBehaviour : PawnController, IHitable
     public void ChangeAimAssistance(float _assistanceRatio)
     {
         SphereCollider i_collider = selfCollider as SphereCollider;
-        i_collider.radius = selfColliderSize * _assistanceRatio;
+        selfColliderDefaultSize = i_collider.radius;
+        i_collider.radius = selfColliderDefaultSize * _assistanceRatio;
     }
     #endregion
 
