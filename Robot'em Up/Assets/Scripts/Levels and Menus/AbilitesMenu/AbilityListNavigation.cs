@@ -116,6 +116,11 @@ public class AbilityListNavigation : MonoBehaviour
         StartCoroutine(UpgradeSequence_C(_newAbilityLevel));
     }
 
+    public void UnlockNextUpgradeForPerfectReception()
+    {
+        StartCoroutine(UpgradePrefectReceptionSequence_C());
+    }
+
     public void DisplayAbility()
     {
         gifImagesToPlay = selectedAbility.gifImages;
@@ -185,9 +190,7 @@ public class AbilityListNavigation : MonoBehaviour
     private IEnumerator UpgradeSequence_C(Upgrade _newAbilityLevel)
     {
         isNavigationAllowed = false;
-        Debug.Log("laucnhing coroutine with " + _newAbilityLevel);
         yield return new WaitForSecondsRealtime(0.5f);
-        Debug.Log("coroutine step 2");
 
         TextMeshProUGUI i_concernedtext = null;
         switch (_newAbilityLevel)
@@ -212,7 +215,62 @@ public class AbilityListNavigation : MonoBehaviour
         float animTime = 1.5f;
         while(animTime > 0)
         {
-            Debug.Log("coroutine anim step");
+            i_concernedtext.outlineWidth = 0.3f * newUpgradeTextVariation.Evaluate(1 - (animTime / 1.5f));
+            animTime -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        i_concernedtext.outlineWidth = 0.147f;
+
+        DisplayAbility();
+        yield return new WaitForSecondsRealtime(0.5f);
+        isNavigationAllowed = true;
+    }
+
+    public IEnumerator UpgradePrefectReceptionSequence_C()
+    {
+        isNavigationAllowed = false;
+        yield return new WaitForSecondsRealtime(0.5f);
+        Upgrade _newLevel;
+        if (selectedAbility.isBaseUnlocked)
+        {
+            if (selectedAbility.isUpgrade1Unlocked)
+            {
+                _newLevel = Upgrade.Upgrade1;
+            }
+            else
+            {
+                _newLevel = Upgrade.Upgrade2;
+            }
+        }
+        else
+        {
+            _newLevel = Upgrade.Base;
+        }
+
+        TextMeshProUGUI i_concernedtext = null;
+        switch (_newLevel)
+        {
+            case Upgrade.Base:
+                i_concernedtext = descriptionMainText;
+                selectedAbility.isBaseUnlocked = true;
+                break;
+            case Upgrade.Upgrade1:
+                i_concernedtext = descriptionUpgrade1;
+                selectedAbility.isUpgrade1Unlocked = true;
+                break;
+            case Upgrade.Upgrade2:
+                i_concernedtext = descriptionUpgrade2;
+                selectedAbility.isUpgrade2unlocked = true;
+                break;
+            default:
+                break;
+        }
+
+        i_concernedtext.alpha = 1;
+        float animTime = 1.5f;
+        while (animTime > 0)
+        {
             i_concernedtext.outlineWidth = 0.3f * newUpgradeTextVariation.Evaluate(1 - (animTime / 1.5f));
             animTime -= Time.unscaledDeltaTime;
             yield return null;

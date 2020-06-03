@@ -256,8 +256,16 @@ public class MainMenu : MonoBehaviour
     public void OpenAbilitiesMenuAtSpecificOne(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
         abilitiesMenuCanvas.enabled = true;
-        abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
-        abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
+        if (_concernedAbility == ConcernedAbility.PerfectReception)
+        {
+            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockNextUpgradeForPerfectReception();
+        }
+        else
+        {
+            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
+        }
         isMainMenuActive = false;
     }
 
