@@ -269,6 +269,7 @@ public class MainMenu : MonoBehaviour
             abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
             abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
         }
+        //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
         isMainMenuActive = false;
     }
 
