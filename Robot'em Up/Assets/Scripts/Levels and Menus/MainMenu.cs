@@ -256,6 +256,23 @@ public class MainMenu : MonoBehaviour
         isMainMenuActive = false;
     }
 
+    public void OpenAbilitiesMenuAtSpecificOne(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
+    {
+        abilitiesMenuCanvas.enabled = true;
+        if (_concernedAbility == ConcernedAbility.PerfectReception)
+        {
+            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockNextUpgradeForPerfectReception();
+        }
+        else
+        {
+            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
+        }
+        //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
+        isMainMenuActive = false;
+    }
+
     void SelectNextButton()
 	{
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);

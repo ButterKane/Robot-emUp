@@ -319,6 +319,12 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
+    {
+        OpenLevelMenu();
+        mainMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
+    }
     #endregion
 
     #region Private functions
