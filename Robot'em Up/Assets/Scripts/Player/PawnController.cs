@@ -114,7 +114,7 @@ public class PawnController : MonoBehaviour
 
 	//Other variables
 	[HideInInspector] public float climbingDelay;
-	private bool isPlayer;
+	[HideInInspector] public bool isPlayer;
 	protected bool targetable;
 	private List<Renderer> hiddenRenderers = new List<Renderer>();
 	protected NavMeshAgent navMeshAgent;

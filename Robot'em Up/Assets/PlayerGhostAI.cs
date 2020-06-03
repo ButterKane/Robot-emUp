@@ -138,7 +138,7 @@ public class PlayerGhostAI : MonoBehaviour
                     dunkController.ForceDunk();
                     jumpCooldown = false;
                 }
-                if (currentCooldown <= 0)
+                if (currentCooldown <= 0 && passTarget != null)
                 {
                     transform.LookAt(passTarget.transform.position);
                     passController.Shoot();

@@ -12458,12 +12458,12 @@ MonoBehaviour:
     m_Bits: 4294967295
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  antialiasingMode: 3
   temporalAntialiasing:
-    jitterSpread: 0.8
-    sharpness: 0.2
-    stationaryBlending: 0.95
-    motionBlending: 0.7
+    jitterSpread: 0.5
+    sharpness: 0.9
+    stationaryBlending: 0.9
+    motionBlending: 0.9
   subpixelMorphologicalAntialiasing:
     quality: 2
   fastApproximateAntialiasing:
@@ -27754,6 +27754,8 @@ MonoBehaviour:
   - {fileID: 926919876}
   optionMenuPrefab: {fileID: 3990827997643161736, guid: dc13041436b957b47a8ca288565745a2,
     type: 3}
+  abilitiesMenuPrefab: {fileID: 0}
+  inputRemapMenuPrefab: {fileID: 0}
   selectorArrow: {fileID: 2116886518}
   selectorOutline: {fileID: 1951929326}
   waitForBResetOne: 0
@@ -33078,7 +33080,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1097741912}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

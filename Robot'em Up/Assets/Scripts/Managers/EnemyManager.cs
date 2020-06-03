@@ -209,6 +209,14 @@ public class EnemyManager : MonoBehaviour
             enemy.speedSettingsMod = i_newSpeedMoveModifier;
         }
     }
+
+    public void ChangeAimAssistanceForAllEnemies(float _assistanceRatio)
+    {
+        foreach(var enemy in enemies)
+        {
+            enemy.ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50)/50), 0.4f));
+        }
+    }
     #endregion
 
 }
