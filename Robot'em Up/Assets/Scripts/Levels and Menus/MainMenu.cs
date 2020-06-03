@@ -76,6 +76,7 @@ public class MainMenu : MonoBehaviour
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isMainMenuActive && gameObject.activeSelf)
         {
+            Debug.Log("Hello it is main menu");
             for (int i = 0; i < 2; i++)
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
@@ -139,8 +140,10 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed && waitForBResetOne == false)
+                Debug.Log("B state: " + i_state.Buttons.B + " waitForReset: " + waitForBResetOne);
+                if (i_state.Buttons.B == ButtonState.Pressed)
                 {
+                    Debug.Log("Closing level selector");
                     CloseLevelSelector();
                 }
                 else
@@ -220,7 +223,7 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(false);
         buttons = menuButtons;
         SelectButton(buttons[0]);
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
+        Time.timeScale = 1;
     }
 
     public void StartGame ()

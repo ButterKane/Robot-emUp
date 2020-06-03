@@ -360,7 +360,7 @@ public class SettingsMenu : MonoBehaviour
         ComputeSettings();
         ModifyPlayerPrefsValues();
 
-        Time.timeScale = 0; // make sure it is still stopped
+        //Time.timeScale = 0; // make sure it is still stopped
 
         scriptLinkedToThisOne.waitForBResetOne = true;
         scriptLinkedToThisOne.isMainMenuActive = true;
@@ -569,7 +569,10 @@ public class SettingsMenu : MonoBehaviour
         if (sliderSettings.TryGetValue("Assisting Aim", out int valueAimAssistance))
         {
             PlayerPrefs.SetFloat("REU_Assisting Aim", valueAimAssistance);
-            EnemyManager.i.ChangeAimAssistanceForAllEnemies(valueAimAssistance);
+            if (EnemyManager.i != null)
+            {
+                EnemyManager.i.ChangeAimAssistanceForAllEnemies(valueAimAssistance);
+            }
             //GameManager.i.aimAssistanceSettingsMod = ((float)valueAimAssistance)/100;
         }
 
@@ -585,7 +588,10 @@ public class SettingsMenu : MonoBehaviour
         if (sliderSettings.TryGetValue("Contrast", out int valueContrast))
         {
             PlayerPrefs.SetFloat("REU_Contrast", valueContrast);
-            PostProcessManager.i.UpdateContrastWithSettings();
+            if (PostProcessManager.i != null)
+            {
+                PostProcessManager.i.UpdateContrastWithSettings();
+            }
             // It's post process wesh
         }
 
