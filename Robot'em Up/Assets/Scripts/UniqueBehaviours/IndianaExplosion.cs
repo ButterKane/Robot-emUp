@@ -10,7 +10,6 @@ public class IndianaExplosion : MonoBehaviour
     public bool isBarrage;
     [ReadOnly] public float waitingForExplosion;
     [ReadOnly]  public bool Explosed;
-    private SphereCollider sphereCollider;
     [ReadOnly] public IndianaManager indianaManager;
     public bool canDamagePlayer = true;
 
@@ -26,7 +25,6 @@ public class IndianaExplosion : MonoBehaviour
         transform.localScale = Vector3.one * myScale;
         waitingForExplosion = waitTimeForExplosion;
         listPawnsHere = new List<PawnController>();
-        sphereCollider = GetComponent<SphereCollider>();
     }
 
     // Update is called once per frame
@@ -58,8 +56,10 @@ public class IndianaExplosion : MonoBehaviour
             {
                 foreach (var item in listPawnsHere)
                 {
-                    item.Damage(indianaManager.damageToPawn);
-                    item.Push(PushType.Light, item.transform.position - transform.position, PushForce.Force2);
+                    if (indianaManager != null) {
+                        item.Damage(indianaManager.damageToPawn);
+                        item.Push(PushType.Light, item.transform.position - transform.position, PushForce.Force2);
+                    }
                 }
             }
         }
