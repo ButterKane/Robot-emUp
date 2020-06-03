@@ -16,7 +16,8 @@ public class DashController : MonoBehaviour
 	public float distance = 3f; //Max distance travelled by the player during the dash
 	public float duration = 0.2f;
 	public AnimationCurve dashSpeedCurve;
-	public int maxStackAmount = 3;
+	public int upgradeMaxStackAmount = 3;
+	public int defaultMaxStackAmount = 2;
 
 	public bool unstoppableDash;
 	public float pushForce = 80f;
@@ -47,15 +48,16 @@ public class DashController : MonoBehaviour
 	private int currentStackAmount;
 	private GameObject currentDashFX;
 	private PlayerUI playerUI;
+	[HideInInspector] public int maxStackAmount = 2;
 
 	[ReadOnly] public DashState state;
 	private void Awake ()
 	{
 		linkedPawn = GetComponent<PawnController>();
 		playerUI = GetComponent<PlayerUI>();
+		maxStackAmount = defaultMaxStackAmount;
 		currentStackAmount = maxStackAmount;
 	}
-
 	private void Update ()
 	{
 		UpdateCooldown();
@@ -104,6 +106,18 @@ public class DashController : MonoBehaviour
     {
         currentStackAmount = maxStackAmount;
     }
+
+	public void CheckForUpgrades()
+	{
+		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dash) > 0)
+		{
+			maxStackAmount = upgradeMaxStackAmount;
+		} else
+		{
+			maxStackAmount = defaultMaxStackAmount;
+		}
+		playerUI.GenerateDashBars();
+	}
     #endregion
 
     #region Private functions

@@ -108,10 +108,33 @@ public class PassController : MonoBehaviour
 		didPerfectReception = true;
 
 		//Add ball modifier on perfect reception
-		_ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
-		_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
+		Upgrade perfectReceptionUpgrade = AbilityManager.GetAbilityLevel(ConcernedAbility.PerfectReception);
+		bool canChargeBall = false;
+		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		switch (perfectReceptionUpgrade)
+		{
+			case Upgrade.Upgrade1:
+				if (i_lerpValue <= 0.1f)
+				{
+					canChargeBall = true;
+				}
+				break;
+			case Upgrade.Upgrade2:
+				if (i_lerpValue <= 0.6f)
+				{
+					canChargeBall = true;
+				}
+				break;
+			case Upgrade.Upgrade3:
+				canChargeBall = true;
+				break;
+		}
+		if (canChargeBall)
+		{
+			_ball.AddNewDamageModifier(new DamageModifier(ballDatas.damageModifierOnPerfectReception, -1, DamageModifierSource.PerfectReception));
+			_ball.AddNewSpeedModifier(new SpeedCoef(ballDatas.speedMultiplierOnPerfectReception, -1, SpeedMultiplierReason.PerfectReception, false));
+		}
 
-		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1); //Used for color
 		GameObject i_perfectReceptionFX = FeedbackManager.SendFeedback("event.PlayerPerfectReception", linkedPawn, handTransform.position, _ball.GetCurrentDirection(), default, !isPlayer).GetVFX();
 		ParticleColorer.ReplaceParticleColor(i_perfectReceptionFX, Color.white, ballDatas.colorOverDamage.Evaluate(i_lerpValue));
 		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
@@ -132,6 +155,7 @@ public class PassController : MonoBehaviour
 	public void TryReception () //Player tries to do a perfect reception
 	{
 		if (didPerfectReception || perfectReceptionBuffer > 0) { return; }
+		if (AbilityManager.GetAbilityLevel(ConcernedAbility.PerfectReception) == Upgrade.Base) { return; } //If player hasn't unlocked perfect reception
 		BallBehaviour i_mainBall = BallBehaviour.instance;
 		if (i_mainBall.GetCurrentThrower() == linkedPawn) { return; }
 		if (currentBall == null)

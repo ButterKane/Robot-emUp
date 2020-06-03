@@ -446,6 +446,12 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
+                Upgrade passLevel = AbilityManager.GetAbilityLevel(ConcernedAbility.Pass);
+                if ((int)passLevel > 0 && GetHealth() / GetMaxHealth() <= AbilityManager.instance.level1PassDamageTreshold)
+                {
+                    _damages = _damages * AbilityManager.instance.level1PassDamageMultiplier;
+                    FeedbackManager.SendFeedback("event.PassUpgradedShot", this, _ball.transform.position, _impactVector, _impactVector);
+                }
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 
                 animator.SetTrigger("HitTrigger");
@@ -475,6 +481,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
                 }
+
+
                 break;
 
             case DamageSource.Laser:

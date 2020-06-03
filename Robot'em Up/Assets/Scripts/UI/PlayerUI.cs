@@ -229,8 +229,17 @@ public class PlayerUI : MonoBehaviour
 		healthBar.heightOffset = healthBarHeight;
 		healthBar.name = "HealthBar";
 	}
-	private void GenerateDashBars ()
+	public void GenerateDashBars ()
 	{
+		if (dashPanel != null) { Destroy(dashPanel); }
+		if (dashStacks.Count > 0)
+		{
+			foreach (Image i in dashStacks)
+			{
+				Destroy(i);
+			}
+		}
+		dashStacks.Clear();
 		dashPanel = new GameObject();
 		dashPanel.name = "DashUI";
 		RectTransform i_dashRT = dashPanel.AddComponent<RectTransform>();
@@ -331,11 +340,14 @@ public class PlayerUI : MonoBehaviour
 		{
 			foreach (Image image in i_images)
 			{
-				Color startColor = image.color;
-				Color endColor = image.color;
-				startColor.a = 1;
-				endColor.a = 0;
-				image.color = Color.Lerp(startColor, endColor, i / (1f / _fadeOutSpeed));
+				if (image != null)
+				{
+					Color startColor = image.color;
+					Color endColor = image.color;
+					startColor.a = 1;
+					endColor.a = 0;
+					image.color = Color.Lerp(startColor, endColor, i / (1f / _fadeOutSpeed));
+				}
 			}
 			foreach (TextMeshProUGUI text in i_texts)
 			{
@@ -347,10 +359,13 @@ public class PlayerUI : MonoBehaviour
 			}
 			yield return null;
 		}
-		_panel.transform.localScale = i_initialScale;
-		displayedPanels.Remove(_panel);
-		currentCoroutines.Remove(_panel);
-		_panel.SetActive(false);
+		if (_panel != null)
+		{
+			_panel.transform.localScale = i_initialScale;
+			displayedPanels.Remove(_panel);
+			currentCoroutines.Remove(_panel);
+			_panel.SetActive(false);
+		}
 		if (_callBack != default) { _callBack.Invoke(); }
 	}
 	IEnumerator DisplayPanel_C(GameObject _panel, float _duration, float _fadeInSpeed, float _fadeOutSpeed, float _startScale, float _endScale, AnimationCurve _scaleCurve, Action _callBack = default)

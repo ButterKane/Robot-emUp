@@ -19,7 +19,8 @@ public enum Upgrade
 {
     Base,
     Upgrade1,
-    Upgrade2
+    Upgrade2,
+    Upgrade3
 }
 
 public class Collectible : MonoBehaviour

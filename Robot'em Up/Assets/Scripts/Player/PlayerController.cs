@@ -71,7 +71,7 @@ public class PlayerController : PawnController, IHitable
 
     //References
     private DunkController dunkController;
-    private DashController dashController;
+    [HideInInspector] public DashController dashController;
     [HideInInspector] public ExtendingArmsController extendingArmsController;
     public static Transform middlePoint;
     private GamePadState state;
@@ -107,6 +107,14 @@ public class PlayerController : PawnController, IHitable
         UpdateMiddlePoint();
         GetInput();
         UpdateOverHeal();
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            AbilityManager.UnlockAllAbilities();
+        }
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            AbilityManager.ResetUpgrades();
+        }
     }
     protected override void LateUpdate()
     {
