@@ -12,12 +12,20 @@ public class MainMenu : MonoBehaviour
 
     public bool isMainMenuActive = true;
     public List<Button> menuButtons = new List<Button>();
+
     public GameObject optionMenuPrefab;
     private GameObject optionMenu;
+    private Canvas optionMenuCanvas;
+
     public GameObject abilitiesMenuPrefab;
     private GameObject abilitiesMenu;
     private Canvas abilitiesMenuCanvas;
-    private Canvas optionMenuCanvas;
+
+    public GameObject inputRemapMenuPrefab;
+    private GameObject inputRemapMenu;
+    private Canvas inputRemapMenuCanvas;
+
+
     private Button selectedButton;
 	public Image selectorArrow;
 	public Image selectorOutline;
@@ -54,6 +62,13 @@ public class MainMenu : MonoBehaviour
             abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
             abilitiesMenuCanvas.enabled = false;
         }
+        if (inputRemapMenuPrefab != null)
+        {
+            inputRemapMenu = Instantiate(abilitiesMenuPrefab);
+            inputRemapMenu.GetComponent<InputRemapper>().scriptLinkedToThisOne = this;
+            inputRemapMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
+            inputRemapMenuCanvas.enabled = false;
+        }
         SelectButton(menuButtons[0]);
     }
 	private void Update ()
@@ -61,6 +76,7 @@ public class MainMenu : MonoBehaviour
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isMainMenuActive && gameObject.activeSelf)
         {
+            Debug.Log("Hello it is main menu");
             for (int i = 0; i < 2; i++)
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
@@ -124,8 +140,10 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed && waitForBResetOne == false)
+                Debug.Log("B state: " + i_state.Buttons.B + " waitForReset: " + waitForBResetOne);
+                if (i_state.Buttons.B == ButtonState.Pressed)
                 {
+                    Debug.Log("Closing level selector");
                     CloseLevelSelector();
                 }
                 else
@@ -205,7 +223,7 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(false);
         buttons = menuButtons;
         SelectButton(buttons[0]);
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
+        Time.timeScale = 1;
     }
 
     public void StartGame ()
@@ -223,11 +241,35 @@ public class MainMenu : MonoBehaviour
         isMainMenuActive = false;
     }
 
+    public void OpenInputRemap()
+    {
+        FeedbackManager.SendFeedback("event.PressSettings", this);
+        inputRemapMenuCanvas.enabled = true;
+        isMainMenuActive = false;
+    }
+
     public void OpenAbilitiesMenu()
     {
         FeedbackManager.SendFeedback("event.PressSettings", this);
         abilitiesMenuCanvas.enabled = true;
         abilitiesMenu.GetComponent<AbilityListNavigation>().ResetDisplay();
+        isMainMenuActive = false;
+    }
+
+    public void OpenAbilitiesMenuAtSpecificOne(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
+    {
+        abilitiesMenuCanvas.enabled = true;
+        if (_concernedAbility == ConcernedAbility.PerfectReception)
+        {
+            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockNextUpgradeForPerfectReception();
+        }
+        else
+        {
+            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
+        }
+        //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
         isMainMenuActive = false;
     }
 

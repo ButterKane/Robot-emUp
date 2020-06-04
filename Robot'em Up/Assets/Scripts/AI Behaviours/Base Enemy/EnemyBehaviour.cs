@@ -122,6 +122,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
     private float currentDeathWaitTime;
     private HealthBar healthBar;
+    private float selfColliderDefaultSize;
 
     protected virtual void Start()
     {
@@ -141,6 +142,8 @@ public class EnemyBehaviour : PawnController, IHitable
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
+
+        ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50) / 50), 0.4f));
 
         ChangeState(EnemyState.Deploying);
     }
@@ -443,6 +446,12 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
+                Upgrade passLevel = AbilityManager.GetAbilityLevel(ConcernedAbility.Pass);
+                if ((int)passLevel > 0 && GetHealth() / GetMaxHealth() <= AbilityManager.instance.level1PassDamageTreshold)
+                {
+                    _damages = _damages * AbilityManager.instance.level1PassDamageMultiplier;
+                    FeedbackManager.SendFeedback("event.PassUpgradedShot", this, _ball.transform.position, _impactVector, _impactVector);
+                }
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 
                 animator.SetTrigger("HitTrigger");
@@ -472,6 +481,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
                 }
+
+
                 break;
 
             case DamageSource.Laser:
@@ -491,10 +502,17 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
     }
+
+    public void ChangeAimAssistance(float _assistanceRatio)
+    {
+        SphereCollider i_collider = selfCollider as SphereCollider;
+        selfColliderDefaultSize = i_collider.radius;
+        i_collider.radius = selfColliderDefaultSize * _assistanceRatio;
+    }
     #endregion
 
-    #region Private and protected methods
-    protected void CheckDistanceAndAdaptFocus()
+        #region Private and protected methods
+        protected void CheckDistanceAndAdaptFocus()
     {
         if (focusValues == null) { return; }
         //Checking who is in range

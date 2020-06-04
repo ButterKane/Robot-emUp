@@ -168,18 +168,14 @@ public class Spawner : MonoBehaviour
 		if (type == SpawnerType.Air)
 		{
 			_enemy.gameObject.SetActive(false);
-			explosionVisualizer = new GameObject();
-			explosionVisualizer.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("ExplosionVisualiseur");
+			explosionVisualizer = Instantiate(Resources.Load<GameObject>("ArenaResource/Spawners/P_ExplosionVisualizer"));
 			explosionVisualizer.transform.position = endPosition + Vector3.up * 0.01f;
 			explosionVisualizer.transform.rotation = Quaternion.LookRotation(Vector3.up);
-			explosionVisualizer.transform.localScale = Vector3.one * 0.2f * _enemy.spawnImpactRadius;
-			Vector3 explosionVisualizerMaxScale = Vector3.one * 0.2f * _enemy.spawnImpactRadius; 
-			for (float i = 0; i < zonePreviewDuration / 3f; i+= Time.deltaTime)
-			{
-				explosionVisualizer.transform.localScale = Vector3.Lerp(Vector3.zero, explosionVisualizerMaxScale, i / (zonePreviewDuration / 3f));
-				yield return null;
-			}
-			yield return new WaitForSeconds(2 * (zonePreviewDuration / 3f));
+			IndianaExplosion ie = explosionVisualizer.GetComponent<IndianaExplosion>();
+			ie.myScale = _enemy.spawnImpactRadius * 0.33f;
+			ie.waitTimeForExplosion = zonePreviewDuration / 3f;
+			ie.Initiate();
+			yield return new WaitForSeconds(zonePreviewDuration / 3f);
 			_enemy.gameObject.SetActive(true);
 
 		}

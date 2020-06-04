@@ -10,8 +10,8 @@ public class IndianaExplosion : MonoBehaviour
     public bool isBarrage;
     [ReadOnly] public float waitingForExplosion;
     [ReadOnly]  public bool Explosed;
-    private SphereCollider sphereCollider;
     [ReadOnly] public IndianaManager indianaManager;
+    public bool canDamagePlayer = true;
 
 
     private List<PawnController> listPawnsHere;
@@ -25,14 +25,12 @@ public class IndianaExplosion : MonoBehaviour
         transform.localScale = Vector3.one * myScale;
         waitingForExplosion = waitTimeForExplosion;
         listPawnsHere = new List<PawnController>();
-        sphereCollider = GetComponent<SphereCollider>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         waitingForExplosion -= Time.deltaTime;
-
 
         if (!Explosed)
         {
@@ -53,11 +51,16 @@ public class IndianaExplosion : MonoBehaviour
             }
             
             FX.transform.localScale = new Vector3(myScale, myScale, myScale);
-           // fXExplosion.SetActive(true);
-            foreach (var item in listPawnsHere)
+            // fXExplosion.SetActive(true);
+            if (canDamagePlayer)
             {
-                item.Damage(indianaManager.damageToPawn);
-                item.Push(PushType.Light, item.transform.position - transform.position, PushForce.Force2);
+                foreach (var item in listPawnsHere)
+                {
+                    if (indianaManager != null) {
+                        item.Damage(indianaManager.damageToPawn);
+                        item.Push(PushType.Light, item.transform.position - transform.position, PushForce.Force2);
+                    }
+                }
             }
         }
         if (waitingForExplosion < -0.45f)
@@ -68,7 +71,7 @@ public class IndianaExplosion : MonoBehaviour
 
     private void OnTriggerEnter(Collider _other)
     {
-        if (_other.GetComponent<PawnController>())
+        if (canDamagePlayer && _other.GetComponent<PawnController>())
         {
             PawnController pawn = _other.gameObject.GetComponent<PawnController>();
             listPawnsHere.Add(pawn);
@@ -77,7 +80,7 @@ public class IndianaExplosion : MonoBehaviour
 
     private void OnTriggerExit(Collider _other)
     {
-        if (_other.GetComponent<PawnController>())
+        if (canDamagePlayer && _other.GetComponent<PawnController>())
         {
             PawnController pawn = _other.gameObject.GetComponent<PawnController>();
             listPawnsHere.Remove(pawn);

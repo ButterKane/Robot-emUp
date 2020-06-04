@@ -214,7 +214,10 @@ public class BallBehaviour : MonoBehaviour
 				i_otherModifier *= modifier.multiplyCoef;
 			}
 		}
-		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, ballInformations.ballDatas.maxDamageModifierOnPerfectReception);
+		if (ballInformations != null && ballInformations.ballDatas != null)
+		{
+			i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, ballInformations.ballDatas.maxDamageModifierOnPerfectReception);
+		}
 		return (i_perfectReceptionModifier * i_otherModifier);
 	}
 	public float GetPerfectReceptionDamageModifier ()
@@ -298,7 +301,7 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				rb.AddForce(ballInformations.direction.normalized * ballInformations.moveSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
-				LockManager.UnlockAll();
+				if (ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
 				break;
 			case BallState.Aimed:
 				DisableGravity();
@@ -306,7 +309,7 @@ public class BallBehaviour : MonoBehaviour
 				break;
 			case BallState.Flying:
 				Highlighter.DetachBallFromPlayer();
-				CursorManager.SetBallPointerParent(null);
+				if (ballInformations.thrower.isPlayer) { CursorManager.SetBallPointerParent(null); }
 				ballTrail = FeedbackManager.SendFeedback("event.BallFlying", this).GetVFX();
 				Vector3 newBallScale = ballTrail.transform.localScale;
 				newBallScale *= Mathf.Lerp(1f, ballInformations.ballDatas.maxFXSizeMultiplierOnPerfectReception, (GetPerfectReceptionDamageModifier() / ballInformations.ballDatas.maxDamageModifierOnPerfectReception));
@@ -314,6 +317,7 @@ public class BallBehaviour : MonoBehaviour
 				DisableGravity();
 				EnableCollisions();
 				col.isTrigger = true;
+				col.enabled = true;
 				ballInformations.distanceTravelled = 0;
 				break;
 			case BallState.Held:
@@ -321,7 +325,7 @@ public class BallBehaviour : MonoBehaviour
 				if (ballTrail) { destroyTrailFX = StartCoroutine(DisableEmitterThenDestroyAfterDelay(ballTrail.GetComponent<ParticleSystem>(), 0.5f)); }
 				DisableGravity();
 				DisableCollisions();
-				LockManager.UnlockAll();
+				if (ballInformations.thrower != null && ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
 				break;
 		}
 		ballInformations.state = _newState;
@@ -429,8 +433,11 @@ public class BallBehaviour : MonoBehaviour
 					ConvertCoordinatesToCurve(i_pathCoordinates, out curveX, out curveY, out curveZ, out i_curveLength);
 					ballInformations.maxDistance = i_curveLength;
 					float i_positionOnCurve = ballInformations.distanceTravelled / ballInformations.maxDistance;
-					LockManager.LockTargetsInPath(i_pathCoordinates, i_positionOnCurve);
-					if (i_positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
+					if (ballInformations.thrower.isPlayer)
+					{
+						LockManager.LockTargetsInPath(i_pathCoordinates, i_positionOnCurve);
+						if (i_positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
+					}
 					Vector3 i_nextPosition = new Vector3(curveX.Evaluate(i_positionOnCurve + 0.1f), curveY.Evaluate(i_positionOnCurve + 0.1f), curveZ.Evaluate(i_positionOnCurve + 0.1f));
 					ballInformations.direction = i_nextPosition - transform.position;
 				}
@@ -458,7 +465,7 @@ public class BallBehaviour : MonoBehaviour
 						}
 
 						IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
-						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound) && isGhostBall == false)
+						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound) && !isGhostBall)
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
 							i_potentialHitableObjectFound.OnHit(this, ballInformations.direction * ballInformations.moveSpeed, ballInformations.thrower, GetCurrentDamages(), DamageSource.Ball);

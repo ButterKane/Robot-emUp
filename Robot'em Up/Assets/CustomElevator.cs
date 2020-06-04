@@ -11,6 +11,7 @@ public class CustomElevator : MonoBehaviour
     private bool activated = false;
     public Transform visuals;
     public Transform emissiveVisuals;
+    public AnimationCurve acceleration;
 
     private void Awake ()
     {
@@ -36,7 +37,7 @@ public class CustomElevator : MonoBehaviour
 
         for (float i = 0; i < height; i+= Time.deltaTime * moveSpeed)
         {
-            visuals.transform.position = Vector3.Lerp(startPosition, endPosition, i / height);
+            visuals.transform.position = Vector3.Lerp(startPosition, endPosition, acceleration.Evaluate(i / height));
             yield return null;
         }
         visuals.transform.position = endPosition;
