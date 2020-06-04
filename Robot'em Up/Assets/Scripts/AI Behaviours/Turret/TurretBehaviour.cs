@@ -181,7 +181,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 break;
             case TurretState.GettingOutOfGround:
-                animator.SetTrigger("DeployTrigger");
                 break;
             case TurretState.Hidden:
                 break;

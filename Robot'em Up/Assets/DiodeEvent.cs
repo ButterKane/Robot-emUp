@@ -8,4 +8,9 @@ public class DiodeEvent : MonoBehaviour
 	{
 		DiodeManager.ActivateDiodes(ID);
 	}
+
+	public void ActivateNeonByID(int ID)
+	{
+		DiodeManager.ActivateNeons(ID);
+	}
 }

@@ -184,7 +184,6 @@ public class EnemyShield : EnemyBehaviour
 
     public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        Debug.Log("Shield hit by ball directly");
         if (_source == DamageSource.Dunk)
         {
             isShieldActivated_accesss = false; // It is bumped, so it will reactivate at the end of it
@@ -238,7 +237,10 @@ public class EnemyShield : EnemyBehaviour
     private IEnumerator DeactivateShieldForGivenTime(float _timeToDeactivate)
     {
         isShieldActivated_accesss = false;
+        animator.SetBool("DeactivateShield", true);
         yield return new WaitForSeconds(_timeToDeactivate);
+        animator.SetBool("DeactivateShield", false);
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); 
         isShieldActivated_accesss = true;
     }
     #endregion

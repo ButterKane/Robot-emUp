@@ -91,7 +91,6 @@ public class WaveController : MonoBehaviour
 	{
 		_enemy.onDeath.AddListener(() => { OnEnemyDeath(_enemy); });
 		currentEnemies.Add(_enemy);
-		Debug.Log("Registering enemy: " + _enemy.name + " New power: " + currentPowerLevel);
 		UpdateCurrentPowerLevel();
 	}
 	public void EndWave()
@@ -134,7 +133,7 @@ public class WaveController : MonoBehaviour
 			waveList[currentWaveIndex].onStartSpawnEvent.StartEvent();
 			return;
 		}
-		else
+		if (currentWaveIndex <= waveList.Count)
 		{
 			StartCoroutine(StartWave_C(currentWaveIndex));
 		}
@@ -190,10 +189,7 @@ public class WaveController : MonoBehaviour
 		UpdateCurrentPowerLevel();
 		nextEnemyToSpawn = null;
 	}
-	#endregion
-
-	#region Private functions
-	private float UpdateCurrentPowerLevel ()
+	public float UpdateCurrentPowerLevel ()
 	{
 		currentPowerLevel = 0;
 		foreach (EnemyBehaviour enemy in currentEnemies)
@@ -202,6 +198,9 @@ public class WaveController : MonoBehaviour
 		}
 		return currentPowerLevel;
 	}
+	#endregion
+
+	#region Private functions
 	private void OnEnemyDeath ( EnemyBehaviour _enemy )
 	{
 		currentEnemies.Remove(_enemy);
@@ -212,19 +211,22 @@ public class WaveController : MonoBehaviour
 	#region Coroutines
 	IEnumerator StartWave_C (int _waveIndex)
 	{
-		float waveDuration = waveList[_waveIndex].duration;
-		if (waveDuration <= -1)
+		if (_waveIndex < waveList.Count)
 		{
-			currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(0);
-		}
-		else
-		{
-			for (float i = 0; i < waveDuration; i += Time.deltaTime)
+			float waveDuration = waveList[_waveIndex].duration;
+			if (waveDuration <= -1)
 			{
-				yield return null;
-				currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
+				currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(0);
 			}
-			StopWaveSpawning();
+			else
+			{
+				for (float i = 0; i < waveDuration; i += Time.deltaTime)
+				{
+					yield return null;
+					currentMaxPowerLevel = waveList[_waveIndex].maxPowerLevel.Evaluate(i / waveList[_waveIndex].duration);
+				}
+				StopWaveSpawning();
+			}
 		}
 	}
 	#endregion

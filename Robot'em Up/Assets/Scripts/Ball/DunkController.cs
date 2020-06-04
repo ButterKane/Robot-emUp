@@ -49,9 +49,8 @@ public class DunkController : MonoBehaviour
 	public float dunkForwardSpeed = 5f;
 
 	[Space(15)]
-	public bool enableDunkAspiration;
-	[ConditionalField(nameof(enableDunkAspiration))] public float dunkAspirationRadius = 15f;
-	[ConditionalField(nameof(enableDunkAspiration))] public float aspirationMinDistanceToPlayer = 4;
+	public float dunkAspirationRadius = 15f;
+	public float aspirationMinDistanceToPlayer = 4;
 
 	private DunkState dunkState;
 	private bool isPlayer;
@@ -280,7 +279,7 @@ public class DunkController : MonoBehaviour
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		pawnController.Freeze();
-		if (enableDunkAspiration)
+		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dunk) > 0) //If ability "Dunk" is upgraded
 		{
 			AttractEnemies();
 		}
