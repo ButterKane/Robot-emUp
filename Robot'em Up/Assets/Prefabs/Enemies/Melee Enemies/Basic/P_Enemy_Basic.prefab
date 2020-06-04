@@ -5053,7 +5053,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4446576433285420611}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.61, z: 0}
+  m_LocalPosition: {x: 0, y: 2.163, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4446576434190298318}
@@ -5083,7 +5083,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4446576434074462061}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.78}
+  m_LocalPosition: {x: 0, y: 0.553, z: 1.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4446576434190298318}
@@ -5117,7 +5117,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4446576434190298309}
   m_LocalRotation: {x: -0, y: -1, z: 0, w: -0.0000001872535}
-  m_LocalPosition: {x: 4.26, y: 13.79, z: 48}
+  m_LocalPosition: {x: 4.26, y: 0, z: 48}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 4446576435193773981}
@@ -5151,7 +5151,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4446576434190298309}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.69
   m_Speed: 4
   m_Acceleration: 30
   avoidancePriority: 50
@@ -5160,8 +5160,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 1.57
-  m_BaseOffset: 0.5
+  m_Height: 2.3
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!135 &4446576434190298307
@@ -5176,7 +5176,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.34
-  m_Center: {x: 0, y: 0.37, z: 0}
+  m_Center: {x: 0, y: 1.32, z: 0}
 --- !u!114 &4446576434190298306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5212,6 +5212,7 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0, z: 0}
   lookInput: {x: 0, y: 0, z: 0}
   climbingDelay: 0
+  isPlayer: 0
   passController: {fileID: 0}
   rb: {fileID: 0}
   animator: {fileID: 0}
@@ -5222,14 +5223,13 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   selfCollider: {fileID: 0}
-  selfColliderSize: 1.34
   enemyType: 0
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
   damage: 15
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 2
+  lockHitboxSize: 3
   lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
   isDeploymentFast: 1
@@ -5271,7 +5271,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4446576435193773980}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.55, z: 0}
+  m_LocalPosition: {x: 0, y: 1.103, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3468737824802589725}
