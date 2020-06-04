@@ -207,8 +207,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
                 StopAnyAction();
                 break;
-            case EnemyState.Spawning:
-                break;
             case EnemyState.Deploying:
                 animator.SetTrigger("DeployTrigger");
                 currentSpawningAnimDuration = spawningAnimDuration;
