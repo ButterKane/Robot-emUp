@@ -11,7 +11,7 @@ using System;
 
 public enum EnemyState
 {
-    WaitForCombatStart,
+    Hidden,
     Idle,
     Following,
     Bumped,
@@ -145,7 +145,7 @@ public class EnemyBehaviour : PawnController, IHitable
 
         ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50) / 50), 0.4f));
 
-        ChangeState(EnemyState.Deploying);
+        ChangeState(EnemyState.Hidden);
     }
 
     protected void Update()
@@ -169,6 +169,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         switch (_newState)
         {
+            case EnemyState.Hidden:
+                     break;
             case EnemyState.Idle:
                 if (focusValues != null)
                 {
@@ -218,6 +220,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         switch (enemyState)
         {
+            case EnemyState.Hidden:
+                break;
             case EnemyState.Idle:
                 break;
             case EnemyState.Following:
@@ -245,6 +249,10 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         switch (enemyState)
         {
+            case EnemyState.Hidden:
+                CheckDistanceAndAdaptFocus();
+                if (CheckIfMustDeploy()) { ChangeState(EnemyState.Deploying); }
+                break;
             case EnemyState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
                 if (timeBetweenCheck <= 0)
@@ -348,6 +356,15 @@ public class EnemyBehaviour : PawnController, IHitable
         {
             animator.SetFloat("IdleRunBlend", navMeshAgent.velocity.magnitude / navMeshAgent.speed);
         }
+    }
+
+    public bool CheckIfMustDeploy()
+    {
+        if (focusedPawnController != null) 
+        {
+            return true;
+        }
+        else { return false; }
     }
 
     public virtual IEnumerator ResetPreparingAttackState()
