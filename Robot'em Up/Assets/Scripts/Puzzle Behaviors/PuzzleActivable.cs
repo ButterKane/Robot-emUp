@@ -96,7 +96,7 @@ public class PuzzleActivable : MonoBehaviour
                 }
             }
         }
-        else
+        else if (indictatorLightsList.Count > 0) 
         {
             if (isActivated)
             {

@@ -28,7 +28,7 @@ public class VibrationManager : MonoBehaviour
 			_forceCurve.AddKey(new Keyframe(1f, 1f));
 		}
 		Vibrator i_vibrator = new GameObject().AddComponent<Vibrator>();
-		i_vibrator.vibrationCoroutine = i_vibrator.StartCoroutine(i_vibrator.Vibrate_C(_playerIndex, _duration, _force, _forceCurve, vibrationSettingsMod));
+		i_vibrator.vibrationCoroutine = i_vibrator.StartCoroutine(i_vibrator.Vibrate_C(_playerIndex, _duration, _force, _forceCurve, (PlayerPrefs.GetFloat("REU_Haptic_intensity", 100)/100)));
 		vibrators.Add(i_vibrator);
 	}
 

@@ -49,9 +49,8 @@ public class DunkController : MonoBehaviour
 	public float dunkForwardSpeed = 5f;
 
 	[Space(15)]
-	public bool enableDunkAspiration;
-	[ConditionalField(nameof(enableDunkAspiration))] public float dunkAspirationRadius = 15f;
-	[ConditionalField(nameof(enableDunkAspiration))] public float aspirationMinDistanceToPlayer = 4;
+	public float dunkAspirationRadius = 15f;
+	public float aspirationMinDistanceToPlayer = 4;
 
 	private DunkState dunkState;
 	private bool isPlayer;
@@ -280,7 +279,7 @@ public class DunkController : MonoBehaviour
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		pawnController.Freeze();
-		if (enableDunkAspiration)
+		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dunk) > 0) //If ability "Dunk" is upgraded
 		{
 			AttractEnemies();
 		}
@@ -338,7 +337,7 @@ public class DunkController : MonoBehaviour
 	}
 	IEnumerator FallOnGround_C ( float _speed )
 	{
-		Time.timeScale = Mathf.Clamp(GameManager.i.gameSpeed - dunkHitlagForce, 0.2f, 1);
+		Time.timeScale = Mathf.Clamp((PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100) - dunkHitlagForce, 0.2f, 1);
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = i_startPosition;
 
@@ -372,7 +371,7 @@ public class DunkController : MonoBehaviour
 			playerController.FreezeTemporarly(dunkCancelFreezeDuration);
 		}
 		pawnController.UnFreeze();
-		Time.timeScale = GameManager.i.gameSpeed;
-	}
+		Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100;
+    }
 	#endregion
 }

@@ -49,7 +49,9 @@ public class NarrationManager : MonoBehaviour
 
         player1Transform = GameManager.playerOne.transform;
         player2Transform = GameManager.playerTwo.transform;
-
+        ChangeTextColor(PlayerPrefs.GetInt("REU_In-Game Text Color", 0)); // initiation, either with saved value or with base value
+        ChangeTextSize(PlayerPrefs.GetInt("REU_In-Game Text Size", 1));
+        ChangeSelectedFont(SwissArmyKnife.ConvertPlayerPrefStringAsBool(PlayerPrefs.GetString("REU_Stylized In-Game Text Font")));
         StartCoroutine(CheckElementToActivate());
     }
 
@@ -83,7 +85,7 @@ public class NarrationManager : MonoBehaviour
             textField.fontSize = textSize;
             textField.font = selectedFont;
 
-            myAudioSource.volume = i_normalAudioVolume * dialogueVolumeSettingsMod;
+            myAudioSource.volume = i_normalAudioVolume * PlayerPrefs.GetFloat("REU_Dialogue Volume", dialogueVolumeSettingsMod); 
             myAudioSource.clip = _dialogueData.dialogueClip;
             myAudioSource.PlayOneShot(_dialogueData.dialogueClip);
 
@@ -106,6 +108,61 @@ public class NarrationManager : MonoBehaviour
         {
             myAudioSource.outputAudioMixerGroup = defaultAudioMixer;
         }
+    }
+
+    public void ChangeTextColor(int _newColorIndex)
+    {
+        switch (_newColorIndex)
+        {
+            case 0://white
+                narrationManager.textColor = Color.white;
+                break;
+            case 1://yellow
+                narrationManager.textColor = Color.yellow;
+                break;
+            case 2://blue
+                narrationManager.textColor = Color.blue;
+                break;
+            case 3://green
+                narrationManager.textColor = Color.green;
+                break;
+            case 4://red
+                narrationManager.textColor = Color.red;
+                break;
+        }
+    }
+
+    public void ChangeTextSize(int _newTextSizeIndex)
+    {
+        switch (_newTextSizeIndex)
+        {
+            case 0://small
+                narrationManager.textSize = 14;
+                break;
+            case 1://regular
+                narrationManager.textSize = 20;
+                break;
+            case 2://big
+                narrationManager.textSize = 30;
+                break;
+            case 3://very big
+                narrationManager.textSize = 40;
+                break;
+        }
+    }
+
+    public void ChangeSelectedFont(bool _isFontStylized)
+    {
+        if (_isFontStylized)
+            {
+                narrationManager.selectedFont = narrationManager.stylizedTextFont;
+            }
+            else
+            {
+                narrationManager.selectedFont = narrationManager.robotoTextFont;
+            }
+        // Yes = Pas Roboto
+        // No = Roboto
     }
     #endregion
 

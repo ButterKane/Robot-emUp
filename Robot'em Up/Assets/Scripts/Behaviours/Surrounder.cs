@@ -87,7 +87,7 @@ public class Surrounder : MonoBehaviour
 
                 if (pointsScripts[i].closestEnemy == null)
                 {
-                    if ((enemy.transform.position - pointsDic[i].position).magnitude < i_closestDistance)
+                    if (enemy != null && (enemy.transform.position - pointsDic[i].position).magnitude < i_closestDistance)
                     {
                         i_closestDistance = (enemy.transform.position - pointsDic[i].position).magnitude; // We keep the distance in memory
 

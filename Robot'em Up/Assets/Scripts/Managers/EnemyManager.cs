@@ -44,6 +44,7 @@ public class EnemyManager : MonoBehaviour
     {
         playerOne = GameManager.playerOne;
         playerTwo = GameManager.playerTwo;
+        ChangeEnemiesAgressivity(PlayerPrefs.GetInt("REU_Enemies Agressivity", 1));
     }
 
     private void Update()
@@ -206,6 +207,14 @@ public class EnemyManager : MonoBehaviour
             enemy.attackAnticipationSettingMod = i_newAnticipationModifier;
             enemy.attackPauseSettingMod = i_newWaitModifier;
             enemy.speedSettingsMod = i_newSpeedMoveModifier;
+        }
+    }
+
+    public void ChangeAimAssistanceForAllEnemies(float _assistanceRatio)
+    {
+        foreach(var enemy in enemies)
+        {
+            enemy.ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50)/50), 0.4f));
         }
     }
     #endregion

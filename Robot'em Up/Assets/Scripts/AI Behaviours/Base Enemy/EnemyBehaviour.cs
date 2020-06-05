@@ -11,7 +11,7 @@ using System;
 
 public enum EnemyState
 {
-    WaitForCombatStart,
+    Hidden,
     Idle,
     Following,
     Bumped,
@@ -122,6 +122,7 @@ public class EnemyBehaviour : PawnController, IHitable
     [System.NonSerialized] public UnityEvent onDeath = new UnityEvent();
     private float currentDeathWaitTime;
     private HealthBar healthBar;
+    private float selfColliderDefaultSize;
 
     protected virtual void Start()
     {
@@ -142,7 +143,9 @@ public class EnemyBehaviour : PawnController, IHitable
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
 
-        ChangeState(EnemyState.Deploying);
+        ChangeAimAssistance(Mathf.Max((PlayerPrefs.GetFloat("REU_Assisting Aim", 50) / 50), 0.4f));
+
+        ChangeState(EnemyState.Hidden);
     }
 
     protected void Update()
@@ -166,6 +169,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         switch (_newState)
         {
+            case EnemyState.Hidden:
+                     break;
             case EnemyState.Idle:
                 if (focusValues != null)
                 {
@@ -201,9 +206,6 @@ public class EnemyBehaviour : PawnController, IHitable
                 Freeze();
                 if (navMeshAgent != null && navMeshAgent.enabled == true) { navMeshAgent.isStopped = true; }
                 StopAnyAction();
-                if (this is TurretBehaviour) { Kill(); }
-                break;
-            case EnemyState.Spawning:
                 break;
             case EnemyState.Deploying:
                 animator.SetTrigger("DeployTrigger");
@@ -216,6 +218,8 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         switch (enemyState)
         {
+            case EnemyState.Hidden:
+                break;
             case EnemyState.Idle:
                 break;
             case EnemyState.Following:
@@ -243,6 +247,10 @@ public class EnemyBehaviour : PawnController, IHitable
     {
         switch (enemyState)
         {
+            case EnemyState.Hidden:
+                CheckDistanceAndAdaptFocus();
+                if (CheckIfMustDeploy()) { ChangeState(EnemyState.Deploying); }
+                break;
             case EnemyState.Idle:
                 timeBetweenCheck -= Time.deltaTime;
                 if (timeBetweenCheck <= 0)
@@ -348,6 +356,15 @@ public class EnemyBehaviour : PawnController, IHitable
         }
     }
 
+    public bool CheckIfMustDeploy()
+    {
+        if (focusedPawnController != null) 
+        {
+            return true;
+        }
+        else { return false; }
+    }
+
     public virtual IEnumerator ResetPreparingAttackState()
     {
         ChangeState(EnemyState.Idle);
@@ -444,6 +461,12 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
 
             case DamageSource.Ball:
+                Upgrade passLevel = AbilityManager.GetAbilityLevel(ConcernedAbility.Pass);
+                if ((int)passLevel > 0 && GetHealth() / GetMaxHealth() <= AbilityManager.instance.level1PassDamageTreshold)
+                {
+                    _damages = _damages * AbilityManager.instance.level1PassDamageMultiplier;
+                    FeedbackManager.SendFeedback("event.PassUpgradedShot", this, _ball.transform.position, _impactVector, _impactVector);
+                }
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 
                 animator.SetTrigger("HitTrigger");
@@ -473,6 +496,8 @@ public class EnemyBehaviour : PawnController, IHitable
                 {
                     Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
                 }
+
+
                 break;
 
             case DamageSource.Laser:
@@ -492,10 +517,17 @@ public class EnemyBehaviour : PawnController, IHitable
                 break;
         }
     }
+
+    public void ChangeAimAssistance(float _assistanceRatio)
+    {
+        SphereCollider i_collider = selfCollider as SphereCollider;
+        selfColliderDefaultSize = i_collider.radius;
+        i_collider.radius = selfColliderDefaultSize * _assistanceRatio;
+    }
     #endregion
 
-    #region Private and protected methods
-    protected void CheckDistanceAndAdaptFocus()
+        #region Private and protected methods
+        protected void CheckDistanceAndAdaptFocus()
     {
         if (focusValues == null) { return; }
         //Checking who is in range
@@ -689,6 +721,13 @@ public class EnemyBehaviour : PawnController, IHitable
             DropCore();
         }
         base.Kill();
+    }
+
+    public override void DeathOverrideWithBump()
+    {
+        deathValues.waitTimeBeforeDisappear = 0.2f;
+        currentDeathWaitTime = 0;
+        animator.SetBool("MustPlayDeathAnim", false);
     }
     #endregion
 

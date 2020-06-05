@@ -11,18 +11,15 @@ public class PuzzleEletricPlate : PuzzleActivable
     [ReadOnly]
     public List<PawnController> pawnTrapped;
     public List<GameObject> IdleFx;
-    public List<ParticleSystem> FXs;
+    public List<ParticleSystem> FXS;
     public float speedModifier = 0.5f;
-
-    private MeshRenderer meshRenderer;
 
     // Update is called once per frame
     void Awake()
     {
         IdleFx = new List<GameObject>();
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
         pawnTrapped.Clear();
+
     }
 
     void FixedUpdate()
@@ -102,9 +99,8 @@ public class PuzzleEletricPlate : PuzzleActivable
             isActivated = true;
 
             UpdateLights();
-            meshRenderer.material = puzzleData.m_puzzleElectreticPlate;
 
-            foreach (ParticleSystem ps in FXs)
+            foreach (ParticleSystem ps in FXS)
             {
                 ParticleSystem.EmissionModule em = ps.emission;
                 em.enabled = false;
@@ -129,7 +125,6 @@ public class PuzzleEletricPlate : PuzzleActivable
 
             if (i_checkAllConditionsCustom)
             {
-                meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Orange;
                 StartCoroutine(GettingEletrified());
             }
         }
@@ -141,12 +136,12 @@ public class PuzzleEletricPlate : PuzzleActivable
 
         isActivated = false;
         UpdateLights();
-        meshRenderer.material = puzzleData.m_puzzleElectreticPlate_Activated;
 
-        foreach (ParticleSystem ps in FXs)
+        foreach (ParticleSystem ps in FXS)
         {
             ParticleSystem.EmissionModule em = ps.emission;
             em.enabled = true;
+
         }
         FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this);
     }
@@ -154,8 +149,7 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     public override void CustomShutDown()
     {
-        meshRenderer.material = puzzleData.m_puzzleElectreticPlate_ShutDown;
-        foreach (ParticleSystem ps in FXs)
+        foreach (ParticleSystem ps in FXS)
         {
             ParticleSystem.EmissionModule em = ps.emission;
             em.enabled = false;
