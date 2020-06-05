@@ -78,7 +78,7 @@ public class ArenaClusterCubes : MonoBehaviour
                     {
                         i_instancePos = spawnPosition - transform.up * heightOffset;
                     }
-                    GameObject newCube = Instantiate(cubeFromCluster, i_instancePos, Quaternion.identity, transform);
+                    GameObject newCube = Instantiate(cubeFromCluster, i_instancePos, Quaternion.LookRotation(transform.forward, Vector3.up), transform);
                     cubesArray[j, k] = newCube.transform;
                 }
             }
