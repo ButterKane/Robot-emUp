@@ -35,6 +35,8 @@ public class AbilityListNavigation : MonoBehaviour
     private Sprite[] gifImagesToPlay;
     private int currentGifImageIndex;
     public bool isNavigationAllowed = true;
+    private bool waitForJoystickResetOne;
+    private bool waitForJoystickResetTwo;
     // Start is called before the first frame update
     void Start()
     {
@@ -49,39 +51,72 @@ public class AbilityListNavigation : MonoBehaviour
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isNavigationAllowed)
         {
-            // Managing Up and Down
-            if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
+            Debug.Log("Hello it is main menu");
+            for (int i = 0; i < 2; i++)
             {
-                if (!waitForJoystickYReset)
+                if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
+                if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
+
+                // Managing Up and Down
+                if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
                 {
-                    ChangeAbility(-1);
-                    waitForJoystickYReset = true;
+                    if (i == 0)
+                    {
+                        if (!waitForJoystickResetOne)
+                        {
+                            ChangeAbility(-1);
+                            waitForJoystickResetOne = true;
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (!waitForJoystickResetTwo)
+                        {
+                            ChangeAbility(-1);
+                            waitForJoystickResetTwo = true;
+                        }
+                    }
                 }
-            }
-            else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
-            {
-                if (!waitForJoystickYReset)
+                else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
                 {
-                    ChangeAbility(1);
-                    waitForJoystickYReset = true;
+                    if (i == 0)
+                    {
+                        if (!waitForJoystickResetOne)
+                        {
+                            ChangeAbility(1);
+                            waitForJoystickResetOne = true;
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (!waitForJoystickResetTwo)
+                        {
+                            ChangeAbility(1);
+                            waitForJoystickResetTwo = true;
+                        }
+                    }
                 }
-
+                else
+                {
+                    if (i == 0)
+                    {
+                        waitForJoystickResetOne = false;
+                    }
+                    else if (i == 1)
+                    {
+                        waitForJoystickResetTwo = false;
+                    }
+                }
+                
+                if (i_state.Buttons.B == ButtonState.Pressed) { ReturnToMainMenu(); }
+                if (i_state.Buttons.Start == ButtonState.Pressed) { ReturnToMainMenu(); scriptLinkedToThisOne.Close(); }
             }
-            else
+            
+            if (gifImagesToPlay != null && gifImagesToPlay.Length != 0)
             {
-                waitForJoystickYReset = false;
+                PlayGif(currentGifImageIndex);
+                currentGifImageIndex++;
             }
-
-            if (i_state.Buttons.B == ButtonState.Pressed) { ReturnToMainMenu(); }
-            if (i_state.Buttons.Start == ButtonState.Pressed) { ReturnToMainMenu(); scriptLinkedToThisOne.Close(); }
-        }
-
-        
-
-        if (gifImagesToPlay != null && gifImagesToPlay.Length != 0)
-        {
-            PlayGif(currentGifImageIndex);
-            currentGifImageIndex++;
         }
     }
 
