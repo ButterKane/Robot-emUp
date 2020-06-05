@@ -321,6 +321,7 @@ public class GameManager : MonoBehaviour
 
     public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
+        AbilityManager.UpgradeAbility(_concernedAbility, _newAbilityLevel);
         OpenLevelMenu();
         mainMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
     }
