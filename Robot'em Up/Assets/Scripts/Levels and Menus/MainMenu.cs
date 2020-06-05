@@ -48,29 +48,10 @@ public class MainMenu : MonoBehaviour
         SelectButton(buttons[0]);
         GameManager gm = GameManager.i; ;
         if (gm != null) { enableRBandRTButtons = true; }
-        if (optionMenuPrefab != null)
-        {
-            optionMenu = Instantiate(optionMenuPrefab);
-            optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
-            optionMenuCanvas = optionMenu.GetComponent<Canvas>();
-            optionMenuCanvas.enabled = false;
-        }
-        if (abilitiesMenuPrefab != null)
-        {
-            abilitiesMenu = Instantiate(abilitiesMenuPrefab);
-            abilitiesMenu.GetComponent<AbilityListNavigation>().scriptLinkedToThisOne = this;
-            abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
-            abilitiesMenuCanvas.enabled = false;
-        }
-        if (inputRemapMenuPrefab != null)
-        {
-            inputRemapMenu = Instantiate(abilitiesMenuPrefab);
-            inputRemapMenu.GetComponent<InputRemapper>().scriptLinkedToThisOne = this;
-            inputRemapMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
-            inputRemapMenuCanvas.enabled = false;
-        }
+        InitiateSubMenus();
         SelectButton(menuButtons[0]);
     }
+
 	private void Update ()
 	{
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
@@ -271,6 +252,31 @@ public class MainMenu : MonoBehaviour
         }
         //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
         isMainMenuActive = false;
+    }
+
+    public void InitiateSubMenus()
+    {
+        if (optionMenuPrefab != null && optionMenu == null)
+        {
+            optionMenu = Instantiate(optionMenuPrefab);
+            optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
+            optionMenuCanvas = optionMenu.GetComponent<Canvas>();
+            optionMenuCanvas.enabled = false;
+        }
+        if (abilitiesMenuPrefab != null && abilitiesMenu == null)
+        {
+            abilitiesMenu = Instantiate(abilitiesMenuPrefab);
+            abilitiesMenu.GetComponent<AbilityListNavigation>().scriptLinkedToThisOne = this;
+            abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
+            abilitiesMenuCanvas.enabled = false;
+        }
+        if (inputRemapMenuPrefab != null && inputRemapMenu == null)
+        {
+            inputRemapMenu = Instantiate(abilitiesMenuPrefab);
+            inputRemapMenu.GetComponent<InputRemapper>().scriptLinkedToThisOne = this;
+            inputRemapMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
+            inputRemapMenuCanvas.enabled = false;
+        }
     }
 
     void SelectNextButton()
