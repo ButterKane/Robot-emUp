@@ -56,6 +56,8 @@ public class BossSettings : ScriptableObject
 		[Tooltip("")] public float bulletDamages;
 		[Tooltip("")] public float bulletRotationSpeed;
 		[Tooltip("")] public float bulletSize;
+		[Tooltip("")] public float bulletCannonnadeCooldown;
+		[Tooltip("")] public float bulletCannonnadeDuration;
 		[Tooltip("Bullet starts with a scale of 0 and goes to his normal scale in X seconds")] public float bulletScaleDuration;
 		[Tooltip("")] public float bulletLifetime;
 		[Tooltip("Random angle determined for the bullet direction (Between 0 and 90)")] public float bulletRandomness;

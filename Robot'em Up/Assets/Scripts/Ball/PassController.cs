@@ -151,6 +151,9 @@ public class PassController : MonoBehaviour
 			}
 			i++;
 		}
+		animator.ResetTrigger("ShootingMissedTrigger");
+		animator.ResetTrigger("PrepareShootingTrigger");
+		animator.SetTrigger("PerfectReceptionShootTrigger");
 	}
 	public void TryReception () //Player tries to do a perfect reception
 	{
@@ -403,9 +406,9 @@ public class PassController : MonoBehaviour
 				if (!CanShoot()) { return; }
 				if (perfectReceptionShoot)
 				{
-					animator.ResetTrigger("ShootingMissedTrigger");
-					animator.ResetTrigger("PrepareShootingTrigger");
-					animator.SetTrigger("PerfectReceptionShootTrigger");
+					//animator.ResetTrigger("ShootingMissedTrigger");
+					//animator.ResetTrigger("PrepareShootingTrigger");
+					//animator.SetTrigger("PerfectReceptionShootTrigger");
 				}
 				else
 				{
