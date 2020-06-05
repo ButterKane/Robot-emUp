@@ -39,6 +39,7 @@ public class Collectible : MonoBehaviour
     [Header("Variables to tweak")]
     public float ratioBeforeTriggerOut;
     public float timeToPressA;
+    public float delayBeforeOpeningMenu;
     //CompletionCircle !
     public float normalEmissiveMultiplier;
     public float maxEmissiveMultiplier;
@@ -266,12 +267,13 @@ public class Collectible : MonoBehaviour
         myAnim.enabled = true;
         myAnim.SetTrigger("CollectedTrigger");
         collected = true;
-        GameManager.PickedUpAnUpgrade(concernedAbility, newAbilityLevel);
-        collectedEvent.Invoke();
+        Invoke("EndEvents", delayBeforeOpeningMenu);
     }
 
-    void DestroyObject()
+    void EndEvents()
     {
+        GameManager.PickedUpAnUpgrade(concernedAbility, newAbilityLevel);
+        collectedEvent.Invoke();
         Destroy(gameObject);
     }
 }
