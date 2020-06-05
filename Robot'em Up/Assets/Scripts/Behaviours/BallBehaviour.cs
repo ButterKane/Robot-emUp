@@ -301,7 +301,10 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				rb.AddForce(ballInformations.direction.normalized * ballInformations.moveSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
-				if (ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
+				if (ballInformations.thrower != null)
+				{
+					if (ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
+				}
 				break;
 			case BallState.Aimed:
 				DisableGravity();
