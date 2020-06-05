@@ -233,24 +233,30 @@ public class MainMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.PressSettings", this);
         abilitiesMenuCanvas.enabled = true;
-        abilitiesMenu.GetComponent<AbilityListNavigation>().ResetDisplay();
+        AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
+        i_script.organizer.OrganizeAbilities();
+        i_script.ResetDisplay();
+        Debug.Log("bidouille");
         isMainMenuActive = false;
+        i_script.isNavigationAllowed = true;
     }
 
     public void OpenAbilitiesMenuAtSpecificOne(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
         abilitiesMenuCanvas.enabled = true;
+        AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
         if (_concernedAbility == ConcernedAbility.PerfectReception)
         {
-            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
-            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockNextUpgradeForPerfectReception();
+            i_script.GoToSpecificAbility(_concernedAbility);
+            i_script.UnlockNextUpgradeForPerfectReception();
         }
         else
         {
-            abilitiesMenu.GetComponent<AbilityListNavigation>().GoToSpecificAbility(_concernedAbility);
-            abilitiesMenu.GetComponent<AbilityListNavigation>().UnlockUpgrade(_newAbilityLevel);
+            i_script.GoToSpecificAbility(_concernedAbility);
+            i_script.UnlockUpgrade(_newAbilityLevel);
         }
         //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
+        i_script.isNavigationAllowed = true;
         isMainMenuActive = false;
     }
 
