@@ -5,6 +5,10 @@ public class Grabbable : MonoBehaviour
 {
 	public List<GrabbableInformation> grabbableInformation = new List<GrabbableInformation>();
 
+	private void Awake ()
+	{
+		ExtendingArmsController.grabableObjects.Add(GetComponent<Collider>());
+	}
 	public void UpdateLine()
 	{
 		foreach (GrabbableInformation gi in grabbableInformation)
