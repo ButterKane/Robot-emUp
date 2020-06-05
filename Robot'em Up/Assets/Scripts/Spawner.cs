@@ -16,7 +16,7 @@ public class Spawner : MonoBehaviour
 	public AnimationCurve horizontalLerpCurve;
 	public AnimationCurve rotationLerpCurve;
 	public AnimationCurve verticalLerpCurve;
-	public float delayBeforeActivation = 1;
+	public float delayBeforeActivation = 0.25f;
 	public bool attachSpawnedObject = false;
 	public GameObject enemyToSpawn;
 
@@ -232,7 +232,7 @@ public class Spawner : MonoBehaviour
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		yield return new WaitForSeconds(delayBeforeActivation);
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = true; }
-		_enemy.ChangeState(EnemyState.Idle);
+		_enemy.ChangeState(EnemyState.Deploying);
 	}
 
 	[ExecuteInEditMode]
