@@ -159,4 +159,19 @@ public static class SwissArmyKnife
         return closestDirection;
     }
     
+    public static bool ConvertPlayerPrefStringAsBool(string _playerPrefString)
+    {
+        if (_playerPrefString == "true")
+        {
+            return true;
+        }
+        else if (_playerPrefString == "false")
+        {
+            return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

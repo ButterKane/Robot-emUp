@@ -147,6 +147,9 @@ GameObject:
   - component: {fileID: 4637012694845503552}
   - component: {fileID: 8153805115754326338}
   - component: {fileID: 6639352445735340859}
+  - component: {fileID: 1118604807462207422}
+  - component: {fileID: 9142105225907707081}
+  - component: {fileID: 7504096610744581090}
   m_Layer: 0
   m_Name: P_Managers
   m_TagString: Untagged
@@ -340,6 +343,8 @@ MonoBehaviour:
   isPoisened_P2: 0
   poisonedSprite_P1: {fileID: 0}
   poisonedSprite_P2: {fileID: 0}
+  playerOneToxicBar: {fileID: 0}
+  playerTwoToxicBar: {fileID: 0}
 --- !u!114 &6639352445735340859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,64 +361,122 @@ MonoBehaviour:
     moveX:
       axis:
       - key: 0
+        index: 0
     moveY:
       axis:
       - key: 1
+        index: 0
     aimX:
       axis:
       - key: 2
+        index: 0
     aimY:
       axis:
       - key: 3
+        index: 0
     dunk:
       buttons:
       - key: 2
+        index: 0
     dash:
       buttons:
       - key: 6
+        index: 0
     throwBall:
       buttons:
       - key: 7
+        index: 0
     interact:
       buttons:
       - key: 0
+        index: 0
     grapple:
       buttons:
       - key: 5
+        index: 0
     detectBall:
       buttons:
       - key: 4
+        index: 0
   bindingP2:
     moveX:
       axis:
       - key: 0
+        index: 0
     moveY:
       axis:
       - key: 1
+        index: 0
     aimX:
       axis:
       - key: 2
+        index: 0
     aimY:
       axis:
       - key: 3
+        index: 0
     dunk:
       buttons:
       - key: 2
+        index: 0
     dash:
       buttons:
       - key: 6
+        index: 0
     throwBall:
       buttons:
       - key: 7
+        index: 0
     interact:
       buttons:
       - key: 0
+        index: 0
     grapple:
       buttons:
       - key: 5
+        index: 0
     detectBall:
       buttons:
       - key: 4
+        index: 0
+--- !u!114 &1118604807462207422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3910e5c775e2cf4c9adc3ed6356acc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9142105225907707081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 409fb81db6ffa344d90af51645ac4574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7504096610744581090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5253247827333039788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc90945a4c773d647b22b8d1b96f0bee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level1PassDamageMultiplier: 1.25
+  level1PassDamageTreshold: 0.35
 --- !u!1 &5966096648677660823
 GameObject:
   m_ObjectHideFlags: 0

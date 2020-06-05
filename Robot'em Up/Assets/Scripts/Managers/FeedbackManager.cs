@@ -97,7 +97,7 @@ public class FeedbackManager
             i_modifiedSoundData.soundName = i_feedback.soundData.soundName;
             i_modifiedSoundData.soundList = i_feedback.soundData.soundList;
             i_modifiedSoundData.delay = i_feedback.soundData.delay;
-            i_modifiedSoundData.volumeMultiplier = i_feedback.soundData.volumeMultiplier * fXVolumeSettingsMod ;
+            i_modifiedSoundData.volumeMultiplier = i_feedback.soundData.volumeMultiplier * PlayerPrefs.GetFloat("REU_SFX Volume", fXVolumeSettingsMod);  
 
             SoundManager.PlaySound(i_modifiedSoundData, newTarget.transform.position, newTarget.transform);
 		}

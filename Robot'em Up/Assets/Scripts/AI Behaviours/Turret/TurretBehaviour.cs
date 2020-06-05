@@ -158,8 +158,8 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
             case TurretState.GettingOutOfGround:
                 break;
             case TurretState.Hidden:
-                animator.SetTrigger("GettingOutOfGroundTrigger");
-                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger"); }
+                animator.SetTrigger("DeployTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("DeployTrigger"); }
                 break;
             case TurretState.Dying:
                 break;
@@ -181,7 +181,6 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                 ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 break;
             case TurretState.GettingOutOfGround:
-                animator.SetTrigger("GettingOutOfGroundTrigger");
                 break;
             case TurretState.Hidden:
                 break;

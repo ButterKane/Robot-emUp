@@ -54,6 +54,7 @@ public class SpawnEvent //A spawn event is either called from a waveController, 
 
 		if (enemyList.Count >= spawnEventList.Count && !mustKillEnemiesBeforeNextWave && linkedWaveController != null)
 		{
+			linkedWaveController.currentEnemies.Add(newEnemy);
 			yield return new WaitForSeconds(delayBeforeNextWave);
 			OnEventEnd();
 		}
@@ -67,6 +68,11 @@ public class SpawnEvent //A spawn event is either called from a waveController, 
 
 	void OnEnemyDeath(EnemyBehaviour _enemy)
 	{
+		if (linkedWaveController != null && !mustKillEnemiesBeforeNextWave)
+		{
+			linkedWaveController.currentEnemies.Remove(_enemy);
+			linkedWaveController.UpdateCurrentPowerLevel();
+		}
 		enemyList.Remove(_enemy);
 		if (enemyList.Count <= 0)
 		{

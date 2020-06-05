@@ -114,7 +114,7 @@ public class PawnController : MonoBehaviour
 
 	//Other variables
 	[HideInInspector] public float climbingDelay;
-	private bool isPlayer;
+	[HideInInspector] public bool isPlayer;
 	protected bool targetable;
 	private List<Renderer> hiddenRenderers = new List<Renderer>();
 	protected NavMeshAgent navMeshAgent;
@@ -536,21 +536,21 @@ public class PawnController : MonoBehaviour
 	}
 	private void CheckIfGrounded ()
 	{
-		if (!grounded)
+		if (!Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 1f, LayerMask.GetMask("Environment")))
 		{
 			timeInAir += Time.deltaTime;
-			if (timeInAir >= 0.2f)
+			grounded = false;
+		} else if (timeInAir > 0.2f) { 
+			FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
+			if (isPlayer)
 			{
-				if (Physics.Raycast(transform.position, Vector3.down, 0.1f, LayerMask.GetMask("Environment")))
-				{
-					FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
-					grounded = true;
-					timeInAir = 0;
-					if (moveState == MoveState.Jumping)
-					{
-						moveState = MoveState.Idle;
-					}
-				}
+				animator.SetTrigger("BackOnGroundTrigger");
+			}
+			grounded = true;
+			timeInAir = 0;
+			if (moveState == MoveState.Jumping)
+			{
+				moveState = MoveState.Idle;
 			}
 		}
 	}
@@ -1073,6 +1073,7 @@ public class PawnController : MonoBehaviour
         // After the whole bump-fly-fall sequence
         if (damageAfterBump > 0)
         {
+            if ((currentHealth - damageAfterBump) <= 0) { DeathOverrideWithBump();}
             Damage(damageAfterBump);
         }
 
@@ -1141,5 +1142,10 @@ public class PawnController : MonoBehaviour
 		}
 		moveState = MoveState.Idle;
 	}
-	#endregion
+
+    public virtual void DeathOverrideWithBump()
+    {
+
+    }
+    #endregion
 }

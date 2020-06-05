@@ -457,7 +457,7 @@ public class WaveEditor : Editor
 		int index = 0;
 		for (int i = 0; i < i_totalEnemies.enemyDatas.Count; i++)
 		{
-			if (IsEnemyAvailable(i_totalEnemies.enemyDatas[i], i_unavailableEnemiesList)) {
+			if (IsEnemyAvailable(i_totalEnemies.enemyDatas[i], i_unavailableEnemiesList) && index <= enemyCount) {
 				i_availableEnemiesList[index] = i_totalEnemies.enemyDatas[i];
 				index++;
 			}

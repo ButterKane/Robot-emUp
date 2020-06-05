@@ -324,6 +324,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: isFastDeployment
     m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: DeployTrigger
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5528693759987072632}
   m_Solo: 0
@@ -576,6 +579,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: DeathTrigger
     m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: MustPlayDeathAnim
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 713111370325517124}
   m_Solo: 0
@@ -659,6 +665,18 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 1
     m_Controller: {fileID: 9100000}
+  - m_Name: DeployTrigger
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: MustPlayDeathAnim
+    m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 1
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -717,7 +735,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ANIM_BasicEnemy_Pushed
+  m_Name: Pushed
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -731,7 +749,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 3a35aa442bf22d741ab1a76274a5ac58, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -828,6 +846,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: isFastDeployment
+    m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: DeployTrigger
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5669260091293012013}
