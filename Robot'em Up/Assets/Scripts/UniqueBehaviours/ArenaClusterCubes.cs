@@ -174,7 +174,7 @@ public class ArenaClusterCubes : MonoBehaviour
         }
     }
 
-    public void ActivateNewLayout()
+    void ActivateNewLayout()
     {
         for (int j = 0; j < row.Length; j++)
         {
