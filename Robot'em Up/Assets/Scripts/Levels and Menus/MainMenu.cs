@@ -263,25 +263,25 @@ public class MainMenu : MonoBehaviour
     {
         if (optionMenuPrefab != null && optionMenu == null)
         {
-            optionMenu = Instantiate(optionMenuPrefab);
+            optionMenu = Instantiate(optionMenuPrefab, gameObject.transform);
             optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
             optionMenuCanvas = optionMenu.GetComponent<Canvas>();
             optionMenuCanvas.enabled = false;
         }
         if (abilitiesMenuPrefab != null && abilitiesMenu == null)
         {
-            abilitiesMenu = Instantiate(abilitiesMenuPrefab);
+            abilitiesMenu = Instantiate(abilitiesMenuPrefab, gameObject.transform);
             abilitiesMenu.GetComponent<AbilityListNavigation>().scriptLinkedToThisOne = this;
             abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
             abilitiesMenuCanvas.enabled = false;
         }
-        if (inputRemapMenuPrefab != null && inputRemapMenu == null)
-        {
-            inputRemapMenu = Instantiate(abilitiesMenuPrefab);
-            inputRemapMenu.GetComponent<InputRemapper>().scriptLinkedToThisOne = this;
-            inputRemapMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
-            inputRemapMenuCanvas.enabled = false;
-        }
+        //if (inputRemapMenuPrefab != null && inputRemapMenu == null)
+        //{
+        //    inputRemapMenu = Instantiate(abilitiesMenuPrefab);
+        //    inputRemapMenu.GetComponent<InputRemapper>().scriptLinkedToThisOne = this;
+        //    inputRemapMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
+        //    inputRemapMenuCanvas.enabled = false;
+        //}
     }
 
     void SelectNextButton()
