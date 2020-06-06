@@ -149,6 +149,7 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0, z: 0}
   lookInput: {x: 0, y: 0, z: 0}
   climbingDelay: 0
+  isPlayer: 0
   passController: {fileID: 0}
   rb: {fileID: 0}
   animator: {fileID: 0}
@@ -159,14 +160,13 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   selfCollider: {fileID: 0}
-  selfColliderSize: 3
   enemyType: 3
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
   damage: 10
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 2
+  lockHitboxSize: 3
   lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
   isDeploymentFast: 1
@@ -190,7 +190,7 @@ MonoBehaviour:
   randomRangeRestTime: 0.5
   aimingRedDotTransform: {fileID: 8306196693675235974}
   aimingRedDotRenderer: {fileID: 8697076270497111846}
-  aimingRedDotDefaultScale: {x: 0.01, y: 0.01, z: 0.01}
+  aimingRedDotDefaultScale: {x: 0.02, y: 0.02, z: 0.02}
   aimingRedDotLockedScale: {x: 0.05, y: 0.05, z: 0.05}
   lockingAimingColor: {r: 0.9882878, g: 1, b: 0, a: 1}
   lockingAimingColorIntensity: 8
@@ -198,7 +198,7 @@ MonoBehaviour:
   followingAimingColorIntensity: 5
   layersToCheckToScale:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 4352
   bulletPrefab: {fileID: 3937835393218686174, guid: b8e3861787e70b145a85cd7de75f14e5,
     type: 3}
   bulletSpawn: {fileID: 8833296311218271805}
@@ -216,7 +216,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 3
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: 1.05, z: 0}
 --- !u!1 &6526861766868225992
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,12 +446,12 @@ PrefabInstance:
     - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.366
       objectReference: {fileID: 0}
     - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.628
       objectReference: {fileID: 0}
     - target: {fileID: 6502595836434758474, guid: 2f19336969824d44d86c364a6cd7f8ac,
         type: 3}

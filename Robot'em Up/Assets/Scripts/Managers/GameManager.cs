@@ -121,7 +121,6 @@ public class GameManager : MonoBehaviour
         numberOfSurroundSpots = SurrounderPrefab.GetComponent<Surrounder>().points.Count;
 
         CreateSurroundersForPlayers();
-
         InstantiateMenus();
 
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
@@ -322,6 +321,7 @@ public class GameManager : MonoBehaviour
 
     public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
+        AbilityManager.UpgradeAbility(_concernedAbility, _newAbilityLevel);
         OpenLevelMenu();
         mainMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
     }
@@ -435,11 +435,12 @@ public class GameManager : MonoBehaviour
         if (restartPanel != null) { Destroy(restartPanel); }
         restartPanel = Instantiate(Resources.Load<GameObject>("Menu/RestartPanel"));
         restartPanel.SetActive(false);
-
+        
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
         GameObject menuObj = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"));
         mainMenu = menuObj.GetComponent<MainMenu>();
+        mainMenu.InitiateSubMenus();
         mainMenu.gameObject.SetActive(false);
 
     }

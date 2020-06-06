@@ -252,6 +252,10 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
                     RotateTowardsPlayerAndHisForward();
                 }
                 currentAnticipationTime -= Time.deltaTime;
+                if (currentAnticipationTime <= 0.3f)
+                {
+                    ChangeAimingRedDotState(AimingRedDotState.Locking);
+                }
                 if (currentAnticipationTime <= 0)
                 {
                     ChangingTurretAttackState(TurretAttackState.Attack);
@@ -275,7 +279,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
         //Adapt aimCube Scale and Position
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
+        if (Physics.Raycast(aimingRedDotTransform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
             aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
         }

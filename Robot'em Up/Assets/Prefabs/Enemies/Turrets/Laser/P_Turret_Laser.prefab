@@ -130,8 +130,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4519917907893789444}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.51, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 4378591261476464930}
   m_Father: {fileID: 5738937565884906333}
@@ -202,7 +202,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 3
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: 1.32, z: 0}
 --- !u!114 &4233777253254011454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +238,7 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0, z: 0}
   lookInput: {x: 0, y: 0, z: 0}
   climbingDelay: 0
+  isPlayer: 0
   passController: {fileID: 0}
   rb: {fileID: 0}
   animator: {fileID: 0}
@@ -248,14 +249,13 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   selfCollider: {fileID: 0}
-  selfColliderSize: 3
   enemyType: 4
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
   damage: 100
   powerLevel: 1
   lockable: 1
-  lockHitboxSize: 2
+  lockHitboxSize: 3
   lockSize3DModifier: {x: 1, y: 1, z: 1}
   arenaRobot: 0
   isDeploymentFast: 1
@@ -437,6 +437,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 4fd32971095aadb42b72a378e0ae998f,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 4fd32971095aadb42b72a378e0ae998f,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 4fd32971095aadb42b72a378e0ae998f,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4fd32971095aadb42b72a378e0ae998f, type: 3}
@@ -706,21 +721,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0.00089600374
-      objectReference: {fileID: 0}
-    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: -3121405613446350570, guid: ca85342a66a63764b8c047d6e4e25569,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -740,6 +740,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0.00089600374
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7336063208917860654, guid: ca85342a66a63764b8c047d6e4e25569,
         type: 3}

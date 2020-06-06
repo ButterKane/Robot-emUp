@@ -47,7 +47,10 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	private NavMeshAgent navMesh;
 	private List<Quaternion> shoulderInitialRotation;
 	private bool shoulderRotationEnabled;
+	private bool bulletStormCanonsEnabled;
 	private bool bulletStormEnabled;
+	private float bulletCannonnadeCooldown;
+	private float bulletCannonnadeDuration;
 	private Transform currentTarget;
 	private bool frozen;
 	private float timeBeforeTeaBag;
@@ -56,6 +59,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	private GameObject bossExplosionFX;
 	private bool destroyed;
 	private bool groundAttackActivated;
+	private Animator healthBarAnimator;
 	[HideInInspector] public Animator animator;
 	[HideInInspector] public List<BossTile> tiles;
 
@@ -157,7 +161,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	}
 	public void ChangeMode(BossMode _newMode)
 	{
-		Debug.Log("Changing to mode: " + _newMode);
 		timeSinceLastModeChange = 0;
 		if (currentMode != null)
 		{
@@ -218,26 +221,11 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void StartBulletStorm ()
 	{
 		bulletStormEnabled = true;
-		foreach (BossLeg leg in legs)
-		{
-			leg.canonMaxAngle = bossDatas.bulletStormSettings.canonMaxAngle;
-			leg.canonRotationSpeed = bossDatas.bulletStormSettings.canonRotationSpeed;
-			leg.maxDelayBetweenBullets = bossDatas.bulletStormSettings.maxDelayBetweenBullets;
-			leg.minDelayBetweenBullets = bossDatas.bulletStormSettings.minDelayBetweenBullets;
-			leg.EnableCanon();
-
-			leg.maxHP = bossDatas.weakPointSettings.legMaxHP;
-			leg.SetDestructible();
-		}
 	}
 
 	public void StopBulletStorm ()
 	{
 		bulletStormEnabled = false;
-		foreach (BossLeg leg in legs)
-		{
-			leg.DisableCanon();
-		}
 	}
 
 	public void DetachTurrets()
@@ -272,11 +260,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			if (Physics.Raycast(hammerObj.transform.position, Vector3.down, out hit, 100f, LayerMask.GetMask("Environment")))
 			{
 				newHammerPosition.y = hit.point.y;
-				Debug.Log(newHammerPosition.y);
-			}
-			else
-			{
-				Debug.Log("No hit");
 			}
 			hammerObj.transform.position = newHammerPosition;
 			Vector3 hammerForwardFlat = currentTarget.transform.position - transform.position;
@@ -296,16 +279,10 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void LaserAttack()
 	{
 		GameObject laserObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
-		RaycastHit hit;
-		if (Physics.Raycast(laserObj.transform.position , Vector3.down, out hit, 50f, LayerMask.GetMask("Environment")))
-		{
-			Vector3 newLaserPosition = laserObj.transform.position;
-			newLaserPosition.y = hit.point.y;
-            newLaserPosition.x = transform.position.x;
-            newLaserPosition.z = transform.position.z;
-            laserObj.transform.position = newLaserPosition;
-            laserObj.transform.parent = transform;
-        }
+		laserObj.transform.parent = transform;
+		laserObj.transform.localPosition = new Vector3(0f, -3.5f, 0f);
+		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(transform);
+		laserObj.transform.parent = null;
 	}
 
 	public void GroundAttack()
@@ -314,6 +291,22 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		{
 			groundAttackActivated = true;
 			StartCoroutine(GroundAttack_C());
+		}
+	}
+
+	public void EnableSecondHealthBar ()
+	{
+		if (healthBarAnimator != null)
+		{
+			healthBarAnimator.SetTrigger("EnablePhaseTwo");
+		}
+	}
+
+	public void DisplayHealthBar()
+	{
+		if (healthBarAnimator != null)
+		{
+			healthBarAnimator.SetTrigger("Enable");
 		}
 	}
 
@@ -361,18 +354,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		shoulderInitialRotation.Add(shoulderRight.transform.localRotation);
 		tiles = new List<BossTile>();
 	}
-
-	public void Freeze(float _duration)
-	{
-		StartCoroutine(Freeze_C(_duration));
-	}
-
-	private void GetReferences()
-	{
-		bossDatas = BossSettings.GetDatas();
-		navMesh = GetComponent<NavMeshAgent>();
-		animator = GetComponent<Animator>();
-	}
 	private void GenerateHealthBars ()
 	{
 		healthBar = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossHealthBar")).transform;
@@ -387,6 +368,40 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		healthBar2FillInstant.fillAmount = 1;
 		healthBar2FillLerped.fillAmount = 1;
 
+		healthBarAnimator = healthBar.GetComponent<Animator>();
+	}
+	private void EnableBulletStormCanons ()
+	{
+		foreach (BossLeg leg in legs)
+		{
+			leg.canonMaxAngle = bossDatas.bulletStormSettings.canonMaxAngle;
+			leg.canonRotationSpeed = bossDatas.bulletStormSettings.canonRotationSpeed;
+			leg.maxDelayBetweenBullets = bossDatas.bulletStormSettings.maxDelayBetweenBullets;
+			leg.minDelayBetweenBullets = bossDatas.bulletStormSettings.minDelayBetweenBullets;
+			leg.EnableCanon();
+
+			leg.maxHP = bossDatas.weakPointSettings.legMaxHP;
+			leg.SetDestructible();
+		}
+	}
+
+	private void DisableBulletStormCanons ()
+	{
+		foreach (BossLeg leg in legs)
+		{
+			leg.DisableCanon();
+		}
+	}
+	public void Freeze(float _duration)
+	{
+		StartCoroutine(Freeze_C(_duration));
+	}
+
+	private void GetReferences()
+	{
+		bossDatas = BossSettings.GetDatas();
+		navMesh = GetComponent<NavMeshAgent>();
+		animator = GetComponent<Animator>();
 	}
 	private void UpdateMovement()
 	{
@@ -487,7 +502,24 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		if (bulletStormEnabled)
 		{
-			transform.Rotate(Vector3.up, Time.deltaTime * bossDatas.bulletStormSettings.bodyRotationSpeed);
+			if (bulletStormCanonsEnabled)
+			{
+				transform.Rotate(Vector3.up, Time.deltaTime * bossDatas.bulletStormSettings.bodyRotationSpeed);
+				bulletCannonnadeDuration += Time.deltaTime;
+				if (bulletCannonnadeDuration >= bossDatas.bulletStormSettings.bulletCannonnadeDuration)
+				{
+					bulletStormCanonsEnabled = true;
+					DisableBulletStormCanons();
+				}
+			} else
+			{
+				bulletCannonnadeCooldown += Time.deltaTime;
+				if (bulletCannonnadeCooldown >= bossDatas.bulletStormSettings.bulletCannonnadeCooldown)
+				{
+					bulletStormCanonsEnabled = false;
+					EnableBulletStormCanons();
+				}
+			}
 		}
 	}
 	private void CheckForModeTransition()
@@ -733,7 +765,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		if (_source == DamageSource.Dunk)
 		{
 			hitByDunk = true;
-			Debug.Log("BossHitByDunk");
 		}
 	}
 }
