@@ -572,7 +572,7 @@ public class EnemyBehaviour : PawnController, IHitable
         //Changing focus between the two
         if ((playerOneInRange && playerOnePawnController.IsTargetable())
             && (playerTwoInRange && playerTwoPawnController.IsTargetable())
-            && focusedPawnController != null)
+            && focusedPawnController != null && enemyState != EnemyState.Attacking)
         {
             if (focusedPawnController.transform == playerOneTransform && distanceWithPlayerOne - distanceWithPlayerTwo > focusValues.distanceBeforeChangingPriority)
             {
