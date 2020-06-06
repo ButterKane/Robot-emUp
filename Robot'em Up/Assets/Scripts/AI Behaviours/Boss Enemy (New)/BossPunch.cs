@@ -32,13 +32,21 @@ public class BossPunch : MonoBehaviour
 		punchFill.enabled = false;
 	}
 
-	public void StartPunch ()
+	public void StartPunch (Animator _animator)
 	{
-		StartCoroutine(Punch_C());
+		StartCoroutine(Punch_C(_animator));
 	}
 
-	IEnumerator Punch_C ()
+	IEnumerator Punch_C ( Animator _animator )
 	{
+		if (damageCollider != null && canDamagePlayers)
+		{
+			_animator.SetTrigger("Punch");
+		}
+		if (destroyEnviroCollider != null && canDestroyEnviro)
+		{
+			_animator.SetTrigger("Hammer");
+		}
 		punchOutline.enabled = true;
 		punchFill.enabled = true;
 		punchFill.material.SetColor("_Tint",fillColorCharging);
@@ -54,6 +62,7 @@ public class BossPunch : MonoBehaviour
 		newFillColor.a = 1f;
 		if (damageCollider != null && canDamagePlayers)
 		{
+			_animator.SetTrigger("Punch2");
 			damageCollider.enabled = true;
 			FeedbackManager.SendFeedback("event.BossPunchHit", this, damageCollider.transform.position, Vector3.up, Vector3.up);
 			yield return null;
@@ -75,6 +84,7 @@ public class BossPunch : MonoBehaviour
 
 		if (destroyEnviroCollider != null && canDestroyEnviro)
 		{
+			_animator.SetTrigger("Hammer2");
 			destroyEnviroCollider.enabled = true;
 			FeedbackManager.SendFeedback("event.BossHammerHit", this, damageCollider.transform.position, Vector3.up, Vector3.up);
 			yield return null;

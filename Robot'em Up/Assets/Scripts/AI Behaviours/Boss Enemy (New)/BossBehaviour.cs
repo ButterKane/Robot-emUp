@@ -60,7 +60,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	private bool destroyed;
 	private bool groundAttackActivated;
 	private Animator healthBarAnimator;
-	[HideInInspector] public Animator animator;
+	public Animator animator;
 	[HideInInspector] public List<BossTile> tiles;
 
 	[SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
@@ -213,7 +213,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			punchScript.fillColorCharging = bossDatas.punchSettings.chargingColor;
 			punchScript.punchPushForce = bossDatas.punchSettings.pushForce;
 			punchScript.punchPushHeight = bossDatas.punchSettings.pushHeight;
-			punchScript.StartPunch();
+			punchScript.StartPunch(animator);
 			Freeze(bossDatas.punchSettings.chargeDuration);
 		}
 	}
@@ -271,18 +271,15 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			hammerScript.fillColorHit = bossDatas.hammerSettings.hitColor;
 			hammerScript.punchChargeDuration = bossDatas.hammerSettings.chargeDuration;
 			hammerScript.punchChargeSpeedCurve = bossDatas.hammerSettings.chargeSpeedCurve;
-			hammerScript.StartPunch();
+			hammerScript.StartPunch(animator);
 			Freeze(bossDatas.hammerSettings.chargeDuration);
 		}
 	}
 
 	public void LaserAttack()
 	{
-		GameObject laserObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
-		laserObj.transform.parent = transform;
-		laserObj.transform.localPosition = new Vector3(0f, -3.5f, 0f);
-		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(transform);
-		laserObj.transform.parent = null;
+		animator.SetTrigger("Laser");
+		StartCoroutine(SpawnLaser_C(1f));
 	}
 
 	public void GroundAttack()
@@ -379,9 +376,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			leg.maxDelayBetweenBullets = bossDatas.bulletStormSettings.maxDelayBetweenBullets;
 			leg.minDelayBetweenBullets = bossDatas.bulletStormSettings.minDelayBetweenBullets;
 			leg.EnableCanon();
-
-			leg.maxHP = bossDatas.weakPointSettings.legMaxHP;
-			leg.SetDestructible();
 		}
 	}
 
@@ -401,7 +395,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		bossDatas = BossSettings.GetDatas();
 		navMesh = GetComponent<NavMeshAgent>();
-		animator = GetComponent<Animator>();
 	}
 	private void UpdateMovement()
 	{
@@ -436,7 +429,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			destinationFlatted.y = 0;
 			Vector3 positionFlatted = transform.position;
 			positionFlatted.y = 0;
-			if (Vector3.Distance(destinationFlatted, positionFlatted) < bossDatas.globalSettings.minAttackRange)
+			if (Vector3.Distance(destinationFlatted, positionFlatted) < bossDatas.globalSettings.minAttackRange && transform.position.y <= 13.5f)
 			{
 				if (currentTarget != null)
 				{
@@ -508,7 +501,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 				bulletCannonnadeDuration += Time.deltaTime;
 				if (bulletCannonnadeDuration >= bossDatas.bulletStormSettings.bulletCannonnadeDuration)
 				{
-					bulletStormCanonsEnabled = true;
+					bulletStormCanonsEnabled = false;
+					bulletCannonnadeDuration = 0f;
 					DisableBulletStormCanons();
 				}
 			} else
@@ -516,7 +510,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 				bulletCannonnadeCooldown += Time.deltaTime;
 				if (bulletCannonnadeCooldown >= bossDatas.bulletStormSettings.bulletCannonnadeCooldown)
 				{
-					bulletStormCanonsEnabled = false;
+					bulletStormCanonsEnabled = true;
+					bulletCannonnadeCooldown = 0f;
 					EnableBulletStormCanons();
 				}
 			}
@@ -557,6 +552,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	private void SpawnElectricalPlates()
 	{
+		animator.SetTrigger("ElectricalPlate");
 		for (int i = 0; i < tiles.Count; i++)
 		{
 			if (i % 2 != 0)
@@ -674,6 +670,16 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	}
 	//Coroutines
 
+	IEnumerator SpawnLaser_C(float _delay)
+	{
+		Freeze(1f);
+		yield return new WaitForSeconds(_delay);
+		GameObject laserObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
+		laserObj.transform.parent = transform;
+		laserObj.transform.localPosition = new Vector3(0f, -3.5f, 0f);
+		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(transform);
+		laserObj.transform.parent = null;
+	}
 	IEnumerator Freeze_C(float _duration)
 	{
 		for (float i = 0; i < _duration; i+= Time.deltaTime)
