@@ -25,8 +25,7 @@ public class EnemyRedBarrel : EnemyBehaviour
     public float bumpDurationMod = 0.7f;
     public float bumpRestDurationMod = 0.2f;
     private Vector3 bumpValues;
-
-    public Renderer explosionRadiusRenderer;
+    
     public Transform explosionGrowingRenderer;
     public Transform explosionRadiusTransform;
     public Renderer bodyRenderer;
@@ -43,6 +42,7 @@ public class EnemyRedBarrel : EnemyBehaviour
         eventOnDeath = "event.EnemyRedBarrelDeathPart2";
         bumpValues = new Vector3(bumpDistanceMod, bumpDurationMod, bumpRestDurationMod);
         explosionRadiusTransform.localScale = new Vector3(explosionRadius * 2, explosionRadius * 2, explosionRadius * 2);
+        explosionRadiusTransform.gameObject.SetActive(false);
         Explosion_C = null;
     }
 
@@ -177,6 +177,16 @@ public class EnemyRedBarrel : EnemyBehaviour
         bodyRenderer.material = materialOnExplosion;
         LaunchExplosion();
         currentAnticipationTime = attackValues.maxAnticipationTime;
+    }
+
+    public override void Damage(float _amount, bool _enableInvincibilityFrame = false)
+    {
+        if (GetHealth() - _amount <= 0)
+        {
+            StartCoroutine(CancelExplosionSequence_C());
+        }
+        base.Damage(_amount, _enableInvincibilityFrame);
+
     }
     #endregion
 }
