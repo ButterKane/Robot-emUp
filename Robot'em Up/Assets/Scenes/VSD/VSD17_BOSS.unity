@@ -9227,7 +9227,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &414438255
 Transform:
   m_ObjectHideFlags: 0
@@ -21202,7 +21202,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-820638
+  m_Name: pb_Mesh262294
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -30915,7 +30915,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh67152
+  m_Name: pb_Mesh262042
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -49070,8 +49070,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1408180361}
-  - component: {fileID: 1408180365}
   - component: {fileID: 1408180364}
+  - component: {fileID: 1408180365}
   m_Layer: 0
   m_Name: Bone
   m_TagString: Untagged
@@ -79523,7 +79523,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2059495381}
   m_LocalRotation: {x: -0, y: -1, z: -0, w: -0.00000035762778}
-  m_LocalPosition: {x: 99.1, y: 17.3, z: 3553.19}
+  m_LocalPosition: {x: -32.1, y: 17.3, z: 3553.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9193936401025338328}
@@ -80240,9 +80240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4e01af601f76db4faa0f60c9baf0322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wantedTransform: {fileID: 447558483}
+  wantedTransform: {fileID: 496435438}
   wantedTransformPos: {x: 0, y: 0, z: 0}
-  IK: {fileID: 111362270}
+  IK: {fileID: 4696941218091404130}
   height: 1.25
   maxDistanceToTarget: 3
   heightCurve:
@@ -80333,7 +80333,7 @@ MonoBehaviour:
   bumpHeight: 2.5
   eventOnStep: event.BossStep
   legSpeed: 0
-  isRight: 1
+  isRight: 0
   isGrounded: 0
   forwardOffset: {x: 0, y: 0, z: 0}
   bumpPawnsOnGrounded: 0
@@ -80665,6 +80665,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9171751230685558805}
   - component: {fileID: 549664214733644299}
+  - component: {fileID: 549664214733644300}
   m_Layer: 10
   m_Name: jnt_Calf_RB
   m_TagString: Untagged
@@ -80688,8 +80689,8 @@ MonoBehaviour:
   lockable: 1
   lockHitboxSize: 15
   lockSize3DModifier: {x: 1, y: 1, z: 1}
-  canonVisuals: {fileID: 1819724569}
-  canonTube: {fileID: 53268119}
+  canonVisuals: {fileID: 976538477}
+  canonTube: {fileID: 1458196782}
   minDelayBetweenBullets: 0
   maxDelayBetweenBullets: 0
   canonMaxAngle: 0
@@ -80698,7 +80699,20 @@ MonoBehaviour:
   perfectReceptionDamageMultiplier: 0.25
   healthBarHeight: 1
   canonLength: 2
-  protectionPlateVisuals: {fileID: 1336489205}
+  protectionPlateVisuals: {fileID: 482532483}
+--- !u!65 &549664214733644300
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549664214733644298}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &558398276044540251
 Transform:
   m_ObjectHideFlags: 0
@@ -80744,6 +80758,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1481620751729104767}
   - component: {fileID: 600594900354224702}
+  - component: {fileID: 600594900354224703}
   m_Layer: 10
   m_Name: jnt_Calf_LF
   m_TagString: Untagged
@@ -80767,8 +80782,8 @@ MonoBehaviour:
   lockable: 1
   lockHitboxSize: 15
   lockSize3DModifier: {x: 1, y: 1, z: 1}
-  canonVisuals: {fileID: 1819724569}
-  canonTube: {fileID: 53268119}
+  canonVisuals: {fileID: 470065205}
+  canonTube: {fileID: 1694908106}
   minDelayBetweenBullets: 0
   maxDelayBetweenBullets: 0
   canonMaxAngle: 0
@@ -80777,7 +80792,20 @@ MonoBehaviour:
   perfectReceptionDamageMultiplier: 0.25
   healthBarHeight: 1
   canonLength: 2
-  protectionPlateVisuals: {fileID: 1336489205}
+  protectionPlateVisuals: {fileID: 1575658465}
+--- !u!65 &600594900354224703
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600594900354224701}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &619058915486260223
 GameObject:
   m_ObjectHideFlags: 0
@@ -81790,6 +81818,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2261124511082688220}
+  - component: {fileID: 1108864905609802524}
   m_Layer: 10
   m_Name: jnt_pelvis
   m_TagString: Untagged
@@ -81797,6 +81826,30 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1108864905609802524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108864905609802523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb48acd8cde1ebc4da97cbea4802ec19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  forwardPart: {fileID: 1028047526}
+  invertForwardDirection: 0
+  forwardLegs:
+  - {fileID: 3841496100109654771}
+  - {fileID: 2202874255997436697}
+  backwardLegs:
+  - {fileID: 148189185451016221}
+  - {fileID: 6996106622750249742}
+  maxYOffset: 1
+  maxRoll: 5
+  moveSpeed: 4
+  stepLength: 0.2
 --- !u!4 &1118676627928740033
 Transform:
   m_ObjectHideFlags: 0
@@ -82762,6 +82815,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4533710240569268312}
+  - component: {fileID: 2169136139270176425}
   m_Layer: 10
   m_Name: jnt_Foot_RF
   m_TagString: Untagged
@@ -82769,6 +82823,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &2169136139270176425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169136139270176424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChainLength: 3
+  Target: {fileID: 85838381}
+  Pole: {fileID: 899015675}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 0
 --- !u!1 &2186882923618346588
 GameObject:
   m_ObjectHideFlags: 0
@@ -82848,9 +82920,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4e01af601f76db4faa0f60c9baf0322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wantedTransform: {fileID: 447558483}
+  wantedTransform: {fileID: 85838381}
   wantedTransformPos: {x: 0, y: 0, z: 0}
-  IK: {fileID: 111362270}
+  IK: {fileID: 2169136139270176425}
   height: 1.25
   maxDistanceToTarget: 3
   heightCurve:
@@ -83800,6 +83872,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8546780020980385083}
   - component: {fileID: 3248354798409782563}
+  - component: {fileID: 3248354798409782564}
   m_Layer: 10
   m_Name: jnt_Calf_LB
   m_TagString: Untagged
@@ -83823,8 +83896,8 @@ MonoBehaviour:
   lockable: 1
   lockHitboxSize: 15
   lockSize3DModifier: {x: 1, y: 1, z: 1}
-  canonVisuals: {fileID: 1819724569}
-  canonTube: {fileID: 53268119}
+  canonVisuals: {fileID: 89542012}
+  canonTube: {fileID: 1415053045}
   minDelayBetweenBullets: 0
   maxDelayBetweenBullets: 0
   canonMaxAngle: 0
@@ -83833,7 +83906,20 @@ MonoBehaviour:
   perfectReceptionDamageMultiplier: 0.25
   healthBarHeight: 1
   canonLength: 2
-  protectionPlateVisuals: {fileID: 1336489205}
+  protectionPlateVisuals: {fileID: 1156241660}
+--- !u!65 &3248354798409782564
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3248354798409782562}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3257502144132906045
 GameObject:
   m_ObjectHideFlags: 0
@@ -84483,9 +84569,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4e01af601f76db4faa0f60c9baf0322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wantedTransform: {fileID: 447558483}
+  wantedTransform: {fileID: 2071768973}
   wantedTransformPos: {x: 0, y: 0, z: 0}
-  IK: {fileID: 111362270}
+  IK: {fileID: 6861390505029976812}
   height: 1.25
   maxDistanceToTarget: 3
   heightCurve:
@@ -84576,7 +84662,7 @@ MonoBehaviour:
   bumpHeight: 2.5
   eventOnStep: event.BossStep
   legSpeed: 0
-  isRight: 1
+  isRight: 0
   isGrounded: 0
   forwardOffset: {x: 0, y: 0, z: 0}
   bumpPawnsOnGrounded: 0
@@ -85497,6 +85583,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3145196962210255279}
+  - component: {fileID: 4696941218091404130}
   m_Layer: 10
   m_Name: jnt_Foot_LB
   m_TagString: Untagged
@@ -85504,6 +85591,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &4696941218091404130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4696941218091404129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChainLength: 3
+  Target: {fileID: 496435438}
+  Pole: {fileID: 856446108}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 0
 --- !u!4 &4708612114732319865
 Transform:
   m_ObjectHideFlags: 0
@@ -85647,6 +85752,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5874716971543059460}
+  - component: {fileID: 4938654872886284574}
   m_Layer: 10
   m_Name: jnt_Foot_RB
   m_TagString: Untagged
@@ -85654,6 +85760,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &4938654872886284574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938654872886284573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChainLength: 3
+  Target: {fileID: 447558483}
+  Pole: {fileID: 2134398858}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 0
 --- !u!4 &4943210241392296866
 Transform:
   m_ObjectHideFlags: 0
@@ -86948,6 +87072,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2317968280128826492}
   - component: {fileID: 6627904450760128741}
+  - component: {fileID: 6627904450760128742}
   m_Layer: 10
   m_Name: jnt_Calf_RF
   m_TagString: Untagged
@@ -86971,8 +87096,8 @@ MonoBehaviour:
   lockable: 1
   lockHitboxSize: 15
   lockSize3DModifier: {x: 1, y: 1, z: 1}
-  canonVisuals: {fileID: 1819724569}
-  canonTube: {fileID: 53268119}
+  canonVisuals: {fileID: 109470750}
+  canonTube: {fileID: 732468940}
   minDelayBetweenBullets: 0
   maxDelayBetweenBullets: 0
   canonMaxAngle: 0
@@ -86981,7 +87106,20 @@ MonoBehaviour:
   perfectReceptionDamageMultiplier: 0.25
   healthBarHeight: 1
   canonLength: 2
-  protectionPlateVisuals: {fileID: 1336489205}
+  protectionPlateVisuals: {fileID: 1973115744}
+--- !u!65 &6627904450760128742
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6627904450760128740}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &6679464295751308042
 Transform:
   m_ObjectHideFlags: 0
@@ -87080,6 +87218,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8311103786351522274}
+  - component: {fileID: 6861390505029976812}
   m_Layer: 10
   m_Name: jnt_Foot_LF
   m_TagString: Untagged
@@ -87087,6 +87226,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &6861390505029976812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6861390505029976811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c5f86c511275a240a291d6f1a993672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChainLength: 3
+  Target: {fileID: 2071768973}
+  Pole: {fileID: 1807177237}
+  Iterations: 10
+  Delta: 0.001
+  SnapBackStrength: 0
 --- !u!1 &6861778889032781916
 GameObject:
   m_ObjectHideFlags: 0
@@ -87352,7 +87509,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wantedTransform: {fileID: 447558483}
   wantedTransformPos: {x: 0, y: 0, z: 0}
-  IK: {fileID: 111362270}
+  IK: {fileID: 4938654872886284574}
   height: 1.25
   maxDistanceToTarget: 3
   heightCurve:
