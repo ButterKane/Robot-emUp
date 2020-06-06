@@ -236,7 +236,6 @@ public class MainMenu : MonoBehaviour
         AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
         i_script.organizer.OrganizeAbilities();
         i_script.ResetDisplay();
-        Debug.Log("bidouille");
         isMainMenuActive = false;
         i_script.isNavigationAllowed = true;
     }
