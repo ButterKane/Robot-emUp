@@ -168,7 +168,6 @@ public class IndianaManager : MonoBehaviour
 
     public void ScriptedIndianaExplosion(Transform xzPosition)
     {
-        print("hey yo");
         Vector3 i_wantedPosition = xzPosition.position;
         i_wantedPosition.y = startposition.y;
         IndianaExplosion i_newExplosion = Instantiate(prefabIndianaExplosion, i_wantedPosition, Quaternion.Euler(-90, 0, 0)).GetComponent<IndianaExplosion>();
