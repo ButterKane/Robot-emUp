@@ -438,8 +438,7 @@ public class GameManager : MonoBehaviour
         
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
-        GameObject menuObj = Instantiate(Resources.Load<GameObject>("Menu/LevelMenu"));
-        mainMenu = menuObj.GetComponent<MainMenu>();
+        mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>();
         mainMenu.InitiateSubMenus();
         mainMenu.gameObject.SetActive(false);
 
