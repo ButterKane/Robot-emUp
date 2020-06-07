@@ -190,16 +190,26 @@ public class EnemyShield : EnemyBehaviour
         }
         else if (_source == DamageSource.Ball)
         {
-            if (currentShieldDeactiveCoroutine != null)
+            if(!isShieldActivated || Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward) > angleRangeForRebound)
             {
-                StopCoroutine(currentShieldDeactiveCoroutine);
-                currentShieldDeactiveCoroutine = null;
+                print(Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward));
+                if (isShieldActivated)
+                {
+                    if (currentShieldDeactiveCoroutine != null)
+                    {
+                        StopCoroutine(currentShieldDeactiveCoroutine);
+                        currentShieldDeactiveCoroutine = null;
+                    }
+                    currentShieldDeactiveCoroutine = DeactivateShieldForGivenTime(timeShieldDisappearAfterHit);
+                    StartCoroutine(currentShieldDeactiveCoroutine);
+                }
+                base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
             }
-            currentShieldDeactiveCoroutine = DeactivateShieldForGivenTime(timeShieldDisappearAfterHit);
-            StartCoroutine(currentShieldDeactiveCoroutine);
+            else if(isShieldActivated && Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward) < angleRangeForRebound)
+            {
+                _ball.Bounce(Vector3.Reflect(_ball.GetCurrentDirection(), transform.forward), 1);
+            }
         }
-
-        base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
     }
 
     public override void HeavyPushAction()
