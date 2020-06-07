@@ -10,6 +10,7 @@ public class PuzzleActivable : MonoBehaviour
     [SerializeField] public List<PuzzleActivator> puzzleDesactivator;
     [ReadOnly] public List<bool> puzzleActivationsBool;
     [SerializeField] public bool needAllConditions = false;
+    [SerializeField] public bool needAllConditionsToFalseForDesactivation = false;
 
     public List<Light> indictatorLightsList;
     public bool isActivated = true;
@@ -20,12 +21,12 @@ public class PuzzleActivable : MonoBehaviour
     {
         if (isActivated)
         {
-            WhenActivate();
+            Activate();
         }
 
         if (!isActivated)
         {
-            WhenDesactivate();
+            Desactivate();
         }
         foreach (var item in indictatorLightsList)
         {
@@ -61,13 +62,13 @@ public class PuzzleActivable : MonoBehaviour
     }
 
 
-    public virtual void WhenActivate()
+    public virtual void Activate()
     {
         isActivated = true;
     }
 
 
-    public virtual void WhenDesactivate()
+    public virtual void Desactivate()
     {
         isActivated = false;
     }
@@ -95,7 +96,7 @@ public class PuzzleActivable : MonoBehaviour
                 }
             }
         }
-        else
+        else if (indictatorLightsList.Count > 0) 
         {
             if (isActivated)
             {
@@ -180,7 +181,7 @@ public class PuzzleActivable : MonoBehaviour
     }
 
 
-    public virtual void shutDownPuzzle()
+    public virtual void ShutDownPuzzle()
     {
         if (!shutDown)
         {
@@ -189,12 +190,12 @@ public class PuzzleActivable : MonoBehaviour
                 item.intensity = 0;
             }
             shutDown = true;
-            customShutDown();
+            CustomShutDown();
         }
     }
 
 
-    public virtual void customShutDown()
+    public virtual void CustomShutDown()
     {
     }
 }

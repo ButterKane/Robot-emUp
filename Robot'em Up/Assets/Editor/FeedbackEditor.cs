@@ -14,7 +14,6 @@ public class FeedbackEditor : Editor
 	public List<bool> showPosition;
 	string[] categoryOptions;
 	int selectedCategoryIndex;
-	List<string> soundList;
 	EditorCoroutine recalculationCoroutine;
 	float recalculationProgression;
 	string nameSearched;
@@ -37,17 +36,8 @@ public class FeedbackEditor : Editor
 		}
 		selectedCategoryIndex = feedbackDatas.feedbackCategories.Count;
 		RecalculateCategoryOptions();
-		RecalculateSoundList();
 	}
 
-	void RecalculateSoundList()
-	{
-		soundList = new List<string>();
-		foreach (SoundData sound in Resources.Load<SoundDatas>("SoundDatas").soundList)
-		{
-			soundList.Add(sound.soundName);
-		}
-	}
 	
 	int GetCategoryIndex(FeedbackEventCategory _category)
 	{
@@ -97,8 +87,9 @@ public class FeedbackEditor : Editor
 			GUILayout.Box("Global settings", i_headerStyle);
 			GUILayout.Space(10);
 			GUI.color = Color.white;
-			GUILayout.Space(10);
 
+			//Event implementation check (Removed temporarly)
+			/*
 			if (recalculationCoroutine == null)
 			{
 				if (GUILayout.Button("Check for implemented events\n (May cause severe lag, save before)", i_buttonStyle, GUILayout.Height(100)))
@@ -110,6 +101,7 @@ public class FeedbackEditor : Editor
 				GUILayout.Label("Checking implementations...", i_headerStyle); 
 				EditorGUILayout.Slider(recalculationProgression, 0, 100);
 			}
+			*/
 		}
 		GUILayout.EndVertical();
 
@@ -164,6 +156,7 @@ public class FeedbackEditor : Editor
 						RemoveEvent(feedbackDatas.feedbackList[i].eventName);
 						break;
 					}
+					/*
 					if (i_feedbackData.eventCalled)
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_max"), GUILayout.Height(20), GUILayout.Width(20));
@@ -172,6 +165,7 @@ public class FeedbackEditor : Editor
 					{
 						EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_winbtn_mac_close"), GUILayout.Height(20), GUILayout.Width(20));
 					}
+					*/
 
 					GUILayout.EndHorizontal();
 					if (showPosition[i])
@@ -311,6 +305,8 @@ public class FeedbackEditor : Editor
 							}
 							else
 							{
+								SoundData soundData = i_feedbackData.soundData;
+
 								EditorGUILayout.BeginHorizontal();
 								GUILayout.FlexibleSpace();
 								GUILayout.Label("Sound", EditorStyles.largeLabel);
@@ -323,18 +319,71 @@ public class FeedbackEditor : Editor
 								{
 									RemoveSound(i_feedbackData);
 								}
-								EditorGUILayout.BeginHorizontal();
+
+								if (soundData.soundList != null)
 								{
-									GUILayout.Label("Sound Name: ", GUILayout.Width(100));
-									i_feedbackData.soundData.soundName = EditorExtend.TextFieldAutoComplete(i_feedbackData.soundData.soundName, soundList.ToArray(), maxShownCount: 10, levenshteinDistance: 0.5f);
+									for (int y = 0; y < soundData.soundList.Count; y++)
+									{
+										GUILayout.BeginHorizontal();
+										{
+											GUILayout.Label("Clip", GUILayout.Width(100));
+											soundData.soundList[y].clip = (AudioClip)EditorGUILayout.ObjectField(soundData.soundList[y].clip, typeof(AudioClip), false, GUILayout.Width(150));
+
+											if (GUILayout.Button(EditorGUIUtility.IconContent("Animation.Play"), GUILayout.Width(20), GUILayout.Height(20)))
+											{
+												SoundManager.PlaySoundInEditor(soundData.soundList[y].clip, 0, false);
+											}
+											GUILayout.Label("Play Chances", GUILayout.Width(100));
+											EditorGUI.BeginChangeCheck();
+											float probaSliderValue = EditorGUILayout.Slider(Mathf.Round(soundData.soundList[y].playChances * 100f) / 100f, 0f, 1f);
+											if (EditorGUI.EndChangeCheck())
+											{
+												soundData.SetPlayProbability(soundData.soundList[y], probaSliderValue);
+											}
+											if (GUILayout.Button(EditorGUIUtility.IconContent("winbtn_win_close"), GUILayout.Width(20), GUILayout.Height(20)))
+											{
+												soundData.RemoveSound(soundData.soundList[y]);
+												return;
+											}
+										}
+										GUILayout.EndHorizontal();
+									}
 								}
-								EditorGUILayout.EndHorizontal();
-								EditorGUILayout.BeginHorizontal();
+
+								GUILayout.BeginHorizontal();
 								{
-									GUILayout.Label("Attach to target: ", GUILayout.Width(100));
-									i_feedbackData.soundData.attachToTarget = EditorGUILayout.Toggle(i_feedbackData.soundData.attachToTarget);
+									GUILayout.FlexibleSpace();
+									GUILayout.Space(10);
+									SerializedProperty m_volumeMultiplier = i_serializedFeedbackData.FindProperty("soundData.volumeMultiplier");
+									GUILayout.Label("Volume multiplier", GUILayout.Width(100));
+									EditorGUILayout.PropertyField(m_volumeMultiplier, GUIContent.none, GUILayout.Width(150));
+									GUILayout.Space(10);
+									SerializedProperty m_delay = i_serializedFeedbackData.FindProperty("soundData.delay");
+									GUILayout.Label("Delay", GUILayout.Width(100));
+									EditorGUILayout.PropertyField(m_delay, GUIContent.none, GUILayout.Width(150));
+									GUILayout.FlexibleSpace();
 								}
-								EditorGUILayout.EndHorizontal();
+								GUILayout.EndHorizontal();
+
+								GUILayout.BeginHorizontal();
+								GUILayout.FlexibleSpace();
+								if (GUILayout.Button("Add clip", GUILayout.Width(100), GUILayout.Height(20)))
+								{
+									Sound newSoundItem = new Sound();
+									newSoundItem.clip = null;
+									if (soundData.soundList.Count == 0)
+									{
+										newSoundItem.playChances = 1f;
+									}
+									else
+									{
+										newSoundItem.playChances = 0f;
+									}
+									soundData.soundList.Add(newSoundItem);
+								}
+								GUILayout.FlexibleSpace();
+								GUILayout.EndHorizontal();
+								GUILayout.Space(10);
 							}
 						}
 						GUILayout.EndVertical();
@@ -492,7 +541,7 @@ public class FeedbackEditor : Editor
 		i_newFeedbackData.vibrationData.forceCurve.AddKey(new Keyframe(0, 1));
 		i_newFeedbackData.vibrationData.forceCurve.AddKey(new Keyframe(1, 1));
 		i_newFeedbackData.eventName = "event.null (" + (feedbackDatas.feedbackList.Count + 1) + ")";
-		i_newFeedbackData.soundData = new SoundPlayData();
+		i_newFeedbackData.soundData = new SoundData();
 		i_newFeedbackData.vfxData = null;
 		int categoryIndex = Mathf.Clamp(selectedCategoryIndex, 0, feedbackDatas.feedbackCategories.Count - 1);
 		if (feedbackDatas.feedbackCategories.Count > 0)

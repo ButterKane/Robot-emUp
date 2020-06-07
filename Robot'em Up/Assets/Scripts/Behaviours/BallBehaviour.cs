@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MyBox;
 using UnityEngine.Analytics;
 
 public enum BallState {
@@ -12,38 +11,45 @@ public enum BallState {
 }
 public class BallBehaviour : MonoBehaviour
 {
-	[Separator("Ball variables")]
-	[Space(2)]
-	[ReadOnly] [SerializeField] private Vector3 currentDirection;
-	[ReadOnly] [SerializeField] private float currentMaxDistance;
-	[ReadOnly] [SerializeField] private float currentDistanceTravelled;
-	[ReadOnly] [SerializeField] private float currentSpeed;
-	[ReadOnly] [SerializeField] private BallState currentState;
-	[ReadOnly] [SerializeField] public BallDatas currentBallDatas;
-	[ReadOnly] [SerializeField] private int currentBounceCount;
-	[ReadOnly] [SerializeField] private PawnController currentThrower;
-	[ReadOnly] public bool canBounce;
-	[ReadOnly] [SerializeField] private bool canHitWalls;
-	[ReadOnly] [SerializeField] private List<Vector3> currentCurve;
-	[ReadOnly] [SerializeField] private Vector3 initialLookDirection;
-	[ReadOnly] [SerializeField] private List<DamageModifier> currentDamageModifiers;
-	[ReadOnly] [SerializeField] private List<SpeedCoef> currentSpeedModifiers;
-	[ReadOnly] [SerializeField] private Color currentColor;
-	[ReadOnly] [SerializeField] private bool teleguided;
-	[ReadOnly] [SerializeField] private float currentTimeFlying;
+
+    public bool isGhostBall = false;
+    public class BallInformations
+	{
+		public Vector3 direction;
+		public float maxDistance;
+		public float distanceTravelled;
+		public float moveSpeed;
+		public BallState state;
+		public BallDatas ballDatas;
+		public int bounceCount;
+		public PawnController thrower;
+		public bool canBounce;
+		public bool canHitWalls;
+		public List<Vector3> curve;
+		public Vector3 initialLookDirection;
+		public List<DamageModifier> damageModifiers;
+		public List<SpeedCoef> speedModifiers;
+		public Color color;
+		public bool isTeleguided;
+		public float timeFlying;
+	}
+
+	public static BallBehaviour instance;
+	public BallInformations ballInformations;
 
 	private Collider col;
 	private Rigidbody rb;
 	private int defaultLayer;
 	private List<IHitable> hitGameObjects;
-	private Vector3 previousPosition;
 	private Coroutine ballCoroutine;
-	public static BallBehaviour instance;
 	private GameObject ballTrail;
-	private Coroutine destroyTrailFX;
+	private Coroutine destroyTrailFX; 
 	private float outOfScreenTime;
 
-	private Vector3 currentPosition;
+	private AnimationCurve curveX;
+	private AnimationCurve curveY;
+	private AnimationCurve curveZ;
+
 	private Vector3 startPosition;
 
 	private void Awake()
@@ -52,224 +58,152 @@ public class BallBehaviour : MonoBehaviour
 		{
 			instance = this;
 		}
-
-		currentSpeedModifiers = new List<SpeedCoef>();
-		currentDamageModifiers = new List<DamageModifier>();
+		InitBallInformation();
 		rb = GetComponent<Rigidbody>();
         defaultLayer = gameObject.layer;
 		col = GetComponent<Collider>();
 		hitGameObjects = new List<IHitable>();
-		currentColor = new Color(122f/255f, 0, 122f/255f);
 		UpdateColor();
 	}
-
-	private void Update ()
+	private void FixedUpdate ()
 	{
-		if (currentState == BallState.Flying)
-		{
-			currentTimeFlying += Time.deltaTime;
-		}
 		UpdateBallPosition();
 		UpdateModifiers();
-		CheckIfOutOfScreen();
+        if (!isGhostBall)
+        {
+            CheckIfOutOfScreen();
+        }
 	}
 
-    public void CurveShoot(PassController _passController, PawnController _thrower, PawnController _target, BallDatas _passDatas, Vector3 _lookDirection) //Shoot a curve ball to reach a point
-    {
+	#region Public functions
+	public void CurveShoot ( PassController _passController, PawnController _thrower, PawnController _target, BallDatas _passDatas, Vector3 _lookDirection ) //Shoot a curve ball to reach a point
+	{
 		if (ballCoroutine != null) { StopCoroutine(ballCoroutine); }
 		startPosition = _passController.GetHandTransform().position;
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
-		currentThrower = _thrower;
-		currentSpeed = _passDatas.moveSpeed;
-		currentMaxDistance = Mathf.Infinity;
-		currentBallDatas = _passDatas;
-		currentBounceCount = 0;
-		canBounce = true;
-		canHitWalls = true;
-		currentCurve = _passController.GetCurvedPathCoordinates(startPosition, _target, _lookDirection);
-		currentTimeFlying = 0;
-		initialLookDirection = _lookDirection;
-		teleguided = false;
-
+		ballInformations.thrower = _thrower;
+		ballInformations.moveSpeed = _passDatas.moveSpeed;
+		ballInformations.maxDistance = Mathf.Infinity;
+		ballInformations.ballDatas = _passDatas;
+		ballInformations.bounceCount = 0;
+		ballInformations.canBounce = true;
+		ballInformations.canHitWalls = true;
+		ballInformations.curve = _passController.GetCurvedPathCoordinates(startPosition, _target, _lookDirection, out float d);
+		ballInformations.timeFlying = 0;
+		ballInformations.initialLookDirection = _lookDirection;
+		ballInformations.isTeleguided = false;
 		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
 		UpdateColor();
 	}
-
-
-    public void Shoot(Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas, bool _teleguided) //Shoot the ball toward a direction
+	public void Shoot ( Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas, bool _teleguided ) //Shoot the ball toward a direction
 	{
 		if (ballCoroutine != null) { StopCoroutine(ballCoroutine); }
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
 		transform.position = _startPosition;
-		currentDirection = _direction;
-		currentThrower = _thrower;
-		currentSpeed = _passDatas.moveSpeed;
-		currentBallDatas = _passDatas;
-		currentBounceCount = 0;
-		currentTimeFlying = 0;
-		currentCurve = null;
-		canBounce = true;
-		canHitWalls = true;
-		teleguided = _teleguided;
-
+		ballInformations.direction = _direction;
+		ballInformations.thrower = _thrower;
+		ballInformations.moveSpeed = _passDatas.moveSpeed;
+		ballInformations.ballDatas = _passDatas;
+		ballInformations.bounceCount = 0;
+		ballInformations.timeFlying = 0;
+		ballInformations.curve = null;
+		ballInformations.canBounce = true;
+		ballInformations.canHitWalls = true;
+		ballInformations.isTeleguided = _teleguided;
 		hitGameObjects.Clear();
 		ChangeState(BallState.Flying);
 		UpdateColor();
 	}
-
-	public void Bounce(Vector3 _newDirection, float _bounceSpeedMultiplier)
+	public void Bounce ( Vector3 _newDirection, float _bounceSpeedMultiplier )
 	{
 		CursorManager.SetBallPointerParent(transform);
-		currentCurve = null;
-		currentDistanceTravelled = 0;
-		currentBounceCount++;
-		currentDirection = _newDirection;
-		currentDirection.y = 0;
-		currentSpeed = currentSpeed * _bounceSpeedMultiplier;
-		teleguided = false;
+		ballInformations.curve = null;
+		ballInformations.distanceTravelled = 0;
+		ballInformations.bounceCount++;
+		ballInformations.direction = _newDirection;
+		ballInformations.direction.y = 0;
+		ballInformations.moveSpeed = ballInformations.moveSpeed * _bounceSpeedMultiplier;
+		ballInformations.isTeleguided = false;
 		hitGameObjects.Clear();
 	}
-
-	public void Attract(Vector3 _position, float attractionForce) //Attract the ball toward a specific point
+	public void ChangeDirection ( Vector3 _newDirection )
 	{
-		_position.y = transform.position.y; //Ball will always stay in 2D plan
-		currentDirection = Vector3.Lerp(currentDirection, _position - transform.position, attractionForce * Time.deltaTime);
-		currentSpeed = 5f;
+		ballInformations.direction = _newDirection;
 	}
-
-	public void ChangeDirection(Vector3 _newDirection)
-	{
-		currentDirection = _newDirection;
-	}
-
 	public void GoToHands ( Transform _handTransform, float _travelDuration, BallDatas _passData )
 	{
-		currentBallDatas = _passData;
-		currentCurve = null;
+		ballInformations.ballDatas = _passData;
+		ballInformations.curve = null;
 		ChangeState(BallState.Held);
 		ballCoroutine = StartCoroutine(GoToPosition(_handTransform, _travelDuration));
 		transform.SetParent(_handTransform, true);
 	}
-
-	public void CancelMovement()
+	public void CancelMovement ()
 	{
+		ballInformations.moveSpeed = 0;
 		ChangeState(BallState.Grounded);
 	}
-
-
-    public void ResetBounds()
+	public void ResetBounceCount ()
+	{
+		ballInformations.bounceCount = 0;
+	}
+	public void MultiplySpeed ( float _coef )
+	{
+		ballInformations.moveSpeed *= _coef;
+	}
+	public void ChangeMaxDistance ( int _newMaxDistance ) //Changing the distance will cause the ball to stop after travelling a certain distance
+	{
+		ballInformations.maxDistance = _newMaxDistance;
+	}
+	public void ChangeSpeed ( float _newSpeed )
+	{
+		ballInformations.moveSpeed = _newSpeed;
+	}
+	public float GetCurrentSpeed ()
+	{
+		return ballInformations.moveSpeed;
+	}
+	public float GetCurrentDistanceTravelled ()
+	{
+		return ballInformations.distanceTravelled;
+	}
+	public Vector3 GetCurrentDirection ()
+	{
+		return ballInformations.direction;
+	}
+	public BallDatas GetCurrentBallDatas ()
+	{
+		return ballInformations.ballDatas;
+	}
+	public PawnController GetCurrentThrower ()
+	{
+		return ballInformations.thrower;
+	}
+	public int GetCurrentBounceCount ()
+	{
+		return ballInformations.bounceCount;
+	}
+	public float GetTimeFlying ()
+	{
+		return ballInformations.timeFlying;
+	}
+	public int GetCurrentDamages ()
     {
-        currentBounceCount = 0;
-    }
-    
-
-    public void MultiplySpeed(float _coef)
-	{
-		currentSpeed *= _coef;
-	}
-
-	void CheckIfOutOfScreen ()
-	{
-		Vector3 viewportPos = GameManager.mainCamera.WorldToViewportPoint(transform.position);
-		if ((viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0 ) && transform.parent == null)
-		{
-			outOfScreenTime += Time.deltaTime;
-		} else
-		{
-			outOfScreenTime = 0;
-		}
-		if (currentBallDatas != null && outOfScreenTime > currentBallDatas.maxTimeOutOfScreen)
-		{
-			StartCoroutine(GoToNearestPlayer_C());
-		}
-	}
-
-	void UpdateModifiers ()
-	{
-		List<DamageModifier> i_newDamageModifierList = new List<DamageModifier>();
-		foreach (DamageModifier damageModifier in currentDamageModifiers)
-		{
-			if (damageModifier.duration <= -1) { i_newDamageModifierList.Add(damageModifier); continue; }
-			damageModifier.duration -= Time.deltaTime;
-			if (damageModifier.duration > 0)
-			{
-				i_newDamageModifierList.Add(damageModifier);
-			}
-		}
-		currentDamageModifiers = i_newDamageModifierList;
-
-		List<SpeedCoef> i_newSpeedModifierList = new List<SpeedCoef>();
-		foreach (SpeedCoef speedModifier in currentSpeedModifiers)
-		{
-			if (speedModifier.duration <= -1) { i_newSpeedModifierList.Add(speedModifier); continue; }
-			speedModifier.duration -= Time.deltaTime;
-			if (speedModifier.duration > 0)
-			{
-				i_newSpeedModifierList.Add(speedModifier);
-			}
-		}
-		currentSpeedModifiers = i_newSpeedModifierList;
-	}
-
-	void UpdateColor ()
-	{
-		if (currentBallDatas != null)
-		{
-			float i_lerpValue = (GetCurrentDamageModifier()-1) / (currentBallDatas.maxDamageModifierOnPerfectReception - 1);
-			Color i_newColor = currentBallDatas.colorOverDamage.Evaluate(i_lerpValue);
-			SetColor(i_newColor);
-		}
-	}
-
-	public void ChangeMaxDistance(int _newMaxDistance) //Changing the distance will cause the ball to stop after travelling a certain distance
-	{
-		currentMaxDistance = _newMaxDistance;
-	}
-
-	public void ChangeSpeed(float _newSpeed)
-	{
-		currentSpeed = _newSpeed;
-	}
-
-	public float GetCurrentDistanceTravelled()
-	{
-		return currentDistanceTravelled;
-	}
-
-	public Vector3 GetCurrentDirection()
-	{
-		return currentDirection;
-	}
-
-	public PawnController GetCurrentThrower()
-	{
-		return currentThrower;
-	}
-
-	public int GetCurrentBounceCount()
-	{
-		return currentBounceCount;
-	}
-
-	public float GetTimeFlying()
-	{
-		return currentTimeFlying;
-	}
-
-	public int GetCurrentDamages()
-	{
-		float i_damages = currentBallDatas.damages;
+        if (isGhostBall)
+        {
+            return (0);
+        }
+        float i_damages = ballInformations.ballDatas.damages;
 		return Mathf.RoundToInt(i_damages * GetCurrentDamageModifier());
 	}
-
-	public float GetCurrentDamageModifier()
+	public float GetCurrentDamageModifier ()
 	{
 		float i_perfectReceptionModifier = 1f;
 		float i_otherModifier = 1;
-		foreach (DamageModifier modifier in currentDamageModifiers)
+		foreach (DamageModifier modifier in ballInformations.damageModifiers)
 		{
 			if (modifier.source == DamageModifierSource.PerfectReception)
 			{
@@ -280,89 +214,82 @@ public class BallBehaviour : MonoBehaviour
 				i_otherModifier *= modifier.multiplyCoef;
 			}
 		}
-		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
+		if (ballInformations != null && ballInformations.ballDatas != null)
+		{
+			i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, ballInformations.ballDatas.maxDamageModifierOnPerfectReception);
+		}
 		return (i_perfectReceptionModifier * i_otherModifier);
 	}
-	
-	public float GetPerfectReceptionDamageModifier()
+	public float GetPerfectReceptionDamageModifier ()
 	{
 		float i_perfectReceptionModifier = 1f;
-		foreach (DamageModifier modifier in currentDamageModifiers)
+		foreach (DamageModifier modifier in ballInformations.damageModifiers)
 		{
 			if (modifier.source == DamageModifierSource.PerfectReception)
 			{
 				i_perfectReceptionModifier *= modifier.multiplyCoef;
 			}
 		}
-		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, currentBallDatas.maxDamageModifierOnPerfectReception);
+		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, ballInformations.ballDatas.maxDamageModifierOnPerfectReception);
 		return i_perfectReceptionModifier;
 	}
-
-	public float GetCurrentSpeedModifier()
+	public float GetCurrentSpeedModifier ()
 	{
 		float i_otherModifier = 1f;
 		float i_perfectReceptionModifier = 1f;
-		foreach (SpeedCoef modifier in currentSpeedModifiers)
+		foreach (SpeedCoef modifier in ballInformations.speedModifiers)
 		{
 			if (modifier.reason == SpeedMultiplierReason.PerfectReception)
 			{
 				i_perfectReceptionModifier *= modifier.speedCoef;
-			} else
+			}
+			else
 			{
 				i_otherModifier *= modifier.speedCoef;
 			}
 		}
-		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, currentBallDatas.maxSpeedMultiplierOnPerfectReception);
+		i_perfectReceptionModifier = Mathf.Clamp(i_perfectReceptionModifier, 0, ballInformations.ballDatas.maxSpeedMultiplierOnPerfectReception);
 		return i_perfectReceptionModifier * i_otherModifier;
 	}
-
-	void SetColor(Color _newColor)
+	public SpeedCoef AddNewSpeedModifier ( SpeedCoef _newModifier )
 	{
-        ParticleColorer.ReplaceParticleColor(gameObject, currentColor, _newColor);
-        currentColor = _newColor;
-	}
-
-	public SpeedCoef AddNewSpeedModifier(SpeedCoef _newModifier)
-	{
-		currentSpeedModifiers.Add(_newModifier);
+		ballInformations.speedModifiers.Add(_newModifier);
 		return _newModifier;
 	}
-
-	public void RemoveSpeedModifier(SpeedMultiplierReason _source)
+	public void RemoveSpeedModifier ( SpeedMultiplierReason _source )
 	{
 		List<SpeedCoef> i_newModifierList = new List<SpeedCoef>();
-		foreach (SpeedCoef modifier in currentSpeedModifiers)
+		foreach (SpeedCoef modifier in ballInformations.speedModifiers)
 		{
 			if (modifier.reason != _source)
 			{
 				i_newModifierList.Add(modifier);
 			}
 		}
-		currentSpeedModifiers = i_newModifierList;
+		ballInformations.speedModifiers = i_newModifierList;
 	}
-	public DamageModifier AddNewDamageModifier(DamageModifier _newModifier)
+	public DamageModifier AddNewDamageModifier ( DamageModifier _newModifier )
 	{
-		currentDamageModifiers.Add(_newModifier);
+		ballInformations.damageModifiers.Add(_newModifier);
 		UpdateColor();
 		return _newModifier;
 	}
-
-	public void RemoveDamageModifier(DamageModifierSource _source)
+	public void RemoveDamageModifier ( DamageModifierSource _source )
 	{
 		List<DamageModifier> i_newModifierList = new List<DamageModifier>();
-		foreach (DamageModifier modifier in currentDamageModifiers)
+		foreach (DamageModifier modifier in ballInformations.damageModifiers)
 		{
 			if (modifier.source != _source)
 			{
 				i_newModifierList.Add(modifier);
 			}
 		}
-		currentDamageModifiers = i_newModifierList;
+		ballInformations.damageModifiers = i_newModifierList;
 		UpdateColor();
 	}
-
-	public void ChangeState(BallState _newState)
+	public void ChangeState ( BallState _newState )
 	{
+		if (_newState == ballInformations.state) { return; }
 		switch (_newState)
 		{
 			case BallState.Grounded:
@@ -372,9 +299,12 @@ public class BallBehaviour : MonoBehaviour
 				FeedbackManager.SendFeedback("event.BallGrounded", this);
 				EnableGravity();
 				EnableCollisions();
-				rb.AddForce(currentDirection.normalized * currentSpeed * rb.mass, ForceMode.Impulse);
+				rb.AddForce(ballInformations.direction.normalized * ballInformations.moveSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
-				LockManager.UnlockAll();
+				if (ballInformations.thrower != null)
+				{
+					if (ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
+				}
 				break;
 			case BallState.Aimed:
 				DisableGravity();
@@ -382,133 +312,193 @@ public class BallBehaviour : MonoBehaviour
 				break;
 			case BallState.Flying:
 				Highlighter.DetachBallFromPlayer();
-				CursorManager.SetBallPointerParent(null);
+				if (ballInformations.thrower.isPlayer) { CursorManager.SetBallPointerParent(null); }
 				ballTrail = FeedbackManager.SendFeedback("event.BallFlying", this).GetVFX();
 				Vector3 newBallScale = ballTrail.transform.localScale;
-				newBallScale *= Mathf.Lerp(1f, currentBallDatas.maxFXSizeMultiplierOnPerfectReception, (GetPerfectReceptionDamageModifier() / currentBallDatas.maxDamageModifierOnPerfectReception));
+				newBallScale *= Mathf.Lerp(1f, ballInformations.ballDatas.maxFXSizeMultiplierOnPerfectReception, (GetPerfectReceptionDamageModifier() / ballInformations.ballDatas.maxDamageModifierOnPerfectReception));
 				ballTrail.transform.localScale = newBallScale;
 				DisableGravity();
 				EnableCollisions();
 				col.isTrigger = true;
-				currentDistanceTravelled = 0;
+				col.enabled = true;
+				ballInformations.distanceTravelled = 0;
 				break;
 			case BallState.Held:
 				if (destroyTrailFX != null) { StopCoroutine(destroyTrailFX); Destroy(ballTrail); }
 				if (ballTrail) { destroyTrailFX = StartCoroutine(DisableEmitterThenDestroyAfterDelay(ballTrail.GetComponent<ParticleSystem>(), 0.5f)); }
 				DisableGravity();
 				DisableCollisions();
-				LockManager.UnlockAll();
+				if (ballInformations.thrower != null && ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
 				break;
 		}
-		currentState = _newState;
+		ballInformations.state = _newState;
 	}
-
-	public BallState GetState()
+	public BallState GetState ()
 	{
-		return currentState;
+		return ballInformations.state;
 	}
-
-	private void UpdateBallPosition()
+	public bool HasTarget()
 	{
-		switch (currentState)
+		if (ballInformations.curve != null || ballInformations.isTeleguided)
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
+	#endregion
+
+	#region Private functions
+	private void InitBallInformation ()
+	{
+		ballInformations = new BallInformations();
+		ballInformations.speedModifiers = new List<SpeedCoef>();
+		ballInformations.damageModifiers = new List<DamageModifier>();
+		ballInformations.color = new Color(122f / 255f, 0, 122f / 255f);
+	}
+	private void CheckIfOutOfScreen ()
+	{
+		Vector3 viewportPos = GameManager.mainCamera.WorldToViewportPoint(transform.position);
+		if ((viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0) && transform.parent == null)
+		{
+			outOfScreenTime += Time.deltaTime;
+		}
+		else
+		{
+			outOfScreenTime = 0;
+		}
+		if (ballInformations.ballDatas != null && outOfScreenTime > ballInformations.ballDatas.maxTimeOutOfScreen && ballCoroutine == null)
+		{
+			ballCoroutine = StartCoroutine(GoToNearestPlayer_C());
+		}
+	}
+	private void UpdateModifiers ()
+	{
+		List<DamageModifier> i_newDamageModifierList = new List<DamageModifier>();
+		foreach (DamageModifier damageModifier in ballInformations.damageModifiers)
+		{
+			if (damageModifier.duration <= -1) { i_newDamageModifierList.Add(damageModifier); continue; }
+			damageModifier.duration -= Time.deltaTime;
+			if (damageModifier.duration > 0)
+			{
+				i_newDamageModifierList.Add(damageModifier);
+			}
+		}
+		ballInformations.damageModifiers = i_newDamageModifierList;
+
+		List<SpeedCoef> i_newSpeedModifierList = new List<SpeedCoef>();
+		foreach (SpeedCoef speedModifier in ballInformations.speedModifiers)
+		{
+			if (speedModifier.duration <= -1) { i_newSpeedModifierList.Add(speedModifier); continue; }
+			speedModifier.duration -= Time.deltaTime;
+			if (speedModifier.duration > 0)
+			{
+				i_newSpeedModifierList.Add(speedModifier);
+			}
+		}
+		ballInformations.speedModifiers = i_newSpeedModifierList;
+	}
+	private void UpdateColor ()
+	{
+		if (ballInformations.ballDatas != null)
+		{
+			float i_lerpValue = (GetCurrentDamageModifier() - 1) / (ballInformations.ballDatas.maxDamageModifierOnPerfectReception - 1);
+			Color i_newColor = ballInformations.ballDatas.colorOverDamage.Evaluate(i_lerpValue);
+			SetColor(i_newColor);
+		}
+	}
+	private void SetColor ( Color _newColor )
+	{
+		ParticleColorer.ReplaceParticleColor(gameObject, ballInformations.color, _newColor);
+		ballInformations.color = _newColor;
+	}
+	private void UpdateBallPosition ()
+	{
+		switch (ballInformations.state)
 		{
 			case BallState.Flying:
-				if (currentCurve != null)
-				{
-					AnimationCurve i_curveX;
-					AnimationCurve i_curveY;
-					AnimationCurve i_curveZ;
-					float i_curveLength;
-					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
-					if (i_currentPassController == null) { return; }
-					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget(), initialLookDirection);
-					ConvertCoordinatesToCurve(i_pathCoordinates, out i_curveX, out i_curveY, out i_curveZ, out i_curveLength);
-					currentMaxDistance = i_curveLength;
-					float i_positionOnCurve = currentDistanceTravelled / currentMaxDistance;
-					LockManager.LockTargetsInPath(i_pathCoordinates, i_positionOnCurve);
-					if (i_positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
-					Vector3 i_nextPosition = new Vector3(i_curveX.Evaluate(i_positionOnCurve + 0.1f), i_curveY.Evaluate(i_positionOnCurve + 0.1f), i_curveZ.Evaluate(i_positionOnCurve + 0.1f));
-					currentDirection = i_nextPosition - transform.position;
-				}
-				if (teleguided)
+				ballInformations.timeFlying += Time.deltaTime;
+				if (ballInformations.isTeleguided)
 				{
 					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
 					if (i_currentPassController != null)
 					{
-						currentDirection = (i_currentPassController.GetTarget().GetCenterPosition()-transform.position).normalized;
+						ballInformations.direction = (i_currentPassController.GetTarget().GetCenterPosition() - transform.position).normalized;
 					}
 				}
-
-				if (currentSpeed <= 0)
+				else if (ballInformations.curve != null)
 				{
-					currentCurve = null;
+					PassController i_currentPassController = GetCurrentThrower().GetComponent<PassController>();
+					List<Vector3> i_pathCoordinates = i_currentPassController.GetCurvedPathCoordinates(startPosition, i_currentPassController.GetTarget(), ballInformations.initialLookDirection, out float d);
+					float i_curveLength;
+					if (i_currentPassController == null) { return; }
+					ConvertCoordinatesToCurve(i_pathCoordinates, out curveX, out curveY, out curveZ, out i_curveLength);
+					ballInformations.maxDistance = i_curveLength;
+					float i_positionOnCurve = ballInformations.distanceTravelled / ballInformations.maxDistance;
+					if (ballInformations.thrower.isPlayer)
+					{
+						LockManager.LockTargetsInPath(i_pathCoordinates, i_positionOnCurve);
+						if (i_positionOnCurve >= 0.95f) { ChangeState(BallState.Grounded); LockManager.UnlockAll(); }
+					}
+					Vector3 i_nextPosition = new Vector3(curveX.Evaluate(i_positionOnCurve + 0.1f), curveY.Evaluate(i_positionOnCurve + 0.1f), curveZ.Evaluate(i_positionOnCurve + 0.1f));
+					ballInformations.direction = i_nextPosition - transform.position;
+				}
+
+				if (ballInformations.moveSpeed <= 0)
+				{
+					ballInformations.curve = null;
 					ChangeState(BallState.Grounded);
 				}
 				else
 				{
 					//Ball is going to it's destination, checking for collisions
-					if (previousPosition == Vector3.zero) { previousPosition = transform.position; }
-					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, currentDirection, currentSpeed * Time.deltaTime);
+					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, ballInformations.direction, ballInformations.moveSpeed * Time.deltaTime);
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
-                        EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
-                        if (i_selfRef != null)
-                        {
+						/*EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
+						if (i_selfRef != null)
+						{
 							if (i_selfRef.shield.transform.InverseTransformPoint(transform.position).z > 0.0)
-                            {
-                                FeedbackManager.SendFeedback("event.ShieldHitByBall", this);
-								Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_selfRef.shield.transform.forward);
+							{
+								FeedbackManager.SendFeedback("event.ShieldHitByBall", this);
+								Vector3 i_newDirection = Vector3.Reflect(ballInformations.direction, i_selfRef.shield.transform.forward);
 								Bounce(i_newDirection, 1);
-                            }
-                        }
+							}
+						}*/
 
-                        IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
-						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
+						IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
+						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound) && !isGhostBall)
 						{
 							hitGameObjects.Add(i_potentialHitableObjectFound);
-							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
+							i_potentialHitableObjectFound.OnHit(this, ballInformations.direction * ballInformations.moveSpeed, ballInformations.thrower, GetCurrentDamages(), DamageSource.Ball);
 							SlowTimeScale();
 						}
 
 						if (raycast.collider.isTrigger || raycast.collider.gameObject.layer != LayerMask.NameToLayer("Environment")) { break; }
-						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, currentDirection, raycast.normal);
-						if (currentBounceCount < currentBallDatas.maxBounces && canBounce && canHitWalls)
+						FeedbackManager.SendFeedback("event.WallHitByBall", raycast.transform, raycast.point, ballInformations.direction, raycast.normal);
+						if (!ballInformations.canHitWalls) { return; }
+						if (ballInformations.bounceCount < ballInformations.ballDatas.maxBounces && ballInformations.canBounce) //Ball can bounce: Bounce
 						{
 							Analytics.CustomEvent("BallBounce", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 							Vector3 i_hitNormal = raycast.normal;
 							i_hitNormal.y = 0;
-							Vector3 i_newDirection = Vector3.Reflect(currentDirection, i_hitNormal);
-							i_newDirection.y = -currentDirection.y;              
-							Bounce(i_newDirection, currentBallDatas.speedMultiplierOnBounce);
+							Vector3 i_newDirection = Vector3.Reflect(ballInformations.direction, i_hitNormal);
+							i_newDirection.y = -ballInformations.direction.y;
+							Bounce(i_newDirection, ballInformations.ballDatas.speedMultiplierOnBounce);
 							return;
 						}
-						else if (canHitWalls)
+						else //Ball can't bounce: Stop
 						{
 							ChangeState(BallState.Grounded);
 							MomentumManager.DecreaseMomentum(MomentumManager.datas.momentumLossWhenBallHitTheGround);
 							return;
 						}
 					}
-					/*
-					RaycastHit[] i_previousColliders = Physics.RaycastAll(transform.position, -currentDirection, currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * 1.2f);
-					foreach (RaycastHit raycast in i_previousColliders)
-					{
-						IHitable i_potentialHitableObjectFound = raycast.transform.GetComponent<IHitable>();
-						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound))
-						{
-							hitGameObjects.Add(i_potentialHitableObjectFound);
-							i_potentialHitableObjectFound.OnHit(this, currentDirection * currentSpeed, currentThrower, GetCurrentDamages(), DamageSource.Ball);
-							if (i_potentialHitableObjectFound.GetType() != typeof(PlayerController))
-							{
-								SlowTimeScale();
-							}
-						}
-					}
-					*/
 				}
-				transform.position += currentDirection.normalized * currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
-				currentDistanceTravelled += currentSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
-				if (currentCurve == null && !teleguided && currentDistanceTravelled >= currentMaxDistance)
+				transform.position += ballInformations.direction.normalized * ballInformations.moveSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
+				ballInformations.distanceTravelled += ballInformations.moveSpeed * Time.deltaTime * MomentumManager.GetValue(MomentumManager.datas.ballSpeedMultiplier) * GetCurrentSpeedModifier();
+				if (ballInformations.curve == null && !ballInformations.isTeleguided && ballInformations.distanceTravelled >= ballInformations.maxDistance)
 				{
 					ChangeState(BallState.Grounded);
 				}
@@ -519,12 +509,10 @@ public class BallBehaviour : MonoBehaviour
 	{
 		rb.useGravity = true;
 	}
-
 	private void DisableGravity ()
 	{
 		rb.useGravity = false;
 	}
-
 	private void EnableCollisions ()
 	{
 		gameObject.layer = defaultLayer;
@@ -537,25 +525,11 @@ public class BallBehaviour : MonoBehaviour
 		col.isTrigger = true;
 		rb.isKinematic = true;
 	}
-
-	IEnumerator GoToPosition(Transform _transform, float _travelDuration)
+	private void SlowTimeScale ()
 	{
-		for (float i = 0; i < _travelDuration; i+=Time.deltaTime)
-		{
-			transform.position = Vector3.Lerp(transform.position, _transform.position, i / _travelDuration);
-			yield return new WaitForEndOfFrame();
-		}
-		transform.position = _transform.position;
-		transform.localScale = Vector3.one;
-		ballCoroutine = null;
+		StartCoroutine(SlowTimeScale_C());
 	}
-
-	public void PrintDecal(RaycastHit _ray, Vector3 _direction )
-	{
-		Debug.Log("Spawning decal");
-	}
-
-	public void ConvertCoordinatesToCurve(List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength)
+	private void ConvertCoordinatesToCurve ( List<Vector3> _coordinates, out AnimationCurve _curveX, out AnimationCurve _curveY, out AnimationCurve _curveZ, out float _curveLength )
 	{
 		AnimationCurve i_curveX = new AnimationCurve();
 		AnimationCurve i_curveY = new AnimationCurve();
@@ -590,7 +564,21 @@ public class BallBehaviour : MonoBehaviour
 		_curveLength = i_curveLength;
 	}
 
-	IEnumerator DisableEmitterThenDestroyAfterDelay ( ParticleSystem _ps, float _delay)
+	#endregion
+
+	#region Coroutines
+	IEnumerator GoToPosition ( Transform _transform, float _travelDuration )
+	{
+		for (float i = 0; i < _travelDuration; i += Time.deltaTime)
+		{
+			transform.position = Vector3.Lerp(transform.position, _transform.position, i / _travelDuration);
+			yield return null;
+		}
+		transform.position = _transform.position;
+		transform.localScale = Vector3.one;
+		ballCoroutine = null;
+	}
+	IEnumerator DisableEmitterThenDestroyAfterDelay ( ParticleSystem _ps, float _delay )
 	{
 		var emission = _ps.emission;
 		emission.enabled = false;
@@ -600,8 +588,7 @@ public class BallBehaviour : MonoBehaviour
 			Destroy(_ps.gameObject);
 		}
 	}
-
-	IEnumerator GoToNearestPlayer_C()
+	IEnumerator GoToNearestPlayer_C ()
 	{
 		ChangeState(BallState.Aimed);
 		float minDist = Vector3.Distance(transform.position, GameManager.alivePlayers[0].transform.position);
@@ -616,25 +603,19 @@ public class BallBehaviour : MonoBehaviour
 			}
 		}
 		Vector3 startPosition = transform.position;
-		for (float i = 0; i < minDist; i+= Time.deltaTime * currentBallDatas.comingBackToScreenSpeed)
+		for (float i = 0; i < minDist; i += Time.deltaTime * ballInformations.ballDatas.comingBackToScreenSpeed)
 		{
 			transform.position = Vector3.Lerp(startPosition, nearestPlayer.transform.position, i / minDist);
 			yield return null;
 		}
-		//ChangeState(BallState.Held);
+		ballCoroutine = null;
 		nearestPlayer.passController.Receive(this);
-		//GoToHands(nearestPlayer.passController.GetHandTransform(), 0.1f, currentBallDatas);
-		//ChangeState(BallState.Grounded);
 	}
-
-	void SlowTimeScale()
+	IEnumerator SlowTimeScale_C ()
 	{
-		StartCoroutine(SlowTimeScale_C());
-	}
-	IEnumerator SlowTimeScale_C()
-	{
-		Time.timeScale = currentBallDatas.timescaleOnHit;
-		yield return new WaitForSeconds(currentBallDatas.timescaleDurationOnHit);
-		Time.timeScale = 1f;
-	}
+		Time.timeScale = Mathf.Min(ballInformations.ballDatas.timescaleOnHit, PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100);
+		yield return new WaitForSeconds(ballInformations.ballDatas.timescaleDurationOnHit);
+		Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100;
+    }
+	#endregion
 }

@@ -82,6 +82,17 @@ public class BossLeg : MonoBehaviour, IHitable
 		protectionPlateInitialRotation = protectionPlateVisuals.transform.localRotation;
 	}
 
+	private void Start ()
+	{
+		healthBar = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossLegHealthBar")).transform;
+		healthBar.transform.SetParent(GameManager.mainCanvas.transform);
+		healthBarFill = healthBar.transform.Find("Fill").GetComponent<Image>();
+		healthBarFill.fillAmount = 1;
+		maxHP = bossDatas.weakPointSettings.legMaxHP;
+		currentHP = maxHP;
+		healthBar.gameObject.SetActive(false);
+	}
+
 	private void Update ()
 	{
 		if (canonEnabled && canonVisuals != null && !destroyed)
@@ -112,31 +123,32 @@ public class BossLeg : MonoBehaviour, IHitable
 	public void EnableCanon ()
 	{
 		StartCoroutine(DeployCanon_C());
+		if (healthBar != null)
+		{
+			healthBar.gameObject.SetActive(true);
+			weakPointRedDot.gameObject.SetActive(true);
+		}
+		destroyable = true;
 	}
 
 	public void DisableCanon()
 	{
 		StartCoroutine(RetractCanon_C());
-	}
-
-	public void SetDestructible()
-	{
-		currentHP = maxHP;
-		weakPointRedDot.gameObject.SetActive(true);
-
-		//Generates HP bar
-		healthBar = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossLegHealthBar")).transform;
-		healthBar.transform.SetParent(GameManager.mainCanvas.transform);
-		healthBarFill = healthBar.transform.Find("Fill").GetComponent<Image>();
-		healthBarFill.fillAmount = 1;
-
-		destroyable = true;
+		//weakPointRedDot.gameObject.SetActive(false);
+		if (healthBar != null)
+		{
+			//healthBar.gameObject.SetActive(false);
+		}
+		//destroyable = false;
 	}
 
 	private void UpdateHealthBar()
 	{
-		healthBar.transform.position = GameManager.mainCamera.WorldToScreenPoint(transform.position) + new Vector3(0, healthBarHeight, 0);
-		healthBarFill.fillAmount = currentHP / maxHP;
+		if (healthBar != null)
+		{
+			healthBar.transform.position = GameManager.mainCamera.WorldToScreenPoint(transform.position) + new Vector3(0, healthBarHeight, 0);
+			healthBarFill.fillAmount = currentHP / maxHP;
+		}
 	}
 
 	private void DestroyHealthBar()
@@ -167,10 +179,17 @@ public class BossLeg : MonoBehaviour, IHitable
 		canonVisuals.gameObject.SetActive(true);
 		Destroy(protectionPlateVisuals.GetComponent<Rigidbody>());
 		protectionPlateVisuals.gameObject.SetActive(true);
-		protectionPlateVisuals.GetComponent<MeshCollider>().isTrigger = true;
+		//protectionPlateVisuals.GetComponent<MeshCollider>().isTrigger = true;
 		protectionPlateVisuals.transform.SetParent(protectionPlateInitialParent);
 		protectionPlateVisuals.transform.localPosition = protectionPlateInitialPosition;
 		protectionPlateVisuals.transform.localRotation = protectionPlateInitialRotation;
+		healthBar = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossLegHealthBar")).transform;
+		healthBar.transform.SetParent(GameManager.mainCanvas.transform);
+		healthBarFill = healthBar.transform.Find("Fill").GetComponent<Image>();
+		healthBarFill.fillAmount = 1;
+		maxHP = bossDatas.weakPointSettings.legMaxHP;
+		currentHP = maxHP;
+		healthBar.gameObject.SetActive(false);
 	}
 
 	public void RemoveExplosionFX()
@@ -227,7 +246,7 @@ public class BossLeg : MonoBehaviour, IHitable
 	{
 		yield return new WaitForSeconds(0.5f);
 		Rigidbody ppvrb = protectionPlateVisuals.gameObject.AddComponent<Rigidbody>();
-		protectionPlateVisuals.GetComponent<MeshCollider>().isTrigger = false;
+		//protectionPlateVisuals.GetComponent<MeshCollider>().isTrigger = false;
 		ppvrb.mass = 50;
 		ppvrb.transform.SetParent(null);
 		ppvrb.AddExplosionForce(1000, transform.position, 10);

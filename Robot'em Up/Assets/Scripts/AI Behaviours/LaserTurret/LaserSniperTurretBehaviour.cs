@@ -31,82 +31,22 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     public AnimationCurve reducingOfLaserWidth;
 
     private IEnumerator laserShootingCoroutine;
-    private IEnumerator redDotLoadingCoroutine;
     private GameObject FXChargingParticlesInstance;
+    private ParticleSystem[] chargingPartSystList;
     private GameObject FXChargingMainLaserInstance;
-
-    public GameObject redDotPrefab;
-
+    private ParticleSystem[] chargingMainSystList;
+    private LaserSniper spawnedLaserScript;
+    private MeshRenderer laserRenderer;
+    private float normalLaserWidth;
 
     protected override void Start()
     {
         base.Start();
         eventOnDeath = "event.TurretLaserDeath";
-    }
-
-    new public void Shoot()
-    {
-        if (laserShootingCoroutine == null)
-        {
-            laserShootingCoroutine = ShootingLaser_C();
-            StartCoroutine(laserShootingCoroutine);
-        }
-    }
-
-
-    public IEnumerator ShootingLaser_C()
-    {
-        LaserSniper i_instance = null;
-        MeshRenderer i_laserRenderer = null;
-        if (spawnedBullet == null)
-        {
-            Vector3 i_spawnPosition;
-            i_spawnPosition = bulletSpawn.position;
-            spawnedBullet = Instantiate(bulletPrefab, i_spawnPosition, Quaternion.LookRotation(modelPivot.forward), modelPivot);
-            i_instance = spawnedBullet.GetComponent<LaserSniper>();
-            i_instance.enemyScript = this;
-            i_instance.target = focusedPawnController.transform;
-            i_instance.spawnParent = transform;
-            shootingLaserTimeProgression = shootingLaserMaxTime;
-            timeToTriggerLaserReduction = shootingLaserMaxTime - (whenToTriggerLaserReduction * shootingLaserMaxTime);
-
-        }
-
-        float normalLaserWidth = i_instance.laserWidth;
-
-        while (shootingLaserTimeProgression > 0)
-        {
-            //Debug.Log("shoot laser coroutine progression: "+shootingLaserTimeProgression+" / " + timeToTriggerLaserReduction);
-            if (shootingLaserTimeProgression < timeToTriggerLaserReduction)
-            {
-                float reducingLaserFactor = reducingOfLaserWidth.Evaluate((timeToTriggerLaserReduction - shootingLaserTimeProgression) / (timeToTriggerLaserReduction));
-                if (i_instance != null)
-                {
-                    i_instance.isLaserActive = false;
-                    i_laserRenderer = i_instance.laserRenderer;
-                }
-                //i_laserRenderer.material.color = new Color(i_laserRenderer.material.color.r, i_laserRenderer.material.color.g, i_laserRenderer.material.color.b, i_laserRenderer.material.color.a * reducingLaserFactor);
-                
-                i_instance.laserWidth = normalLaserWidth * reducingLaserFactor;
-            }
-            shootingLaserTimeProgression -= Time.deltaTime;
-            yield return null;
-        }
-
-        if (spawnedBullet != null)
-        {
-            Destroy(spawnedBullet);
-        }
-    }
-
-    public override void Die()
-    {
-        if (Random.Range(0f, 1f) <= coreDropChances)
-        {
-            DropCore();
-        }
-
-        Destroy(gameObject);
+        CreateChargingFxs();
+        isBumpable = false;
+        CreateProjectile();
+        ChangingTurretState(TurretState.Hidden);
     }
 
     protected override void Update()
@@ -115,36 +55,18 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         UpdateAimingRedDotState();
     }
 
-    public override void ExitTurretState()
+    #region Change Turret State
+    protected override void EnterTurretState()
     {
-        switch (turretState)
-        {
-            case TurretState.Hiding:
-                break;
-            case TurretState.GettingOutOfGround:
-                animator.ResetTrigger("GettingOutOfGroundTrigger");
-                break;
-            case TurretState.Hidden:
-                break;
-            case TurretState.Dying:
-                break;
-            case TurretState.Attacking:
-                break;
-            case TurretState.Idle:
-                break;
-        }
-    }
-
-    public override void EnterTurretState()
-    {
-        //print(State);
         switch (turretState)
         {
             case TurretState.Hiding:
                 animator.SetTrigger("HidingTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("HidingTrigger");}
                 break;
             case TurretState.GettingOutOfGround:
                 animator.SetTrigger("GettingOutOfGroundTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("GettingOutOfGroundTrigger");}
                 ChangingTurretAttackState(TurretAttackState.NotAttacking);
                 break;
             case TurretState.Hidden:
@@ -161,32 +83,53 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void EnterTurretAttackState()
+    protected override void ExitTurretState()
+    {
+        switch (turretState)
+        {
+            case TurretState.Hiding:
+                break;
+            case TurretState.GettingOutOfGround:
+                animator.ResetTrigger("DeployTrigger");
+                break;
+            case TurretState.Hidden:
+                animator.SetTrigger("DeployTrigger");
+                if (baseAnimator != null) { baseAnimator.SetTrigger("DeployTrigger"); }
+                break;
+            case TurretState.Dying:
+                break;
+            case TurretState.Attacking:
+                break;
+            case TurretState.Idle:
+                break;
+        }
+    }
+    #endregion
+
+    #region Change Turret Attack State
+    protected override void EnterTurretAttackState()
     {
         switch (attackState)
         {
             case TurretAttackState.Anticipation:
                 //VARIABLES GAMEPLAY------------------
                 animator.SetTrigger("AnticipationTrigger");
-                anticipationTime = maxAnticipationTime;
+                currentAnticipationTime = attackValues.maxAnticipationTime;
                 restTime = maxRestTime + Random.Range(-randomRangeRestTime, randomRangeRestTime);
 
                 //VARIABLES FXs--------------------------------------
-                if (FXChargingParticlesInstance) { Destroy(FXChargingParticlesInstance); }
-                if (FXChargingMainLaserInstance) { Destroy(FXChargingMainLaserInstance); }
-
-                FXChargingParticlesInstance = Instantiate(FXChargingParticlesPrefab, bulletSpawn.position, Quaternion.identity, modelPivot);
-                FXChargingMainLaserInstance = Instantiate(FXChargingMainLaserPrefab, bulletSpawn.position, Quaternion.identity, modelPivot);   // has a 0.1sec start delay to make it look like the charging particles created it
+                ChangeAimingRedDotState(AimingRedDotState.Following);
+                if (FXChargingParticlesInstance & FXChargingMainLaserInstance) { PlayChargingFxs(); } // Play the Charging Fxs
 
                 aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 1);
                 aimingAtPlayerFXRenderer.material.SetFloat("_EmissiveMultiplier", 2);
                 aimingAtPlayerFXRenderer.material.SetColor("_EmissiveColor", Color.red);
                 aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", startAimingFXCircleThickness);
 
-                redDotLoadingCoroutine = null;
                 laserShootingCoroutine = null;
                 break;
             case TurretAttackState.Attack:
+
                 animator.SetTrigger("StartLaserTrigger");
                 attackDuration = shootingLaserMaxTime;
                 Shoot();
@@ -201,7 +144,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void ExitTurretAttackState()
+    protected override void ExitTurretAttackState()
     {
         switch (attackState)
         {
@@ -209,8 +152,7 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 //ADAPT FXs----------------------------------
                 aimingAtPlayerFXTransform.gameObject.SetActive(false);
 
-                if (FXChargingParticlesInstance) { Destroy(FXChargingParticlesInstance); }
-                if (FXChargingMainLaserInstance) { Destroy(FXChargingMainLaserInstance); }
+                if (FXChargingParticlesInstance & FXChargingMainLaserInstance) { StopChargingFxs(); }
 
                 ChangeAimingRedDotState(AimingRedDotState.NotVisible);
                 break;
@@ -225,49 +167,31 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         }
     }
 
-    public override void AttackingUpdateState()
+    protected override void AttackingUpdateState()
     {
-        bool i_aimAtPlayer = false;
-        
         //Adapt aimCube Scale and Position
-        RaycastHit hit = default;
-        RaycastHit[] hits = Physics.RaycastAll(aimingRedDotTransform.position, aimingRedDotTransform.forward, 500);
-        System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
-        for (int i = 0; i < hits.Length; i++)
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, modelPivot.forward, out hit, 50, layersToCheckToScale))
         {
-            if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Player"))
-            {
-                if (hits[i].collider.tag != "Player")
-                {
-                    continue;
-                }
-                else
-                {
-                    i_aimAtPlayer = true;
-                    hit = hits[i];
-                    aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
-                    break;
-                }
-            }
-            if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
-            {
-                hit = hits[i];
-                aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
-                break;
-            }
-            hit = hits[i];
-            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(modelPivot.position, hit.point));
+        }
+        else
+        {
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, 50);
         }
 
         switch (attackState)
         {
             //-------------------------------------------------------
             case TurretAttackState.Anticipation:
-                // UPDATE FXS -------------------------------
+                // Update Red Dot -------------------------
+                RaycastHit i_hit;
+                bool i_isAimingAtPLayer;
+                RedDotOfAnticipation(out i_hit, out i_isAimingAtPLayer);
 
-                // Circle on player
+                // Circle on player -----------------------
                 aimingAtPlayerFXTransform.gameObject.SetActive(true);
-                if (i_aimAtPlayer)
+                if (i_isAimingAtPLayer)
                 {
                     aimingAtPlayerFXTransform.position = focusedPawnController.transform.position + Vector3.up * 0.1f;
                     aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(Vector3.up);
@@ -275,18 +199,18 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 }
                 else
                 {
-                    aimingAtPlayerFXTransform.position = hit.point + hit.normal * 0.2f;
-                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(hit.normal);
+                    aimingAtPlayerFXTransform.position = i_hit.point + i_hit.normal * 0.2f;
+                    aimingAtPlayerFXTransform.rotation = Quaternion.LookRotation(i_hit.normal);
                     aimingAtPlayerFXTransform.localScale = aimingAtPlayerFXScaleOnWall;
                 }
 
-                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (anticipationTime / maxAnticipationTime)));
-                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (anticipationTime / maxAnticipationTime));
+                aimingAtPlayerFXRenderer.material.SetFloat("_CircleThickness", Mathf.Lerp(startAimingFXCircleThickness, 1, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime)));
+                aimingAtPlayerFXTransform.localScale *= Mathf.Lerp(1, endAimingFXScaleMultiplier, 1 - (currentAnticipationTime / attackValues.maxAnticipationTime));
 
                 // Charging energy ball in front of turret
-                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(maxAnticipationTime / anticipationTime + 0.01f, 1, 6);
+                FXChargingMainLaserInstance.transform.localScale = Vector3.one * Mathf.Clamp(attackValues.maxAnticipationTime / currentAnticipationTime + 0.01f, 1, 6);
 
-                if (anticipationTime < maxAnticipationTime * 0.2)
+                if (currentAnticipationTime < attackValues.maxAnticipationTime * 0.2)
                 {
                     ParticleSystem[] i_systems = FXChargingParticlesInstance.GetComponentsInChildren<ParticleSystem>();
                     foreach (var system in i_systems)
@@ -302,9 +226,9 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 }
 
                 //TRANSITION TO OTHER STATE
-                anticipationTime -= Time.deltaTime;
+                currentAnticipationTime -= Time.deltaTime;
 
-                if (anticipationTime <= 0)
+                if (currentAnticipationTime <= 0)
                 {
                     ChangingTurretAttackState(TurretAttackState.Attack);
                 }
@@ -344,85 +268,86 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 break;
         }
     }
+    #endregion
 
-    public override void ResetValuesAtEndOfAttack() 
+    #region Public methods
+    new public void Shoot()
     {
-        aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
-        animator.ResetTrigger("StartLaserTrigger");
-        animator.ResetTrigger("AnticipationTrigger");
-        animator.ResetTrigger("FromRestToIdleTrigger");
-    }
-
-    public override void AbortAttack()
-    {
-        ChangingTurretAttackState(TurretAttackState.Rest);
-    }
-
-    IEnumerator UpdateAnticipationRedDot_C() // WIP, NOT FINISHED, MUST BE FINISHED
-    {
-        List<GameObject> i_redDotsLoaders = new List<GameObject>();
-        List<int> i_indexesToRemove = new List<int>();
-        float i_anticipationProgression = maxAnticipationTime;
-        float i_finalRedDotLength = aimingRedDotTransform.localScale.z;
-        Vector3 loadingRedDotGrowth = new Vector3(0.01f, 0.01f, 0);
-        float i_timeBetweenLoaderSpawnings = 0.3f;
-        float i_loaderSpawnCooldown = 0;
-
-
-        while (i_anticipationProgression > 0)
+        if (laserShootingCoroutine == null)
         {
-            if (i_anticipationProgression > maxAnticipationTime * 0.6f)  // From start to 40% of completion
+            laserShootingCoroutine = ShootingLaser_C();
+            StartCoroutine(laserShootingCoroutine);
+        }
+    }
+    #endregion
+
+    #region Private and protected methods
+    protected void RedDotOfAnticipation(out RaycastHit outHit, out bool outAimingAtPlayer)
+    {
+        bool i_aimAtPlayer = false;
+        //Adapt aimCube Scale and Position
+        RaycastHit hit = default;
+        RaycastHit[] hits = Physics.RaycastAll(aimingRedDotTransform.position, aimingRedDotTransform.forward, 500);
+        System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
-                //Spawn redDot loader periodically
-                if (i_loaderSpawnCooldown <= 0)
+                if (hits[i].collider.tag != "Player")
                 {
-                    GameObject i_newRedDot = Instantiate(redDotPrefab, aimingRedDotTransform);
-                    i_newRedDot.transform.LookAt(aimingRedDotTransform.transform.position + Vector3.up);
-                    i_newRedDot.transform.localScale = new Vector3(i_newRedDot.transform.localScale.x, i_newRedDot.transform.localScale.y, i_finalRedDotLength);
-                    i_redDotsLoaders.Add(i_newRedDot);
-                    i_loaderSpawnCooldown = i_timeBetweenLoaderSpawnings;
+                    continue;
                 }
                 else
                 {
-                    i_loaderSpawnCooldown -= Time.deltaTime;
+                    i_aimAtPlayer = true;
+                    hit = hits[i];
+                    aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
+                    break;
                 }
             }
-
-            if (i_anticipationProgression > maxAnticipationTime * 0.2f) // From start to 80% of completion
+            if (hits[i].collider.gameObject.layer == LayerMask.NameToLayer("Environment"))
             {
-                if (i_redDotsLoaders.Count > 0)
-                {
-                    for (int i = 0; i < i_redDotsLoaders.Count-1; i++)
-                    {
-                        Quaternion wantedRotation = Quaternion.LookRotation(aimingRedDotTransform.position + aimingRedDotTransform.forward);
-                        wantedRotation.eulerAngles = new Vector3(0, wantedRotation.eulerAngles.y, 0);
-                        i_redDotsLoaders[i].transform.rotation = Quaternion.Lerp(i_redDotsLoaders[i].transform.rotation, wantedRotation, i_anticipationProgression);
-
-                        if (Vector3.Dot(i_redDotsLoaders[i].transform.forward, aimingRedDotTransform.forward) <= 1 && Vector3.Dot(i_redDotsLoaders[i].transform.forward, aimingRedDotTransform.forward) > 0.99)
-                        {
-                            i_indexesToRemove.Add(i);
-                            aimingRedDotTransform.localScale += loadingRedDotGrowth;
-                        }
-                    }
-                }
+                hit = hits[i];
+                aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
+                break;
             }
-            else
-            {
-                // Reduce redDot size, to "go back" to turret before firing
-                aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Mathf.Lerp(i_finalRedDotLength, 0, i_anticipationProgression / maxAnticipationTime * 0.2f));
-            }
+            hit = hits[i];
+            aimingRedDotTransform.localScale = new Vector3(aimingRedDotTransform.localScale.x, aimingRedDotTransform.localScale.y, Vector3.Distance(aimingRedDotTransform.position, hit.point));
+        }
 
-            // clean the useless redDotsLoaders
-            foreach (var index in i_indexesToRemove)
-            {
-                Destroy(i_redDotsLoaders[index]);
-                i_redDotsLoaders.RemoveAt(index);
-            }
-            i_indexesToRemove.Clear();
+        outAimingAtPlayer = i_aimAtPlayer;
+        outHit = hit;
+    }
 
+    private void CreateChargingFxs()
+    {
+        FXChargingParticlesInstance = Instantiate(FXChargingParticlesPrefab, bulletSpawn.position, Quaternion.identity, modelPivot);
+        FXChargingMainLaserInstance = Instantiate(FXChargingMainLaserPrefab, bulletSpawn.position, Quaternion.identity, modelPivot);   // has a 0.1sec start delay to make it look like the charging particles created it
+        chargingPartSystList = FXChargingParticlesInstance.GetComponentsInChildren<ParticleSystem>();
+        chargingMainSystList = FXChargingMainLaserInstance.GetComponentsInChildren<ParticleSystem>();
+    }
 
-            i_anticipationProgression -= Time.deltaTime;
-            yield return null;
+    private void PlayChargingFxs()
+    {
+        foreach (ParticleSystem PS in chargingPartSystList)
+        {
+            PS.Play();
+        }
+        foreach (ParticleSystem PS in chargingMainSystList)
+        {
+            PS.Play();
+        }
+    }
+
+    private void StopChargingFxs()
+    {
+        foreach (ParticleSystem PS in chargingPartSystList)
+        {
+            PS.Stop();
+        }
+        foreach (ParticleSystem PS in chargingMainSystList)
+        {
+            PS.Stop();
         }
     }
 
@@ -435,7 +360,6 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
                 float i_randomFloat = Random.Range(0f, 1f);
                 if (i_randomFloat > 0.5f)
                 {
-
                     aimingRedDotTransform.localScale = new Vector3(minMaxFollowingAimingRedDotScale.x, minMaxFollowingAimingRedDotScale.x, aimingRedDotTransform.localScale.z);
                 }
                 else
@@ -453,14 +377,75 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
     void StopLaser()
     {
         shootingLaserTimeProgression = timeToTriggerLaserReduction;
-        //if (laserShootingCoroutine != null)
-        //{
-        //    StopCoroutine(laserShootingCoroutine);
-        //    laserShootingCoroutine = null;
-        //}
-        //if (spawnedBullet != null)
-        //{
-        //    Destroy(spawnedBullet);
-        //}
     }
+    #endregion
+
+    #region Overridden methods
+    public override void ResetValuesAtEndOfAttack()
+    {
+        spawnedLaserScript.laserWidth = normalLaserWidth;
+        aimingAtPlayerFXRenderer.material.SetFloat("_AddToCompleteCircle", 0);
+        animator.ResetTrigger("StartLaserTrigger");
+        animator.ResetTrigger("AnticipationTrigger");
+        animator.ResetTrigger("FromRestToIdleTrigger");
+    }
+
+    protected override void AbortAttack()
+    {
+        ChangingTurretAttackState(TurretAttackState.Rest);
+    }
+
+    protected override void CreateProjectile()
+    {
+        if (spawnedBullet != null)
+        {
+            Destroy(spawnedBullet);
+            spawnedBullet = null;
+        }
+        spawnedBullet = Instantiate(bulletPrefab, transform.position, Quaternion.LookRotation(modelPivot.forward), modelPivot);
+        spawnedLaserScript = spawnedBullet.GetComponent<LaserSniper>();
+        spawnedLaserScript.enemyScript = this;
+        spawnedLaserScript.spawnParent = transform;
+        laserRenderer = spawnedLaserScript.laserRenderer;
+        normalLaserWidth = spawnedLaserScript.laserWidth;
+        spawnedBullet.gameObject.SetActive(false);
+    }
+    #endregion
+
+    #region  Coroutines
+    private IEnumerator ShootingLaser_C()
+    {
+        spawnedLaserScript.isLaserActive = true;
+
+        spawnedBullet.transform.position = bulletSpawn.position;
+        spawnedBullet.SetActive(true);
+
+        shootingLaserTimeProgression = shootingLaserMaxTime;
+        timeToTriggerLaserReduction = shootingLaserMaxTime - (whenToTriggerLaserReduction * shootingLaserMaxTime);
+
+        while (shootingLaserTimeProgression > 0)
+        {
+            if (shootingLaserTimeProgression < timeToTriggerLaserReduction)
+            {
+                float reducingLaserFactor = reducingOfLaserWidth.Evaluate((timeToTriggerLaserReduction - shootingLaserTimeProgression) / (timeToTriggerLaserReduction));
+                if (spawnedLaserScript != null)
+                {
+                    spawnedLaserScript.isLaserActive = false;
+                    laserRenderer = spawnedLaserScript.laserRenderer;
+                }
+
+                spawnedLaserScript.laserWidth = normalLaserWidth * reducingLaserFactor;
+            }
+            shootingLaserTimeProgression -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (spawnedBullet != null)
+        {
+            spawnedLaserScript.isLaserActive = false;
+            spawnedBullet.SetActive(false);
+            spawnedBullet.transform.localScale = new Vector3(spawnedBullet.transform.localScale.x, spawnedBullet.transform.localScale.y, 0);
+        }
+    }
+    #endregion 
 }

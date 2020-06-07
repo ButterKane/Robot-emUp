@@ -20,6 +20,7 @@ public class VoidPlane : MonoBehaviour
 		if (other.tag == "Player")
 		{
 			PlayerController player = other.GetComponent<PlayerController>();
+			if (player == null) { return; }
 			player.KillWithoutCorePart();
 			if (GameManager.alivePlayers.Count <= 1)
 			{

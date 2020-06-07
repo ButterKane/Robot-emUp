@@ -43,7 +43,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
-    force: 1
+    force: 2
     duration: 0.5
     target: 0
     forceCurve:
@@ -80,7 +80,11 @@ MonoBehaviour:
     displayColor: {r: 0.58943963, g: 1, b: 0.4669811, a: 1}
   soundData:
     soundName: PerfectReception
-    attachToTarget: 0
+    delay: 0
+    soundList:
+    - clip: {fileID: 8300000, guid: 2ce20bfa8eafd4f4ea08308b121da6dc, type: 3}
+      playChances: 1
+    volumeMultiplier: 0.1
   vfxData:
     vfxPrefab: {fileID: 1911461834216105247, guid: a5e001f70de21fb4da19f2fc140ed5ea,
       type: 3}

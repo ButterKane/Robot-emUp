@@ -28,39 +28,30 @@ public class EnemyMelee : EnemyBehaviour
         InititateMeleeHitBox();
     }
 
-    public override void EnterPreparingAttackState()
+    #region Public methods
+    public void ActivateAttackHitBox()
     {
-        //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
-        base.EnterPreparingAttackState();
-        ActivateMeleeHitBox();
-    }
-
-    public void InititateMeleeHitBox()
-    {
-        if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
+        FeedbackManager.SendFeedback("event.EnemyMeleeAttack", this);
+        if (attackHitBoxInstance != null)
         {
-            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, new Vector3(attackHitBoxCenterPoint.position.x, attackHitBoxCenterPoint.position.y + attackHitBoxCenterPoint.localScale.y / 2, attackHitBoxCenterPoint.position.z), Quaternion.identity, transform);
-            attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
-            attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
-            attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
-            attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
-            attackHitBoxInstance.SetActive(false);
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
         }
     }
-
-    public void ActivateMeleeHitBox()
+    #endregion
+    #region Private methods
+    private void ActivateMeleeBoxInstance()
     {
         attackHitBoxInstance.SetActive(true);
     }
 
-    public void MeleeAttackPreview(float _anticipationTime)
+    private void MeleeAttackPreview(float _anticipationTime)
     {
         if (attackPreviewPlane != null)
         {
             // Make attack zone appear progressively
-            if (_anticipationTime > portionOfAnticipationWithFlickering * maxAnticipationTime)
+            if (_anticipationTime > portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)
             {
-                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * maxAnticipationTime)) / (maxAnticipationTime - (maxAnticipationTime * portionOfAnticipationWithFlickering))));
+                attackPreviewPlane.transform.localScale = Vector3.one * (1 - ((_anticipationTime - (portionOfAnticipationWithFlickering * attackValues.maxAnticipationTime)) / (attackValues.maxAnticipationTime - (attackValues.maxAnticipationTime * portionOfAnticipationWithFlickering))));
             }
             // If max size is reached, flicker the color
             else
@@ -76,51 +67,73 @@ public class EnemyMelee : EnemyBehaviour
         }
     }
 
+    private void InititateMeleeHitBox()
+    {
+        if (attackHitBoxInstance == null && enemyType == EnemyTypes.Melee)
+        {
+            attackHitBoxInstance = Instantiate(attackHitBoxPrefab, new Vector3(attackHitBoxCenterPoint.position.x, attackHitBoxCenterPoint.position.y + attackHitBoxCenterPoint.localScale.y / 2, attackHitBoxCenterPoint.position.z), Quaternion.identity, transform);
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().attackDamage = damage;
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().spawnParent = this;
+            attackPreviewPlane = attackHitBoxInstance.GetComponent<EnemyArmAttack>().highlightPlane;
+            attackPreviewPlaneRenderer = attackPreviewPlane.GetComponent<MeshRenderer>();
+            attackHitBoxInstance.SetActive(false);
+        }
+    }
+    #endregion
+    #region Overriden methods
+    public override void EnterPreparingAttackState()
+    {
+        //ChangePawnState("MeleeEnemyAnticipating", StartAttackState_C(), StopAttackState_C());
+        base.EnterPreparingAttackState();
+        ActivateMeleeBoxInstance();
+    }
+
     public override void PreparingAttackState()
     {
         base.PreparingAttackState();
-        MeleeAttackPreview(anticipationTime);
-    }
-
-    public void ActivateAttackHitBox()
-    {
-        FeedbackManager.SendFeedback("event.EnemyMeleeAttack", this);
-        if (attackHitBoxInstance != null)
-        {
-            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(true);
-        }
+        MeleeAttackPreview(currentAnticipationTime);
     }
 
     public override void DestroySpawnedAttackUtilities()
     {
+        // well, we don't destroy anything here, but this is an override method so teh name isn't contractual
         if (attackHitBoxInstance != null)
         {
+            attackHitBoxInstance.GetComponent<EnemyArmAttack>().ToggleArmCollider(false);
             attackHitBoxInstance.SetActive(false);
         }
     }
 
-    public IEnumerator StartAttackState_C()
+    public override void HeavyPushAction()
+    {
+        cooldownDuration = attackValues.cooldownAfterAttackTime;
+        currentAnticipationTime = 0;
+        animator.ResetTrigger("AnticipateAttackTrigger");
+        animator.ResetTrigger("AttackTrigger");
+        ChangeState(EnemyState.Idle);
+    }
+
+    protected override void StopAnyAction()
+    {
+        attackHitBoxInstance.SetActive(false);
+        attackPreviewPlane.SetActive(false);
+    }
+    #endregion
+    #region Coroutines
+    private IEnumerator StartAttackState_C()
     {
         Debug.Log("starting attack");
         base.EnterPreparingAttackState();
         attackPreviewPlane = null;
-        InititateMeleeHitBox();
+        InititateMeleeHitBox(); // just in case the hit box got a problem, recreate it
         yield return null;
     }
 
-    public IEnumerator StopAttackState_C()
+    private IEnumerator StopAttackState_C()
     {
         Debug.Log("stopping attack");
         DestroySpawnedAttackUtilities();
         yield return null;
     }
-
-    public override void HeavyPushAction()
-    {
-        cooldownDuration = cooldownAfterAttackTime;
-        anticipationTime = 0;
-        animator.ResetTrigger("AnticipateAttackTrigger");
-        animator.ResetTrigger("AttackTrigger");
-        ChangeState(EnemyState.Idle);
-    }
+    #endregion
 }

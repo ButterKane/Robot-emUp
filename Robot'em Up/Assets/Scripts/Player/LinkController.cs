@@ -55,8 +55,13 @@ public class LinkController : MonoBehaviour
         linkGameObject = GenerateLinkHolder();
 		ChangeLinkState(LinkState.Hidden);
     }
+	private void Update ()
+	{
+		UpdateLink();
+	}
 
-    GameObject GenerateLinkHolder()
+	#region Private functions
+	private GameObject GenerateLinkHolder ()
 	{
 		GameObject i_newLinkHolder = new GameObject();
 		i_newLinkHolder.name = "Link[" + firstPawn.name + "] - [" + secondPawn.name + "]";
@@ -69,12 +74,6 @@ public class LinkController : MonoBehaviour
 		GameManager.DDOL.Add(i_newLinkHolder.gameObject);
 		return i_newLinkHolder;
 	}
-
-	private void Update ()
-	{
-		UpdateLink();
-	}
-
 	private void ChangeLinkState ( LinkState _newState )
 	{
 		if (linkState == _newState) { return; }
@@ -101,7 +100,6 @@ public class LinkController : MonoBehaviour
 
 		linkState = _newState;
 	}
-
 	private void UpdateLink()
 	{
 		if (linkGameObject != null)
@@ -145,12 +143,12 @@ public class LinkController : MonoBehaviour
 					//Slow player 1
 					float FcDirectionAngle = Vector3.Angle(firstPawn.transform.forward, secondPawn.transform.position - firstPawn.transform.position);
 					float FcSlowValue = Mathf.Lerp(1f, slowValue, FcDirectionAngle / 180f);
-					firstPawn.AddSpeedCoef(new SpeedCoef(FcSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
+					firstPawn.AddSpeedModifier(new SpeedCoef(FcSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
 
 					//Slow player 2
 					float FsDirectionAngle = Vector3.Angle(secondPawn.transform.forward, firstPawn.transform.position - secondPawn.transform.position);
 					float FsSlowValue = Mathf.Lerp(1f, slowValue, FsDirectionAngle / 180f);
-					secondPawn.AddSpeedCoef(new SpeedCoef(FsSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
+					secondPawn.AddSpeedModifier(new SpeedCoef(FsSlowValue, Time.deltaTime, SpeedMultiplierReason.Link, false));
 					ChangeLinkState(LinkState.Slowing);
 				}
 				if (i_linkLength >= maxDistanceBeforeBreaking)
@@ -181,4 +179,5 @@ public class LinkController : MonoBehaviour
 			}
 		}
 	}
+	#endregion
 }

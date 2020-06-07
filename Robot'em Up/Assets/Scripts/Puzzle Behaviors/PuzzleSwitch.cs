@@ -7,10 +7,9 @@ using MyBox;
 public class PuzzleSwitch : PuzzleActivator
 {
     private MeshRenderer meshRenderer;
-    private BoxCollider boxCollider;
     private bool playerHere;
     public GameObject interactionHelper;
-    private List<PawnController> listPawnsHere;
+    private int totalPawnAmount = 0;
 
 
     [ReadOnly]
@@ -26,7 +25,6 @@ public class PuzzleSwitch : PuzzleActivator
     private void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
-        boxCollider = GetComponent<BoxCollider>();
         playerHere = false;
         UpdateMaterial();
         interactionHelper.SetActive(false);
@@ -34,12 +32,12 @@ public class PuzzleSwitch : PuzzleActivator
         playerIndex2 = PlayerIndex.Two;
         state = GamePad.GetState(playerIndex);
         state2 = GamePad.GetState(playerIndex2);
-        listPawnsHere = new List<PawnController>();
+        totalPawnAmount = 0;
     }
     
     void Update()
     {
-           if (playerHere)
+        if (playerHere)
         {
             prevState = state;
             state = GamePad.GetState(playerIndex);
@@ -47,7 +45,6 @@ public class PuzzleSwitch : PuzzleActivator
             // Detect if a button was pressed this frame
             if (state.Buttons.A == ButtonState.Released && prevState.Buttons.A == ButtonState.Pressed)
             {
-                //Debug.Log("ActionOnSwitch 1");
                 ActionOnSwitch();
             }
             prevState2 = state2;
@@ -56,7 +53,6 @@ public class PuzzleSwitch : PuzzleActivator
             // Detect if a button was pressed this frame
             if (state2.Buttons.A == ButtonState.Released && prevState2.Buttons.A == ButtonState.Pressed)
             {
-                //Debug.Log("ActionOnSwitch 2");
                 ActionOnSwitch();
             }
         }
@@ -65,7 +61,6 @@ public class PuzzleSwitch : PuzzleActivator
 
     private void ActionOnSwitch()
     {
-      //  Debug.Log("Action on switch fct");
         isActivated = !isActivated;
         if (isActivated)
         {
@@ -97,8 +92,7 @@ public class PuzzleSwitch : PuzzleActivator
     {
         if (_other.GetComponent<PlayerController>())
         {
-            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Add(pawn);
+            totalPawnAmount++;
             playerHere = true;
             if (puzzleData.showTuto)
             {
@@ -111,9 +105,8 @@ public class PuzzleSwitch : PuzzleActivator
     {
         if (_other.GetComponent<PlayerController>())
         {
-            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Remove(pawn);
-            if (listPawnsHere.Count < 1)
+            totalPawnAmount--;
+            if (totalPawnAmount < 1)
             {
                 playerHere = false;
                 interactionHelper.SetActive(false);

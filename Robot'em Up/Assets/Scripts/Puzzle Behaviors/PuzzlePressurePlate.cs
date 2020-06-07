@@ -6,75 +6,67 @@ using MyBox;
 public class PuzzlePressurePlate : PuzzleActivator
 {
     [ReadOnly] public bool pawnHere;
-    private BoxCollider boxCollider;
-    private List<PawnController> listPawnsHere;
-
-
-    // Start is called before the first frame update
-    void Awake()
-    {
-        boxCollider = GetComponent<BoxCollider>();
-        listPawnsHere = new List<PawnController>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    private List<PawnController> pawnHereList = new List<PawnController>();
+    public Animator animator;
 
 
     private void OnTriggerEnter(Collider _other)
     {
-        if (_other.gameObject.GetComponent<PawnController>() && !shutDown)
+        PawnController foundPawn = _other.gameObject.GetComponent<PawnController>();
+        if (foundPawn && !shutDown)
         {
-            pawnHere = true;
-            transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
-            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
-            //pawn.Damage(puzzleData.DamageEletricPlate);
-            listPawnsHere.Add(pawn);
-			if (!isActivated)
-			{
-				FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
-			}
-            isActivated = true;
-            ActivateLinkedObjects();
+            if (!pawnHereList.Contains(foundPawn))
+            {
+                pawnHereList.Add(foundPawn);
+                pawnHere = true;
+                transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
+                if (!isActivated)
+                {
+                    FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
+                }
+                isActivated = true;
+                animator.SetBool("Activated", true);
+                ActivateLinkedObjects();
+            }
         }
 
-        UpdateLight();
+        //UpdateLight();
     }
 
 
     private void OnTriggerExit(Collider _other)
     {
-        if (_other.gameObject.GetComponent<PawnController>())
+        PawnController foundPawn = _other.gameObject.GetComponent<PawnController>();
+        if (foundPawn)
         {
-            PawnController pawn = _other.gameObject.GetComponent<PawnController>();
-            listPawnsHere.Remove(pawn);
-            if (listPawnsHere.Count < 1)
+            if (pawnHereList.Contains(foundPawn))
             {
-				if (isActivated)
-				{
-					FeedbackManager.SendFeedback("event.PuzzlePressurePlateDesactivation", this);
-				}
-				isActivated = false;
-                DesactiveLinkedObjects();
-                pawnHere = false;
-                transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
+                pawnHereList.Remove(foundPawn);
+                if (pawnHereList.Count < 1)
+                {
+                    if (isActivated)
+                    {
+                        FeedbackManager.SendFeedback("event.PuzzlePressurePlateDesactivation", this);
+                    }
+                    isActivated = false;
+                    animator.SetBool("Activated", false);
+
+                    DesactiveLinkedObjects();
+                    pawnHere = false;
+                    transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
+                }
             }
         }
 
-        UpdateLight();
+        //UpdateLight();
 
     }
 
 
-    override public void customShutDown()
+    override public void CustomShutDown()
     {
         transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
         isActivated = false;
+        animator.SetBool("Activated", false);
     }
-
-
 }

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8571949612738797835}
   - component: {fileID: 5108980756436379075}
   - component: {fileID: 3812962642234523005}
-  - component: {fileID: 5466241031433028996}
   m_Layer: 12
   m_Name: PossessionEmissive1
   m_TagString: Untagged
@@ -79,19 +78,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &5466241031433028996
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3560242364722175564}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: -0.0000076293945}
 --- !u!1 &3941491135225342935
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,7 +89,6 @@ GameObject:
   - component: {fileID: 6579918488367034586}
   - component: {fileID: 8601215334980452713}
   - component: {fileID: 8728077492968444258}
-  - component: {fileID: 1589406442496770908}
   m_Layer: 12
   m_Name: PossessionEmissive2
   m_TagString: Untagged
@@ -171,19 +156,64 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &1589406442496770908
-BoxCollider:
+--- !u!1 &6399925900482510303
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3941491135225342935}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7654657896447412527}
+  - component: {fileID: 3078096321212936903}
+  - component: {fileID: 1055398052718533733}
+  m_Layer: 0
+  m_Name: RangeTrigger (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7654657896447412527
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6399925900482510303}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7519697661370609959}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &3078096321212936903
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6399925900482510303}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: -0.0000076293945}
+  m_Radius: 3.6
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1055398052718533733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6399925900482510303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b95b2003b436a4b88fc242cb279bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myElement: {fileID: 7519697661370609958}
 --- !u!1 &7519697661106857834
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,6 +370,7 @@ Transform:
   - {fileID: 7519697662618928311}
   - {fileID: 7519697662827275892}
   - {fileID: 5812568498871538536}
+  - {fileID: 7654657896447412527}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -408,6 +439,7 @@ MonoBehaviour:
   possessed: 0
   lockable: 1
   lockHitboxSize: 1.5
+  lockSize3DModifier: {x: 1, y: 1, z: 1}
   breakEventName: event.ScreenBreaking
   possessionAnimationMaxTime: 0.25
   possessionColor: {r: 0.47564507, g: 0, b: 1, a: 0.98039216}
@@ -451,6 +483,8 @@ MonoBehaviour:
   maxEmissiveIntensity: 11
   normalEmissiveIntensity: 3
   myAudioMixer: {fileID: 24300002, guid: ab1c3989b9748bd45862cd8e260c1bfc, type: 2}
+  rangeTriggerGameObject: {fileID: 6399925900482510303}
+  middlePointInRange: 0
   leftEyeTransform: {fileID: 7519697662857802085}
   rightEyeTransform: {fileID: 7519697661106857833}
   topEyeTransform: {fileID: 7519697661372051066}

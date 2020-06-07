@@ -42,12 +42,13 @@ public class CameraZone : MonoBehaviour
 		lastTool = Tools.current;
 		Tools.current = Tool.None;
 #endif
-		if (GetComponent<SpriteRenderer>() == null)
+		SpriteRenderer foundVisualizer = GetComponent<SpriteRenderer>();
+		if (foundVisualizer == null)
 		{
 			visualizer = gameObject.AddComponent<SpriteRenderer>();
 		} else
 		{
-			visualizer = GetComponent<SpriteRenderer>();
+			visualizer = foundVisualizer;
 		}
 		visualizer.transform.localRotation = Quaternion.Euler(new Vector3(-90, transform.localRotation.eulerAngles.y, transform.localRotation.eulerAngles.z));
 		if (cameraPivot == null)
@@ -62,13 +63,14 @@ public class CameraZone : MonoBehaviour
 	private void Awake ()
 	{
 		playersInside = new List<PlayerController>();
-		if (GetComponent<SpriteRenderer>() == null)
+		SpriteRenderer foundVisualizer = GetComponent<SpriteRenderer>();
+		if (foundVisualizer == null)
 		{
 			visualizer = gameObject.AddComponent<SpriteRenderer>();
 		}
 		else
 		{
-			visualizer = GetComponent<SpriteRenderer>();
+			visualizer = foundVisualizer;
 		}
 		if (Application.isPlaying)
 		{
@@ -81,6 +83,7 @@ public class CameraZone : MonoBehaviour
 					visualizer.sprite = null;// Resources.Load<Sprite>("CameraEditor/circleZoneVisualizerIngame");
 					break;
 			}
+			if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
 		} else
 		{
 			switch (type)
@@ -95,23 +98,23 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	private void Start ()
+
+	private void OnTriggerEnter ( Collider _other )
 	{
-		if (linkedCameraBehaviour == null) { linkedCameraBehaviour = transform.parent.GetComponentInChildren<CameraBehaviour>(); }
+		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
+		if (i_playerFound != null && !playersInside.Contains(i_playerFound))
+		{
+			playersInside.Add(i_playerFound);
+		}
 	}
 
-	public void GenerateZone( CameraCustomType _type ) {
-		type = _type;
-		switch (type)
+	private void OnTriggerExit ( Collider _other )
+	{
+		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
+		if (i_playerFound != null && playersInside.Contains(i_playerFound))
 		{
-			case CameraCustomType.Combat:
-				GenerateCombatZone();
-				break;
-			case CameraCustomType.Circle:
-				GenerateCircleZone();
-				break;
+			playersInside.Remove(i_playerFound);
 		}
-		genCollider.isTrigger = true;
 	}
 
 	public virtual void Update ()
@@ -146,7 +149,46 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	void GenerateCombatZone ()
+	public void GenerateZone ( CameraCustomType _type )
+	{
+		type = _type;
+		switch (type)
+		{
+			case CameraCustomType.Combat:
+				GenerateCombatZone();
+				break;
+			case CameraCustomType.Circle:
+				GenerateCircleZone();
+				break;
+		}
+		genCollider.isTrigger = true;
+	}
+	public Vector3 GetCenterPosition ()
+	{
+		return transform.position;
+	}
+
+	public bool IsZoneActivated ()
+	{
+		return zoneActivated;
+	}
+	public List<PlayerController> GetPlayersInside ()
+	{
+		if (playersInside.Count > 0)
+		{
+			if (GameManager.playerOne != null && GameManager.playerOne.moveState == MoveState.Dead && !playersInside.Contains(GameManager.playerOne))
+			{
+				playersInside.Remove(GameManager.playerOne);
+			}
+			if (GameManager.playerTwo != null && GameManager.playerTwo.moveState == MoveState.Dead && !playersInside.Contains(GameManager.playerTwo))
+			{
+				playersInside.Remove(GameManager.playerTwo);
+			}
+		}
+		return playersInside;
+	}
+
+	private void GenerateCombatZone ()
 	{
 		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/squareZoneVisualizer");
 		visualizer.drawMode = SpriteDrawMode.Tiled;
@@ -162,7 +204,7 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	void GenerateCircleZone()
+	private void GenerateCircleZone ()
 	{
 		visualizer.sprite = Resources.Load<Sprite>("CameraEditor/circleZoneVisualizer");
 		visualizer.drawMode = SpriteDrawMode.Simple;
@@ -178,7 +220,7 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	void UpdateCombatZone()
+	private void UpdateCombatZone ()
 	{
 		Vector3 i_wantedPosition = cornerA_access + ((cornerB_access - cornerA_access) / 2);
 		transform.position = new Vector3(i_wantedPosition.x, transform.position.y, i_wantedPosition.z);
@@ -206,7 +248,7 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	void UpdateCircleZone ()
+	private void UpdateCircleZone ()
 	{
 		transform.position = visualizer.transform.position;
 		if (cameraPivot != null && Application.isEditor && !Application.isPlaying)
@@ -215,56 +257,14 @@ public class CameraZone : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerEnter ( Collider _other )
-	{
-		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
-		if (i_playerFound != null && !playersInside.Contains(i_playerFound))
-		{
-			playersInside.Add(i_playerFound);
-		}
-	}
-
-	private void OnTriggerExit ( Collider _other )
-	{
-		PlayerController i_playerFound = _other.GetComponent<PlayerController>();
-		if (i_playerFound != null && playersInside.Contains(i_playerFound))
-		{
-			playersInside.Remove(i_playerFound);
-		}
-	}
-
-	void ActivateZone()
+	private void ActivateZone ()
 	{
 		zoneActivated = true;
 		onZoneActivation.Invoke();
 	}
 
-	void DesactivateZone()
+	private void DesactivateZone ()
 	{
 		zoneActivated = false;
-	}
-
-	public Vector3 GetCenterPosition()
-	{
-		return transform.position;
-	}
-
-	public bool IsZoneActivated()
-	{
-		return zoneActivated;
-	}
-	public List<PlayerController> GetPlayersInside()
-	{
-		if (playersInside.Count > 0)
-		{
-			if (GameManager.playerOne != null && GameManager.playerOne.moveState == MoveState.Dead && !playersInside.Contains(GameManager.playerOne)) {
-				playersInside.Remove(GameManager.playerOne);
-			}
-			if (GameManager.playerTwo != null && GameManager.playerTwo.moveState == MoveState.Dead && !playersInside.Contains(GameManager.playerTwo))
-			{
-				playersInside.Remove(GameManager.playerTwo);
-			}
-		}
-		return playersInside;
 	}
 }
