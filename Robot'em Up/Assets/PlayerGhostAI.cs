@@ -21,6 +21,10 @@ public class PlayerGhostAI : MonoBehaviour
     public float actionCooldown = 5;
     private float currentCooldown;
     private float curvedCooldown;
+    private Vector3 OriginalPosition;
+    private Vector3 ThrustX;
+    private Vector3 ThrustZ;
+    private int StepMoving;
     private bool jumpCooldown;
 
     private DashController dashController;
@@ -38,7 +42,8 @@ public class PlayerGhostAI : MonoBehaviour
         dunkController = GetComponent<DunkController>();
         pawnController = GetComponent<PawnController>();
         curvedCooldown = 0;
-
+        StepMoving = 0;
+        OriginalPosition = transform.position;
         if (passController) { passController.SetTargetedPawn(passTarget); }
     }
     void Update()
@@ -49,25 +54,42 @@ public class PlayerGhostAI : MonoBehaviour
         {
             case GhostType.Moving:
                 pawnController.canMove = true;
-                pawnController.moveInput = CurrentDirection * SpeedGhost;
-                pawnController.lookInput = CurrentDirection;
-                pawnController.UpdateAnimatorBlendTree();
+
+                switch (StepMoving)
+                {
+                    case 0:
+                        CurrentDirection = new Vector3(1, 0, 0);
+                        break;
+                    case 1:
+                        CurrentDirection = new Vector3(1, 0, 1);
+                        break;
+                    case 2:
+                        CurrentDirection = new Vector3(-1, 0, 0);
+                        break;
+                    case 3:
+                        CurrentDirection = new Vector3(-1, 0, -1);
+                        break;
+                }
+
+
                 if (currentCooldown <= 0)
                 {
+                    StepMoving++;
+                    if (StepMoving>3)
+                        {
+                                StepMoving = 0;
+                    }
                     currentCooldown = actionCooldown;
-                    if (CurrentDirection == Direction1)
-                    {
-                        CurrentDirection = Direction2;
-                    }
-                    else
-                    {
-                        CurrentDirection = Direction1;
-                    }
                 }
                 else
                 {
                     currentCooldown -= Time.deltaTime;
                 }
+
+                pawnController.moveInput = CurrentDirection * SpeedGhost;
+                pawnController.lookInput = CurrentDirection;
+                pawnController.UpdateAnimatorBlendTree();
+
 
                 break;
             case GhostType.Dashing:
