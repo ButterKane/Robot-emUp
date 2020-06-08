@@ -14,11 +14,14 @@ public class AbilityListNavigation : MonoBehaviour
     public TextMeshProUGUI descriptionMainText;
     public TextMeshProUGUI descriptionUpgrade1;
     public TextMeshProUGUI descriptionUpgrade2;
+    public AbilityListOrganizer organizer;
 
     [Separator ("Variables")]
-    public AbilityGroupData[] abilitesData;
+    public AbilityGroupData[] abilitiesData;
+    public List<AbilityGroupData> availableAbilitesData;
     public Color normalColor;
     public Color selectedColor;
+    public Color notAvailableColor;
     [Range(0, 1)] public float joystickTreshold = 0.6f;
 
     [ReadOnly] public MainMenu scriptLinkedToThisOne;
@@ -31,49 +34,89 @@ public class AbilityListNavigation : MonoBehaviour
     private bool waitForJoystickYReset;
     private Sprite[] gifImagesToPlay;
     private int currentGifImageIndex;
-    private bool isNavigationAllowed = true;
+    public bool isNavigationAllowed = true;
+    private bool waitForJoystickResetOne;
+    private bool waitForJoystickResetTwo;
     // Start is called before the first frame update
     void Start()
     {
+        isNavigationAllowed = false;
+        GetAvailableAbilitiesDatas();
         ResetDisplay();
     }
-    
+
     // Update is called once per frame
     void Update()
     {
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isNavigationAllowed)
         {
-            // Managing Up and Down
-            if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
+            Debug.Log("Hello it is main menu");
+            for (int i = 0; i < 2; i++)
             {
-                if (!waitForJoystickYReset)
+                if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
+                if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
+
+                // Managing Up and Down
+                if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
                 {
-                    ChangeAbility(-1);
-                    waitForJoystickYReset = true;
+                    if (i == 0)
+                    {
+                        if (!waitForJoystickResetOne)
+                        {
+                            ChangeAbility(-1);
+                            waitForJoystickResetOne = true;
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (!waitForJoystickResetTwo)
+                        {
+                            ChangeAbility(-1);
+                            waitForJoystickResetTwo = true;
+                        }
+                    }
                 }
-            }
-            else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
-            {
-                if (!waitForJoystickYReset)
+                else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
                 {
-                    ChangeAbility(1);
-                    waitForJoystickYReset = true;
+                    if (i == 0)
+                    {
+                        if (!waitForJoystickResetOne)
+                        {
+                            ChangeAbility(1);
+                            waitForJoystickResetOne = true;
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (!waitForJoystickResetTwo)
+                        {
+                            ChangeAbility(1);
+                            waitForJoystickResetTwo = true;
+                        }
+                    }
                 }
-
+                else
+                {
+                    if (i == 0)
+                    {
+                        waitForJoystickResetOne = false;
+                    }
+                    else if (i == 1)
+                    {
+                        waitForJoystickResetTwo = false;
+                    }
+                }
+                
+                if (i_state.Buttons.B == ButtonState.Pressed) { ReturnToMainMenu(); }
+                if (i_state.Buttons.Start == ButtonState.Pressed) { ReturnToMainMenu(); scriptLinkedToThisOne.Close(); }
             }
-            else
+            
+            if (gifImagesToPlay != null && gifImagesToPlay.Length != 0)
             {
-                waitForJoystickYReset = false;
+                PlayGif(currentGifImageIndex);
+                currentGifImageIndex++;
             }
-        }
-
-        if (i_state.Buttons.B == ButtonState.Pressed) { ReturnToMainMenu(); }
-
-        if (gifImagesToPlay.Length != 0)
-        {
-            PlayGif(currentGifImageIndex);
-            currentGifImageIndex++;
         }
     }
 
@@ -85,11 +128,11 @@ public class AbilityListNavigation : MonoBehaviour
             i_addition = (int)Mathf.Sign(_plusOrMinus);
         }
 
-        if (selectedAbilityIndex + i_addition >= 0 && selectedAbilityIndex + i_addition < abilitesData.Length)
+        if (selectedAbilityIndex + i_addition >= 0 && selectedAbilityIndex + i_addition < availableAbilitesData.Count)
         {
             FeedbackManager.SendFeedback("event.SwitchSettingsPage", this);
             selectedAbilityIndex += i_addition;
-            selectedAbility = abilitesData[selectedAbilityIndex];
+            selectedAbility = availableAbilitesData[selectedAbilityIndex];
 
             ChangeSelectedColor();
 
@@ -104,7 +147,7 @@ public class AbilityListNavigation : MonoBehaviour
     public void GotToSpecificAbilityByIndex(int _abilityIndex)
     {
         selectedAbilityIndex = _abilityIndex;
-        selectedAbility = abilitesData[selectedAbilityIndex];
+        selectedAbility = abilitiesData[selectedAbilityIndex];
 
         ChangeSelectedColor();
 
@@ -141,9 +184,10 @@ public class AbilityListNavigation : MonoBehaviour
 
     public void ChangeSelectedColor()
     {
-        foreach ( var abilityGroup in abilitesData)
+        foreach ( var abilityGroup in abilitiesData)
         {
-            abilityGroup.backgroundImage.color = normalColor;
+            if (abilityGroup.isBaseUnlocked) { abilityGroup.backgroundImage.color = normalColor; }
+            else { abilityGroup.backgroundImage.color = notAvailableColor; }
         }
         selectedAbility.backgroundImage.color = selectedColor;
     }
@@ -157,6 +201,7 @@ public class AbilityListNavigation : MonoBehaviour
 
     void ReturnToMainMenu()
     {
+        isNavigationAllowed = false;
         FeedbackManager.SendFeedback("event.MenuBack", this);
 
         Time.timeScale = 0; // make sure it is still stopped
@@ -171,19 +216,28 @@ public class AbilityListNavigation : MonoBehaviour
     {
         selectedAbilityIndex = 0;
         currentGifImageIndex = 0;
-        selectedAbility = abilitesData[selectedAbilityIndex];
+        selectedAbility = availableAbilitesData[selectedAbilityIndex];
         ChangeSelectedColor();
         DisplayAbility();
     }
 
     public void GoToSpecificAbility(ConcernedAbility _concernedAbility)
     {
-        for (int i = 0; i < abilitesData.Length; i++)
+        for (int i = 0; i < abilitiesData.Length; i++)
         {
-            if (abilitesData[i].ability == _concernedAbility)
+            if (abilitiesData[i].ability == _concernedAbility)
             {
                 GotToSpecificAbilityByIndex(i);
             }
+        }
+    }
+    
+    private void GetAvailableAbilitiesDatas()
+    {
+        availableAbilitesData.Clear();
+        foreach (var ability in abilitiesData)
+        {
+            if (ability.isBaseUnlocked) { availableAbilitesData.Add(ability); }
         }
     }
 
@@ -221,7 +275,8 @@ public class AbilityListNavigation : MonoBehaviour
         }
 
         i_concernedtext.outlineWidth = 0.147f;
-
+        GetAvailableAbilitiesDatas();
+        organizer.OrganizeAbilities();
         DisplayAbility();
         yield return new WaitForSecondsRealtime(0.5f);
         isNavigationAllowed = true;
@@ -266,7 +321,9 @@ public class AbilityListNavigation : MonoBehaviour
             default:
                 break;
         }
-
+        GetAvailableAbilitiesDatas();
+        organizer.OrganizeAbilities();
+        DisplayAbility();
         i_concernedtext.alpha = 1;
         float animTime = 1.5f;
         while (animTime > 0)
@@ -277,7 +334,8 @@ public class AbilityListNavigation : MonoBehaviour
         }
 
         i_concernedtext.outlineWidth = 0.147f;
-
+        GetAvailableAbilitiesDatas();
+        organizer.OrganizeAbilities();
         DisplayAbility();
         yield return new WaitForSecondsRealtime(0.5f);
         isNavigationAllowed = true;

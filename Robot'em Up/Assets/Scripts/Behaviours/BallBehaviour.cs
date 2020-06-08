@@ -301,7 +301,10 @@ public class BallBehaviour : MonoBehaviour
 				EnableCollisions();
 				rb.AddForce(ballInformations.direction.normalized * ballInformations.moveSpeed * rb.mass, ForceMode.Impulse);
 				CursorManager.SetBallPointerParent(transform);
-				if (ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
+				if (ballInformations.thrower != null)
+				{
+					if (ballInformations.thrower.isPlayer) { LockManager.UnlockAll(); }
+				}
 				break;
 			case BallState.Aimed:
 				DisableGravity();
@@ -453,7 +456,7 @@ public class BallBehaviour : MonoBehaviour
 					RaycastHit[] i_hitColliders = Physics.RaycastAll(transform.position, ballInformations.direction, ballInformations.moveSpeed * Time.deltaTime);
 					foreach (RaycastHit raycast in i_hitColliders)
 					{
-						EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
+						/*EnemyShield i_selfRef = raycast.collider.GetComponentInParent<EnemyShield>();
 						if (i_selfRef != null)
 						{
 							if (i_selfRef.shield.transform.InverseTransformPoint(transform.position).z > 0.0)
@@ -462,7 +465,7 @@ public class BallBehaviour : MonoBehaviour
 								Vector3 i_newDirection = Vector3.Reflect(ballInformations.direction, i_selfRef.shield.transform.forward);
 								Bounce(i_newDirection, 1);
 							}
-						}
+						}*/
 
 						IHitable i_potentialHitableObjectFound = raycast.collider.GetComponent<IHitable>();
 						if (i_potentialHitableObjectFound != null && !hitGameObjects.Contains(i_potentialHitableObjectFound) && !isGhostBall)

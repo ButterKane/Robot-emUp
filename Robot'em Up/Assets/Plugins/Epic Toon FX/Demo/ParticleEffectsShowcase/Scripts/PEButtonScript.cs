@@ -16,7 +16,7 @@ public class PEButtonScript : MonoBehaviour, IEventSystemHandler, IPointerEnterH
 
 	// Use this for initialization
 	void Start () {
-		myButton = gameObject.GetComponent<Button> ();
+		myButton = gameObject.GetComponent<Button> (); 
 	}
 
 	public void OnPointerEnter(PointerEventData eventData) {

@@ -19,7 +19,9 @@ MonoBehaviour:
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 0
-      modeTransitionConditionValue: 5
+      modeTransitionConditionValue: 4
+    - modeTransitionConditionType: 7
+      modeTransitionConditionValue: 0
     modeToActivate:
     - mode: {fileID: 11400000, guid: bb7ca9d173d7f7b4a9d90c9a8b74994e, type: 2}
       chances: 100
@@ -28,6 +30,14 @@ MonoBehaviour:
       modeTransitionConditionValue: 0
     modeToActivate:
     - mode: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
+      chances: 100
+  - transitionConditions:
+    - modeTransitionConditionType: 0
+      modeTransitionConditionValue: 4
+    - modeTransitionConditionType: 8
+      modeTransitionConditionValue: 0
+    modeToActivate:
+    - mode: {fileID: 11400000, guid: fc87683d8f322f341956cff796122704, type: 2}
       chances: 100
   actionsOnStart:
   - LaserAttack

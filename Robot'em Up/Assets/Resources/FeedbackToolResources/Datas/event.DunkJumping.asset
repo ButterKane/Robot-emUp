@@ -25,17 +25,35 @@ MonoBehaviour:
       m_RotationOrder: 4
     durationLeft: 0
   vibrationData:
-    force: 2
-    duration: 0.2
+    force: 1
+    duration: 0.1
     target: 0
     forceCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: -0.004166667
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1.000002
+        value: -0.0023566186
+        inSlope: -2.5178342
+        outSlope: -2.5178342
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.12033372
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
   shakeDataInited: 0
-  vibrationDataInited: 0
+  vibrationDataInited: 1
   soundDataInited: 1
   vfxDataInited: 1
   eventCalled: 1
@@ -44,6 +62,7 @@ MonoBehaviour:
     displayColor: {r: 0, g: 1, b: 0.94070315, a: 1}
   soundData:
     soundName: JumpForDunk
+    delay: 0
     soundList:
     - clip: {fileID: 8300000, guid: 5d9c3ad03b8df5947b22d641347658b3, type: 3}
       playChances: 1

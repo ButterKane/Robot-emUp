@@ -208,7 +208,7 @@ public class DunkController : MonoBehaviour
 			if (c.gameObject.layer == LayerMask.NameToLayer("Enemy"))
 			{
 				EnemyBehaviour enemy = c.GetComponentInParent<EnemyBehaviour>();
-				if (!pushedEnemies.Contains(enemy))
+				if (enemy != null && !pushedEnemies.Contains(enemy))
 				{
 					Vector3 pushDirectionFlat = transform.position - enemy.transform.position;
 					pushDirectionFlat.y = 0;
