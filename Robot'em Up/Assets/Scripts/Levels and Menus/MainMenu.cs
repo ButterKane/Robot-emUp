@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
 	private List<Button> buttons = new List<Button>();
 
     public bool isMainMenuActive = true;
-    public List<Button> menuButtons = new List<Button>();
+    public List<Button> menuButtons;
 
     public GameObject optionMenuPrefab;
     private GameObject optionMenu;
@@ -67,7 +67,7 @@ public class MainMenu : MonoBehaviour
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
                 if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
-                if (i_state.ThumbSticks.Left.Y > 0)
+                if (i_state.ThumbSticks.Left.Y > 0.3f)
                 {
                     if (i == 0)
                     {
@@ -86,12 +86,13 @@ public class MainMenu : MonoBehaviour
                         }
                     }
                 }
-                else if (i_state.ThumbSticks.Left.Y < 0)
+                else if (i_state.ThumbSticks.Left.Y < -0.3f)
                 {
                     if (i == 0)
                     {
                         if (!waitForJoystickResetOne)
                         {
+                            Debug.Log("bidouille");
                             SelectNextButton();
                             waitForJoystickResetOne = true;
                         }
@@ -109,6 +110,7 @@ public class MainMenu : MonoBehaviour
                 {
                     if (i == 0)
                     {
+                        Debug.Log("annule bioduill");
                         waitForJoystickResetOne = false;
                     }
                     else if (i == 1)
