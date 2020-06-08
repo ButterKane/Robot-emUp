@@ -26,6 +26,7 @@ public class PlayerGhostAI : MonoBehaviour
     private Vector3 ThrustZ;
     private int StepMoving;
     private bool jumpCooldown;
+    private bool DashActivated;
 
     private DashController dashController;
     private DunkController dunkController;
@@ -43,6 +44,7 @@ public class PlayerGhostAI : MonoBehaviour
         pawnController = GetComponent<PawnController>();
         curvedCooldown = 0;
         StepMoving = 0;
+        DashActivated = false;
         OriginalPosition = transform.position;
         if (passController) { passController.SetTargetedPawn(passTarget); }
     }
@@ -99,11 +101,16 @@ public class PlayerGhostAI : MonoBehaviour
                 pawnController.moveInput = CurrentDirection * SpeedGhost;
                 pawnController.UpdateAnimatorBlendTree();
 
-                if (currentCooldown <= 0)
+                if (currentCooldown <= 0.5f && !DashActivated)
                 {
                     dashController.RecoverAllStackAmount();
                     dashController.Dash(CurrentDirection);
                     pawnController.lookInput = CurrentDirection;
+                    DashActivated = true;
+                }
+                else if (currentCooldown <= 0)
+                {
+                    DashActivated = false;
                     currentCooldown = actionCooldown;
                     if (CurrentDirection == Direction1)
                     {
@@ -113,6 +120,7 @@ public class PlayerGhostAI : MonoBehaviour
                     {
                         CurrentDirection = Direction1;
                     }
+
                 }
                 else
                 {
