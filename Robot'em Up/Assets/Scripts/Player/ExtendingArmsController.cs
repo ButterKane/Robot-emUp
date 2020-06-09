@@ -191,8 +191,11 @@ public class ExtendingArmsController : MonoBehaviour
 		currentHitDecalScript = currentHitDecal.transform.Find("DecalMin").GetComponent<Decal>();
 		hitDecalMaxScale = currentHitDecal.transform.Find("DecalMax").localScale;
 		currentHitDecal.gameObject.SetActive(false);
-		DontDestroyOnLoad(currentHitDecal.gameObject);
-		GameManager.DDOL.Add(currentHitDecal.gameObject);
+		if (linkedPawn.isPlayer)
+		{
+			DontDestroyOnLoad(currentHitDecal.gameObject);
+			GameManager.DDOL.Add(currentHitDecal.gameObject);
+		}
 	}
 	private void GenerateGrabHand ()
 	{
@@ -201,8 +204,11 @@ public class ExtendingArmsController : MonoBehaviour
 		grabHand.transform.localPosition = Vector3.zero;
 		grabHand.transform.localRotation = Quaternion.identity;
 		grabHand.gameObject.SetActive(false);
-		DontDestroyOnLoad(grabHand.root);
-		GameManager.DDOL.Add(grabHand.gameObject);
+		if (linkedPawn.isPlayer)
+		{
+			DontDestroyOnLoad(grabHand.root);
+			GameManager.DDOL.Add(grabHand.gameObject);
+		}
 	}
 	private bool IsGrabbable (Transform t)
 	{

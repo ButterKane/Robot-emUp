@@ -426,11 +426,6 @@ public class PlayerController : PawnController, IHitable
     }
     private void CheckButtons()
     {
-        if (state.Buttons.B == ButtonState.Pressed)
-        {
-            PushEveryPawn();
-        }
-
         if (state.Buttons.Y == ButtonState.Pressed && revivablePlayers.Count <= 0)
         {
             dunkController.Dunk();

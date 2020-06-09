@@ -69,7 +69,16 @@ public class ArenaClusterCubes : MonoBehaviour
                     spawnPosition -= transform.right * (row[j].column.Length-1) * 0.5f * columnOffset;
                     spawnPosition += transform.right * columnOffset * k;
 
-                    GameObject newCube = Instantiate(cubeFromCluster, spawnPosition - transform.up * heightOffset, Quaternion.identity, transform);
+                    Vector3 i_instancePos;
+                    if(layout0[j].column[k])
+                    {
+                        i_instancePos = spawnPosition + transform.up * heightOffset;
+                    }
+                    else
+                    {
+                        i_instancePos = spawnPosition - transform.up * heightOffset;
+                    }
+                    GameObject newCube = Instantiate(cubeFromCluster, i_instancePos, Quaternion.LookRotation(transform.forward, Vector3.up), transform);
                     cubesArray[j, k] = newCube.transform;
                 }
             }
@@ -174,7 +183,7 @@ public class ArenaClusterCubes : MonoBehaviour
         }
     }
 
-    public void ActivateNewLayout()
+    void ActivateNewLayout()
     {
         for (int j = 0; j < row.Length; j++)
         {

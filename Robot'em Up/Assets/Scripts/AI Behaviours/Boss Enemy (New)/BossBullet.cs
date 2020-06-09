@@ -58,11 +58,13 @@ public class BossBullet : MonoBehaviour, IHitable
 		if (_other.tag == "Player")
 		{
 			PlayerController hitPlayer = _other.GetComponent<PlayerController>();
+			FeedbackManager.SendFeedback("event.bulletStormHitPlayer", hitPlayer, transform.position, transform.forward, transform.forward);
 			hitPlayer.Damage(bossDatas.bulletStormSettings.bulletDamages);
 			Destroy(gameObject);
 		}
 		if (_other.gameObject.layer == LayerMask.NameToLayer("Environment"))
 		{
+			FeedbackManager.SendFeedback("event.bulletStormHitWall", _other.gameObject, transform.position, transform.forward, transform.forward);
 			Destroy(gameObject);
 		}
 	}
