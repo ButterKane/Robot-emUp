@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 5b62784973361cb45ab0ebae7c494664, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 9160190d5a2eeef469dc4f2c3f71bc48, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -14336,16 +14336,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
-        type: 3}
-      propertyPath: musicID
-      value: MenuTheme
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
-        type: 3}
-      propertyPath: loadOnAwake
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4147452011158739294, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14400,6 +14390,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
+        type: 3}
+      propertyPath: musicID
+      value: MenuTheme
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
+        type: 3}
+      propertyPath: loadOnAwake
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4147452011158739264, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a, type: 3}
@@ -28095,6 +28095,7 @@ MonoBehaviour:
   - {fileID: 1163014192}
   - {fileID: 708450404}
   - {fileID: 926919876}
+  mainMenuCanvas: {fileID: 0}
   optionMenuPrefab: {fileID: 3990827997643161736, guid: dc13041436b957b47a8ca288565745a2,
     type: 3}
   abilitiesMenuPrefab: {fileID: 0}
@@ -33425,7 +33426,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1097741912}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
