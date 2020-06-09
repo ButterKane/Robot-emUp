@@ -108,6 +108,7 @@ public class LinkController : MonoBehaviour
 			float i_linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
 			if (!linkIsBroke)
 			{
+				LockEnemiesInPath();
 				linkMaterial.SetFloat("_CurrentEnergyAmout", EnergyManager.GetEnergy());
 				if (i_linkLength < maxDistanceBeforeBreaking)
 				{
@@ -178,6 +179,14 @@ public class LinkController : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	private void LockEnemiesInPath ()
+	{
+		List<Vector3> pathCoordinates = new List<Vector3>();
+		pathCoordinates.Add(firstPawn.GetCenterPosition());
+		pathCoordinates.Add(secondPawn.GetCenterPosition());
+		LockManager.LockTargetsInPath(pathCoordinates, 0, true);
 	}
 	#endregion
 }

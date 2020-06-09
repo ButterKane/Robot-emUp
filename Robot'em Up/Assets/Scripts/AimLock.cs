@@ -7,10 +7,17 @@ public class AimLock : MonoBehaviour
 	private Animator animator;
 	private Collider extendedCollider;
 
-	public void Init(Transform _linkedTarget, float _radius, Color _color, Color _iconColor, Vector3 sizeModifier = default)
+	public void Init ( Transform _linkedTarget, float _radius, Color _color, Color _iconColor, Vector3 sizeModifier = default, bool _hideLock = false)
 	{
 		linkedTarget = _linkedTarget;
 		animator = GetComponent<Animator>();
+		if (_hideLock)
+		{
+			foreach (Image _im in GetComponentsInChildren<Image>())
+			{
+				_im.enabled = false;
+			}
+		}
 		Collider existingCollider = _linkedTarget.GetComponent<Collider>();
 		if (existingCollider != null)
 		{

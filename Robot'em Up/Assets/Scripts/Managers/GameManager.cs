@@ -231,7 +231,7 @@ public class GameManager : MonoBehaviour
         }
         Time.timeScale = 0f;
         VibrationManager.CancelAllVibrations();
-        mainMenu.gameObject.SetActive(true);
+        mainMenu.mainMenuCanvas.enabled = true;
     }
 
     public static void CloseLevelMenu()
@@ -241,7 +241,7 @@ public class GameManager : MonoBehaviour
             p.EnableInput();
         }
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100;
-        mainMenu.gameObject.SetActive(false);
+        mainMenu.mainMenuCanvas.enabled = false;
     }
 
     public void FindMainCanvas()
@@ -251,7 +251,7 @@ public class GameManager : MonoBehaviour
             if (canvas.renderMode != RenderMode.WorldSpace)
             {
                 mainCanvas = canvas;
-                DontDestroyOnLoad(mainCanvas.gameObject);
+                DontDestroyOnLoad(mainCanvas.rootCanvas.transform);
                 DDOL.Add(mainCanvas.gameObject);
             }
         }
@@ -339,7 +339,7 @@ public class GameManager : MonoBehaviour
             {
                 if (i == 0) { if (menuCalledOne) { return; } }
                 if (i == 1) { if (menuCalledTwo) { return; } }
-                if (mainMenu != null && !mainMenu.gameObject.activeSelf)
+                if (mainMenu != null && !mainMenu.mainMenuCanvas.enabled)
                 {
                     OpenLevelMenu();
                     if (i == 0) { menuCalledOne = true; }
@@ -440,8 +440,6 @@ public class GameManager : MonoBehaviour
         if (mainMenu != null) { Destroy(mainMenu); }
         mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>();
         mainMenu.InitiateSubMenus();
-        mainMenu.gameObject.SetActive(false);
-
     }
 
     private static void DestroyDDOL()

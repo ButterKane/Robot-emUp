@@ -7,7 +7,7 @@ public class LockManager : MonoBehaviour
 	public static List<AimLock> lockedTargets = new List<AimLock>();
 	private static LockDatas datas;
 
-	public static void LockTarget(Transform _target, float _hitboxSize, Vector3 _sizeModifier = default)
+	public static void LockTarget(Transform _target, float _hitboxSize, Vector3 _sizeModifier = default, bool _hideLock = false)
 	{
 		if (datas == null) { datas = Resources.Load<LockDatas>("LockData"); }
 		if (!datas.enableLock) { return; }
@@ -24,7 +24,7 @@ public class LockManager : MonoBehaviour
         {
             AimLock i_newLock = Instantiate(Resources.Load<GameObject>("LockResource/Lock")).GetComponent<AimLock>();
             i_newLock.transform.SetParent(i_canvas.transform);
-            i_newLock.Init(_target, _hitboxSize, datas.defaultLockColor, datas.defaultLockIconColor, _sizeModifier);
+            i_newLock.Init(_target, _hitboxSize, datas.defaultLockColor, datas.defaultLockIconColor, _sizeModifier, _hideLock);
             lockedTargets.Add(i_newLock);
         }
     }
@@ -52,16 +52,16 @@ public class LockManager : MonoBehaviour
 			lockF.Unlock();
 		}
 	}
-	public static void LockTargetsInPath ( List<Vector3> _pathCoordinates, float _startValue )
+	public static void LockTargetsInPath ( List<Vector3> _pathCoordinates, float _startValue, bool _hideLock = false )
 	{
 		List<Transform> i_foundTargets = new List<Transform>();
 		int i_startPoint = Mathf.RoundToInt((_startValue - 0.05f) * _pathCoordinates.Count);
 		i_startPoint = Mathf.Clamp(i_startPoint, 0, _pathCoordinates.Count - 1);
-		for (int i = i_startPoint; i < _pathCoordinates.Count - 1; i++)
+		for (int i = i_startPoint; i < _pathCoordinates.Count; i++)
 		{
 			if (i > 0)
 			{
-				Vector3 i_direction = _pathCoordinates[i+1] - _pathCoordinates[i];
+				Vector3 i_direction = _pathCoordinates[i-1] - _pathCoordinates[i];
 				RaycastHit[] i_hitObjects = Physics.RaycastAll(_pathCoordinates[i], i_direction, i_direction.magnitude);
 				Debug.DrawRay(_pathCoordinates[i], i_direction, Color.red);
 				List<RaycastHit> i_hitObjectsList = new List<RaycastHit>(i_hitObjects);
@@ -75,12 +75,11 @@ public class LockManager : MonoBehaviour
 				}
 				foreach (RaycastHit hit in i_hitObjectsList)
 				{
-					//Debug.Log("Hit found: " + hit.transform.name)
 					IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
 					if (potentialTarget != null && potentialTarget.lockable_access)
 					{
 						i_foundTargets.Add(hit.transform);
-						LockTarget(hit.transform, potentialTarget.lockHitboxSize_access, potentialTarget.lockSize3DModifier_access);
+						LockTarget(hit.transform, potentialTarget.lockHitboxSize_access, potentialTarget.lockSize3DModifier_access, _hideLock);
 					}
 				}
 			}

@@ -91,7 +91,7 @@ public class PlayerUI : MonoBehaviour
 
 		GenerateHealthPanel();
 		GenerateHealthBar();
-		if (dashController)
+		if (dashController && displayDashes)
 		{
 			GenerateDashBars();
 		}
@@ -106,6 +106,7 @@ public class PlayerUI : MonoBehaviour
 	#region Public functions
 	public void DisplayDashes ()
 	{
+		if (!displayDashes) { return; }
 		if (displayedPanels.Contains(dashPanel))
 		{
 			StopCoroutine(currentCoroutines[dashPanel]);
@@ -191,6 +192,7 @@ public class PlayerUI : MonoBehaviour
 	}
 	private void UpdateDashBars()
 	{
+		if (!displayDashes) { return; }
 		float i_totalFillAmount = dashController.GetCurrentStackAmount() + (dashController.GetCurrentStackCooldown() / dashController.defaultStackRecoveryDuration);
 		for (int i = 0; i < dashStacks.Count; i++)
 		{
@@ -231,6 +233,7 @@ public class PlayerUI : MonoBehaviour
 	}
 	public void GenerateDashBars ()
 	{
+		if (!displayDashes) { return; }
 		if (dashPanel != null) { Destroy(dashPanel); }
 		if (dashStacks.Count > 0)
 		{
