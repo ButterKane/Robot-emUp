@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using XInputDotNetPure;
+using TMPro;
+using DG.Tweening;
 
 public class MainMenu : MonoBehaviour
 {
@@ -25,12 +27,16 @@ public class MainMenu : MonoBehaviour
     private GameObject inputRemapMenu;
     private Canvas inputRemapMenuCanvas;
 
+    public Color defaultColor;
+    public Color selectedColor;
+
 
     private Button selectedButton;
 	public Image selectorArrow;
 	public Image selectorOutline;
 	private int selectedButtonIndex;
 	private bool waitForJoystickResetOne;
+    private float selectedButtonDefaultPosition;
 	private bool waitForJoystickResetTwo;
 
 	private bool waitForAResetOne;
@@ -57,7 +63,6 @@ public class MainMenu : MonoBehaviour
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isMainMenuActive && gameObject.activeSelf)
         {
-            Debug.Log("Hello it is main menu");
             for (int i = 0; i < 2; i++)
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
@@ -121,10 +126,8 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                Debug.Log("B state: " + i_state.Buttons.B + " waitForReset: " + waitForBResetOne);
                 if (i_state.Buttons.B == ButtonState.Pressed)
                 {
-                    Debug.Log("Closing level selector");
                     CloseLevelSelector();
                 }
                 else
@@ -164,12 +167,37 @@ public class MainMenu : MonoBehaviour
 
     void SelectButton ( Button _button )
     {
+        if (selectedButton != null)
+        {
+            if (selectedButton == _button) { return; }
+            selectedButton.transform.DOMoveX(selectedButtonDefaultPosition, 0.2f);
+        }
         selectedButton = _button;
+        selectedButtonDefaultPosition = selectedButton.transform.position.x;
         RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
         if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), i_buttonTransform); }
-        selectorArrow.rectTransform.position = _button.transform.position + ((Vector3.right * i_buttonTransform.sizeDelta.x / 2 * i_buttonTransform.localScale.x) + Vector3.right * (100 * selectorArrow.transform.localScale.x)) * transform.localScale.x;
+        float leftValue = i_buttonTransform.sizeDelta.x;
+        selectorArrow.rectTransform.position = i_buttonTransform.position + (Vector3.left * (leftValue / 2f)) + (Vector3.left * 70);
+        Image buttonImage = i_buttonTransform.GetComponent<Image>();
+        foreach (Button b in menuButtons)
+        {
+            if (b.name != "BUTTON_Quit")
+            {
+                b.GetComponent<Image>().color = defaultColor;
+            }
+            b.GetComponentInChildren<TextMeshProUGUI>().color = defaultColor;
+        }
+        if (_button.name != "BUTTON_Quit") {
+            buttonImage.color = selectedColor;
+        }
+        _button.transform.DOMoveX(_button.transform.position.x - 20, 0.2f);
+        selectorOutline.transform.DOMoveX(_button.transform.position.x - 20, 0.2f);
+        buttonImage.GetComponentInChildren<TextMeshProUGUI>().color = selectedColor;
+        selectorArrow.color = buttonImage.color;
         selectorOutline.rectTransform.position = i_buttonTransform.position;
-        selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x * (i_buttonTransform.localScale.x / selectorOutline.rectTransform.localScale.x) * 0.8f, i_buttonTransform.sizeDelta.y * (i_buttonTransform.localScale.y / selectorOutline.rectTransform.localScale.y) * 0.6f);
+        selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x, i_buttonTransform.sizeDelta.y) ;
+        selectorOutline.transform.localScale = i_buttonTransform.localScale;
+        selectorOutline.color = buttonImage.color;
         selectedButtonIndex = buttons.IndexOf(_button);
     }
 
