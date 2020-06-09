@@ -327,6 +327,10 @@ public class PlayerController : PawnController, IHitable
             SphereCollider col = middlePoint.gameObject.AddComponent<SphereCollider>();
             col.radius = 3f;
             col.isTrigger = true;
+            GameObject cinematicCam = Instantiate(Resources.Load<GameObject>("Cinematic/CinematicCamera")).gameObject;
+            cinematicCam.transform.SetParent(middlePoint);
+            cinematicCam.transform.localPosition = Vector3.zero;
+            cinematicCam.transform.localRotation = Quaternion.identity;
         }
     }
     private void UpdateMiddlePoint() //Only the player one can update the position of the middle point
@@ -542,7 +546,7 @@ public class PlayerController : PawnController, IHitable
     {
         if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
         {
-            Highlighter.HighlightBall();
+           // Highlighter.HighlightBall(); //Cut for the moment
             leftShouldWaitForRelease = true;
         }
         else if (state.Buttons.LeftShoulder == ButtonState.Released)

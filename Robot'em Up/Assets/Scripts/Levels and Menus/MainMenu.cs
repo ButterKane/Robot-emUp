@@ -13,7 +13,9 @@ public class MainMenu : MonoBehaviour
 	private List<Button> buttons = new List<Button>();
 
     public bool isMainMenuActive = true;
-    public List<Button> menuButtons = new List<Button>();
+    public List<Button> menuButtons;
+
+    public Canvas mainMenuCanvas;
 
     public GameObject optionMenuPrefab;
     private GameObject optionMenu;
@@ -48,6 +50,7 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         buttons = menuButtons;
+        if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }
         waitForAResetOne = true;
         waitForAResetTwo = true;
         if (sceneList != null) { sceneList.gameObject.SetActive(false); }
@@ -56,6 +59,7 @@ public class MainMenu : MonoBehaviour
         if (gm != null) { enableRBandRTButtons = true; }
         InitiateSubMenus();
         SelectButton(menuButtons[0]);
+        mainMenuCanvas.enabled = false;
     }
 
 	private void Update ()
@@ -67,7 +71,7 @@ public class MainMenu : MonoBehaviour
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
                 if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
-                if (i_state.ThumbSticks.Left.Y > 0)
+                if (i_state.ThumbSticks.Left.Y > 0.3f)
                 {
                     if (i == 0)
                     {
@@ -86,7 +90,7 @@ public class MainMenu : MonoBehaviour
                         }
                     }
                 }
-                else if (i_state.ThumbSticks.Left.Y < 0)
+                else if (i_state.ThumbSticks.Left.Y < -0.3f)
                 {
                     if (i == 0)
                     {
