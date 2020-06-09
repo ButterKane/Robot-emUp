@@ -79,7 +79,7 @@ Light:
   m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 522295
   m_RenderingLayerMask: 1
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 4399952095139653994}
   - component: {fileID: 4399952095139653997}
   m_Layer: 0
-  m_Name: PuzzleElevator
+  m_Name: P_Puzzle_Elevator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -201,11 +201,15 @@ MonoBehaviour:
   puzzleActivators:
   - {fileID: 0}
   puzzleDesactivator: []
+  puzzleActivationsBool: 
   needAllConditions: 0
+  needAllConditionsToFalseForDesactivation: 0
   indictatorLightsList:
   - {fileID: 4371800713919441858}
   isActivated: 0
+  shutDown: 0
   downPosition: {x: 163.65027, y: 0.18999958, z: -224.57486}
   upPosition: {x: 163.65027, y: 9, z: -224.57486}
   speed: 5
+  delayBeforeMoving: 1
   state: 0

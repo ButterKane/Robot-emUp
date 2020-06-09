@@ -219,7 +219,7 @@ public class DashController : MonoBehaviour
 			foreach (RaycastHit hit in hits)
 			{
 				PlayerController hitPawn = hit.collider.transform.gameObject.GetComponent<PlayerController>();
-				if (hitPawn)
+				if (hitPawn && linkedPawn.isPlayer)
 				{
 					if (hitPawn != linkedPawn)
 					{
