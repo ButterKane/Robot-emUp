@@ -99203,6 +99203,7 @@ GameObject:
   - component: {fileID: 1892834135}
   - component: {fileID: 1892834134}
   - component: {fileID: 1892834133}
+  - component: {fileID: 1892834136}
   m_Layer: 0
   m_Name: Virtual camera
   m_TagString: Untagged
@@ -99291,6 +99292,36 @@ Transform:
   m_Father: {fileID: 311511088}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 21.302002, y: 0, z: 0}
+--- !u!114 &1892834136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892834132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 4096
+  m_IgnoreTag: 
+  m_TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_MinimumDistanceFromTarget: 0.5
+  m_AvoidObstacles: 1
+  m_DistanceLimit: 0.5
+  m_MinimumOcclusionTime: 0
+  m_CameraRadius: 0.7
+  m_Strategy: 1
+  m_MaximumEffort: 5
+  m_SmoothingTime: 1.5
+  m_Damping: 2
+  m_DampingWhenOccluded: 2
+  m_OptimalTargetDistance: 0
 --- !u!1001 &1893693235
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -106035,6 +106066,7 @@ GameObject:
   - component: {fileID: 2006741333}
   - component: {fileID: 2006741332}
   - component: {fileID: 2006741331}
+  - component: {fileID: 2006741334}
   m_Layer: 0
   m_Name: Virtual camera
   m_TagString: Untagged
@@ -106123,6 +106155,36 @@ Transform:
   m_Father: {fileID: 1537926058}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 26.928001, y: 0, z: 0}
+--- !u!114 &2006741334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2006741330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 4096
+  m_IgnoreTag: 
+  m_TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_MinimumDistanceFromTarget: 0.5
+  m_AvoidObstacles: 1
+  m_DistanceLimit: 0.5
+  m_MinimumOcclusionTime: 0
+  m_CameraRadius: 0.7
+  m_Strategy: 1
+  m_MaximumEffort: 5
+  m_SmoothingTime: 1.5
+  m_Damping: 2
+  m_DampingWhenOccluded: 2
+  m_OptimalTargetDistance: 0
 --- !u!1001 &2014398579
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -107705,6 +107767,7 @@ GameObject:
   - component: {fileID: 2099882880}
   - component: {fileID: 2099882879}
   - component: {fileID: 2099882878}
+  - component: {fileID: 2099882881}
   m_Layer: 0
   m_Name: Virtual camera
   m_TagString: Untagged
@@ -107732,7 +107795,7 @@ MonoBehaviour:
   translationSpeed: 1
   focusPoint: {fileID: 1120586975}
   staticCamera: 0
-  focusImportance: 0.15
+  focusImportance: 0.1
   enableTranslation: 1
   wantedAngle: 0
   currentDistanceX: 0
@@ -107793,6 +107856,36 @@ Transform:
   m_Father: {fileID: 1550840103}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
+--- !u!114 &2099882881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099882877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 4096
+  m_IgnoreTag: 
+  m_TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_MinimumDistanceFromTarget: 0.5
+  m_AvoidObstacles: 1
+  m_DistanceLimit: 0.5
+  m_MinimumOcclusionTime: 0
+  m_CameraRadius: 0.7
+  m_Strategy: 1
+  m_MaximumEffort: 5
+  m_SmoothingTime: 1.5
+  m_Damping: 2
+  m_DampingWhenOccluded: 2
+  m_OptimalTargetDistance: 0
 --- !u!1001 &2110200965
 PrefabInstance:
   m_ObjectHideFlags: 0
