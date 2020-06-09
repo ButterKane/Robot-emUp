@@ -251,7 +251,7 @@ public class GameManager : MonoBehaviour
             if (canvas.renderMode != RenderMode.WorldSpace)
             {
                 mainCanvas = canvas;
-                DontDestroyOnLoad(mainCanvas.gameObject);
+                DontDestroyOnLoad(mainCanvas.rootCanvas.transform);
                 DDOL.Add(mainCanvas.gameObject);
             }
         }

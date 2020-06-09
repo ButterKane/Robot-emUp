@@ -252,6 +252,7 @@ public class PassController : MonoBehaviour
 	public void Aim ()
 	{
 		ChangePassState(PassState.Aiming);
+		LockManager.UnlockAll();
 	}
 	public void StopAim ()
 	{
