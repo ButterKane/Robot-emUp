@@ -15,6 +15,8 @@ public class MainMenu : MonoBehaviour
     public bool isMainMenuActive = true;
     public List<Button> menuButtons;
 
+    public Canvas mainMenuCanvas;
+
     public GameObject optionMenuPrefab;
     private GameObject optionMenu;
     private Canvas optionMenuCanvas;
@@ -48,6 +50,7 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         buttons = menuButtons;
+        if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }
         waitForAResetOne = true;
         waitForAResetTwo = true;
         if (sceneList != null) { sceneList.gameObject.SetActive(false); }
@@ -56,6 +59,7 @@ public class MainMenu : MonoBehaviour
         if (gm != null) { enableRBandRTButtons = true; }
         InitiateSubMenus();
         SelectButton(menuButtons[0]);
+        mainMenuCanvas.enabled = false;
     }
 
 	private void Update ()
@@ -92,7 +96,6 @@ public class MainMenu : MonoBehaviour
                     {
                         if (!waitForJoystickResetOne)
                         {
-                            Debug.Log("bidouille");
                             SelectNextButton();
                             waitForJoystickResetOne = true;
                         }
@@ -110,7 +113,6 @@ public class MainMenu : MonoBehaviour
                 {
                     if (i == 0)
                     {
-                        Debug.Log("annule bioduill");
                         waitForJoystickResetOne = false;
                     }
                     else if (i == 1)
