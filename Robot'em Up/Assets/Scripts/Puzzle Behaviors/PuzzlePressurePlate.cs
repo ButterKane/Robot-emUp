@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
+using UnityEngine.Events;
 
 public class PuzzlePressurePlate : PuzzleActivator
 {
     [ReadOnly] public bool pawnHere;
     private List<PawnController> pawnHereList = new List<PawnController>();
     public Animator animator;
-
+    public UnityEvent activatedEvent;
+    public UnityEvent deactivatedEvent;
 
     private void OnTriggerEnter(Collider _other)
     {
-        PawnController foundPawn = _other.gameObject.GetComponent<PawnController>();
+        PlayerController foundPawn = _other.gameObject.GetComponent<PlayerController>();
         if (foundPawn && !shutDown)
         {
             if (!pawnHereList.Contains(foundPawn))
@@ -27,6 +29,7 @@ public class PuzzlePressurePlate : PuzzleActivator
                 isActivated = true;
                 animator.SetBool("Activated", true);
                 ActivateLinkedObjects();
+                activatedEvent.Invoke();
             }
         }
 
@@ -36,7 +39,7 @@ public class PuzzlePressurePlate : PuzzleActivator
 
     private void OnTriggerExit(Collider _other)
     {
-        PawnController foundPawn = _other.gameObject.GetComponent<PawnController>();
+        PlayerController foundPawn = _other.gameObject.GetComponent<PlayerController>();
         if (foundPawn)
         {
             if (pawnHereList.Contains(foundPawn))
@@ -54,6 +57,7 @@ public class PuzzlePressurePlate : PuzzleActivator
                     DesactiveLinkedObjects();
                     pawnHere = false;
                     transform.localScale = new Vector3(transform.localScale.x, 1f, transform.localScale.z);
+                    deactivatedEvent.Invoke();
                 }
             }
         }
