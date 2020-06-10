@@ -63,13 +63,13 @@ public class PlayerGhostAI : MonoBehaviour
                         CurrentDirection = new Vector3(1, 0, 0);
                         break;
                     case 1:
-                        CurrentDirection = new Vector3(1, 0, 1);
+                        CurrentDirection = new Vector3(0, 0, 1);
                         break;
                     case 2:
                         CurrentDirection = new Vector3(-1, 0, 0);
                         break;
                     case 3:
-                        CurrentDirection = new Vector3(-1, 0, -1);
+                        CurrentDirection = new Vector3(0, 0, -1);
                         break;
                 }
 
