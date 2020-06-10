@@ -37,6 +37,7 @@ public class LevelSelector : MonoBehaviour
 
 			i_newButton.AddComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(x)) ;
 			i_newButton.transform.SetParent(transform.Find("Viewport").transform.Find("Content"));
+			i_newButton.transform.localPosition = new Vector3(0f, -i * 50, 0);
 
 			GameObject i_buttonText = new GameObject();
 			i_buttonText.transform.SetParent(i_newButton.transform);
@@ -44,9 +45,9 @@ public class LevelSelector : MonoBehaviour
 			i_newText.alignment = TextAnchor.MiddleCenter;
 			i_newText.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x*0.7f, i_buttonTransform.sizeDelta.y * 0.5f);
 			i_newText.text = GetSceneNameFromBuildIndex(x);
-			i_newText.resizeTextMinSize = 1;
-			i_newText.resizeTextForBestFit = true;
+			i_newText.fontSize = 8;
 			i_newText.font = buttonFont;
+			i_newText.transform.localPosition = Vector3.zero;
 
 			buttons.Add(i_newButton.GetComponent<Button>());
 		}

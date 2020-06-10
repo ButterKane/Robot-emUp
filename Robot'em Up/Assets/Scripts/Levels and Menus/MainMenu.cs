@@ -46,15 +46,16 @@ public class MainMenu : MonoBehaviour
     [ReadOnly] public bool waitForBResetOne;
     public ScrollRect sceneList;
 	private bool enableRBandRTButtons;
-    private float menuButtonXPosition;
-    private float menuButtonXPositionEnd;
     private bool menuRetracted;
+
+    public float menuDefaultPosition = 0.85f;
+    public float menuSelectedPosition = 0.84f;
+    public float menuHiddenPosition = 1.25f;
+    public float menuTransitionSpeed = 0.4f;
 
     private void Start()
     {
         buttons = menuButtons;
-        menuButtonXPosition = buttons[0].transform.position.x;
-        menuButtonXPositionEnd = menuButtonXPosition + 300f;
         if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }
         waitForAResetOne = true;
         waitForAResetTwo = true;
@@ -64,7 +65,7 @@ public class MainMenu : MonoBehaviour
         if (gm != null) { enableRBandRTButtons = true; }
         InitiateSubMenus();
         SelectButton(menuButtons[0]);
-        mainMenuCanvas.enabled = false;
+        RestoreButtons();
     }
 
 	private void Update ()
@@ -179,7 +180,7 @@ public class MainMenu : MonoBehaviour
         if (selectedButton != null)
         {
             DOTween.Complete(selectedButton);
-            selectedButton.transform.DOMoveX(selectedButtonDefaultPosition, 0.1f).OnComplete(HideButtons2);
+            selectedButton.transform.DOMoveX(Screen.width * menuDefaultPosition, 0.1f).OnComplete(HideButtons2);
             selectedButton = null;
         } else
         {
@@ -190,16 +191,14 @@ public class MainMenu : MonoBehaviour
     void HideButtons2()
     {
         float i = 0;
-        selectorOutline.transform.position = buttons[0].transform.position;
-        selectorOutline.transform.DOMoveX(menuButtonXPositionEnd, 1f + i * 0.1f);
         foreach (Button b in menuButtons)
         {
             if (i == menuButtons.Count - 1)
             {
-                b.transform.DOMoveX(menuButtonXPositionEnd, 1f + i * 0.1f).OnComplete(SelectDefaultButton); ;
+                b.transform.DOMoveX(Screen.width * menuHiddenPosition, menuTransitionSpeed + i * 0.025f);
             } else
             {
-                b.transform.DOMoveX(menuButtonXPositionEnd, 1f + i * 0.1f);
+                b.transform.DOMoveX(Screen.width * menuHiddenPosition, menuTransitionSpeed + i * 0.025f);
             }
             i++;
         }
@@ -209,21 +208,23 @@ public class MainMenu : MonoBehaviour
     {
         SelectButton(buttons[0], false);
     }
+    void SelectLevelSelectorButton ()
+    {
+        SelectButton(buttons[2], false);
+    }
     void RestoreButtons ()
     {
         menuRetracted = false;
         float i = 0;
-        selectorOutline.transform.position = buttons[0].transform.position;
-        selectorOutline.transform.DOMoveX(menuButtonXPosition, 1f + i * 0.1f);
         foreach (Button b in menuButtons)
         {
             if (i == menuButtons.Count - 1)
             {
-                b.transform.DOMoveX(menuButtonXPosition, 1f + i * 0.1f).OnComplete(SelectDefaultButton);
+                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
             }
             else
             {
-                b.transform.DOMoveX(menuButtonXPosition, 1f + i * 0.1f);
+                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
             }
             i++;
         }
@@ -235,12 +236,9 @@ public class MainMenu : MonoBehaviour
         if (selectedButton != null)
         {
             if (selectedButton == _button) { return; }
-            if (menuRetracted && _showAnimation)
+            if (_showAnimation)
             {
-                selectedButton.transform.DOMoveX(menuButtonXPositionEnd, 0.2f);
-            } else if (_showAnimation)
-            {
-                selectedButton.transform.DOMoveX(menuButtonXPosition, 0.2f);
+                 selectedButton.transform.DOMoveX(Screen.width * menuDefaultPosition, 0.1f);
             }
         }
         selectedButton = _button;
@@ -261,15 +259,9 @@ public class MainMenu : MonoBehaviour
         if (_button.name != "BUTTON_Quit") {
             buttonImage.color = selectedColor;
         }
-        if (menuRetracted && _showAnimation)
+         if (_showAnimation)
         {
-            _button.transform.DOMoveX(menuButtonXPositionEnd - 20, 0.2f);
-            selectorOutline.transform.DOMoveX(menuButtonXPositionEnd - 20, 0.2f);
-        }
-        else if (_showAnimation)
-        {
-            _button.transform.DOMoveX(menuButtonXPosition - 20, 0.2f);
-            selectorOutline.transform.DOMoveX(menuButtonXPosition - 20, 0.2f);
+            _button.transform.DOMoveX(Screen.width * menuSelectedPosition, 0.1f);
         }
         if (buttonImage != null)
         {
@@ -280,9 +272,10 @@ public class MainMenu : MonoBehaviour
             }
         }
         selectorArrow.color = buttonImage.color;
-        selectorOutline.rectTransform.position = i_buttonTransform.position;
+        selectorOutline.transform.SetParent(_button.transform);
+        selectorOutline.transform.localPosition = Vector3.zero;
         selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x, i_buttonTransform.sizeDelta.y) ;
-        selectorOutline.transform.localScale = i_buttonTransform.localScale;
+        selectorOutline.transform.localScale = Vector3.one;
         selectorOutline.color = buttonImage.color;
         selectedButtonIndex = buttons.IndexOf(_button);
     }
@@ -310,15 +303,49 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(true);
         LevelSelector lselector = sceneList.GetComponent<LevelSelector>();
         buttons = lselector.buttons;
+        SelectDefaultButton();
+        float i = 0;
+        foreach (Button b in buttons)
+        {
+            if (i == buttons.Count - 1)
+            {
+                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
+            }
+            else
+            {
+                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
+            }
+            i++;
+        }
     }
 
     public void CloseLevelSelector ()
     {
-        RestoreButtons();
         FeedbackManager.SendFeedback("event.PressExit", this);
-        sceneList.gameObject.SetActive(false);
+        float i = 0;
+        bool callBackCalled = false;
+        foreach (Button b in buttons)
+        {
+            if (i >= buttons.Count - 1 || i >= 5 && !callBackCalled)
+            {
+                b.transform.DOMoveX(Screen.width * menuHiddenPosition, menuTransitionSpeed + i * 0.025f).OnComplete(HideLevelSelector);
+                callBackCalled = true;
+            }
+            else
+            {
+                b.transform.DOMoveX(Screen.width * menuHiddenPosition, menuTransitionSpeed + i * 0.025f);
+            }
+            i++;
+        }
         buttons = menuButtons;
+    }
+
+    private void HideLevelSelector()
+    {
+        sceneList.gameObject.SetActive(false);
         Time.timeScale = 1;
+        RestoreButtons();
+        SelectLevelSelectorButton();
     }
 
     public void StartGame ()
