@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 9160190d5a2eeef469dc4f2c3f71bc48, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 5b62784973361cb45ab0ebae7c494664, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -7945,7 +7945,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13.7, y: -116}
+  m_AnchoredPosition: {x: 501, y: 0}
   m_SizeDelta: {x: 250, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &248740858
@@ -7972,7 +7972,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 248740855}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -8754,7 +8754,7 @@ RectTransform:
   m_GameObject: {fileID: 341335093}
   m_LocalRotation: {x: -0, y: -0, z: -0.9964158, w: 0.08459108}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10.749667, y: 17.044353, z: 12.335701}
+  m_LocalScale: {x: 10.749667, y: 50.241642, z: 12.335701}
   m_Children: []
   m_Father: {fileID: 1106217756}
   m_RootOrder: 0
@@ -14336,6 +14336,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
+        type: 3}
+      propertyPath: musicID
+      value: MenuTheme
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
+        type: 3}
+      propertyPath: loadOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4147452011158739294, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14390,16 +14400,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
-        type: 3}
-      propertyPath: musicID
-      value: MenuTheme
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147452011158739267, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a,
-        type: 3}
-      propertyPath: loadOnAwake
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4147452011158739264, guid: 73286f3b7fdd3aa4b8153a600d3f5e3a, type: 3}
@@ -33425,8 +33425,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1097741913}
   m_HandleRect: {fileID: 1097741912}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.9999999
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -38243,7 +38243,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1714493392}
   m_HandleRect: {fileID: 1714493390}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

@@ -80,7 +80,8 @@ public class GameManager : MonoBehaviour
 
 
     // Settings variables
-    [ReadOnly] public float gameSpeed = 100; // as in 100% of normal speed
+    [Tooltip("gameSpeed: 100 = TimeScale: 1")]
+    public float gameSpeed = 100; // as in 100% of normal speed
     [ReadOnly] public float damageTakenSettingsMod = 1;
     [ReadOnly] public float aimAssistanceSettingsMod = 0; // Get PlayerPrefs.GetFloat("REU_Assisting Aim", aimAssistanceSettingsMod);
     [ReadOnly] public int enemiesAgressivity = 1;
@@ -93,7 +94,7 @@ public class GameManager : MonoBehaviour
 
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed)/100; 
+        Time.timeScale = (PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed)/100); 
         ChangeDifficulty(null, null); // initialisation, with base  
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
