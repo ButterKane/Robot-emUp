@@ -360,7 +360,7 @@ public class BallBehaviour : MonoBehaviour
 	private void CheckIfOutOfScreen ()
 	{
 		Vector3 viewportPos = GameManager.mainCamera.WorldToViewportPoint(transform.position);
-		if ((viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0) && transform.parent == null)
+		if ((viewportPos.x > 1 || viewportPos.x < 0 || viewportPos.y > 1 || viewportPos.y < 0 || IsBehindEnvironment()) && transform.parent == null)
 		{
 			outOfScreenTime += Time.deltaTime;
 		}
@@ -372,6 +372,19 @@ public class BallBehaviour : MonoBehaviour
 		{
 			ballCoroutine = StartCoroutine(GoToNearestPlayer_C());
 		}
+	}
+
+	private bool IsBehindEnvironment()
+	{
+		RaycastHit hit;
+		Vector3 startPoint = GameManager.mainCamera.transform.position;
+		Vector3 endPoint = transform.position;
+		Vector3 direction = endPoint - startPoint;
+		if (Physics.Raycast(startPoint, direction, out hit, direction.magnitude * 1.2f, LayerMask.GetMask("Environment")))
+		{
+			return true;
+		}
+		return false;
 	}
 	private void UpdateModifiers ()
 	{

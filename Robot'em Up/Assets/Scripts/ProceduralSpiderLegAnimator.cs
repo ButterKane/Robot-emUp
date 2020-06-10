@@ -82,7 +82,10 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 				yield return null;
 			}
 		}
-		IK.Target.transform.position = wantedTransform.transform.position + forwardOffset;
+		if (IK.Target != null)
+		{
+			IK.Target.transform.position = wantedTransform.transform.position + forwardOffset;
+		}
 		isGrounded = true;
 		if (eventOnStep != "")
 		{
