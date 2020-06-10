@@ -54,9 +54,17 @@ public class EnemyShield : EnemyBehaviour
         enemyType = EnemyTypes.Shield;
     }
 
+    private void AbortAttack()
+    {
+        attackTimeProgression = whenToTriggerEndOfAttackAnim;
+        mustCancelAttack = true;
+        attackHitBox.ToggleCollider(false);
+        navMeshAgent.enabled = false;
+    }
+
     #region Public methods
     // Ususally called when hitting player
-    public void StopAttack()
+    public void AttackTouchedSoStop()
     {
         //navMeshAgent.SetDestination(transform.position);
         attackTimeProgression = whenToTriggerEndOfAttackAnim;
@@ -192,9 +200,11 @@ public class EnemyShield : EnemyBehaviour
         {
             if(!isShieldActivated || Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward) > angleRangeForRebound)
             {
+
                 print(Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward));
                 if (isShieldActivated)
                 {
+                    AbortAttack();
                     if (currentShieldDeactiveCoroutine != null)
                     {
                         StopCoroutine(currentShieldDeactiveCoroutine);

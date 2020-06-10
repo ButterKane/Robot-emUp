@@ -21,7 +21,12 @@ public class PlayerGhostAI : MonoBehaviour
     public float actionCooldown = 5;
     private float currentCooldown;
     private float curvedCooldown;
+    private Vector3 OriginalPosition;
+    private Vector3 ThrustX;
+    private Vector3 ThrustZ;
+    private int StepMoving;
     private bool jumpCooldown;
+    private bool DashActivated;
 
     private DashController dashController;
     private DunkController dunkController;
@@ -38,7 +43,9 @@ public class PlayerGhostAI : MonoBehaviour
         dunkController = GetComponent<DunkController>();
         pawnController = GetComponent<PawnController>();
         curvedCooldown = 0;
-
+        StepMoving = 0;
+        DashActivated = false;
+        OriginalPosition = transform.position;
         if (passController) { passController.SetTargetedPawn(passTarget); }
     }
     void Update()
@@ -49,25 +56,42 @@ public class PlayerGhostAI : MonoBehaviour
         {
             case GhostType.Moving:
                 pawnController.canMove = true;
-                pawnController.moveInput = CurrentDirection * SpeedGhost;
-                pawnController.lookInput = CurrentDirection;
-                pawnController.UpdateAnimatorBlendTree();
+
+                switch (StepMoving)
+                {
+                    case 0:
+                        CurrentDirection = new Vector3(1, 0, 0);
+                        break;
+                    case 1:
+                        CurrentDirection = new Vector3(1, 0, 1);
+                        break;
+                    case 2:
+                        CurrentDirection = new Vector3(-1, 0, 0);
+                        break;
+                    case 3:
+                        CurrentDirection = new Vector3(-1, 0, -1);
+                        break;
+                }
+
+
                 if (currentCooldown <= 0)
                 {
+                    StepMoving++;
+                    if (StepMoving>3)
+                        {
+                                StepMoving = 0;
+                    }
                     currentCooldown = actionCooldown;
-                    if (CurrentDirection == Direction1)
-                    {
-                        CurrentDirection = Direction2;
-                    }
-                    else
-                    {
-                        CurrentDirection = Direction1;
-                    }
                 }
                 else
                 {
                     currentCooldown -= Time.deltaTime;
                 }
+
+                pawnController.moveInput = CurrentDirection * SpeedGhost;
+                pawnController.lookInput = CurrentDirection;
+                pawnController.UpdateAnimatorBlendTree();
+
 
                 break;
             case GhostType.Dashing:
@@ -77,11 +101,16 @@ public class PlayerGhostAI : MonoBehaviour
                 pawnController.moveInput = CurrentDirection * SpeedGhost;
                 pawnController.UpdateAnimatorBlendTree();
 
-                if (currentCooldown <= 0)
+                if (currentCooldown <= 0.5f && !DashActivated)
                 {
                     dashController.RecoverAllStackAmount();
                     dashController.Dash(CurrentDirection);
                     pawnController.lookInput = CurrentDirection;
+                    DashActivated = true;
+                }
+                else if (currentCooldown <= 0)
+                {
+                    DashActivated = false;
                     currentCooldown = actionCooldown;
                     if (CurrentDirection == Direction1)
                     {
@@ -91,6 +120,7 @@ public class PlayerGhostAI : MonoBehaviour
                     {
                         CurrentDirection = Direction1;
                     }
+
                 }
                 else
                 {
