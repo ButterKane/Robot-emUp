@@ -30,7 +30,7 @@ public class RushAttackHitBox : MonoBehaviour
         {
             other.GetComponentInParent<IHitable>().OnHit(null, other.transform.position - transform.position, null, parent.damage, DamageSource.EnemyContact);
             FeedbackManager.SendFeedback("event.EnemyShieldHitPlayer", this);
-            parent.StopAttack();
+            parent.AttackTouchedSoStop();
             ToggleCollider(false);
         }
         else if (other.transform.tag == "Enemy")
