@@ -217,7 +217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 30
   totalHeight: 1.5
-  invincibilityTime: 0.05
+  invincibilityTime: 0.1
   ignoreEletricPlates: 0
   canMove: 0
   pawnMovementValues: {fileID: 11400000, guid: f5761a05d10d06743bb8e2402968d0fc, type: 2}
@@ -249,11 +249,11 @@ MonoBehaviour:
   playerOneTransform: {fileID: 0}
   playerTwoTransform: {fileID: 0}
   selfCollider: {fileID: 0}
-  enemyType: 4
+  enemyType: 5
   focusedPawnController: {fileID: 0}
   energyGainedOnHit: 0.08
   damage: 100
-  powerLevel: 1
+  powerLevel: 2.5
   lockable: 1
   lockHitboxSize: 3
   lockSize3DModifier: {x: 1, y: 1, z: 1}
@@ -301,8 +301,8 @@ MonoBehaviour:
   endAimingFXScaleMultiplier: 0
   startAimingFXCircleThickness: 0
   rotationSpeedReductionRatio: 0.929
-  repulseCircleRadius: 2
-  repulseCircleStrength: 1
+  repulseCircleRadius: 0
+  repulseCircleStrength: 0
   playerSpeedReductionCoef: 0.5
   FXChargingParticlesPrefab: {fileID: 147226, guid: d33e6250f9821824d9f179f05808ba22,
     type: 3}
@@ -721,6 +721,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0.00089600374
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -3121405613446350570, guid: ca85342a66a63764b8c047d6e4e25569,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -740,21 +755,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0.00089600374
-      objectReference: {fileID: 0}
-    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 7073820479684747382, guid: ca85342a66a63764b8c047d6e4e25569,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7336063208917860654, guid: ca85342a66a63764b8c047d6e4e25569,
         type: 3}

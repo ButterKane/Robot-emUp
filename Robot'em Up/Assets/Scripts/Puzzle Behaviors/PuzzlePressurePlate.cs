@@ -20,16 +20,20 @@ public class PuzzlePressurePlate : PuzzleActivator
             if (!pawnHereList.Contains(foundPawn))
             {
                 pawnHereList.Add(foundPawn);
-                pawnHere = true;
-                transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
+
                 if (!isActivated)
                 {
-                    FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
+                    pawnHere = true;
+                    transform.localScale = new Vector3(transform.localScale.x, 0.3f, transform.localScale.z);
+                    if (!isActivated)
+                    {
+                        FeedbackManager.SendFeedback("event.PuzzlePressurePlateActivation", this);
+                    }
+                    isActivated = true;
+                    animator.SetBool("Activated", true);
+                    ActivateLinkedObjects();
+                    activatedEvent.Invoke();
                 }
-                isActivated = true;
-                animator.SetBool("Activated", true);
-                ActivateLinkedObjects();
-                activatedEvent.Invoke();
             }
         }
 
