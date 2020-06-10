@@ -26,7 +26,8 @@ public class OldBoss_Manager : MonoBehaviour
     public Slider pyramidHealth;
 
     public GameObject cameraZone;
-    public Cinemachine.CinemachineVirtualCamera EndCamera;
+    public CameraBehaviour EndCamera;
+    public GameObject EndToActivate;
 
     private void Awake()
     {
@@ -39,6 +40,7 @@ public class OldBoss_Manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        EndToActivate.SetActive(false);
     }
 
 
@@ -56,7 +58,8 @@ public class OldBoss_Manager : MonoBehaviour
         PyramidBehaviorGameObject.SetActive(false);
         doorExit.OpenDoor();
         cameraZone.SetActive(false);
-        EndCamera.Priority = 13;
+        EndCamera.ActivateCamera();
+        EndToActivate.SetActive(true);
     }
     
 

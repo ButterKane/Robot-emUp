@@ -46,10 +46,15 @@ public class MainMenu : MonoBehaviour
     [ReadOnly] public bool waitForBResetOne;
     public ScrollRect sceneList;
 	private bool enableRBandRTButtons;
+    private float menuButtonXPosition;
+    private float menuButtonXPositionEnd;
+    private bool menuRetracted;
 
     private void Start()
     {
         buttons = menuButtons;
+        menuButtonXPosition = buttons[0].transform.position.x;
+        menuButtonXPositionEnd = menuButtonXPosition + 300f;
         if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }
         waitForAResetOne = true;
         waitForAResetTwo = true;
@@ -168,13 +173,75 @@ public class MainMenu : MonoBehaviour
         }
 	}
 
+    void HideButtons()
+    {
+        menuRetracted = true;
+        if (selectedButton != null)
+        {
+            DOTween.Complete(selectedButton);
+            selectedButton.transform.DOMoveX(selectedButtonDefaultPosition, 0.1f).OnComplete(HideButtons2);
+            selectedButton = null;
+        } else
+        {
+            HideButtons2();
+        }
+    }
 
-    void SelectButton ( Button _button )
+    void HideButtons2()
+    {
+        float i = 0;
+        selectorOutline.transform.position = buttons[0].transform.position;
+        selectorOutline.transform.DOMoveX(menuButtonXPositionEnd, 1f + i * 0.1f);
+        foreach (Button b in menuButtons)
+        {
+            if (i == menuButtons.Count - 1)
+            {
+                b.transform.DOMoveX(menuButtonXPositionEnd, 1f + i * 0.1f).OnComplete(SelectDefaultButton); ;
+            } else
+            {
+                b.transform.DOMoveX(menuButtonXPositionEnd, 1f + i * 0.1f);
+            }
+            i++;
+        }
+    }
+
+    void SelectDefaultButton()
+    {
+        SelectButton(buttons[0], false);
+    }
+    void RestoreButtons ()
+    {
+        menuRetracted = false;
+        float i = 0;
+        selectorOutline.transform.position = buttons[0].transform.position;
+        selectorOutline.transform.DOMoveX(menuButtonXPosition, 1f + i * 0.1f);
+        foreach (Button b in menuButtons)
+        {
+            if (i == menuButtons.Count - 1)
+            {
+                b.transform.DOMoveX(menuButtonXPosition, 1f + i * 0.1f).OnComplete(SelectDefaultButton);
+            }
+            else
+            {
+                b.transform.DOMoveX(menuButtonXPosition, 1f + i * 0.1f);
+            }
+            i++;
+        }
+    }
+
+
+    void SelectButton ( Button _button, bool _showAnimation = true )
     {
         if (selectedButton != null)
         {
             if (selectedButton == _button) { return; }
-            selectedButton.transform.DOMoveX(selectedButtonDefaultPosition, 0.2f);
+            if (menuRetracted && _showAnimation)
+            {
+                selectedButton.transform.DOMoveX(menuButtonXPositionEnd, 0.2f);
+            } else if (_showAnimation)
+            {
+                selectedButton.transform.DOMoveX(menuButtonXPosition, 0.2f);
+            }
         }
         selectedButton = _button;
         selectedButtonDefaultPosition = selectedButton.transform.position.x;
@@ -194,9 +261,24 @@ public class MainMenu : MonoBehaviour
         if (_button.name != "BUTTON_Quit") {
             buttonImage.color = selectedColor;
         }
-        _button.transform.DOMoveX(_button.transform.position.x - 20, 0.2f);
-        selectorOutline.transform.DOMoveX(_button.transform.position.x - 20, 0.2f);
-        buttonImage.GetComponentInChildren<TextMeshProUGUI>().color = selectedColor;
+        if (menuRetracted && _showAnimation)
+        {
+            _button.transform.DOMoveX(menuButtonXPositionEnd - 20, 0.2f);
+            selectorOutline.transform.DOMoveX(menuButtonXPositionEnd - 20, 0.2f);
+        }
+        else if (_showAnimation)
+        {
+            _button.transform.DOMoveX(menuButtonXPosition - 20, 0.2f);
+            selectorOutline.transform.DOMoveX(menuButtonXPosition - 20, 0.2f);
+        }
+        if (buttonImage != null)
+        {
+            TextMeshProUGUI tmpro = buttonImage.GetComponentInChildren<TextMeshProUGUI>();
+            if (tmpro != null)
+            {
+                tmpro.color = selectedColor;
+            }
+        }
         selectorArrow.color = buttonImage.color;
         selectorOutline.rectTransform.position = i_buttonTransform.position;
         selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x, i_buttonTransform.sizeDelta.y) ;
@@ -224,18 +306,18 @@ public class MainMenu : MonoBehaviour
 
     public void OpenLevelSelector ()
     {
+        HideButtons();
         sceneList.gameObject.SetActive(true);
         LevelSelector lselector = sceneList.GetComponent<LevelSelector>();
         buttons = lselector.buttons;
-        SelectButton(buttons[0]);
     }
 
     public void CloseLevelSelector ()
     {
+        RestoreButtons();
         FeedbackManager.SendFeedback("event.PressExit", this);
         sceneList.gameObject.SetActive(false);
         buttons = menuButtons;
-        SelectButton(buttons[0]);
         Time.timeScale = 1;
     }
 
