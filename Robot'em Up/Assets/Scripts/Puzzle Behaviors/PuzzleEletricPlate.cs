@@ -62,12 +62,12 @@ public class PuzzleEletricPlate : PuzzleActivable
         {
             
             PawnController _pawn = _other.gameObject.GetComponent<PawnController>();
-            if (_pawn.ignoreEletricPlates == false)
+            if (_pawn.ignoreEletricPlates == false & !shutDown)
             {
                 pawnTrapped.Add(_pawn);
             }
 
-            if (!isActivated)
+            if (!isActivated &!shutDown)
             {
                 _pawn.AddSpeedModifier(new SpeedCoef(0.5f, puzzleData.timeCheckingDamageEletricPlate, SpeedMultiplierReason.Freeze, false));
             }
