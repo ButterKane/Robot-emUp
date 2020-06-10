@@ -31,7 +31,7 @@ public class LevelSelector : MonoBehaviour
 			Scene foundScene = SceneManager.GetSceneByBuildIndex(x);
 			i_newButton.name = "Button[" + foundScene.name + "]";
 			Image i_image = i_newButton.AddComponent<Image>();
-			i_image.sprite = Resources.Load<Sprite>("Menu/default_button");
+			i_image.sprite = Resources.Load<Sprite>("Menu/default_button02");
 			RectTransform i_buttonTransform = i_newButton.GetComponent<RectTransform>();
 			i_buttonTransform.sizeDelta = new Vector2(200, 50);
 
