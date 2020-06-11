@@ -146,7 +146,11 @@ public class CameraBehaviour : MonoBehaviour
 		}
 		else
 		{
-			i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			i_middlePosition = Vector3.zero;
+			if (GameManager.playerOne != null && GameManager.playerTwo != null)
+			{
+				i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
+			}
 		}
 		if (focusPoint != null)
 		{
