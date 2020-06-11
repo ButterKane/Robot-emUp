@@ -49,7 +49,7 @@ public class PuzzleRepeater : PuzzleActivator
         isActivated = false;
         UpdateLight();
 
-        FeedbackManager.SendFeedback("event.PuzzleRepeaterActivation", this);
+       //  FeedbackManager.SendFeedback("event.PuzzleRepeaterActivation", this);
     }
 
     public virtual void DeactivatedAction()
@@ -57,8 +57,8 @@ public class PuzzleRepeater : PuzzleActivator
         ActivateLinkedObjects();
         isActivated = true;
         UpdateLight();
-		FeedbackManager.SendFeedback("event.PuzzleRepeaterDesactivation", this);
-	}
+        // FeedbackManager.SendFeedback("event.PuzzleRepeaterDesactivation", this);
+    }
 
 
 }
