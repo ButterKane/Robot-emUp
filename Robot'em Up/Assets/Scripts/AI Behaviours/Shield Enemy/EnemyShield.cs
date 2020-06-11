@@ -195,6 +195,7 @@ public class EnemyShield : EnemyBehaviour
         if (_source == DamageSource.Dunk)
         {
             isShieldActivated_accesss = false; // It is bumped, so it will reactivate at the end of it
+            base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
         }
         else if (_source == DamageSource.Ball)
         {

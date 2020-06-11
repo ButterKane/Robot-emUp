@@ -97,6 +97,21 @@ public class ArenaClusterCubes : MonoBehaviour
         }
     }
 
+    public void ToggleClusterLayout()
+    {
+        DeactivateCurrentLayout();
+        if (layoutState == 0)
+        {
+            layoutState++;
+            Invoke("ActivateNewLayout", movingCubeTimeOffset + movingCubeDownMaxTime);
+        }
+        else
+        {
+            layoutState--;
+            Invoke("ActivateNewLayout", movingCubeTimeOffset + movingCubeDownMaxTime);
+        }
+    }
+
     IEnumerator MoveCube(bool _up, int _row, int _column)
     {
         //SET UP
