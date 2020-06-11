@@ -190,6 +190,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(index);
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
+        timeInZone = 0;
     }
 
     public static void LoadNextScene()
@@ -198,6 +199,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
+        timeInZone = 0;
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -233,6 +235,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         VibrationManager.CancelAllVibrations();
         mainMenu.mainMenuCanvas.enabled = true;
+        timeInZone = 0;
     }
 
     public static void CloseLevelMenu()
@@ -263,6 +266,7 @@ public class GameManager : MonoBehaviour
         DestroyDDOL();
         SceneManager.LoadScene(GetCurrentZoneName());
         VibrationManager.CancelAllVibrations();
+        timeInZone = 0;
     }
 
     public static void ResetBall()
