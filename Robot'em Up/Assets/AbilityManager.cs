@@ -30,6 +30,18 @@ public class AbilityManager : MonoBehaviour
 	{
 		return unlockedAbilities[_ability];
 	}
+
+    public static bool IsAbilityUnlocked(ConcernedAbility _ability)
+    {
+        if (GetAbilityLevel(_ability) >= 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 	public static void UpgradeAbility(ConcernedAbility _ability, Upgrade _upgrade)
 	{
 		//Check that the upgrade is better than the current

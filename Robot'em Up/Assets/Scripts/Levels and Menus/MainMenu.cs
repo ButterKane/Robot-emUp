@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
 {
 	private List<Button> buttons = new List<Button>();
 
+    public bool showOnAwake = false;
     public bool isMainMenuActive = true;
     public List<Button> menuButtons;
 
@@ -45,8 +46,6 @@ public class MainMenu : MonoBehaviour
 	private bool waitForAResetTwo;
     [ReadOnly] public bool waitForBResetOne;
     public ScrollRect sceneList;
-	private bool enableRBandRTButtons;
-    private bool menuRetracted;
 
     public float menuDefaultPosition = 0.85f;
     public float menuSelectedPosition = 0.84f;
@@ -61,10 +60,15 @@ public class MainMenu : MonoBehaviour
         waitForAResetTwo = true;
         if (sceneList != null) { sceneList.gameObject.SetActive(false); }
         SelectButton(buttons[0]);
-        GameManager gm = GameManager.i; ;
-        if (gm != null) { enableRBandRTButtons = true; }
+        GameManager gm = GameManager.i;
         InitiateSubMenus();
-        SelectButton(menuButtons[0]);
+        if (!showOnAwake)
+        {
+            mainMenuCanvas.enabled = false;
+        } else
+        {
+            mainMenuCanvas.enabled = true;
+        }
         RestoreButtons();
     }
 
@@ -144,23 +148,6 @@ public class MainMenu : MonoBehaviour
                 {
                     waitForBResetOne = true;
                 }
-                if (enableRBandRTButtons)
-                {
-                    if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
-                    {
-                        if (SceneManager.GetActiveScene().buildIndex < SceneManager.sceneCountInBuildSettings - 1)
-                        {
-                            GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex + 1);
-                        }
-                    }
-                    if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
-                    {
-                        if (SceneManager.GetActiveScene().buildIndex > 0)
-                        {
-                            GameManager.LoadSceneByIndex(SceneManager.GetActiveScene().buildIndex - 1);
-                        }
-                    }
-                }
             }
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -176,7 +163,6 @@ public class MainMenu : MonoBehaviour
 
     void HideButtons()
     {
-        menuRetracted = true;
         if (selectedButton != null)
         {
             DOTween.Complete(selectedButton);
@@ -214,7 +200,6 @@ public class MainMenu : MonoBehaviour
     }
     void RestoreButtons ()
     {
-        menuRetracted = false;
         float i = 0;
         foreach (Button b in menuButtons)
         {
@@ -352,6 +337,7 @@ public class MainMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
         SceneManager.LoadScene(1);
+        AbilityManager.ResetUpgrades();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
