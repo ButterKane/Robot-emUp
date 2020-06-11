@@ -337,6 +337,7 @@ public class MainMenu : MonoBehaviour
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
         SceneManager.LoadScene(1);
+        AbilityManager.ResetUpgrades();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
