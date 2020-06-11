@@ -161,7 +161,7 @@ public class AbilityListNavigation : MonoBehaviour
 
     public void UnlockNextUpgradeForPerfectReception()
     {
-        StartCoroutine(UpgradePrefectReceptionSequence_C());
+        StartCoroutine(UpgradePerfectReceptionSequence_C());
     }
 
     public void DisplayAbility()
@@ -235,8 +235,18 @@ public class AbilityListNavigation : MonoBehaviour
     private void GetAvailableAbilitiesDatas()
     {
         availableAbilitesData.Clear();
+        
         foreach (var ability in abilitiesData)
         {
+            if (ability.ability == ConcernedAbility.PerfectReception)
+            {
+                if (AbilityManager.GetAbilityLevel(ability.ability) >= Upgrade.Upgrade1) { ability.isBaseUnlocked = true; }
+            }
+            else
+            {
+                if (AbilityManager.IsAbilityUnlocked(ability.ability)) { ability.isBaseUnlocked = true; }
+            }
+
             if (ability.isBaseUnlocked) { availableAbilitesData.Add(ability); }
         }
     }
@@ -282,7 +292,7 @@ public class AbilityListNavigation : MonoBehaviour
         isNavigationAllowed = true;
     }
 
-    public IEnumerator UpgradePrefectReceptionSequence_C()
+    public IEnumerator UpgradePerfectReceptionSequence_C()
     {
         isNavigationAllowed = false;
         yield return new WaitForSecondsRealtime(0.5f);
