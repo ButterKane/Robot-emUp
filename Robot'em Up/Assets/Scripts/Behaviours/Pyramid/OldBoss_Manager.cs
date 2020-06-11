@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
+using TMPro;
 
 public class OldBoss_Manager : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class OldBoss_Manager : MonoBehaviour
 
     public List<OldBoss_WeakPoint> weakPoints;
     public Text winningMessage;
-    public Text inversionMessage;
+    public TextMeshProUGUI inversionMessage;
     public Slider pyramidHealth;
 
     public GameObject cameraZone;
@@ -93,7 +94,7 @@ public class OldBoss_Manager : MonoBehaviour
 
         if (PyramidActivation)
         {
-            int i_temporaryHealth = 0;
+            /*int i_temporaryHealth = 0;
             showInversionMessage -= Time.deltaTime;
             if (showInversionMessage < 0)
             {
@@ -110,7 +111,7 @@ public class OldBoss_Manager : MonoBehaviour
             {
                 pyramidHealth.gameObject.SetActive(false);
             }
-            pyramidHealth.value = i_temporaryHealth;
+            pyramidHealth.value = i_temporaryHealth;*/
 
             float i_totalHealth = GameManager.playerOne.GetHealth() + GameManager.playerTwo.GetHealth();
             float i_totalmaxHealth = GameManager.playerOne.maxHealth + GameManager.playerTwo.maxHealth;
