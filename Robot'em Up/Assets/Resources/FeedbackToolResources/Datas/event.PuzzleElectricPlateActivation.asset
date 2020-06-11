@@ -72,7 +72,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   shakeDataInited: 0
   vibrationDataInited: 0
-  soundDataInited: 0
+  soundDataInited: 1
   vfxDataInited: 0
   eventCalled: 0
   category:
@@ -81,8 +81,10 @@ MonoBehaviour:
   soundData:
     soundName: 
     delay: 0
-    soundList: []
-    volumeMultiplier: 1
+    soundList:
+    - clip: {fileID: 8300000, guid: 31a73e895b2189245965184ea6acdc02, type: 3}
+      playChances: 1
+    volumeMultiplier: 0.002
   vfxData:
     vfxPrefab: {fileID: 0}
     offset: {x: 0, y: 0, z: 0}
