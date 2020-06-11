@@ -170,7 +170,7 @@ public class DunkController : MonoBehaviour
 		else
 		{
 			if (currentDunkReadyFX != null) { Destroy(currentDunkReadyFX); }
-			if (currentDunkReadyPanel.activeSelf) { currentDunkReadyPanel.SetActive(false); }
+			if (currentDunkReadyPanel != null && currentDunkReadyPanel.activeSelf) { currentDunkReadyPanel.SetActive(false); }
 		}
 	}
 	private void Explode ()
