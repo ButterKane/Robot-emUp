@@ -19,4 +19,10 @@ public class MusicLoader : MonoBehaviour
 	{
 		MusicManager.PlayMusic(musicID);
 	}
+
+
+	public void StopMusic(float time)
+	{
+		MusicManager.StopMusic(time);
+	}
 }
