@@ -60,6 +60,7 @@ public class EnemyShield : EnemyBehaviour
         mustCancelAttack = true;
         attackHitBox.ToggleCollider(false);
         navMeshAgent.enabled = false;
+        ChangeState(EnemyState.PauseAfterAttack);
     }
 
     #region Public methods

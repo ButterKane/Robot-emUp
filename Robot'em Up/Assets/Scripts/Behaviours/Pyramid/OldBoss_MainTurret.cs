@@ -9,6 +9,10 @@ public class OldBoss_MainTurret : MonoBehaviour
     public float multiplier;
     public int damageToPlayer;
     public bool selfRotating = true;
+
+    public GameObject cyclePS;
+    public GameObject uncyclePS;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,8 +40,8 @@ public class OldBoss_MainTurret : MonoBehaviour
 
     public void InverseLaser()
     {
-		OldBoss_Manager.i.inversionMessage.gameObject.SetActive(true);
-		OldBoss_Manager.i.showInversionMessage = 2f;
+		//OldBoss_Manager.i.inversionMessage.gameObject.SetActive(true);
+		//OldBoss_Manager.i.showInversionMessage = 2f;
         if (multiplier ==-1)
         {
             multiplier = 1;
@@ -45,6 +49,16 @@ public class OldBoss_MainTurret : MonoBehaviour
         else
         {
             multiplier = -1;
+        }
+        if (cyclePS.active)
+        {
+            cyclePS.SetActive(false);
+            uncyclePS.SetActive(true);
+        }
+        else
+        {
+            cyclePS.SetActive(true);
+            uncyclePS.SetActive(false);
         }
     }
 
