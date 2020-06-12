@@ -45,6 +45,8 @@ public class ToxicAreaManager : MonoBehaviour
             playerTwoToxicBar.SetParent(player2UI.playerCanvasLateralRectTransform.transform);
         }
 
+        playerOneToxicBar.transform.localRotation = Quaternion.identity;
+        playerTwoToxicBar.transform.localRotation = Quaternion.identity;
         playerOneToxicBar.transform.localScale = Vector3.one;
         playerTwoToxicBar.transform.localScale = Vector3.one;
         playerOneToxicBar.transform.localPosition = Vector3.zero;
