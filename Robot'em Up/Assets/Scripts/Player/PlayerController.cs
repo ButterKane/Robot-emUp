@@ -342,7 +342,7 @@ public class PlayerController : PawnController, IHitable
     }
     private void UpdateWhenOutOfCamera()
     {
-        if (GameManager.timeInZone < 3f || !Application.isPlaying || !forceInsideCameraView) { return; }
+        if (GameManager.timeInZone < 1.5f || !Application.isPlaying || !forceInsideCameraView) { return; }
         Vector3 i_viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
         float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
         if (i_viewPortPosition.x > 1 + extents || i_viewPortPosition.x < -extents || i_viewPortPosition.y > 1 + extents || i_viewPortPosition.y < -extents)

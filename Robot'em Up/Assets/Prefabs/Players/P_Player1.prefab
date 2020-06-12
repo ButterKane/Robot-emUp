@@ -4953,7 +4953,7 @@ SpriteRenderer:
   m_Size: {x: 5.13, y: 5.13}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6708521642080469559
@@ -5423,8 +5423,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1165085648754162084}
   - component: {fileID: 582782276331545200}
-  - component: {fileID: 5438624259343542176}
   - component: {fileID: 6915438919527861155}
+  - component: {fileID: 5162505803672068514}
   m_Layer: 0
   m_Name: PlayerUIMain
   m_TagString: Untagged
@@ -5472,18 +5472,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &5438624259343542176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7361189692522563101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ec44ed11e3fdf541937f2a2b8c62d87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6915438919527861155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5509,6 +5497,19 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 1
+--- !u!114 &5162505803672068514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7361189692522563101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e3c3f70ef0060e4193429797b74a262, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  followedTransform: {fileID: 5825664154814933021}
 --- !u!1 &7369546282892008088
 GameObject:
   m_ObjectHideFlags: 0

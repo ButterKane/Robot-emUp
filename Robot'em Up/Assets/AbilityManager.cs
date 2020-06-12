@@ -75,8 +75,11 @@ public class AbilityManager : MonoBehaviour
 
 	private static void UpdateUpgrades() //Recalculate UIs and upgrade-specific elements
 	{
-		GameManager.playerOne.dashController.CheckForUpgrades();
-		GameManager.playerTwo.dashController.CheckForUpgrades();
+		if (GameManager.playerOne != null && GameManager.playerTwo != null)
+		{
+			GameManager.playerOne.dashController.CheckForUpgrades();
+			GameManager.playerTwo.dashController.CheckForUpgrades();
+		}
 	}
 	private static void LoadUpgrades()
 	{
