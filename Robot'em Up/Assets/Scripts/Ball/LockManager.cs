@@ -52,7 +52,7 @@ public class LockManager : MonoBehaviour
 			lockF.Unlock();
 		}
 	}
-	public static void LockTargetsInPath ( List<Vector3> _pathCoordinates, float _startValue, bool _hideLock = false )
+	public static void LockTargetsInPath ( List<Vector3> _pathCoordinates, float _startValue, bool _hideLock = false, bool _unlockUntargetedLocks = true )
 	{
 		List<Transform> i_foundTargets = new List<Transform>();
 		int i_startPoint = Mathf.RoundToInt((_startValue - 0.05f) * _pathCoordinates.Count);
@@ -65,14 +65,6 @@ public class LockManager : MonoBehaviour
 				RaycastHit[] i_hitObjects = Physics.RaycastAll(_pathCoordinates[i], i_direction, i_direction.magnitude);
 				Debug.DrawRay(_pathCoordinates[i], i_direction, Color.red);
 				List<RaycastHit> i_hitObjectsList = new List<RaycastHit>(i_hitObjects);
-				if (i > 1)
-				{
-					//RaycastHit[] i_reverseHitObjects = Physics.RaycastAll(_pathCoordinates[i], -i_direction, i_direction.magnitude);
-					//foreach (RaycastHit hit in i_reverseHitObjects)
-					//{
-					//	i_hitObjectsList.Add(hit);
-					//}
-				}
 				foreach (RaycastHit hit in i_hitObjectsList)
 				{
 					IHitable potentialTarget = hit.transform.GetComponent<IHitable>();
@@ -84,11 +76,14 @@ public class LockManager : MonoBehaviour
 				}
 			}
 		}
-		foreach (AimLock lockedTarget in lockedTargets)
+		if (_unlockUntargetedLocks)
 		{
-			if (!i_foundTargets.Contains(lockedTarget.linkedTarget))
+			foreach (AimLock lockedTarget in lockedTargets)
 			{
-				UnlockTarget(lockedTarget);
+				if (!i_foundTargets.Contains(lockedTarget.linkedTarget))
+				{
+					UnlockTarget(lockedTarget);
+				}
 			}
 		}
 	}
