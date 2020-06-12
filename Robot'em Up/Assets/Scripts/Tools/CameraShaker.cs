@@ -114,7 +114,7 @@ public class ShakeEffect : MonoBehaviour {
 
 	public CinemachineVirtualCamera GetVirtualCamera()
 	{
-		if (Camera.main.gameObject == null) { return null; }
+		if (Camera.main == null || Camera.main.gameObject == null) { return null; }
 		CinemachineBrain i_brain = Camera.main.gameObject.GetComponent<CinemachineBrain>();
 		if (i_brain == null) { return null; }
 
