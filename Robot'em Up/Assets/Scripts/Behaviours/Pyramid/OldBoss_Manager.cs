@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using Cinemachine;
 using TMPro;
 
@@ -30,6 +31,10 @@ public class OldBoss_Manager : MonoBehaviour
     public CameraBehaviour EndCamera;
     public GameObject EndToActivate;
 
+
+    public UnityEvent onTriggerEnterAction;
+    public UnityEvent onTriggerExit;
+
     private void Awake()
     {
         if (i == null)
@@ -50,6 +55,7 @@ public class OldBoss_Manager : MonoBehaviour
         PyramidActivation = true;
         PyramidBehaviorGameObject.SetActive(true);
         difficulty = startDifficulty;
+        onTriggerEnterAction.Invoke();
     }
 
 
@@ -61,6 +67,7 @@ public class OldBoss_Manager : MonoBehaviour
         cameraZone.SetActive(false);
         EndCamera.ActivateCamera();
         EndToActivate.SetActive(true);
+        onTriggerExit.Invoke();
     }
     
 

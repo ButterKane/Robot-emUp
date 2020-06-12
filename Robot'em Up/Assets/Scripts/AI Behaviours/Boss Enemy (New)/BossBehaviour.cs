@@ -311,6 +311,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		animator.SetTrigger("Death");
 		FeedbackManager.SendFeedback("event.BossDeath", this);
+
+		MusicManager.StopMusic(4);
 	}
 	public void FallOnGround ()
 	{

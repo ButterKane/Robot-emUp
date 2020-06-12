@@ -140,6 +140,7 @@ public class EnemyBehaviour : PawnController, IHitable
         EnemyManager.i.enemies.Add(this);
         if (canSurroundPlayer) { EnemyManager.i.enemiesThatSurround.Add(this); }
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar.transform.SetAsFirstSibling();
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
 

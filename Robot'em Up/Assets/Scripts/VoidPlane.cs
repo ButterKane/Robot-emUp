@@ -22,7 +22,7 @@ public class VoidPlane : MonoBehaviour
 			PlayerController player = other.GetComponent<PlayerController>();
 			if (player == null) { return; }
 			player.KillWithoutCorePart();
-			if (GameManager.alivePlayers.Count <= 1)
+			if (GameManager.alivePlayers.Count <= 1 && GameManager.alivePlayers.Count > 0)
 			{
 				Retriever r = GameManager.alivePlayers[0].GetComponentInChildren<Retriever>();
 				r.AllowPlayerRevive(player);
