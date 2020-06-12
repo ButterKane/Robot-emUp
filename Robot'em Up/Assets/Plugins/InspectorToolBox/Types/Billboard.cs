@@ -5,7 +5,7 @@ public class Billboard : MonoBehaviour
 {
 	private static Camera _camera;
 
-	private void Update()
+	private void LateUpdate()
 	{
 		if (_camera == null) FindCamera();
 		if (_camera == null) return;

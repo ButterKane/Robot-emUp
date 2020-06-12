@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using MyBox;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MyBox;
 using UnityEngine.Analytics;
 
 public enum PassState
@@ -13,11 +13,11 @@ public enum PassState
 }
 public class PassController : MonoBehaviour
 {
-    [Separator("Private references")]
-    [SerializeField] private Transform handTransform = default;
-    [SerializeField] private BallDatas ballDatas = default;
+	[Separator("Private references")]
+	[SerializeField] private Transform handTransform = default;
+	[SerializeField] private BallDatas ballDatas = default;
 
-    [Separator("General settings")]
+	[Separator("General settings")]
 	public bool passPreviewInEditor;
 	public Color previewDefaultColor;
 
@@ -35,15 +35,15 @@ public class PassController : MonoBehaviour
 	public float curveMinAngle = 10;
 	public float hanseLength;
 
-    // Auto-assigned References
+	// Auto-assigned References
 	private PawnController targetedPawn;
 	private PawnController linkedPawn;
 	private DunkController linkedDunkController;
-    private LineRenderer lineRenderer;
-    private Animator animator;
+	private LineRenderer lineRenderer;
+	private Animator animator;
 
 
-    private BallBehaviour currentBall;
+	private BallBehaviour currentBall;
 	private List<Vector3> pathCoordinates;
 	private bool passPreview;
 	private float currentPassCooldown;
@@ -59,7 +59,7 @@ public class PassController : MonoBehaviour
 	private float pathLength;
 	[ReadOnly] public PassState passState;
 
-    private void Start ()
+	private void Start ()
 	{
 		lineRenderer = GetComponent<LineRenderer>();
 		linkedPawn = GetComponent<PawnController>();
@@ -90,11 +90,11 @@ public class PassController : MonoBehaviour
 
 	#region Public functions
 
-	public void SetTargetedPawn(PawnController _pawn)
+	public void SetTargetedPawn ( PawnController _pawn )
 	{
 		targetedPawn = _pawn;
 	}
-	public void SetLookDirection(Vector3 _lookDirection)
+	public void SetLookDirection ( Vector3 _lookDirection )
 	{
 		lookDirection = _lookDirection;
 	}
@@ -241,7 +241,7 @@ public class PassController : MonoBehaviour
 		return i_coordinates;
 	}
 
-	public bool IsAiming()
+	public bool IsAiming ()
 	{
 		if (passState == PassState.Aiming)
 		{
@@ -252,11 +252,11 @@ public class PassController : MonoBehaviour
 	public void Aim ()
 	{
 		ChangePassState(PassState.Aiming);
-		LockManager.UnlockAll();
 	}
 	public void StopAim ()
 	{
 		ChangePassState(PassState.None);
+		//if (isPlayer)
 	}
 	public void ResetPreviewColor ()
 	{
@@ -345,20 +345,20 @@ public class PassController : MonoBehaviour
 	public void Receive ( BallBehaviour _ball )
 	{
 		if (!canReceive) { return; }
-        if (_ball.isGhostBall == true)
-        {
-            if (!GetComponent<PlayerGhostAI>())
-            {
-                return;
-            }
-        }
-        else
-        {
-            if (!isPlayer)
-            {
-                return;
-            }
-        }
+		if (_ball.isGhostBall == true)
+		{
+			if (!GetComponent<PlayerGhostAI>())
+			{
+				return;
+			}
+		}
+		else
+		{
+			if (!isPlayer)
+			{
+				return;
+			}
+		}
 		FeedbackManager.SendFeedback("event.PlayerReceivingBall", linkedPawn, handTransform.position, _ball.GetCurrentDirection(), _ball.GetCurrentDirection(), !isPlayer);
 		if (isPlayer)
 		{
@@ -456,7 +456,7 @@ public class PassController : MonoBehaviour
 			perfectReceptionBuffer -= Time.deltaTime;
 		}
 	}
-	private void UpdatePass()
+	private void UpdatePass ()
 	{
 		if (passPreview)
 		{
@@ -468,7 +468,7 @@ public class PassController : MonoBehaviour
 			}
 		}
 	}
-	private void UpdateBallTimeInHand()
+	private void UpdateBallTimeInHand ()
 	{
 		if (ballDatas == null && ballTimeInHand != 0) { ballTimeInHand = 0; return; }
 
@@ -484,7 +484,7 @@ public class PassController : MonoBehaviour
 	#endregion
 
 	#region Coroutines
-	IEnumerator ShootAfterDelay_C (float _delay)
+	IEnumerator ShootAfterDelay_C ( float _delay )
 	{
 		yield return new WaitForSeconds(_delay);
 		didPerfectReception = false;

@@ -81,6 +81,7 @@ public class PlayerUI : MonoBehaviour
         private void Start ()
 	{
 		pawnController = GetComponent<PawnController>();
+		if (pawnController && !pawnController.isPlayer) { Destroy(playerCanvasRectTransform.gameObject);  return; }
 		dashController = GetComponent<DashController>();
 		dashStacks = new List<Image>();
 		currentCoroutines = new Dictionary<GameObject, Coroutine>();
@@ -99,6 +100,7 @@ public class PlayerUI : MonoBehaviour
 
 	private void Update ()
 	{
+		if (!pawnController.isPlayer) { return; }
 		UpdateDashBars();
 		UpdateHealth();
 	}
@@ -265,6 +267,7 @@ public class PlayerUI : MonoBehaviour
 			GameObject i_dashStackBackground = new GameObject();
 			i_dashStackBackground.transform.SetParent(dashPanel.transform);
 			i_dashStackBackground.transform.localPosition = Vector3.zero;
+			i_dashStackBackground.transform.localRotation = Quaternion.identity;
 			i_dashStackBackground.name = "Dash bar BG [" + i + "]";
 
 			Image i_dashStackBackgroundImage = i_dashStackBackground.AddComponent<Image>();
@@ -273,6 +276,7 @@ public class PlayerUI : MonoBehaviour
 			GameObject i_dashStackFill = new GameObject();
 			i_dashStackFill.transform.SetParent(i_dashStackBackground.transform);
 			i_dashStackFill.transform.localPosition = Vector3.zero;
+			i_dashStackFill.transform.localRotation = Quaternion.identity;
 			i_dashStackFill.name = "Dash bar fill [" + i + "]";
 
 			Image i_dashStackFillImage = i_dashStackFill.AddComponent<Image>();

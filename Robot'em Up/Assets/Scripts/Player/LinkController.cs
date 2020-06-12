@@ -186,7 +186,7 @@ public class LinkController : MonoBehaviour
 		List<Vector3> pathCoordinates = new List<Vector3>();
 		pathCoordinates.Add(firstPawn.GetCenterPosition());
 		pathCoordinates.Add(secondPawn.GetCenterPosition());
-		LockManager.LockTargetsInPath(pathCoordinates, 0, true);
+		LockManager.LockTargetsInPath(pathCoordinates, 0, true, false);
 	}
 	#endregion
 }
