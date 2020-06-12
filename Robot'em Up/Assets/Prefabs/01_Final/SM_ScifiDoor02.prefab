@@ -1189,6 +1189,9 @@ GameObject:
   - component: {fileID: 2387724030014208039}
   - component: {fileID: 2387724030014208037}
   - component: {fileID: 2387724030014208036}
+  - component: {fileID: 834987963167830716}
+  - component: {fileID: 3664023436989892844}
+  - component: {fileID: 3988312543795818581}
   m_Layer: 12
   m_Name: SM_ScifiDoor02
   m_TagString: Untagged
@@ -1243,7 +1246,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 24.508663, y: 14.187887, z: 1}
+  m_Size: {x: 24.508663, y: 14.187887, z: 1.93}
   m_Center: {x: -0.04631996, y: 7.0939436, z: 0}
 --- !u!114 &2387724030014208039
 MonoBehaviour:
@@ -1309,6 +1312,45 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 7.5, z: 0}
   m_TimeToStationary: 0.5
+--- !u!65 &834987963167830716
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387724030014208038}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.91, y: 1.9, z: 5.64}
+  m_Center: {x: 0, y: 0.97, z: 0}
+--- !u!65 &3664023436989892844
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387724030014208038}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.82, y: 1.9, z: 5.64}
+  m_Center: {x: 9.49, y: 0.97, z: 0}
+--- !u!65 &3988312543795818581
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387724030014208038}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.82, y: 1.9, z: 5.64}
+  m_Center: {x: -9.49, y: 0.97, z: 0}
 --- !u!1 &2666718544678006593
 GameObject:
   m_ObjectHideFlags: 0
