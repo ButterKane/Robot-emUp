@@ -14,29 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FeedbackData
   eventName: event.EnemyRedBarrelDeathPart2
   shakeData:
-    duration: 0
-    intensity: 0
-    frequency: 0
+    duration: 0.8
+    intensity: 2
+    frequency: 2
     intensityCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
+        inSlope: -0.059104007
+        outSlope: -0.059104007
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.08056872
       - serializedVersion: 3
         time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
+        value: 0
+        inSlope: -3.0142834
+        outSlope: -3.0142834
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.03554505
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -70,7 +70,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  shakeDataInited: 0
+  shakeDataInited: 1
   vibrationDataInited: 0
   soundDataInited: 1
   vfxDataInited: 1
@@ -80,6 +80,7 @@ MonoBehaviour:
     displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
   soundData:
     soundName: RedBarrelExplosion
+    delay: 0
     soundList:
     - clip: {fileID: 8300000, guid: f8cdd4399f517a343a91ea692594173e, type: 3}
       playChances: 1

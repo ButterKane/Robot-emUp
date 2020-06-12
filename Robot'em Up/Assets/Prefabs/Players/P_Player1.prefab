@@ -122,12 +122,12 @@ MonoBehaviour:
   delayBeforeDash: 0.2
   eventOnResurrecting: event.PlayerResurrecting
   deathExplosionRadius: 0
-  deathExplosionDamage: 0
+  deathExplosionDamage: 10
   deathExplosionForce: 0
   reviveExplosionRadius: 20
   reviveExplosionDamage: 0
   reviveExplosionForce: 10
-  reviveSpeedCoef: 0.3
+  reviveSpeedCoef: 0.4
   revivePartsCount: 3
   partExplosionAngleRandomness: 0.412
   minMaxProjectionForce: {x: 12, y: 16}
@@ -154,10 +154,10 @@ MonoBehaviour:
   passPreviewInEditor: 1
   previewDefaultColor: {r: 1, g: 1, b: 1, a: 1}
   delayBeforePickingOwnBall: 0.1
-  minBouncesBeforePickingOwnBall: 2
+  minBouncesBeforePickingOwnBall: 1
   perfectReceptionBufferOnFail: 0.65
   perfectReceptionMinDistance: 10
-  perfectReceptionMinDelay: 0.2
+  perfectReceptionMinDelay: 0.3
   perfectReceptionExplosionRadius: 7
   perfectReceptionExplosionDamages: 5
   curveRaycastIteration: 50
@@ -1671,6 +1671,55 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.71213555, y: 0.090413064, z: 0.2609917}
     m_Extent: {x: 0.35471976, y: 0.3525474, z: 0.24269116}
   m_DirtyAABB: 0
+--- !u!114 &2012007670621387755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323878344282243036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f8e25b0712ff54fa79bb7eae7bdeb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myRend: {fileID: 748594089495382784}
+  minTimeBetweenWinks: 1
+  maxTimeBetweenWinks: 4
+  timeToWink: 0.3
+  winkCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.60833335
+    - serializedVersion: 3
+      time: 0.5
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.0058353073
+      outSlope: -0.0058353073
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.8083333
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1361149646482344288
 GameObject:
   m_ObjectHideFlags: 0
@@ -6580,9 +6629,21 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 8b8c68da1369c7e4093474a7f3b9f753, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d853bdcb754e93b4dbb4ea4b3116fa55, type: 3}
+--- !u!23 &748594089495382784 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1504981713932161579, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
+    type: 3}
+  m_PrefabInstance: {fileID: 7025247363267110613}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2595205400958635471 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
+    type: 3}
+  m_PrefabInstance: {fileID: 7025247363267110613}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1323878344282243036 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
     type: 3}
   m_PrefabInstance: {fileID: 7025247363267110613}
   m_PrefabAsset: {fileID: 0}
