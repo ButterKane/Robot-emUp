@@ -28,7 +28,12 @@ public class AbilityManager : MonoBehaviour
 
 	public static Upgrade GetAbilityLevel (ConcernedAbility _ability)
 	{
-		return unlockedAbilities[_ability];
+		if (unlockedAbilities.ContainsKey(_ability)) {
+			return unlockedAbilities[_ability];
+		} else
+		{
+			return Upgrade.Base;
+		}
 	}
 
     public static bool IsAbilityUnlocked(ConcernedAbility _ability)
