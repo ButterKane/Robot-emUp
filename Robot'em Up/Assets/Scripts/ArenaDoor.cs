@@ -10,12 +10,12 @@ public class ArenaDoor : MonoBehaviour
 	public Counter currentCounter;
 	public float delayBeforeOpening = 1f;
 	private List<PlayerController> playerGoneThroughDoor;
-	private Collider linkedCollider;
+	private Collider[] linkedColliders;
 
 	private Animator animator;
 	private void Awake ()
 	{
-		linkedCollider = GetComponent<Collider>();
+		linkedColliders = GetComponents<Collider>();
 		playerGoneThroughDoor = new List<PlayerController>();
 		animator = GetComponent<Animator>();
 		if (!closeOnArenaStart)
@@ -60,19 +60,19 @@ public class ArenaDoor : MonoBehaviour
 	{
 		yield return new WaitForSeconds(delayBeforeOpening);
 		animator.SetBool("Opened", true);
-		linkedCollider.isTrigger = true;
+        foreach(var collider in linkedColliders) { collider.isTrigger = true; }
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
 	}
 
 	public void OpenDoor()
 	{
-		linkedCollider.isTrigger = true;
-		animator.SetBool("Opened", true);
+        foreach (var collider in linkedColliders) { collider.isTrigger = true; }
+        animator.SetBool("Opened", true);
 		FeedbackManager.SendFeedback("event.ArenaDoorOpening", this);
 	}
 	public void CloseDoor()
 	{
-		linkedCollider.isTrigger = false;
+        foreach (var collider in linkedColliders) { collider.isTrigger = false; }
 		animator.SetBool("Opened", false);
 		FeedbackManager.SendFeedback("event.ArenaDoorClosing", this);
 	}
