@@ -65,9 +65,11 @@ public class MainMenu : MonoBehaviour
         if (!showOnAwake)
         {
             mainMenuCanvas.enabled = false;
+            isMainMenuActive = false;
         } else
         {
             mainMenuCanvas.enabled = true;
+            isMainMenuActive = true;
         }
         RestoreButtons();
     }
