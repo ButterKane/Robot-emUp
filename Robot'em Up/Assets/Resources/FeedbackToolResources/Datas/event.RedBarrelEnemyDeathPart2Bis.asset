@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventName: event.RedBarrelEnemyDeathPart2Bis
   shakeData:
-    duration: 0
-    intensity: 0
-    frequency: 0
+    duration: 0.8
+    intensity: 3
+    frequency: 2
     intensityCurve:
       serializedVersion: 2
       m_Curve:
@@ -31,12 +31,12 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
+        value: 0
+        inSlope: -2.2459397
+        outSlope: -2.2459397
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.040284336
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -70,9 +70,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  shakeDataInited: 0
+  shakeDataInited: 1
   vibrationDataInited: 0
-  soundDataInited: 1
+  soundDataInited: 0
   vfxDataInited: 1
   eventCalled: 0
   category:
@@ -80,7 +80,11 @@ MonoBehaviour:
     displayColor: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
   soundData:
     soundName: RedBarrelExplosion
-    attachToTarget: 0
+    delay: 0
+    soundList:
+    - clip: {fileID: 0}
+      playChances: 1
+    volumeMultiplier: 1
   vfxData:
     vfxPrefab: {fileID: 9291318973935025, guid: 9c74b559500b1c44dba632c91419a221,
       type: 3}

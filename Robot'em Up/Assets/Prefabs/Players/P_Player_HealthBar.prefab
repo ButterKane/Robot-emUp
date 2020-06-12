@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6345541632243073557}
   - component: {fileID: 8971638734931675730}
   m_Layer: 5
-  m_Name: PlayerHealthBar
+  m_Name: P_Player_HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fillRect: {fileID: 6345541633644457524}
-  heightOffset: 0
+  heightOffset: -1
   target: {fileID: 0}
   healthBarGradient:
     serializedVersion: 2
@@ -118,6 +118,9 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   fadeInSpeed: 0.5
   fadeOutSpeed: 0.1
+  customHealthBar: 0
+  customValueToCheck: 0
+  customDeltaPosition: 0
 --- !u!1 &6345541633644457525
 GameObject:
   m_ObjectHideFlags: 0
