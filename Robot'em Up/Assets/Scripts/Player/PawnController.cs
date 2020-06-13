@@ -317,7 +317,9 @@ public class PawnController : MonoBehaviour
 	}
 	public virtual void Damage(float _amount, bool enableInvincibilityFrame = false)
 	{
-		if (!CanDamage()){ return; }
+        if (currentHealth <= 0){ Kill(); } // previous check, if the death went under the radar
+
+        if (!CanDamage()){ return; }
 		if (enableInvincibilityFrame) { SetInvincible(); }
 		FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 
