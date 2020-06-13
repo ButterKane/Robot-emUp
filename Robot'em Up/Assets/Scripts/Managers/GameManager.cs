@@ -67,6 +67,8 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public static CameraGlobalSettings cameraGlobalSettings;
 
     public static float timeInZone;
+    private int frameBuffer;
+    private bool subMenuInstantiated;
 
     // UI stuff
     private static GameObject restartPanel;
@@ -91,7 +93,17 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         i = this;
-
+        if (frameBuffer < 1)
+        {
+            frameBuffer++;
+        } else
+        {
+            if (!subMenuInstantiated)
+            {
+                InstantiateMenus();
+                subMenuInstantiated = true;
+            }
+        }
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
         Time.timeScale = (PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed)/100); 
@@ -122,7 +134,6 @@ public class GameManager : MonoBehaviour
         numberOfSurroundSpots = SurrounderPrefab.GetComponent<Surrounder>().points.Count;
 
         CreateSurroundersForPlayers();
-        InstantiateMenus();
 
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
@@ -446,6 +457,7 @@ public class GameManager : MonoBehaviour
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
         mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>();
+        Debug.Log(mainMenu);
         mainMenu.InitiateSubMenus();
     }
 
