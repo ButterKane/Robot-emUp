@@ -667,16 +667,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &18129642
 PrefabInstance:
@@ -4695,32 +4695,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: zonePreviewDuration
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.x
-      value: 35.919468
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.y
-      value: 25.535528
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 1194.3423
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: enemyToSpawn
-      value: 
-      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
-        type: 3}
     - target: {fileID: 6307279104845220788, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_Positions.Array.data[0].x
@@ -4751,11 +4725,6 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[1].z
       value: 1278.7231
       objectReference: {fileID: 0}
-    - target: {fileID: 6307279104210351737, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 15.24
-      objectReference: {fileID: 0}
     - target: {fileID: 6307279104219747629, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4770,6 +4739,37 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.0000076293873
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: zonePreviewDuration
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.x
+      value: 35.919468
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.y
+      value: 25.535528
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.z
+      value: 1194.3423
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: enemyToSpawn
+      value: 
+      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
+        type: 3}
+    - target: {fileID: 6307279104210351737, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 15.24
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49089126e303b284bba86e62bf780191, type: 3}
@@ -7416,11 +7416,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.x
       value: 1.65
       objectReference: {fileID: 0}
-    - target: {fileID: 4918866793832517239, guid: 6878c487a4f926e45a50e311859a15e0,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4918866794418339679, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
       propertyPath: onTriggerEnterAction.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7430,6 +7425,11 @@ PrefabInstance:
         type: 3}
       propertyPath: onTriggerEnterAction.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: NextClusterLayout
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918866793832517239, guid: 6878c487a4f926e45a50e311859a15e0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6878c487a4f926e45a50e311859a15e0, type: 3}
@@ -12825,16 +12825,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &453002948
 PrefabInstance:
@@ -19393,16 +19393,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &669773917
 PrefabInstance:
@@ -26859,32 +26859,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: zonePreviewDuration
-      value: 1.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.x
-      value: 34.96947
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.y
-      value: 25.535528
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 1175.3323
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: enemyToSpawn
-      value: 
-      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
-        type: 3}
     - target: {fileID: 6307279104845220788, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_Positions.Array.data[0].x
@@ -26930,6 +26904,32 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 1.4551915e-11
       objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: zonePreviewDuration
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.x
+      value: 34.96947
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.y
+      value: 25.535528
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.z
+      value: 1175.3323
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: enemyToSpawn
+      value: 
+      objectReference: {fileID: 4446576434190298309, guid: 87ccd4a7f78275046845a99dd8c15d54,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49089126e303b284bba86e62bf780191, type: 3}
 --- !u!4 &921277642 stripped
@@ -27094,16 +27094,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!4 &927069171 stripped
 Transform:
@@ -30862,32 +30862,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: enemyToSpawn
-      value: 
-      objectReference: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
-        type: 3}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.x
-      value: 26.659622
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.y
-      value: 25.535528
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 1184.0569
-      objectReference: {fileID: 0}
-    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: zonePreviewDuration
-      value: 1.75
-      objectReference: {fileID: 0}
     - target: {fileID: 6307279104845220788, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_Positions.Array.data[0].x
@@ -30918,11 +30892,6 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[1].z
       value: 1265.7231
       objectReference: {fileID: 0}
-    - target: {fileID: 6307279104210351737, guid: 49089126e303b284bba86e62bf780191,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.85
-      objectReference: {fileID: 0}
     - target: {fileID: 6307279104219747629, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -30937,6 +30906,37 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.0000076294455
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: enemyToSpawn
+      value: 
+      objectReference: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
+        type: 3}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.x
+      value: 26.659622
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.y
+      value: 25.535528
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: endPosition.z
+      value: 1184.0569
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104845220791, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: zonePreviewDuration
+      value: 1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307279104210351737, guid: 49089126e303b284bba86e62bf780191,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 6307279104210351734, guid: 49089126e303b284bba86e62bf780191,
         type: 3}
@@ -31591,16 +31591,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &1088542886
 PrefabInstance:
@@ -34049,16 +34049,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &1150553619
 PrefabInstance:
@@ -37506,16 +37506,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1 &1238552698
 GameObject:
@@ -50506,16 +50506,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &1636150429
 PrefabInstance:
@@ -55886,16 +55886,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1001 &1836105326
 PrefabInstance:
@@ -58324,16 +58324,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1 &1917526516
 GameObject:
@@ -61429,16 +61429,16 @@ MonoBehaviour:
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_MinimumDistanceFromTarget: 0.5
+  m_MinimumDistanceFromTarget: 3
   m_AvoidObstacles: 1
-  m_DistanceLimit: 0.5
+  m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
-  m_CameraRadius: 0.7
-  m_Strategy: 1
+  m_CameraRadius: 5
+  m_Strategy: 0
   m_MaximumEffort: 5
-  m_SmoothingTime: 1.5
-  m_Damping: 2
-  m_DampingWhenOccluded: 2
+  m_SmoothingTime: 0.5
+  m_Damping: 5
+  m_DampingWhenOccluded: 5
   m_OptimalTargetDistance: 0
 --- !u!1 &2011700304
 GameObject:
