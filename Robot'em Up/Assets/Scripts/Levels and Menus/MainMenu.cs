@@ -142,7 +142,7 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed)
+                if (i_state.Buttons.B == ButtonState.Pressed && sceneList != null && sceneList.gameObject.activeSelf == true)
                 {
                     CloseLevelSelector();
                 }
@@ -246,7 +246,7 @@ public class MainMenu : MonoBehaviour
         if (_button.name != "BUTTON_Quit") {
             buttonImage.color = selectedColor;
         }
-         if (_showAnimation)
+        if (_showAnimation)
         {
             _button.transform.DOMoveX(Screen.width * menuSelectedPosition, 0.1f);
         }

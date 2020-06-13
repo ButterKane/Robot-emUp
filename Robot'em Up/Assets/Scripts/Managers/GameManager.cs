@@ -352,12 +352,12 @@ public class GameManager : MonoBehaviour
                     if (i == 0) { menuCalledOne = true; }
                     if (i == 1) { menuCalledTwo = true; }
                 }
-                else if (mainMenu != null)
-                {
-                    CloseLevelMenu();
-                    if (i == 0) { menuCalledOne = true; }
-                    if (i == 1) { menuCalledTwo = true; }
-                }
+                //else if (mainMenu != null)
+                //{
+                //    CloseLevelMenu();
+                //    if (i == 0) { menuCalledOne = true; }
+                //    if (i == 1) { menuCalledTwo = true; }
+                //}
             }
             if (state.Buttons.Start == ButtonState.Released)
             {
