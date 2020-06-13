@@ -5,7 +5,7 @@ using UnityEngine;
 public class DestroyableWall : MonoBehaviour, IHitable
 {
     public bool onlyDestroyableByDunk = true;
-    public GameObject[] destroyedVisuals;
+    public GameObject destroyedVisuals;
     public GameObject visualsToHideWhenDestroyed;
     private bool destroyed;
     [SerializeField] private bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
@@ -29,9 +29,6 @@ public class DestroyableWall : MonoBehaviour, IHitable
         destroyed = true;
         FeedbackManager.SendFeedback("event.DestrObjectDeath", this, transform.position, transform.up, transform.up);
         visualsToHideWhenDestroyed.SetActive(false);
-        for (int i = 0; i < destroyedVisuals.Length; i++)
-        {
-            destroyedVisuals[i].SetActive(true);
-        }
+        destroyedVisuals.SetActive(true);
     }
 }
