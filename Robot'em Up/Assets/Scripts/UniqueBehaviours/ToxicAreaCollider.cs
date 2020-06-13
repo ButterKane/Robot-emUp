@@ -31,21 +31,37 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
 
     }
 
-    void OnTriggerStay (Collider _other)
+    void OnTriggerEnter (Collider _other)
     {
 
         if (_other.gameObject.GetComponent<PlayerController>())
         {
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
-                ToxicAreaManager.i.toxicValue_P1 += Time.deltaTime * multiplicator;
+                ToxicAreaManager.i.isInToxicArea_P1++;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
-                ToxicAreaManager.i.toxicValue_P2 += Time.deltaTime * multiplicator;
+                ToxicAreaManager.i.isInToxicArea_P2++;
             }
         }
-  }
+    }
+
+    void OnTriggerExit(Collider _other)
+    {
+
+        if (_other.gameObject.GetComponent<PlayerController>())
+        {
+            if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
+            {
+                ToxicAreaManager.i.isInToxicArea_P1--;
+            }
+            if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
+            {
+                ToxicAreaManager.i.isInToxicArea_P2--;
+            }
+        }
+    }
 
     public void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
