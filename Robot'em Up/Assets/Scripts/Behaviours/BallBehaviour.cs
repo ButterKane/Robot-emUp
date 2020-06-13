@@ -79,8 +79,17 @@ public class BallBehaviour : MonoBehaviour
 	public void CurveShoot ( PassController _passController, PawnController _thrower, PawnController _target, BallDatas _passDatas, Vector3 _lookDirection ) //Shoot a curve ball to reach a point
 	{
 		if (ballCoroutine != null) { StopCoroutine(ballCoroutine); }
-		startPosition = _passController.GetHandTransform().position;
+		Vector3 playerBodyDirection = _passController.GetHandTransform().position - _thrower.GetCenterPosition();
+		if (Physics.Raycast(_thrower.GetCenterPosition(), playerBodyDirection, playerBodyDirection.magnitude, LayerMask.GetMask("Environment")))
+		{
+			startPosition = _thrower.GetCenterPosition();
+		}
+		else
+		{
+			startPosition = _passController.GetHandTransform().position;
+		}
 		transform.SetParent(null, true);
+		transform.position = startPosition;
 		transform.localScale = Vector3.one;
 		ballInformations.thrower = _thrower;
 		ballInformations.moveSpeed = _passDatas.moveSpeed;
@@ -100,6 +109,12 @@ public class BallBehaviour : MonoBehaviour
 	public void Shoot ( Vector3 _startPosition, Vector3 _direction, PawnController _thrower, BallDatas _passDatas, bool _teleguided ) //Shoot the ball toward a direction
 	{
 		if (ballCoroutine != null) { StopCoroutine(ballCoroutine); }
+		Vector3 playerBodyDirection = _thrower.passController.GetHandTransform().position - _thrower.GetCenterPosition();
+		if (Physics.Raycast(_thrower.GetCenterPosition(), playerBodyDirection, playerBodyDirection.magnitude, LayerMask.GetMask("Environment")))
+		{
+			_startPosition = _thrower.GetCenterPosition();
+		}
+		startPosition = _startPosition;
 		transform.SetParent(null, true);
 		transform.localScale = Vector3.one;
 		transform.position = _startPosition;
