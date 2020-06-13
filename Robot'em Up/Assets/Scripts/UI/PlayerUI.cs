@@ -229,6 +229,7 @@ public class PlayerUI : MonoBehaviour
 	private void GenerateHealthBar ()
 	{
 		healthBar = Instantiate(healthBarPrefab, GameManager.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar.transform.SetAsFirstSibling();
 		healthBar.target = pawnController;
 		healthBar.heightOffset = healthBarHeight;
 		healthBar.name = "HealthBar";
