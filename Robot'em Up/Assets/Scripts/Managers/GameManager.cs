@@ -235,6 +235,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         VibrationManager.CancelAllVibrations();
         mainMenu.mainMenuCanvas.enabled = true;
+        mainMenu.isMainMenuActive = true;
         timeInZone = 0;
     }
 
@@ -246,6 +247,7 @@ public class GameManager : MonoBehaviour
         }
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100;
         mainMenu.mainMenuCanvas.enabled = false;
+        mainMenu.isMainMenuActive = false;
     }
 
     public void FindMainCanvas()
@@ -350,12 +352,12 @@ public class GameManager : MonoBehaviour
                     if (i == 0) { menuCalledOne = true; }
                     if (i == 1) { menuCalledTwo = true; }
                 }
-                else if (mainMenu != null)
-                {
-                    CloseLevelMenu();
-                    if (i == 0) { menuCalledOne = true; }
-                    if (i == 1) { menuCalledTwo = true; }
-                }
+                //else if (mainMenu != null)
+                //{
+                //    CloseLevelMenu();
+                //    if (i == 0) { menuCalledOne = true; }
+                //    if (i == 1) { menuCalledTwo = true; }
+                //}
             }
             if (state.Buttons.Start == ButtonState.Released)
             {

@@ -51,7 +51,6 @@ public class AbilityListNavigation : MonoBehaviour
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isNavigationAllowed)
         {
-            Debug.Log("Hello it is main menu");
             for (int i = 0; i < 2; i++)
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
