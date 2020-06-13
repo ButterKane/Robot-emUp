@@ -451,7 +451,7 @@ public class EnemyBehaviour : PawnController, IHitable
             case DamageSource.RedBarrelExplosion:
                 if (isBumpable && enemyType != EnemyTypes.RedBarrel)
                 {
-                    damageAfterBump = _damages;
+                    damageAfterBump = _damages/2;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                 }

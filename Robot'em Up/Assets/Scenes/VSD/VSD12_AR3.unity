@@ -33207,26 +33207,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArenaEnterDoor
       objectReference: {fileID: 0}
-    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.72
-      objectReference: {fileID: 0}
-    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2.3203335
-      objectReference: {fileID: 0}
-    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -9.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 22.5219
-      objectReference: {fileID: 0}
     - target: {fileID: 4918866794418339669, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -33306,6 +33286,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.3203335
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -9.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 22.5219
       objectReference: {fileID: 0}
     - target: {fileID: 4918866793832517232, guid: 6878c487a4f926e45a50e311859a15e0,
         type: 3}
@@ -34386,6 +34386,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6821338821536550633, guid: c41603ab4f7f63848b8d92f7e57eca2e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1043233638842926685, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
       propertyPath: m_ComponentOwner
@@ -34395,11 +34400,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Priority
       value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6821338821536550633, guid: c41603ab4f7f63848b8d92f7e57eca2e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3968163051874365296, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
@@ -43326,14 +43326,14 @@ PrefabInstance:
       propertyPath: wire
       value: 
       objectReference: {fileID: 2004217080}
-    - target: {fileID: 1505815116, guid: 18e99065504b9f64ba2f8177e78be881, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5313042237638623912, guid: 18e99065504b9f64ba2f8177e78be881,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 522295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505815116, guid: 18e99065504b9f64ba2f8177e78be881, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 18e99065504b9f64ba2f8177e78be881, type: 3}
@@ -70636,7 +70636,7 @@ MonoBehaviour:
             type: 3}
           color: {r: 0, g: 0.4716981, b: 0.01347706, a: 1}
         spawner: {fileID: 535200421}
-        delayBeforeSpawn: 0.5
+        delayBeforeSpawn: 3
       mustKillEnemiesBeforeNextWave: 0
       delayBeforeNextWave: 2
       linkedSpawnEventController: {fileID: 0}
@@ -70648,35 +70648,35 @@ MonoBehaviour:
         prefab: {fileID: 373019035910456887, guid: 0c341f61e1daa3540b3df4a21b4aafa6,
           type: 3}
         color: {r: 1, g: 0.14010851, b: 0, a: 1}
-      probability: 0.39413142
+      probability: 0.4226116
       spawnIndexes: 020000000000000001000000
     - enemyType:
         name: Shield
         prefab: {fileID: 6181108247738804025, guid: 48c032c58b057434aa1457c10558af0b,
           type: 3}
         color: {r: 0, g: 0.58638144, b: 1, a: 1}
-      probability: 0.108945765
+      probability: 0.079
       spawnIndexes: 020000000100000000000000
     - enemyType:
         name: RedBarrel
         prefab: {fileID: 7315615831173523753, guid: 10178b918cdd7874389ff05098a6c125,
           type: 3}
         color: {r: 1, g: 0, b: 0.5670934, a: 1}
-      probability: 0.06930051
+      probability: 0.18194358
       spawnIndexes: 020000000100000000000000
     - enemyType:
         name: DefaultTurret
         prefab: {fileID: 6086072691216837907, guid: 920f5953dff5ed041977f995546341eb,
           type: 3}
         color: {r: 0.92129517, g: 1, b: 0, a: 1}
-      probability: 0.21962176
+      probability: 0.16230294
       spawnIndexes: 0300000004000000050000000600000007000000
     - enemyType:
         name: LaserTurret
         prefab: {fileID: 4808274588740219700, guid: 60dff2fafe754694e8eb44c3b62bc836,
           type: 3}
         color: {r: 0, g: 0.4716981, b: 0.01347706, a: 1}
-      probability: 0.208
+      probability: 0.1541413
       spawnIndexes: 0300000004000000050000000600000007000000
   spawnList:
   - customName: WallSpawnerVisuals2
