@@ -198,6 +198,29 @@ public class EnemyShield : EnemyBehaviour
             isShieldActivated_accesss = false; // It is bumped, so it will reactivate at the end of it
             base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
         }
+        else if(_source == DamageSource.PerfectReceptionExplosion)
+        {
+            Damage(_damages);
+            FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+
+            BallDatas bd = _ball.GetCurrentBallDatas();
+            float ballChargePercent = (_ball.GetCurrentDamageModifier() - 1) / (bd.maxDamageModifierOnPerfectReception - 1);
+
+            // Bump or push depending on Ball charge value
+            if (ballChargePercent >= bd.minimalChargeForBump)
+            {
+                BumpMe(_impactVector.normalized, BumpForce.Force1);
+                isShieldActivated_accesss = false;
+            }
+            else if (ballChargePercent >= bd.minimalChargeForHeavyPush)
+            {
+                Push(PushType.Heavy, _impactVector.normalized, PushForce.Force1);
+            }
+            else if (ballChargePercent >= bd.minimalChargeForLightPush)
+            {
+                Push(PushType.Light, _impactVector.normalized, PushForce.Force1);
+            }
+        }
         else if (_source == DamageSource.Ball)
         {
             if(!isShieldActivated || Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward) > angleRangeForRebound)
@@ -221,6 +244,10 @@ public class EnemyShield : EnemyBehaviour
             {
                 _ball.Bounce(Vector3.Reflect(_ball.GetCurrentDirection(), transform.forward), 1);
             }
+        }
+        else
+        {
+            base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
         }
     }
 

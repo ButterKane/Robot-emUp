@@ -22,7 +22,7 @@ public class AbilityGroupData : MonoBehaviour
     public Sprite[] gifImages;
     public bool isBaseUnlocked = true;
     public bool isUpgrade1Unlocked = false;
-    public bool isUpgrade2unlocked = false;
+    public bool isUpgrade2Unlocked = false;
 
     // Start is called before the first frame update
     void Start()
