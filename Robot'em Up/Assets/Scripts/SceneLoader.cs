@@ -24,6 +24,7 @@ public class SceneLoader : MonoBehaviour
 
 	public void LoadNextLevel ()
 	{
+		Debug.Log("Loading next level");
 		for (int i = buildIndex + 1; i < buildIndex + 3; i++)
 		{
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
@@ -42,6 +43,7 @@ public class SceneLoader : MonoBehaviour
 
 	public void LoadPreviousLevel ()
 	{
+		Debug.Log("Loading previous level");
 		for (int i = buildIndex - 1; i > buildIndex - 3; i--)
 		{
 			if (i <= 0) { continue; }

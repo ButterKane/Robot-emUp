@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneEssentialLoader : MonoBehaviour
 {
 	public bool alsoLoadNextScene;
+	public bool alsoLoadPreviousScene = true;
 	public Transform player1Position;
 	public Transform player2Position;
 	public Transform ballPosition;
@@ -98,6 +99,14 @@ public class SceneEssentialLoader : MonoBehaviour
 		{
 			yield return new WaitForEndOfFrame();
 			SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Additive);
+		}
+		if (alsoLoadPreviousScene)
+		{
+			yield return new WaitForEndOfFrame();
+			if (SceneManager.GetActiveScene().buildIndex - 1 > 0)
+			{
+				SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex - 1, LoadSceneMode.Additive);
+			}
 		}
 
 		if (sceneLoader != null)
