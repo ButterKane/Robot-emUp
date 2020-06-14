@@ -135,6 +135,7 @@ public class ToxicAreaManager : MonoBehaviour
             {
                 playerOneToxicBar.gameObject.SetActive(false);
                 toxicValue_P1 = 0;
+                isInToxicArea_P1 = 0;
                 // poisonedSprite_P1.gameObject.SetActive(false);
             }
 
@@ -149,6 +150,7 @@ public class ToxicAreaManager : MonoBehaviour
             {
                 playerTwoToxicBar.gameObject.SetActive(false);
                 toxicValue_P2 = 0;
+                isInToxicArea_P2 = 0;
                 //   poisonedSprite_P2.gameObject.SetActive(false);
             }
         }
