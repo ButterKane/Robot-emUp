@@ -441,6 +441,7 @@ public class PassController : MonoBehaviour
 	}
 	private void PreviewPath ( List<Vector3> _pathCoordinates )
 	{
+		if (!isPlayer) { return; }
 		lineRenderer.positionCount = _pathCoordinates.Count;
 		lineRenderer.SetPositions(_pathCoordinates.ToArray());
 		lineRenderer.materials[0].mainTextureScale = new Vector3(pathLength * (1f / lineRenderer.startWidth), 1, 1);

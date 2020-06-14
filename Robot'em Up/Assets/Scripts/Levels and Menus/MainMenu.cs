@@ -374,6 +374,7 @@ public class MainMenu : MonoBehaviour
         FeedbackManager.SendFeedback("event.PressSettings", this);
         abilitiesMenuCanvas.enabled = true;
         AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
+        i_script.GetUpgradeLevelsToDisplayInAbilities();
         i_script.organizer.OrganizeAbilities();
         i_script.ResetDisplay();
         isMainMenuActive = false;
