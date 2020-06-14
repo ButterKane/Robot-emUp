@@ -334,6 +334,8 @@ public class GameManager : MonoBehaviour
 
     public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
+        if(mainMenu == null) { mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>(); }
+        if (!mainMenu.DoesAbilityMenuExist()) { mainMenu.InitiateSubMenus(); }
         AbilityManager.UpgradeAbility(_concernedAbility, _newAbilityLevel);
         OpenLevelMenu();
         mainMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
