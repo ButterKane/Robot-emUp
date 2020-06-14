@@ -184,6 +184,7 @@ public class PlayerController : PawnController, IHitable
         FeedbackManager.SendFeedback(eventOnResurrecting, this);
         moveState = MoveState.Idle;
         _player.moveState = MoveState.Idle;
+        _player.ui.DisplayHealth();
         _player.animator.SetTrigger("Revive");
         _player.SetTargetable();
         _player.UnHide();
@@ -206,13 +207,14 @@ public class PlayerController : PawnController, IHitable
         revivablePlayers = i_newRevivablePlayers;
         GameManager.deadPlayers.Remove(_player);
         GameManager.alivePlayers.Add(_player);
-        canBeKilled = true;
+        _player.canBeKilled = true;
     }
     public void KillWithoutCorePart()
     {
         canBeKilled = false;
         if (moveState == MoveState.Dead) { return; }
         SetUntargetable();
+        ui.HideHealthBar(); 
         Analytics.CustomEvent("PlayerDeath", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
         dunkController.StopDunk();
         moveState = MoveState.Dead;
