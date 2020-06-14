@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using XInputDotNetPure;
 using TMPro;
 using DG.Tweening;
+using System;
 
 public class MainMenu : MonoBehaviour
 {
@@ -44,7 +45,8 @@ public class MainMenu : MonoBehaviour
 
 	private bool waitForAResetOne;
 	private bool waitForAResetTwo;
-    [ReadOnly] public bool waitForBResetOne;
+    [NonSerialized] public bool waitForStartReset;
+    [NonSerialized] public bool waitForBResetOne;
     public ScrollRect sceneList;
 
     public float menuDefaultPosition = 0.85f;
@@ -146,9 +148,15 @@ public class MainMenu : MonoBehaviour
                 {
                     CloseLevelSelector();
                 }
-                else
+                else { waitForBResetOne = true; }
+
+                if (i_state.Buttons.Start == ButtonState.Pressed)
                 {
-                    waitForBResetOne = true;
+                    if (waitForStartReset) { return; } else { waitForStartReset = true; Close(); }
+                }
+                else if (i_state.Buttons.Start == ButtonState.Released)
+                {
+                    waitForStartReset = false;
                 }
             }
 
@@ -269,6 +277,7 @@ public class MainMenu : MonoBehaviour
 
     public void Close ()
     {
+        GameManager.i.waitForStartReset = true;
         FeedbackManager.SendFeedback("event.ClosePauseMenu", this);
         GameManager.CloseLevelMenu();
     }
@@ -349,6 +358,7 @@ public class MainMenu : MonoBehaviour
         FeedbackManager.SendFeedback("event.PressSettings", this);
         optionMenuCanvas.enabled = true;
         optionMenu.GetComponent<SettingsMenu>().CheckListWhenLaunchingSettings();
+        optionMenu.GetComponent<SettingsMenu>().settingsMenuIsActive = true;
         isMainMenuActive = false;
     }
 
