@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
     private static MainMenu mainMenu;
     private static bool menuCalledOne = false;
     private static bool menuCalledTwo = false;
+    [NonSerialized] public bool waitForStartReset;
     private static bool deathPanelCalled = false;
     public static List<GameObject> DDOL;
     public static string currentZoneName;
@@ -227,6 +228,7 @@ public class GameManager : MonoBehaviour
 
     public static void OpenLevelMenu()
     {
+        mainMenu.waitForStartReset = true;
         foreach (PlayerController p in GameManager.players)
         {
             if (!p.IsInputDisabled())
@@ -237,6 +239,7 @@ public class GameManager : MonoBehaviour
         }
         Time.timeScale = 0f;
         VibrationManager.CancelAllVibrations();
+
         mainMenu.mainMenuCanvas.enabled = true;
         mainMenu.isMainMenuActive = true;
         timeInZone = 0;
@@ -349,6 +352,7 @@ public class GameManager : MonoBehaviour
             {
                 if (i == 0) { if (menuCalledOne) { return; } }
                 if (i == 1) { if (menuCalledTwo) { return; } }
+                if (waitForStartReset) { return; }
                 if (mainMenu != null && !mainMenu.mainMenuCanvas.enabled)
                 {
                     OpenLevelMenu();
@@ -366,6 +370,7 @@ public class GameManager : MonoBehaviour
             {
                 if (i == 0) { menuCalledOne = false; }
                 if (i == 1) { menuCalledTwo = false; }
+                waitForStartReset = false;
             }
         }
 
