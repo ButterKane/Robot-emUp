@@ -42,6 +42,7 @@ public class AbilityListNavigation : MonoBehaviour
     {
         isNavigationAllowed = false;
         GetAvailableAbilitiesDatas();
+        GetUpgradeLevelsToDisplayInAbilities();
         ResetDisplay();
     }
 
@@ -250,6 +251,43 @@ public class AbilityListNavigation : MonoBehaviour
         }
     }
 
+    public void GetUpgradeLevelsToDisplayInAbilities()
+    {
+        for (int i = 0; i < availableAbilitesData.Count; i++)
+        {
+            if (availableAbilitesData[i].ability == ConcernedAbility.PerfectReception)
+            {
+                switch (AbilityManager.GetAbilityLevel(availableAbilitesData[i].ability))
+                {
+                    case Upgrade.Upgrade1:
+                        availableAbilitesData[i].isBaseUnlocked = true;
+                        break;
+                    case Upgrade.Upgrade2:
+                        availableAbilitesData[i].isUpgrade1Unlocked = true;
+                        break;
+                    case Upgrade.Upgrade3:
+                        availableAbilitesData[i].isUpgrade2Unlocked = true;
+                        break;
+                }
+            }
+            else
+            {
+                switch (AbilityManager.GetAbilityLevel(availableAbilitesData[i].ability))
+                {
+                    case Upgrade.Base:
+                        availableAbilitesData[i].isBaseUnlocked = true;
+                        break;
+                    case Upgrade.Upgrade1:
+                        availableAbilitesData[i].isUpgrade1Unlocked = true;
+                        break;
+                    case Upgrade.Upgrade2:
+                        availableAbilitesData[i].isUpgrade2Unlocked = true;
+                        break;
+                }
+            }
+        }
+    }
+
     private IEnumerator UpgradeSequence_C(Upgrade _newAbilityLevel)
     {
         isNavigationAllowed = false;
@@ -350,4 +388,5 @@ public class AbilityListNavigation : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
         isNavigationAllowed = true;
     }
+    
 }
