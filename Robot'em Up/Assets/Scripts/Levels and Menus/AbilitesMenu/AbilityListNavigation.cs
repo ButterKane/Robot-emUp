@@ -177,7 +177,7 @@ public class AbilityListNavigation : MonoBehaviour
         else { descriptionMainText.alpha=1;}
         if (!selectedAbility.isUpgrade1Unlocked) { descriptionUpgrade1.alpha = 0.3f; }
         else { descriptionUpgrade1.alpha = 1; }
-        if (!selectedAbility.isUpgrade2unlocked) { descriptionUpgrade2.alpha = 0.3f; }
+        if (!selectedAbility.isUpgrade2Unlocked) { descriptionUpgrade2.alpha = 0.3f; }
         else { descriptionUpgrade2.alpha = 1; }
     }
 
@@ -268,7 +268,7 @@ public class AbilityListNavigation : MonoBehaviour
                 break;
             case Upgrade.Upgrade2:
                 i_concernedtext = descriptionUpgrade2;
-                selectedAbility.isUpgrade2unlocked = true;
+                selectedAbility.isUpgrade2Unlocked = true;
                 break;
             default:
                 break;
@@ -296,11 +296,12 @@ public class AbilityListNavigation : MonoBehaviour
         isNavigationAllowed = false;
         yield return new WaitForSecondsRealtime(0.5f);
         Upgrade _newLevel;
+
         if (selectedAbility.isBaseUnlocked)
         {
             if (selectedAbility.isUpgrade1Unlocked)
             {
-                _newLevel = Upgrade.Upgrade1;
+                _newLevel = Upgrade.Upgrade3;
             }
             else
             {
@@ -309,23 +310,23 @@ public class AbilityListNavigation : MonoBehaviour
         }
         else
         {
-            _newLevel = Upgrade.Base;
+            _newLevel = Upgrade.Upgrade1;
         }
-
+        Debug.Log("New level is " + _newLevel);
         TextMeshProUGUI i_concernedtext = null;
         switch (_newLevel)
         {
-            case Upgrade.Base:
+            case Upgrade.Upgrade1:
                 i_concernedtext = descriptionMainText;
                 selectedAbility.isBaseUnlocked = true;
                 break;
-            case Upgrade.Upgrade1:
+            case Upgrade.Upgrade2:
                 i_concernedtext = descriptionUpgrade1;
                 selectedAbility.isUpgrade1Unlocked = true;
                 break;
-            case Upgrade.Upgrade2:
+            case Upgrade.Upgrade3:
                 i_concernedtext = descriptionUpgrade2;
-                selectedAbility.isUpgrade2unlocked = true;
+                selectedAbility.isUpgrade2Unlocked = true;
                 break;
             default:
                 break;
