@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -35,7 +36,7 @@ public class LevelSelector : MonoBehaviour
 			RectTransform i_buttonTransform = i_newButton.GetComponent<RectTransform>();
 			i_buttonTransform.sizeDelta = new Vector2(200, 50);
 
-			i_newButton.AddComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(x)) ;
+			i_newButton.AddComponent<Button>().onClick.AddListener(() => LoadingScreen.StartLoadingScreen(new UnityAction(() => SceneManager.LoadScene(x))));
 			i_newButton.transform.SetParent(transform.Find("Viewport").transform.Find("Content"));
 			i_newButton.transform.localPosition = new Vector3(0f, -i * 50, 0);
 

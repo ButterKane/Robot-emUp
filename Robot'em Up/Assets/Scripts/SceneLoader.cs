@@ -24,7 +24,6 @@ public class SceneLoader : MonoBehaviour
 
 	public void LoadNextLevel ()
 	{
-		Debug.Log("Loading next level");
 		for (int i = buildIndex + 1; i < buildIndex + 3; i++)
 		{
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
@@ -37,13 +36,11 @@ public class SceneLoader : MonoBehaviour
 		{
 			StartCoroutine(UnloadLevelAsynchronously_C(buildIndex - 1, UnloadSceneOptions.None));
 		}
-		//Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
 		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex + 1));
 	}
 
 	public void LoadPreviousLevel ()
 	{
-		Debug.Log("Loading previous level");
 		for (int i = buildIndex - 1; i > buildIndex - 3; i--)
 		{
 			if (i <= 0) { continue; }
