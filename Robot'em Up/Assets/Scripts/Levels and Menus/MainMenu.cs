@@ -400,6 +400,12 @@ public class MainMenu : MonoBehaviour
         isMainMenuActive = false;
     }
 
+    public bool DoesAbilityMenuExist()
+    {
+        if(abilitiesMenu != null) { return true; }
+        else { return false; }
+    }
+
     public void InitiateSubMenus()
     {
         if (optionMenuPrefab != null && optionMenu == null)
