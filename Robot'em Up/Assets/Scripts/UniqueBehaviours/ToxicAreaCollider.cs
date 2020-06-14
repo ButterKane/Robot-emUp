@@ -7,6 +7,8 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
     public ToxicAreaManager manager;
     public new ParticleSystem particleSystem;
     public float multiplicator = 1f;
+    bool isPlayer1In;
+    bool isPlayer2In;
 
 	[SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
 	[SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }
@@ -19,18 +21,6 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         manager = ToxicAreaManager.i;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-    void OnBecameVisible()
-    {
-    }
-    void OnBecameInvisible()
-    {
-
-    }
-
     void OnTriggerEnter (Collider _other)
     {
 
@@ -39,10 +29,12 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
                 ToxicAreaManager.i.isInToxicArea_P1++;
+                isPlayer1In = true;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
                 ToxicAreaManager.i.isInToxicArea_P2++;
+                isPlayer2In = true;
             }
         }
     }
@@ -55,10 +47,12 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
                 ToxicAreaManager.i.isInToxicArea_P1--;
+                isPlayer1In = false;
             }
             if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
                 ToxicAreaManager.i.isInToxicArea_P2--;
+                isPlayer2In = false;
             }
         }
     }
@@ -68,6 +62,14 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         if (_source == DamageSource.Dunk || _source == DamageSource.RedBarrelExplosion)
         {
             Destroy(gameObject);
+            if (isPlayer1In)
+            {
+                ToxicAreaManager.i.isInToxicArea_P1--;
+            }
+            if (isPlayer2In)
+            {
+                ToxicAreaManager.i.isInToxicArea_P2--;
+            }
         }
       
     }
