@@ -291,6 +291,7 @@ public class BallBehaviour : MonoBehaviour
 	}
 	public void RemoveDamageModifier ( DamageModifierSource _source )
 	{
+		if (isGhostBall) { return; }
 		List<DamageModifier> i_newModifierList = new List<DamageModifier>();
 		foreach (DamageModifier modifier in ballInformations.damageModifiers)
 		{
