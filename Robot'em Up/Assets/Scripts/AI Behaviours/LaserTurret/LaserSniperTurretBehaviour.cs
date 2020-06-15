@@ -390,9 +390,19 @@ public class LaserSniperTurretBehaviour : TurretBehaviour
         animator.ResetTrigger("FromRestToIdleTrigger");
     }
 
-    protected override void AbortAttack()
+    public override void AbortAttack()
     {
-        ChangingTurretAttackState(TurretAttackState.Rest);
+        if (attackState == TurretAttackState.Anticipation || attackState == TurretAttackState.Attack)
+        { ChangingTurretAttackState(TurretAttackState.Rest); }
+        if (currentHealth <= 0)
+        {
+            if (spawnedBullet != null)
+            {
+                spawnedLaserScript.isLaserActive = false;
+                spawnedBullet.SetActive(false);
+                spawnedBullet.transform.localScale = new Vector3(spawnedBullet.transform.localScale.x, spawnedBullet.transform.localScale.y, 0);
+            }
+        }
     }
 
     protected override void CreateProjectile()

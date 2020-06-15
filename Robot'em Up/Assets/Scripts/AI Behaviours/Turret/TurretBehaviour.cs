@@ -315,7 +315,14 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+        if(_source == DamageSource.Dunk)
+        {
+            base.OnHit(_ball, _impactVector, _thrower, _damages*2, _source, _bumpModificators);
+        }
+        else
+        {
+            base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+        }
     }
 
     public virtual void ChangeAimingRedDotState(AimingRedDotState _newState)
@@ -370,7 +377,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1 - _rotationSpeedModRatio)));
     }
 
-    protected virtual void AbortAttack()
+    public virtual void AbortAttack()
     {
         ChangingTurretAttackState(TurretAttackState.Rest);
         if (aimingRedDotState != AimingRedDotState.NotVisible)
