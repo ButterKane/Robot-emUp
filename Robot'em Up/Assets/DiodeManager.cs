@@ -24,7 +24,10 @@ public class DiodeManager : MonoBehaviour
 		{
 			foreach (DiodeController dc in registeredControllers)
 			{
-				dc.Activate();
+				if (dc != null)
+				{
+					dc.Activate();
+				}
 			}
 		}
 	}

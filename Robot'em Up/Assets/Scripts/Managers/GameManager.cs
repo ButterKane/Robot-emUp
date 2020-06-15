@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public static PlayerController playerTwo;
     [NonSerialized] public static BallBehaviour ball;
     [NonSerialized] public static Camera mainCamera;
+    [NonSerialized] public static Cinemachine.CinemachineBrain cameraBrain;
 
     [NonSerialized] public static CameraGlobalSettings cameraGlobalSettings;
 
@@ -126,6 +127,7 @@ public class GameManager : MonoBehaviour
 
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
+        cameraBrain = Camera.main.GetComponent<Cinemachine.CinemachineBrain>();
         disabledInputs = new List<PlayerController>();
     }
 
@@ -140,6 +142,8 @@ public class GameManager : MonoBehaviour
         timeInZone += Time.deltaTime;
         if (deadPlayers.Count >= 2 && !deathPanelCalled)
         {
+            cameraBrain.enabled = false;
+            Time.timeScale = 0.5f;
             deathPanelCalled = true;
             restartPanel.SetActive(true);
         }
@@ -168,6 +172,13 @@ public class GameManager : MonoBehaviour
             {
                 LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) - 1);
             }
+        }
+        //Reset button
+        GamePadState state1 = GamePad.GetState(PlayerIndex.One);
+        GamePadState state2 = GamePad.GetState(PlayerIndex.Two);
+        if (state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed)
+        {
+            ResetScene();
         }
         UpdateSceneLoader();
     }
@@ -457,6 +468,8 @@ public class GameManager : MonoBehaviour
         if (restartPanel != null) { Destroy(restartPanel); }
         restartPanel = Instantiate(Resources.Load<GameObject>("Menu/RestartPanel"));
         restartPanel.SetActive(false);
+        DDOL.Add(restartPanel);
+        DontDestroyOnLoad(restartPanel);
         
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
