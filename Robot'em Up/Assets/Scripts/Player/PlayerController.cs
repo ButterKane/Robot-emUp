@@ -110,7 +110,8 @@ public class PlayerController : PawnController, IHitable
         UpdateOverHeal();
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            AbilityManager.UnlockAllAbilities();
+            AbilityManager.UpgradeAbility(ConcernedAbility.PerfectReception, Upgrade.Upgrade1);
+            //AbilityManager.UnlockAllAbilities();
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
