@@ -104,6 +104,7 @@ public class PawnController : MonoBehaviour
 	private bool rotationForced;
 	protected bool frozen;
 	private PushDatas pushDatas;
+	private int defaultLayer;
 	protected float damageAfterBump;
 
 	//Health variables
@@ -142,6 +143,7 @@ public class PawnController : MonoBehaviour
 		if (navMeshAgent == null) { navMeshAgent = GetComponentInChildren<NavMeshAgent>(); }
 		if (navMeshAgent == null) { navMeshAgent = GetComponent<NavMeshAgent>(); }
 		pushDatas = PushDatas.GetDatas();
+		defaultLayer = gameObject.layer;
 
 		//Init variables
 		isInvincible = false;
@@ -317,7 +319,9 @@ public class PawnController : MonoBehaviour
 	}
 	public virtual void Damage(float _amount, bool enableInvincibilityFrame = false)
 	{
-		if (!CanDamage()){ return; }
+        if (currentHealth <= 0){ Kill(); } // previous check, if the death went under the radar
+
+        if (!CanDamage()){ return; }
 		if (enableInvincibilityFrame) { SetInvincible(); }
 		FeedbackManager.SendFeedback(eventOnBeingHit, this, transform.position, transform.up, transform.up);
 
@@ -617,7 +621,7 @@ public class PawnController : MonoBehaviour
         else
 		{
 			isInvincible = false;
-			gameObject.layer = 8; // 8 = Player Layer
+			gameObject.layer = defaultLayer; //Reset layer to default layer
 		}
 	}
 	private void SetInvincible()

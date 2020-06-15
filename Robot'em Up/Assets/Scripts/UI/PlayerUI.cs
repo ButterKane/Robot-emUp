@@ -155,10 +155,24 @@ public class PlayerUI : MonoBehaviour
 				break;
 		}
 	}
-	#endregion
+    public void ShowHealthBar()
+    {
+        if (healthBar != null && pawnController.GetHealth() < pawnController.GetMaxHealth())
+        {
+            healthBar.ToggleHealthBar(true);
+        }
+    }
+    public void HideHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.ToggleHealthBar(false);
+        }
+    }
+    #endregion
 
-	#region Private functions
-	private void UpdateHealth()
+    #region Private functions
+    private void UpdateHealth()
 	{
 		currentHealth = (float)pawnController.GetHealth() / (float)pawnController.GetMaxHealth();
 		float i_healthLerpSpeed = healthLossLerpSpeed;
@@ -229,6 +243,7 @@ public class PlayerUI : MonoBehaviour
 	private void GenerateHealthBar ()
 	{
 		healthBar = Instantiate(healthBarPrefab, GameManager.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar.transform.SetAsFirstSibling();
 		healthBar.target = pawnController;
 		healthBar.heightOffset = healthBarHeight;
 		healthBar.name = "HealthBar";
@@ -295,20 +310,7 @@ public class PlayerUI : MonoBehaviour
 		dashPanel.SetActive(false);
 
 	}
-	private void ShowHealthBar ()
-	{
-		if (healthBar != null && pawnController.GetHealth() < pawnController.GetMaxHealth())
-		{
-			healthBar.ToggleHealthBar(true);
-		}
-	}
-	private void HideHealthBar ()
-	{
-		if (healthBar != null)
-		{
-			healthBar.ToggleHealthBar(false);
-		}
-	}
+	
 	#endregion
 
 	#region Coroutines

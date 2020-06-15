@@ -9,11 +9,14 @@ public class ToxicAreaManager : MonoBehaviour
     public bool areaActivated = false;
     public bool accelerateDepoisoned = false;
     public float decay_multiplier;
+    public float toxicity_multiplier;
     public float damageWhenPoisened_multiplier;
     public float toxicValue_P1;
     public float toxicValue_P2;
     public bool isPoisened_P1;
     public bool isPoisened_P2;
+    public int isInToxicArea_P1;
+    public int isInToxicArea_P2;
     public Image poisonedSprite_P1;
     public Image poisonedSprite_P2;
     public Transform playerOneToxicBar;
@@ -31,8 +34,8 @@ public class ToxicAreaManager : MonoBehaviour
         playerTwoToxicBar = Instantiate(Resources.Load<GameObject>("PlayerResource/ToxicityIndicator")).transform;
     }
 
-        void Start()
-        {
+    void Start()
+    {
             PlayerUI player1UI = GameManager.playerOne.GetComponent<PlayerUI>();
         PlayerUI player2UI = GameManager.playerTwo.GetComponent<PlayerUI>();
 
@@ -57,6 +60,9 @@ public class ToxicAreaManager : MonoBehaviour
 
         playerOneToxicBar.gameObject.SetActive(false);
         playerTwoToxicBar.gameObject.SetActive(false);
+
+        decay_multiplier = 0.6f;
+        damageWhenPoisened_multiplier = 5;
     }
 
 
@@ -68,6 +74,8 @@ public class ToxicAreaManager : MonoBehaviour
             //Update slider values
             playerOneToxicBarSlider.value = toxicValue_P1;
             playerTwoToxicBarSlider.value = toxicValue_P2;
+
+            if (toxicValue_P1 > 0) { if (!playerOneToxicBar.gameObject.activeSelf) { playerOneToxicBar.gameObject.SetActive(true); } }
             if (toxicValue_P1 >= 1)
             {
                 isPoisened_P1 = true;
@@ -76,11 +84,12 @@ public class ToxicAreaManager : MonoBehaviour
 
             if (toxicValue_P1 <= 0)
             {
+                if (playerOneToxicBar.gameObject.activeSelf) { playerOneToxicBar.gameObject.SetActive(false); }
                 toxicValue_P1 = 0;
                 isPoisened_P1 = false;
             }
 
-
+            if(toxicValue_P2 > 0) { if (!playerTwoToxicBar.gameObject.activeSelf) { playerTwoToxicBar.gameObject.SetActive(true); } }
             if (toxicValue_P2 >= 1)
             {
                 toxicValue_P2 = 1;
@@ -89,12 +98,30 @@ public class ToxicAreaManager : MonoBehaviour
 
             if (toxicValue_P2 <= 0)
             {
+                if (playerTwoToxicBar.gameObject.activeSelf) { playerTwoToxicBar.gameObject.SetActive(false); }
                 toxicValue_P2 = 0;
                 isPoisened_P2 = false;
             }
+            print(decay_multiplier);
 
-            toxicValue_P1 -= Time.deltaTime * decay_multiplier;
-            toxicValue_P2 -= Time.deltaTime * decay_multiplier;
+            //UP AND DOWN TOXICITY VALUE
+            if (isInToxicArea_P1>0)
+            {
+                toxicValue_P1 += Time.deltaTime * toxicity_multiplier;
+            }
+            else
+            {
+                toxicValue_P1 -= Time.deltaTime * decay_multiplier;
+            }
+            if (isInToxicArea_P2>0)
+            {
+                toxicValue_P2 += Time.deltaTime * toxicity_multiplier;
+            }
+            else
+            {
+                toxicValue_P2 -= Time.deltaTime * decay_multiplier;
+            }
+
             inflictDamage_P1 -= Time.deltaTime;
             inflictDamage_P2 -= Time.deltaTime;
 
@@ -102,14 +129,13 @@ public class ToxicAreaManager : MonoBehaviour
             {
                 // poisonedSprite_P1.gameObject.SetActive(true);
                 inflictDamage_P1 = 0.5f;
-                GameManager.playerOne.Damage(0.5f * damageWhenPoisened_multiplier);
-                if (accelerateDepoisoned)
-                {
-                    toxicValue_P1 -= Time.deltaTime * decay_multiplier * 4;
-                }
+                GameManager.playerOne.Damage(damageWhenPoisened_multiplier);
             }
-            else
+            else if (!GameManager.alivePlayers.Contains(GameManager.playerOne))
             {
+                playerOneToxicBar.gameObject.SetActive(false);
+                toxicValue_P1 = 0;
+                isInToxicArea_P1 = 0;
                 // poisonedSprite_P1.gameObject.SetActive(false);
             }
 
@@ -118,15 +144,13 @@ public class ToxicAreaManager : MonoBehaviour
             {
                 //  poisonedSprite_P2.gameObject.SetActive(true);
                 inflictDamage_P2 = 0.5f;
-
-                GameManager.playerTwo.Damage(Time.deltaTime * damageWhenPoisened_multiplier);
-                if (accelerateDepoisoned)
-                {
-                    toxicValue_P2 -= Time.deltaTime * decay_multiplier * 4;
-                }
+                GameManager.playerTwo.Damage(damageWhenPoisened_multiplier);
             }
-            else
+            else if (!GameManager.alivePlayers.Contains(GameManager.playerTwo))
             {
+                playerTwoToxicBar.gameObject.SetActive(false);
+                toxicValue_P2 = 0;
+                isInToxicArea_P2 = 0;
                 //   poisonedSprite_P2.gameObject.SetActive(false);
             }
         }
@@ -136,8 +160,8 @@ public class ToxicAreaManager : MonoBehaviour
     {
         Debug.Log("ToxicAreaEntry");
         areaActivated = true;
-        playerOneToxicBar.gameObject.SetActive(true);
-        playerTwoToxicBar.gameObject.SetActive(true);
+        //playerOneToxicBar.gameObject.SetActive(true);
+        //playerTwoToxicBar.gameObject.SetActive(true);
     }
 
 
@@ -145,8 +169,8 @@ public class ToxicAreaManager : MonoBehaviour
     {
         Debug.Log("ToxicAreaLeaving");
         areaActivated = false;
-        playerOneToxicBar.gameObject.SetActive(false);
-        playerTwoToxicBar.gameObject.SetActive(false);
+        //playerOneToxicBar.gameObject.SetActive(false);
+        //playerTwoToxicBar.gameObject.SetActive(false);
     }
 
 }

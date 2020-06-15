@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using XInputDotNetPure;
 #pragma warning disable 0649
@@ -73,6 +74,7 @@ public class GameManager : MonoBehaviour
     private static MainMenu mainMenu;
     private static bool menuCalledOne = false;
     private static bool menuCalledTwo = false;
+    [NonSerialized] public bool waitForStartReset;
     private static bool deathPanelCalled = false;
     public static List<GameObject> DDOL;
     public static string currentZoneName;
@@ -91,7 +93,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         i = this;
-
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
         Time.timeScale = (PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed)/100); 
@@ -122,15 +123,20 @@ public class GameManager : MonoBehaviour
         numberOfSurroundSpots = SurrounderPrefab.GetComponent<Surrounder>().points.Count;
 
         CreateSurroundersForPlayers();
-        InstantiateMenus();
 
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         disabledInputs = new List<PlayerController>();
     }
 
+    private void Start()
+    {
+        InstantiateMenus();
+    }
+
     private void Update()
     {
+        if (LoadingScreen.loading) { return; }
         timeInZone += Time.deltaTime;
         if (deadPlayers.Count >= 2 && !deathPanelCalled)
         {
@@ -186,8 +192,9 @@ public class GameManager : MonoBehaviour
 
     public static void LoadSceneByIndex(int index)
     {
-        DestroyDDOL();
-        SceneManager.LoadScene(index);
+        UnityAction newAction = new UnityAction(() => SceneManager.LoadScene(index));
+        newAction += DestroyDDOL; 
+        LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
         timeInZone = 0;
@@ -195,8 +202,9 @@ public class GameManager : MonoBehaviour
 
     public static void LoadNextScene()
     {
-        DestroyDDOL();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        UnityAction newAction = new UnityAction(() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1));
+        newAction += DestroyDDOL;
+        LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
         timeInZone = 0;
@@ -224,6 +232,7 @@ public class GameManager : MonoBehaviour
 
     public static void OpenLevelMenu()
     {
+        mainMenu.waitForStartReset = true;
         foreach (PlayerController p in GameManager.players)
         {
             if (!p.IsInputDisabled())
@@ -234,7 +243,9 @@ public class GameManager : MonoBehaviour
         }
         Time.timeScale = 0f;
         VibrationManager.CancelAllVibrations();
+
         mainMenu.mainMenuCanvas.enabled = true;
+        mainMenu.isMainMenuActive = true;
         timeInZone = 0;
     }
 
@@ -246,13 +257,14 @@ public class GameManager : MonoBehaviour
         }
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100;
         mainMenu.mainMenuCanvas.enabled = false;
+        mainMenu.isMainMenuActive = false;
     }
 
     public void FindMainCanvas()
     {
         foreach (Canvas canvas in FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode != RenderMode.WorldSpace)
+            if (canvas.renderMode != RenderMode.WorldSpace && canvas.name != "LoadingScreenCanvas")
             {
                 mainCanvas = canvas;
                 DontDestroyOnLoad(mainCanvas.rootCanvas.transform);
@@ -263,8 +275,9 @@ public class GameManager : MonoBehaviour
 
     public static void ResetScene()
     {
-        DestroyDDOL();
-        SceneManager.LoadScene(GetCurrentZoneName());
+        UnityAction newAction = new UnityAction(() => SceneManager.LoadScene(GetCurrentZoneName()));
+        newAction += DestroyDDOL;
+        LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         timeInZone = 0;
     }
@@ -326,6 +339,8 @@ public class GameManager : MonoBehaviour
 
     public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
+        if(mainMenu == null) { mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>(); }
+        if (!mainMenu.DoesAbilityMenuExist()) { mainMenu.InitiateSubMenus(); }
         AbilityManager.UpgradeAbility(_concernedAbility, _newAbilityLevel);
         OpenLevelMenu();
         mainMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
@@ -344,23 +359,25 @@ public class GameManager : MonoBehaviour
             {
                 if (i == 0) { if (menuCalledOne) { return; } }
                 if (i == 1) { if (menuCalledTwo) { return; } }
+                if (waitForStartReset) { return; }
                 if (mainMenu != null && !mainMenu.mainMenuCanvas.enabled)
                 {
                     OpenLevelMenu();
                     if (i == 0) { menuCalledOne = true; }
                     if (i == 1) { menuCalledTwo = true; }
                 }
-                else if (mainMenu != null)
-                {
-                    CloseLevelMenu();
-                    if (i == 0) { menuCalledOne = true; }
-                    if (i == 1) { menuCalledTwo = true; }
-                }
+                //else if (mainMenu != null)
+                //{
+                //    CloseLevelMenu();
+                //    if (i == 0) { menuCalledOne = true; }
+                //    if (i == 1) { menuCalledTwo = true; }
+                //}
             }
             if (state.Buttons.Start == ButtonState.Released)
             {
                 if (i == 0) { menuCalledOne = false; }
                 if (i == 1) { menuCalledTwo = false; }
+                waitForStartReset = false;
             }
         }
 

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using XInputDotNetPure;
 using TMPro;
 using DG.Tweening;
+using System;
+using UnityEngine.Events;
 
 public class MainMenu : MonoBehaviour
 {
@@ -44,7 +46,8 @@ public class MainMenu : MonoBehaviour
 
 	private bool waitForAResetOne;
 	private bool waitForAResetTwo;
-    [ReadOnly] public bool waitForBResetOne;
+    [NonSerialized] public bool waitForStartReset;
+    [NonSerialized] public bool waitForBResetOne;
     public ScrollRect sceneList;
 
     public float menuDefaultPosition = 0.85f;
@@ -65,15 +68,18 @@ public class MainMenu : MonoBehaviour
         if (!showOnAwake)
         {
             mainMenuCanvas.enabled = false;
+            isMainMenuActive = false;
         } else
         {
             mainMenuCanvas.enabled = true;
+            isMainMenuActive = true;
         }
         RestoreButtons();
     }
 
 	private void Update ()
 	{
+        if (LoadingScreen.loading) { return; }
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isMainMenuActive && gameObject.activeSelf)
         {
@@ -140,13 +146,19 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed)
+                if (i_state.Buttons.B == ButtonState.Pressed && sceneList != null && sceneList.gameObject.activeSelf == true)
                 {
                     CloseLevelSelector();
                 }
-                else
+                else { waitForBResetOne = true; }
+
+                if (i_state.Buttons.Start == ButtonState.Pressed)
                 {
-                    waitForBResetOne = true;
+                    if (waitForStartReset) { return; } else { waitForStartReset = true; Close(); }
+                }
+                else if (i_state.Buttons.Start == ButtonState.Released)
+                {
+                    waitForStartReset = false;
                 }
             }
 
@@ -244,7 +256,7 @@ public class MainMenu : MonoBehaviour
         if (_button.name != "BUTTON_Quit") {
             buttonImage.color = selectedColor;
         }
-         if (_showAnimation)
+        if (_showAnimation)
         {
             _button.transform.DOMoveX(Screen.width * menuSelectedPosition, 0.1f);
         }
@@ -267,6 +279,7 @@ public class MainMenu : MonoBehaviour
 
     public void Close ()
     {
+        GameManager.i.waitForStartReset = true;
         FeedbackManager.SendFeedback("event.ClosePauseMenu", this);
         GameManager.CloseLevelMenu();
     }
@@ -336,10 +349,9 @@ public class MainMenu : MonoBehaviour
     public void StartGame ()
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
-        SceneManager.LoadScene(1);
+        LoadingScreen.StartLoadingScreen(new UnityAction(() => SceneManager.LoadScene(1)));
         EnergyManager.DecreaseEnergy(1);
         AbilityManager.ResetUpgrades();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
     public void GoToSettings ()
@@ -347,6 +359,7 @@ public class MainMenu : MonoBehaviour
         FeedbackManager.SendFeedback("event.PressSettings", this);
         optionMenuCanvas.enabled = true;
         optionMenu.GetComponent<SettingsMenu>().CheckListWhenLaunchingSettings();
+        optionMenu.GetComponent<SettingsMenu>().settingsMenuIsActive = true;
         isMainMenuActive = false;
     }
 
@@ -362,6 +375,7 @@ public class MainMenu : MonoBehaviour
         FeedbackManager.SendFeedback("event.PressSettings", this);
         abilitiesMenuCanvas.enabled = true;
         AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
+        i_script.GetUpgradeLevelsToDisplayInAbilities();
         i_script.organizer.OrganizeAbilities();
         i_script.ResetDisplay();
         isMainMenuActive = false;
@@ -385,6 +399,12 @@ public class MainMenu : MonoBehaviour
         //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
         i_script.isNavigationAllowed = true;
         isMainMenuActive = false;
+    }
+
+    public bool DoesAbilityMenuExist()
+    {
+        if(abilitiesMenu != null) { return true; }
+        else { return false; }
     }
 
     public void InitiateSubMenus()

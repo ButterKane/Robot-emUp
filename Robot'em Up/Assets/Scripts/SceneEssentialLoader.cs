@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneEssentialLoader : MonoBehaviour
 {
 	public bool alsoLoadNextScene;
+	public bool alsoLoadPreviousScene = true;
 	public Transform player1Position;
 	public Transform player2Position;
 	public Transform ballPosition;
@@ -48,6 +49,13 @@ public class SceneEssentialLoader : MonoBehaviour
 		GameManager.DDOL.Add(ball.gameObject);
 		GameManager.DDOL.Add(Camera.main.gameObject);
 		GameManager.DDOL.Add(GameManager.i.gameObject);
+
+		if (!LoadingScreen.instantiated)
+		{
+			Debug.Log("Instantiating");
+			Instantiate(Resources.Load("LoadingScreenCanvas"));
+		}
+
 		foreach (Light light in FindObjectsOfType<Light>())
 		{
 			if (light.type == LightType.Directional)
@@ -98,6 +106,14 @@ public class SceneEssentialLoader : MonoBehaviour
 		{
 			yield return new WaitForEndOfFrame();
 			SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Additive);
+		}
+		if (alsoLoadPreviousScene)
+		{
+			yield return new WaitForEndOfFrame();
+			if (SceneManager.GetActiveScene().buildIndex - 1 > 0)
+			{
+				SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex - 1, LoadSceneMode.Additive);
+			}
 		}
 
 		if (sceneLoader != null)

@@ -42,6 +42,7 @@ public class AbilityListNavigation : MonoBehaviour
     {
         isNavigationAllowed = false;
         GetAvailableAbilitiesDatas();
+        GetUpgradeLevelsToDisplayInAbilities();
         ResetDisplay();
     }
 
@@ -51,7 +52,6 @@ public class AbilityListNavigation : MonoBehaviour
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isNavigationAllowed)
         {
-            Debug.Log("Hello it is main menu");
             for (int i = 0; i < 2; i++)
             {
                 if (i == 0) { i_state = GamePad.GetState(PlayerIndex.One); }
@@ -178,7 +178,7 @@ public class AbilityListNavigation : MonoBehaviour
         else { descriptionMainText.alpha=1;}
         if (!selectedAbility.isUpgrade1Unlocked) { descriptionUpgrade1.alpha = 0.3f; }
         else { descriptionUpgrade1.alpha = 1; }
-        if (!selectedAbility.isUpgrade2unlocked) { descriptionUpgrade2.alpha = 0.3f; }
+        if (!selectedAbility.isUpgrade2Unlocked) { descriptionUpgrade2.alpha = 0.3f; }
         else { descriptionUpgrade2.alpha = 1; }
     }
 
@@ -251,6 +251,43 @@ public class AbilityListNavigation : MonoBehaviour
         }
     }
 
+    public void GetUpgradeLevelsToDisplayInAbilities()
+    {
+        for (int i = 0; i < availableAbilitesData.Count; i++)
+        {
+            if (availableAbilitesData[i].ability == ConcernedAbility.PerfectReception)
+            {
+                switch (AbilityManager.GetAbilityLevel(availableAbilitesData[i].ability))
+                {
+                    case Upgrade.Upgrade1:
+                        availableAbilitesData[i].isBaseUnlocked = true;
+                        break;
+                    case Upgrade.Upgrade2:
+                        availableAbilitesData[i].isUpgrade1Unlocked = true;
+                        break;
+                    case Upgrade.Upgrade3:
+                        availableAbilitesData[i].isUpgrade2Unlocked = true;
+                        break;
+                }
+            }
+            else
+            {
+                switch (AbilityManager.GetAbilityLevel(availableAbilitesData[i].ability))
+                {
+                    case Upgrade.Base:
+                        availableAbilitesData[i].isBaseUnlocked = true;
+                        break;
+                    case Upgrade.Upgrade1:
+                        availableAbilitesData[i].isUpgrade1Unlocked = true;
+                        break;
+                    case Upgrade.Upgrade2:
+                        availableAbilitesData[i].isUpgrade2Unlocked = true;
+                        break;
+                }
+            }
+        }
+    }
+
     private IEnumerator UpgradeSequence_C(Upgrade _newAbilityLevel)
     {
         isNavigationAllowed = false;
@@ -269,7 +306,7 @@ public class AbilityListNavigation : MonoBehaviour
                 break;
             case Upgrade.Upgrade2:
                 i_concernedtext = descriptionUpgrade2;
-                selectedAbility.isUpgrade2unlocked = true;
+                selectedAbility.isUpgrade2Unlocked = true;
                 break;
             default:
                 break;
@@ -297,11 +334,12 @@ public class AbilityListNavigation : MonoBehaviour
         isNavigationAllowed = false;
         yield return new WaitForSecondsRealtime(0.5f);
         Upgrade _newLevel;
+
         if (selectedAbility.isBaseUnlocked)
         {
             if (selectedAbility.isUpgrade1Unlocked)
             {
-                _newLevel = Upgrade.Upgrade1;
+                _newLevel = Upgrade.Upgrade3;
             }
             else
             {
@@ -310,23 +348,23 @@ public class AbilityListNavigation : MonoBehaviour
         }
         else
         {
-            _newLevel = Upgrade.Base;
+            _newLevel = Upgrade.Upgrade1;
         }
-
+        Debug.Log("New level is " + _newLevel);
         TextMeshProUGUI i_concernedtext = null;
         switch (_newLevel)
         {
-            case Upgrade.Base:
+            case Upgrade.Upgrade1:
                 i_concernedtext = descriptionMainText;
                 selectedAbility.isBaseUnlocked = true;
                 break;
-            case Upgrade.Upgrade1:
+            case Upgrade.Upgrade2:
                 i_concernedtext = descriptionUpgrade1;
                 selectedAbility.isUpgrade1Unlocked = true;
                 break;
-            case Upgrade.Upgrade2:
+            case Upgrade.Upgrade3:
                 i_concernedtext = descriptionUpgrade2;
-                selectedAbility.isUpgrade2unlocked = true;
+                selectedAbility.isUpgrade2Unlocked = true;
                 break;
             default:
                 break;
@@ -350,4 +388,5 @@ public class AbilityListNavigation : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
         isNavigationAllowed = true;
     }
+    
 }

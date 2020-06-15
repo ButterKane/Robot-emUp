@@ -36,7 +36,6 @@ public class SceneLoader : MonoBehaviour
 		{
 			StartCoroutine(UnloadLevelAsynchronously_C(buildIndex - 1, UnloadSceneOptions.None));
 		}
-		//Debug.Log("Entering zone: " + GameManager.GetSceneNameFromIndex(buildIndex + 1));
 		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex + 1));
 	}
 

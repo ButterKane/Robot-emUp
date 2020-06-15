@@ -1,4 +1,5 @@
 ﻿using MyBox;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,8 +42,9 @@ public class SettingsMenu : MonoBehaviour
     private float timeJoystickHeldDown;
     private float sliderSpecificRestTime;
 
-
+    [NonSerialized] public bool settingsMenuIsActive;
     private bool waitForResetReset;
+    private bool waitForStartReset;
     private bool waitForJoystickYReset;
     private bool waitForJoystickXReset;
     private float restTimeOfJoystickX;
@@ -156,147 +158,158 @@ public class SettingsMenu : MonoBehaviour
         selectedSettingName = selectedSetting.gameObject.name;
 
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
-
-        // Managing Up and Down
-        if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
+        if (settingsMenuIsActive)
         {
-            if (!waitForJoystickYReset)
+            // Managing Up and Down
+            if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
             {
-                SelectPreviousSettings();
-                waitForJoystickYReset = true;
+                if (!waitForJoystickYReset)
+                {
+                    SelectPreviousSettings();
+                    waitForJoystickYReset = true;
+                }
             }
-        }
-        else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
-        {
-            if (!waitForJoystickYReset)
+            else if (i_state.ThumbSticks.Left.Y < -joystickTreshold || i_state.DPad.Down == ButtonState.Pressed)
             {
-                SelectNextSettings();
-                waitForJoystickYReset = true;
-            }
+                if (!waitForJoystickYReset)
+                {
+                    SelectNextSettings();
+                    waitForJoystickYReset = true;
+                }
 
-        }
-        else
-        {
-            waitForJoystickYReset = false;
-        }
-
-        // Managing Left and Right
-        if (i_state.ThumbSticks.Left.X > joystickTreshold || i_state.DPad.Right == ButtonState.Pressed)
-        {
-            timeJoystickHeldDown += Time.unscaledDeltaTime;
-            if (!waitForJoystickXReset)
-            {
-                IncreaseValue();
-                waitForJoystickXReset = true;
-                currentRestTimeOfJoystickX = restTimeOfJoystickX;
-                sliderSpecificRestTime = 0;
-            }
-        }
-        else if (i_state.ThumbSticks.Left.X < -joystickTreshold || i_state.DPad.Left == ButtonState.Pressed)
-        {
-            timeJoystickHeldDown += Time.unscaledDeltaTime;
-            if (!waitForJoystickXReset)
-            {
-                DecreaseValue();
-                waitForJoystickXReset = true;
-                currentRestTimeOfJoystickX = restTimeOfJoystickX;
-                sliderSpecificRestTime = 0;
-            }
-        }
-        else
-        {
-            waitForJoystickXReset = false;
-            restTimeOfJoystickX = normalRestTimeOfJoystick;
-            timeJoystickHeldDown = 0;
-        }
-
-        if (currentRestTimeOfJoystickX <= 0)
-        {
-            waitForJoystickXReset = false;
-        }
-
-        if (selectedSetting is SliderUI)
-        {
-            currentSliderTimeRatioBeforeReset = timeBeforeResetEvolution.Evaluate(timeJoystickHeldDown / timeToReachMinTimeBeforeReset); //from 1 to 0
-            sliderSpecificRestTime += Time.unscaledDeltaTime;
-
-            if (sliderSpecificRestTime >= Mathf.Lerp(minMaxTimeBeforeReset.x, minMaxTimeBeforeReset.y, currentSliderTimeRatioBeforeReset)) // from max to min
-            {
-                waitForJoystickXReset = false;
-            }
-        }
-
-        currentRestTimeOfJoystickX -= Time.unscaledDeltaTime;
-
-
-        // Managing Buttons
-        if (i_state.Buttons.A == ButtonState.Pressed)
-        {
-            if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; }
-        }
-        else
-        {
-            waitForAReset = false;
-        }
-
-        if (i_state.Buttons.B == ButtonState.Pressed)
-        {
-            if (isInputChangingOpen)
-            {
-                CloseInputChanging();
             }
             else
             {
-                ReturnToMainMenu();
+                waitForJoystickYReset = false;
             }
-        }
 
-        if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
-        {
-            if (waitForRightShoulderReset) { return; } else { waitForRightShoulderReset = true; ChangeCategory(1); }
-        }
-        else if (i_state.Buttons.RightShoulder == ButtonState.Released)
-        {
-            waitForRightShoulderReset = false;
-        }
+            // Managing Left and Right
+            if (i_state.ThumbSticks.Left.X > joystickTreshold || i_state.DPad.Right == ButtonState.Pressed)
+            {
+                timeJoystickHeldDown += Time.unscaledDeltaTime;
+                if (!waitForJoystickXReset)
+                {
+                    IncreaseValue();
+                    waitForJoystickXReset = true;
+                    currentRestTimeOfJoystickX = restTimeOfJoystickX;
+                    sliderSpecificRestTime = 0;
+                }
+            }
+            else if (i_state.ThumbSticks.Left.X < -joystickTreshold || i_state.DPad.Left == ButtonState.Pressed)
+            {
+                timeJoystickHeldDown += Time.unscaledDeltaTime;
+                if (!waitForJoystickXReset)
+                {
+                    DecreaseValue();
+                    waitForJoystickXReset = true;
+                    currentRestTimeOfJoystickX = restTimeOfJoystickX;
+                    sliderSpecificRestTime = 0;
+                }
+            }
+            else
+            {
+                waitForJoystickXReset = false;
+                restTimeOfJoystickX = normalRestTimeOfJoystick;
+                timeJoystickHeldDown = 0;
+            }
 
-        if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
-        {
-            if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1); }
-        }
-        else if (i_state.Buttons.LeftShoulder == ButtonState.Released)
-        {
-            waitForLeftShoulderReset = false;
-        }
+            if (currentRestTimeOfJoystickX <= 0)
+            {
+                waitForJoystickXReset = false;
+            }
+
+            if (selectedSetting is SliderUI)
+            {
+                currentSliderTimeRatioBeforeReset = timeBeforeResetEvolution.Evaluate(timeJoystickHeldDown / timeToReachMinTimeBeforeReset); //from 1 to 0
+                sliderSpecificRestTime += Time.unscaledDeltaTime;
+
+                if (sliderSpecificRestTime >= Mathf.Lerp(minMaxTimeBeforeReset.x, minMaxTimeBeforeReset.y, currentSliderTimeRatioBeforeReset)) // from max to min
+                {
+                    waitForJoystickXReset = false;
+                }
+            }
+
+            currentRestTimeOfJoystickX -= Time.unscaledDeltaTime;
 
 
-        if (i_state.Buttons.Back == ButtonState.Pressed)
-        {
-            if (waitForResetReset) { return; } else { waitForResetReset = true; ResetToDefault(); }
-        }
-        else if (i_state.Buttons.Back == ButtonState.Released)
-        {
-            waitForResetReset = false;
-        }
+            // Managing Buttons
+            if (i_state.Buttons.A == ButtonState.Pressed)
+            {
+                if (waitForAReset) { return; } else { PressingA(); waitForAReset = true; }
+            }
+            else
+            {
+                waitForAReset = false;
+            }
+
+            if (i_state.Buttons.B == ButtonState.Pressed)
+            {
+                if (isInputChangingOpen)
+                {
+                    CloseInputChanging();
+                }
+                else
+                {
+                    ReturnToMainMenu();
+                }
+            }
+
+            if (i_state.Buttons.RightShoulder == ButtonState.Pressed)
+            {
+                if (waitForRightShoulderReset) { return; } else { waitForRightShoulderReset = true; ChangeCategory(1); }
+            }
+            else if (i_state.Buttons.RightShoulder == ButtonState.Released)
+            {
+                waitForRightShoulderReset = false;
+            }
+
+            if (i_state.Buttons.LeftShoulder == ButtonState.Pressed)
+            {
+                if (waitForLeftShoulderReset) { return; } else { waitForLeftShoulderReset = true; ChangeCategory(-1); }
+            }
+            else if (i_state.Buttons.LeftShoulder == ButtonState.Released)
+            {
+                waitForLeftShoulderReset = false;
+            }
+
+
+            if (i_state.Buttons.Back == ButtonState.Pressed)
+            {
+                if (waitForResetReset) { return; } else { waitForResetReset = true; ResetToDefault(); }
+            }
+            else if (i_state.Buttons.Back == ButtonState.Released)
+            {
+                waitForResetReset = false;
+            }
+
+            if (i_state.Buttons.Start == ButtonState.Pressed)
+            {
+                if (waitForStartReset) { return; } else { waitForStartReset = true; ReturnToMainMenu(); scriptLinkedToThisOne.Close(); }
+            }
+            else if (i_state.Buttons.Start == ButtonState.Released)
+            {
+                waitForStartReset = false;
+            }
 
 
 
-        // Managing KeyBoard
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            SelectNextSettings();
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            SelectPreviousSettings();
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            IncreaseValue();
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            DecreaseValue();
+            // Managing KeyBoard
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                SelectNextSettings();
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                SelectPreviousSettings();
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                IncreaseValue();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                DecreaseValue();
+            }
         }
     }
 
@@ -361,7 +374,7 @@ public class SettingsMenu : MonoBehaviour
         ModifyPlayerPrefsValues();
 
         //Time.timeScale = 0; // make sure it is still stopped
-
+        settingsMenuIsActive = false;
         scriptLinkedToThisOne.waitForBResetOne = true;
         scriptLinkedToThisOne.isMainMenuActive = true;
 

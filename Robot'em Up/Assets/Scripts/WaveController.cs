@@ -31,6 +31,7 @@ public class WaveController : MonoBehaviour
 	private float delayBeforeNextWave;
 	private bool enemiesKilled = false;
 	private bool arenaFinished = false;
+	private bool eventPlaying;
 
 	private void Awake ()
 	{
@@ -58,7 +59,7 @@ public class WaveController : MonoBehaviour
 			}
 		} else
 		{
-			if (currentWaveIndex >= 0)
+			if (currentWaveIndex >= 0 && !eventPlaying)
 			{
 				if (currentPowerLevel <= 0)
 				{
@@ -125,11 +126,11 @@ public class WaveController : MonoBehaviour
 		if (currentWaveIndex >= waveList.Count) { EndArena(); return; }
 		if (exitDoor != null) { exitDoor.OnWaveStart(); }
 		enemiesKilled = false;
-		waveStarted = true;
 		if (waveList[currentWaveIndex].onStartSpawnEvent.isEnabled)
 		{
+			eventPlaying = true;
 			waveList[currentWaveIndex].onStartSpawnEvent.linkedWaveController = this;
-			waveList[currentWaveIndex].onStartSpawnEvent.onEnd.AddListener(() => { StartCoroutine(StartWave_C(currentWaveIndex)); });
+			waveList[currentWaveIndex].onStartSpawnEvent.onEnd.AddListener(() => { StartCoroutine(StartWave_C(currentWaveIndex)); eventPlaying = false; });
 			waveList[currentWaveIndex].onStartSpawnEvent.StartEvent();
 			return;
 		}
@@ -211,6 +212,8 @@ public class WaveController : MonoBehaviour
 	#region Coroutines
 	IEnumerator StartWave_C (int _waveIndex)
 	{
+		waveStarted = true;
+
 		if (_waveIndex < waveList.Count)
 		{
 			float waveDuration = waveList[_waveIndex].duration;

@@ -18,7 +18,7 @@ public class PuzzleElevator : PuzzleActivable
     float progression = 0;
     private float delayBlocked;
 
-    private List<PawnController> blockingObjects = new List<PawnController>();
+    public List<PawnController> blockingObjects = new List<PawnController>();
 
 
     void Awake()
@@ -27,7 +27,7 @@ public class PuzzleElevator : PuzzleActivable
         journeyLength = Vector3.Distance(downPosition, upPosition);
     }
 
-    private void OnCollisionStay ( Collision collision )
+    private void OnCollisionEnter ( Collision collision )
     {
         if (collision.gameObject.tag == "Player")
         {
@@ -109,6 +109,7 @@ public class PuzzleElevator : PuzzleActivable
             if (state == ElevatorState.MovingDown)
             {
                 progression += Time.deltaTime * speed;
+                progression = Mathf.Clamp(progression, 0, journeyLength);
                 if (progression > 0 && progression < journeyLength)
                 {
                     transform.position = Vector3.Lerp(downPosition, upPosition, progression / journeyLength);
@@ -116,9 +117,15 @@ public class PuzzleElevator : PuzzleActivable
             }
         }
 
+        if (state == ElevatorState.MovingDown)
+        {
+            Debug.Log(transform.name + " " + !isActivated + " " + !IsBlocked() + " " + delayBlocked);
+        }
         if (state == ElevatorState.MovingDown && !isActivated && !IsBlocked() && delayBlocked <= 0)
         {
+            Debug.Log(transform.name + " Moving down " + progression);
             progression -= Time.deltaTime * speed;
+            progression = Mathf.Clamp(progression, 0, journeyLength);
             if (progression > 0)
             {
                 transform.position = Vector3.Lerp(downPosition, upPosition, progression / journeyLength);
@@ -143,6 +150,7 @@ public class PuzzleElevator : PuzzleActivable
 
     override public void Desactivate()
     {
+        Debug.Log("Desactivating");
         if (isActivated)
         {
             isActivated = false;

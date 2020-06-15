@@ -140,6 +140,7 @@ public class EnemyBehaviour : PawnController, IHitable
         EnemyManager.i.enemies.Add(this);
         if (canSurroundPlayer) { EnemyManager.i.enemiesThatSurround.Add(this); }
         healthBar = Instantiate(healthBarPrefab, CanvasManager.i.mainCanvas.transform).GetComponent<HealthBar>();
+        healthBar.transform.SetAsFirstSibling();
         healthBar.target = this;
         selfCollider = GetComponent<Collider>();
 
@@ -450,7 +451,7 @@ public class EnemyBehaviour : PawnController, IHitable
             case DamageSource.RedBarrelExplosion:
                 if (isBumpable && enemyType != EnemyTypes.RedBarrel)
                 {
-                    damageAfterBump = _damages;
+                    damageAfterBump = _damages/2;
                     i_normalizedImpactVector = new Vector3(_impactVector.x, 0, _impactVector.z);
                     BumpMe(i_normalizedImpactVector.normalized, BumpForce.Force2);
                 }
