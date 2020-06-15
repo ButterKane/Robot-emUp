@@ -245,13 +245,25 @@ public class MainMenu : MonoBehaviour
         float leftValue = i_buttonTransform.sizeDelta.x;
         selectorArrow.rectTransform.position = i_buttonTransform.position + (Vector3.left * (leftValue / 2f)) + (Vector3.left * 70);
         Image buttonImage = i_buttonTransform.GetComponent<Image>();
-        foreach (Button b in menuButtons)
+        foreach (Button b in buttons)
         {
             if (b.name != "BUTTON_Quit")
             {
                 b.GetComponent<Image>().color = defaultColor;
             }
-            b.GetComponentInChildren<TextMeshProUGUI>().color = defaultColor;
+            TextMeshProUGUI tmp = b.GetComponentInChildren<TextMeshProUGUI>();
+            if (tmp != null)
+            {
+                tmp.color = defaultColor;
+            }
+            else
+            {
+                Text txt = b.GetComponentInChildren<Text>();
+                if (txt != null)
+                {
+                    txt.color = defaultColor;
+                }
+            }
         }
         if (_button.name != "BUTTON_Quit") {
             buttonImage.color = selectedColor;
@@ -266,6 +278,13 @@ public class MainMenu : MonoBehaviour
             if (tmpro != null)
             {
                 tmpro.color = selectedColor;
+            } else
+            {
+                Text txt = buttonImage.GetComponentInChildren<Text>();
+                if (txt != null)
+                {
+                    txt.color = selectedColor;
+                }
             }
         }
         selectorArrow.color = buttonImage.color;
