@@ -20,8 +20,11 @@ public class IndianaCamera : MonoBehaviour
         }
         else
         {
-            Vector3 i_wantedPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
-            transform.position = Vector3.Lerp(transform.position, i_wantedPosition, Time.deltaTime);
+            if (firstPawn != null && secondPawn != null)
+            {
+                Vector3 i_wantedPosition = new Vector3((firstPawn.transform.position.x + secondPawn.transform.position.x) / 2, 0, (firstPawn.transform.position.z + secondPawn.transform.position.z) / 2);
+                transform.position = Vector3.Lerp(transform.position, i_wantedPosition, Time.deltaTime);
+            }
         }
         if (shakeAmount > 0)
         {
