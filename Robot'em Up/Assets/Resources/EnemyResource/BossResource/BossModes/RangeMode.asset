@@ -19,7 +19,7 @@ MonoBehaviour:
   modeTransitions:
   - transitionConditions:
     - modeTransitionConditionType: 0
-      modeTransitionConditionValue: 15
+      modeTransitionConditionValue: 1
     modeToActivate:
     - mode: {fileID: 11400000, guid: fc87683d8f322f341956cff796122704, type: 2}
       chances: 100
@@ -29,8 +29,6 @@ MonoBehaviour:
     modeToActivate:
     - mode: {fileID: 11400000, guid: 865f0e17163c7364d80729c0e1acf13a, type: 2}
       chances: 100
-  actionsOnStart:
-  - EnableTurretsInstantly
+  actionsOnStart: []
   actionsOnMovementEnd: []
-  actionsOnEnd:
-  - DisableTurrets
+  actionsOnEnd: []

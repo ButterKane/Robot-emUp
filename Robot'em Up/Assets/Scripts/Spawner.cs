@@ -215,7 +215,6 @@ public class Spawner : MonoBehaviour
 		enemyPawn.transform.position = endPosition;
 		if (type == SpawnerType.Air)
 		{
-			Destroy(explosionVisualizer);
 			foreach (Collider col in Physics.OverlapSphere(explosionVisualizer.transform.position, _enemy.spawnImpactRadius))
 			{
 				IHitable hitableTarget = col.GetComponent<IHitable>();
@@ -224,6 +223,7 @@ public class Spawner : MonoBehaviour
 					hitableTarget.OnHit(default, explosionVisualizer.transform.position - col.transform.position, _enemy, _enemy.spawnImpactDamages, DamageSource.SpawnImpact);
 				}
 			}
+			Destroy(explosionVisualizer);
 			FeedbackManager.SendFeedback("event.EnemyGroundImpact", _enemy);
 			
 		}

@@ -8,6 +8,7 @@ using XInputDotNetPure;
 using TMPro;
 using DG.Tweening;
 using System;
+using UnityEngine.Events;
 
 public class MainMenu : MonoBehaviour
 {
@@ -78,6 +79,7 @@ public class MainMenu : MonoBehaviour
 
 	private void Update ()
 	{
+        if (LoadingScreen.loading) { return; }
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isMainMenuActive && gameObject.activeSelf)
         {
@@ -347,10 +349,9 @@ public class MainMenu : MonoBehaviour
     public void StartGame ()
     {
         FeedbackManager.SendFeedback("event.PressPlay", this);
-        SceneManager.LoadScene(1);
+        LoadingScreen.StartLoadingScreen(new UnityAction(() => SceneManager.LoadScene(1)));
         EnergyManager.DecreaseEnergy(1);
         AbilityManager.ResetUpgrades();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed");
     }
 
     public void GoToSettings ()
@@ -398,6 +399,12 @@ public class MainMenu : MonoBehaviour
         //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
         i_script.isNavigationAllowed = true;
         isMainMenuActive = false;
+    }
+
+    public bool DoesAbilityMenuExist()
+    {
+        if(abilitiesMenu != null) { return true; }
+        else { return false; }
     }
 
     public void InitiateSubMenus()
