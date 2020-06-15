@@ -57,6 +57,7 @@ public class PassController : MonoBehaviour
 	private Vector3 lookDirection;
 	private bool isPlayer;
 	private float pathLength;
+	private bool damageModifierRemoved;
 	[ReadOnly] public PassState passState;
 
 	private void Start ()
@@ -110,7 +111,7 @@ public class PassController : MonoBehaviour
 		//Add ball modifier on perfect reception
 		Upgrade perfectReceptionUpgrade = AbilityManager.GetAbilityLevel(ConcernedAbility.PerfectReception);
 		bool canChargeBall = false;
-		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1) / (ballDatas.maxDamageModifierOnPerfectReception - 1);
+		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1f) / (ballDatas.maxDamageModifierOnPerfectReception - 1f);
 		switch (perfectReceptionUpgrade)
 		{
 			case Upgrade.Upgrade1:
@@ -317,11 +318,12 @@ public class PassController : MonoBehaviour
 		ChangePassState(PassState.Shooting);
 		Analytics.CustomEvent("PlayerPass", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		FeedbackManager.SendFeedback("event.PlayerThrowingBall", linkedPawn, handTransform.position, lookDirection, Vector3.zero, !isPlayer);
-		if (!keepPerfectReceptionModifiers)
+		if (!keepPerfectReceptionModifiers && isPlayer)
 		{
 			BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
 		}
 		keepPerfectReceptionModifiers = false;
+		damageModifierRemoved = false;
 		BallBehaviour i_shotBall = currentBall;
 		currentBall = null;
 		didPerfectReception = false;
@@ -473,12 +475,13 @@ public class PassController : MonoBehaviour
 	{
 		if (ballDatas == null && ballTimeInHand != 0) { ballTimeInHand = 0; return; }
 
-		if (currentBall != null)
+		if (currentBall != null && isPlayer)
 		{
 			ballTimeInHand += Time.deltaTime;
-			if (ballTimeInHand > perfectReceptionMinDelay + 0.1f)
+			if (ballTimeInHand > perfectReceptionMinDelay + 0.1f && !damageModifierRemoved)
 			{
 				BallBehaviour.instance.RemoveDamageModifier(DamageModifierSource.PerfectReception); BallBehaviour.instance.RemoveSpeedModifier(SpeedMultiplierReason.PerfectReception);
+				damageModifierRemoved = true;
 			}
 		}
 	}
