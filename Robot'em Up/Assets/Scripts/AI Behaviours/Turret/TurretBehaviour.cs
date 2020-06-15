@@ -315,7 +315,14 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
 
     public override void OnHit(BallBehaviour _ball, Vector3 _impactVector, PawnController _thrower, float _damages, DamageSource _source, Vector3 _bumpModificators = default)
     {
-        base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+        if(_source == DamageSource.Dunk)
+        {
+            base.OnHit(_ball, _impactVector, _thrower, _damages*2, _source, _bumpModificators);
+        }
+        else
+        {
+            base.OnHit(_ball, _impactVector, _thrower, _damages, _source, _bumpModificators);
+        }
     }
 
     public virtual void ChangeAimingRedDotState(AimingRedDotState _newState)
