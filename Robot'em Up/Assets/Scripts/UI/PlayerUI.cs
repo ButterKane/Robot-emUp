@@ -266,6 +266,7 @@ public class PlayerUI : MonoBehaviour
 		dashPanel.transform.SetParent(playerCanvas.transform);
 		dashPanel.transform.localRotation = Quaternion.identity;
 		dashPanel.transform.localPosition = Vector3.zero;
+		dashPanel.transform.localScale = Vector3.one;
 		i_dashRT.sizeDelta = new Vector2(playerCanvasRectTransform.sizeDelta.x, 0.4f);
 		HorizontalLayoutGroup i_hlg = dashPanel.AddComponent<HorizontalLayoutGroup>();
 		i_hlg.childAlignment = TextAnchor.MiddleCenter;
@@ -283,6 +284,7 @@ public class PlayerUI : MonoBehaviour
 			i_dashStackBackground.transform.SetParent(dashPanel.transform);
 			i_dashStackBackground.transform.localPosition = Vector3.zero;
 			i_dashStackBackground.transform.localRotation = Quaternion.identity;
+			i_dashStackBackground.transform.localScale = Vector3.one;
 			i_dashStackBackground.name = "Dash bar BG [" + i + "]";
 
 			Image i_dashStackBackgroundImage = i_dashStackBackground.AddComponent<Image>();
@@ -292,6 +294,7 @@ public class PlayerUI : MonoBehaviour
 			i_dashStackFill.transform.SetParent(i_dashStackBackground.transform);
 			i_dashStackFill.transform.localPosition = Vector3.zero;
 			i_dashStackFill.transform.localRotation = Quaternion.identity;
+			i_dashStackFill.transform.localScale = Vector3.one;
 			i_dashStackFill.name = "Dash bar fill [" + i + "]";
 
 			Image i_dashStackFillImage = i_dashStackFill.AddComponent<Image>();
@@ -299,6 +302,7 @@ public class PlayerUI : MonoBehaviour
 			i_dashStackFillImage.color = dashBarColor;
 			i_dashStackFillImage.type = Image.Type.Filled;
 			i_dashStackFillImage.fillMethod = Image.FillMethod.Horizontal;
+			i_dashStackFillImage.transform.localScale = Vector3.one;
 			dashStacks.Add(i_dashStackFillImage);
 		}
 

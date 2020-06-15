@@ -108,18 +108,21 @@ public class CameraBehaviour : MonoBehaviour
 			if (activated)
 			{
 				//Enable camera
-				virtualCamera.m_Priority = enabledPriority;
-				switch (type)
+				if (GameManager.deadPlayers.Count < 2)
 				{
-					case CameraCustomType.Combat:
-						UpdateCombatCamera();
-						break;
-					case CameraCustomType.Circle:
-						UpdateCircleCamera();
-						break;
-					case CameraCustomType.Adventure:
-						UpdateAdventureCamera();
-						break;
+					virtualCamera.m_Priority = enabledPriority;
+					switch (type)
+					{
+						case CameraCustomType.Combat:
+							UpdateCombatCamera();
+							break;
+						case CameraCustomType.Circle:
+							UpdateCircleCamera();
+							break;
+						case CameraCustomType.Adventure:
+							UpdateAdventureCamera();
+							break;
+					}
 				}
 
 			}
@@ -161,6 +164,7 @@ public class CameraBehaviour : MonoBehaviour
 
 	void UpdateCombatCamera()
 	{
+		if (GameManager.playerOne == null || GameManager.playerTwo == null) { return; }
 		Vector3 i_middlePosition = Vector3.Lerp(GameManager.playerOne.transform.position, GameManager.playerTwo.transform.position, 0.5f);
 		Vector3 i_directionToCenter = i_middlePosition - zone.GetCenterPosition();
 		float i_xAngle = Vector3.Angle(zone.transform.TransformDirection(new Vector3(0, -1, 0)), i_directionToCenter);

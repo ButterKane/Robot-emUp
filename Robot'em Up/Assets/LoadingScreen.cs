@@ -50,7 +50,7 @@ public class LoadingScreen : MonoBehaviour
 	public static IEnumerator FadeAfterDelay(float _delay)
 	{
 		yield return new WaitForEndOfFrame();
-		yield return new WaitForEndOfFrame();
+		yield return new WaitForEndOfFrame(); //Keep both waitForEndOfFrame
 		Camera.main.gameObject.GetComponent<AudioListener>().enabled = false;
 		yield return new WaitForSeconds(_delay);
 		Camera.main.gameObject.GetComponent<AudioListener>().enabled = true;

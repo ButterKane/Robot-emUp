@@ -438,10 +438,6 @@ public class PlayerController : PawnController, IHitable
         {
             dunkController.Dunk();
         }
-        if (state.Buttons.Back == ButtonState.Pressed)
-        {
-            GameManager.ResetScene();
-        }
     }
     private void CheckRightTrigger()
     {
