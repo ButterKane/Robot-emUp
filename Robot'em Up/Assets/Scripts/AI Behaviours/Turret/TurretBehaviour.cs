@@ -370,7 +370,7 @@ public class TurretBehaviour : EnemyBehaviour, IHitable
         modelPivot.rotation = Quaternion.Lerp(modelPivot.rotation, wantedRotation, Time.deltaTime * Mathf.Abs(maxRotationSpeed * (1 - _rotationSpeedModRatio)));
     }
 
-    protected virtual void AbortAttack()
+    public virtual void AbortAttack()
     {
         ChangingTurretAttackState(TurretAttackState.Rest);
         if (aimingRedDotState != AimingRedDotState.NotVisible)

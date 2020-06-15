@@ -62,4 +62,9 @@ public class TurretAnimationEvent : MonoBehaviour
     {
         myScript.Kill();
     }
+
+    public void AbortAttack()
+    {
+        myScript.AbortAttack();
+    }
 }
