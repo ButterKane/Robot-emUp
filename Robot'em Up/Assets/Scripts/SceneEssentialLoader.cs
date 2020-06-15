@@ -49,6 +49,13 @@ public class SceneEssentialLoader : MonoBehaviour
 		GameManager.DDOL.Add(ball.gameObject);
 		GameManager.DDOL.Add(Camera.main.gameObject);
 		GameManager.DDOL.Add(GameManager.i.gameObject);
+
+		if (!LoadingScreen.instantiated)
+		{
+			Debug.Log("Instantiating");
+			Instantiate(Resources.Load("LoadingScreenCanvas"));
+		}
+
 		foreach (Light light in FindObjectsOfType<Light>())
 		{
 			if (light.type == LightType.Directional)

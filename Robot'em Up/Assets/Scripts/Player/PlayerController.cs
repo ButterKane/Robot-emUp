@@ -104,6 +104,7 @@ public class PlayerController : PawnController, IHitable
     }
     private void Update()
     {
+        if (LoadingScreen.loading) { return; }
         UpdateMiddlePoint();
         GetInput();
         UpdateOverHeal();

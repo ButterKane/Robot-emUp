@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using XInputDotNetPure;
 #pragma warning disable 0649
@@ -135,6 +136,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (LoadingScreen.loading) { return; }
         timeInZone += Time.deltaTime;
         if (deadPlayers.Count >= 2 && !deathPanelCalled)
         {
@@ -190,8 +192,9 @@ public class GameManager : MonoBehaviour
 
     public static void LoadSceneByIndex(int index)
     {
-        DestroyDDOL();
-        SceneManager.LoadScene(index);
+        UnityAction newAction = new UnityAction(() => SceneManager.LoadScene(index));
+        newAction += DestroyDDOL; 
+        LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
         timeInZone = 0;
@@ -199,8 +202,9 @@ public class GameManager : MonoBehaviour
 
     public static void LoadNextScene()
     {
-        DestroyDDOL();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        UnityAction newAction = new UnityAction(() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1));
+        newAction += DestroyDDOL;
+        LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
         timeInZone = 0;
@@ -260,7 +264,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Canvas canvas in FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode != RenderMode.WorldSpace)
+            if (canvas.renderMode != RenderMode.WorldSpace && canvas.name != "LoadingScreenCanvas")
             {
                 mainCanvas = canvas;
                 DontDestroyOnLoad(mainCanvas.rootCanvas.transform);
@@ -271,8 +275,9 @@ public class GameManager : MonoBehaviour
 
     public static void ResetScene()
     {
-        DestroyDDOL();
-        SceneManager.LoadScene(GetCurrentZoneName());
+        UnityAction newAction = new UnityAction(() => SceneManager.LoadScene(GetCurrentZoneName()));
+        newAction += DestroyDDOL;
+        LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         timeInZone = 0;
     }
@@ -456,7 +461,6 @@ public class GameManager : MonoBehaviour
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
         mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>();
-        Debug.Log(mainMenu);
         mainMenu.InitiateSubMenus();
     }
 
