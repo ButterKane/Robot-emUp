@@ -65270,15 +65270,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6821338821536550633, guid: c41603ab4f7f63848b8d92f7e57eca2e,
+    - target: {fileID: 3968163051874365296, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -89.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6821338821536550633, guid: c41603ab4f7f63848b8d92f7e57eca2e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
+      propertyPath: m_CullingMask.m_Bits
+      value: 522295
       objectReference: {fileID: 0}
     - target: {fileID: 1043233638842926685, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
@@ -65290,10 +65285,15 @@ PrefabInstance:
       propertyPath: m_ComponentOwner
       value: 
       objectReference: {fileID: 359168731}
-    - target: {fileID: 3968163051874365296, guid: c41603ab4f7f63848b8d92f7e57eca2e,
+    - target: {fileID: 6821338821536550633, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 522295
+      propertyPath: m_LocalPosition.z
+      value: -89.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6821338821536550633, guid: c41603ab4f7f63848b8d92f7e57eca2e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1988570915332554610, guid: c41603ab4f7f63848b8d92f7e57eca2e,
         type: 3}
@@ -79952,7 +79952,6 @@ GameObject:
   - component: {fileID: 1630724730}
   - component: {fileID: 1630724729}
   - component: {fileID: 1630724728}
-  - component: {fileID: 1630724731}
   m_Layer: 0
   m_Name: Virtual camera
   m_TagString: Untagged
@@ -80041,36 +80040,6 @@ Transform:
   m_Father: {fileID: 1852497349}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1630724731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1630724727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CollideAgainst:
-    serializedVersion: 2
-    m_Bits: 4096
-  m_IgnoreTag: 
-  m_TransparentLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_MinimumDistanceFromTarget: 3
-  m_AvoidObstacles: 1
-  m_DistanceLimit: 0
-  m_MinimumOcclusionTime: 0
-  m_CameraRadius: 5
-  m_Strategy: 0
-  m_MaximumEffort: 5
-  m_SmoothingTime: 0.5
-  m_Damping: 5
-  m_DampingWhenOccluded: 5
-  m_OptimalTargetDistance: 0
 --- !u!4 &1631575991 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8520473448040532763, guid: 61c4908e2eb765a4cb134200950f0a73,
@@ -97077,26 +97046,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1579355950922201766, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -97373,6 +97322,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 522295
+      objectReference: {fileID: 0}
+    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3391965749327511037, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1187968429963676986, guid: 29e870ef81ed72141a54fe6a5e5ce2a0,
         type: 3}
@@ -105000,16 +104969,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: m_Name
-      value: Puzzle_Link (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: nbSecondsLinkMaintained
-      value: 0.8
-      objectReference: {fileID: 0}
     - target: {fileID: 6177554630888201700, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_BoundingSphereOverride.y
@@ -105034,6 +104993,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 522295
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: m_Name
+      value: Puzzle_Link (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: nbSecondsLinkMaintained
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
@@ -105338,16 +105307,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: m_Name
-      value: Puzzle_Link (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: nbSecondsLinkMaintained
-      value: 0.8
-      objectReference: {fileID: 0}
     - target: {fileID: 6177554630888201700, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -105367,6 +105326,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 522295
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: m_Name
+      value: Puzzle_Link (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: nbSecondsLinkMaintained
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
@@ -105455,16 +105424,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: m_Name
-      value: Puzzle_Link
-      objectReference: {fileID: 0}
-    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
-        type: 3}
-      propertyPath: nbSecondsLinkMaintained
-      value: 0.8
-      objectReference: {fileID: 0}
     - target: {fileID: 6177554630888201700, guid: 609e5ebafb0876045be5350bd71cf608,
         type: 3}
       propertyPath: m_BoundingSphereOverride.y
@@ -105489,6 +105448,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 522295
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: m_Name
+      value: Puzzle_Link
+      objectReference: {fileID: 0}
+    - target: {fileID: 826081212846633650, guid: 609e5ebafb0876045be5350bd71cf608,
+        type: 3}
+      propertyPath: nbSecondsLinkMaintained
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 609e5ebafb0876045be5350bd71cf608, type: 3}
