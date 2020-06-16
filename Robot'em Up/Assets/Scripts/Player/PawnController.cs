@@ -343,12 +343,14 @@ public class PawnController : MonoBehaviour
 	public void Freeze()
 	{
 		rb.isKinematic = true;
+		rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		rb.useGravity = false;
 		frozen = true;
 	}
 	public void UnFreeze()
 	{
 		rb.isKinematic = false;
+		rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 		rb.useGravity = true;
 		frozen = false;
 	}
