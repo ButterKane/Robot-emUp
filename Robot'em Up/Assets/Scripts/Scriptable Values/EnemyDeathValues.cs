@@ -10,4 +10,5 @@ public class EnemyDeathValues : ScriptableObject
     public Vector2 minMaxDropForce;
     public Vector2 minMaxCoreHealthValue = new Vector2(1, 3);
     public float waitTimeBeforeDisappear = 1;
+    public float scoreOnDeath = 10;
 }

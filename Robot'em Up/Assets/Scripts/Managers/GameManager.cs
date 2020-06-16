@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     public GameObject SurrounderPrefab;
     [NonSerialized] public int numberOfSurroundSpots = 0;
     public GameObject ballPrefab;
+    public static float currentScore = 0;
 
     // Auto-Assigned References
     [NonSerialized] public GameObject surrounderPlayerOne;
@@ -209,6 +210,7 @@ public class GameManager : MonoBehaviour
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
         timeInZone = 0;
+        EndlessUI.instance.HideEndlessUI();
     }
 
     public static void LoadNextScene()
@@ -219,6 +221,7 @@ public class GameManager : MonoBehaviour
         VibrationManager.CancelAllVibrations();
         Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
         timeInZone = 0;
+        EndlessUI.instance.HideEndlessUI();
     }
 
     public static string GetSceneNameFromIndex(int _buildIndex)
@@ -257,7 +260,7 @@ public class GameManager : MonoBehaviour
 
         mainMenu.mainMenuCanvas.enabled = true;
         mainMenu.isMainMenuActive = true;
-        timeInZone = 0;
+        // timeInZone = 0;
     }
 
     public static void CloseLevelMenu()
@@ -291,6 +294,8 @@ public class GameManager : MonoBehaviour
         LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
         timeInZone = 0;
+        currentScore = 0;
+        EndlessUI.instance.HideEndlessUI();
     }
 
     public static void ResetBall()
