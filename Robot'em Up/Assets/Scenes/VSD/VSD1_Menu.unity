@@ -12373,6 +12373,67 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 650722175}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &650722177 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
+    type: 3}
+  m_PrefabInstance: {fileID: 650722175}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &650722178 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1504981713932161579, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
+    type: 3}
+  m_PrefabInstance: {fileID: 650722175}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &650722179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650722177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f8e25b0712ff54fa79bb7eae7bdeb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myRend: {fileID: 650722178}
+  minTimeBetweenWinks: 1
+  maxTimeBetweenWinks: 4
+  timeToWink: 0.3
+  winkCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.7583333
+    - serializedVersion: 3
+      time: 0.5
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.0042880666
+      outSlope: -0.0042880666
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &658342380
 GameObject:
   m_ObjectHideFlags: 0
@@ -16750,6 +16811,67 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 956643603}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &956643605 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
+    type: 3}
+  m_PrefabInstance: {fileID: 956643603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &956643606 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1504981713932161579, guid: d853bdcb754e93b4dbb4ea4b3116fa55,
+    type: 3}
+  m_PrefabInstance: {fileID: 956643603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &956643607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 956643605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f8e25b0712ff54fa79bb7eae7bdeb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myRend: {fileID: 956643606}
+  minTimeBetweenWinks: 1
+  maxTimeBetweenWinks: 4
+  timeToWink: 0.3
+  winkCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.7583333
+    - serializedVersion: 3
+      time: 0.5
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.0042880666
+      outSlope: -0.0042880666
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &957879779
 GameObject:
   m_ObjectHideFlags: 0
@@ -33578,7 +33700,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1097741912}
   m_Direction: 0
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
