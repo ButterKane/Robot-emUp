@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ProceduralSpiderLegAnimator : MonoBehaviour
 {
@@ -25,8 +26,12 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 
 	private void Awake ()
 	{
-		IK.Target = null;
+		//IK.Target = null;
 		isGrounded = true;
+		IK.Target = new GameObject().transform;
+		SceneManager.MoveGameObjectToScene(IK.Target.gameObject, gameObject.scene);
+		IK.SetPositionRootSpace(IK.Target, IK.GetPositionRootSpace(IK.transform));
+		IK.Target.name = "IK_Target";
 	}
 
 	private void LateUpdate ()
@@ -85,6 +90,9 @@ public class ProceduralSpiderLegAnimator : MonoBehaviour
 		if (IK.Target != null)
 		{
 			IK.Target.transform.position = wantedTransform.transform.position + forwardOffset;
+		} else
+		{
+			Debug.Log("IK target null");
 		}
 		isGrounded = true;
 		if (eventOnStep != "")

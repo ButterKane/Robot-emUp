@@ -2,9 +2,9 @@
 using UnityEditor;
 #endif
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace DitzelGames.FastIK
-{
     /// <summary>
     /// Fabrik IK Solver
     /// </summary>
@@ -74,11 +74,6 @@ namespace DitzelGames.FastIK
             }
 
             //init target
-            if (Target == null)
-            {
-                Target = new GameObject(gameObject.name + " Target").transform;
-                SetPositionRootSpace(Target, GetPositionRootSpace(transform));
-            }
             StartRotationTarget = GetRotationRootSpace(Target);
 
 
@@ -198,7 +193,7 @@ namespace DitzelGames.FastIK
             }
         }
 
-        private Vector3 GetPositionRootSpace(Transform current)
+        public Vector3 GetPositionRootSpace(Transform current)
         {
             if (Root == null)
                 return current.position;
@@ -206,7 +201,7 @@ namespace DitzelGames.FastIK
                 return Quaternion.Inverse(Root.rotation) * (current.position - Root.position);
         }
 
-        private void SetPositionRootSpace(Transform current, Vector3 position)
+        public void SetPositionRootSpace(Transform current, Vector3 position)
         {
             if (Root == null)
                 current.position = position;
@@ -247,4 +242,3 @@ namespace DitzelGames.FastIK
 		}
 
 	}
-}
