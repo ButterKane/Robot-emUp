@@ -13,13 +13,31 @@ public class PuzzleEletricPlate : PuzzleActivable
     public List<GameObject> IdleFx;
     public List<ParticleSystem> FXS;
     public float speedModifier = 0.5f;
+    List<Renderer> ledList = new List<Renderer>();
+    public Transform plateHolder;
+    int ledNB;
+    public GameObject fuckYou;
 
     // Update is called once per frame
     void Awake()
     {
+        print(fuckYou.GetComponent<Renderer>());
         IdleFx = new List<GameObject>();
         pawnTrapped.Clear();
 
+        //GET ALL LEDS
+        for (int i = 0; i < plateHolder.childCount; i++)
+        {
+            print(i);
+            if(plateHolder.GetChild(i).name == "PlatePart_Side")
+            {
+                Renderer[] i_leds = plateHolder.GetChild(i).GetChild(0).GetChild(0).GetComponentsInChildren<Renderer>();
+                for (int j = 0; j < i_leds.Length; j++)
+                {
+                    ledList.Add(i_leds[j]);
+                }
+            }
+        }
     }
 
     void FixedUpdate()
@@ -145,7 +163,6 @@ public class PuzzleEletricPlate : PuzzleActivable
         }
         FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this);
     }
-
 
     public override void CustomShutDown()
     {
