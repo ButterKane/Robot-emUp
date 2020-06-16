@@ -717,6 +717,7 @@ public class EnemyBehaviour : PawnController, IHitable
         if (healthBar != null) { Destroy(healthBar.gameObject); }
         onDeath.Invoke();
         EnemyManager.i.RemoveEnemy(this);
+        GameManager.currentScore += deathValues.scoreOnDeath;
         if (UnityEngine.Random.Range(0f, 1f) <= deathValues.coreDropChances)
         {
             DropCore();

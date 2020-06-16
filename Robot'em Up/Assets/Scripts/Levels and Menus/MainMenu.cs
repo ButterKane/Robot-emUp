@@ -311,7 +311,9 @@ public class MainMenu : MonoBehaviour
     public void OpenMainMenu ()
     {
         FeedbackManager.SendFeedback("event.OpenPauseMenu", this);
+        EndlessUI.instance.HideEndlessUI();
         GameManager.LoadSceneByIndex(0);
+
     }
 
     public void OpenLevelSelector ()
