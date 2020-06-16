@@ -16,12 +16,10 @@ public class PuzzleEletricPlate : PuzzleActivable
     List<Renderer> ledList = new List<Renderer>();
     public Transform plateHolder;
     int ledNB;
-    public GameObject fuckYou;
 
     // Update is called once per frame
     void Awake()
     {
-        print(fuckYou.GetComponent<Renderer>());
         IdleFx = new List<GameObject>();
         pawnTrapped.Clear();
 
@@ -116,12 +114,16 @@ public class PuzzleEletricPlate : PuzzleActivable
             StopAllCoroutines();
             isActivated = true;
 
-            UpdateLights();
+            //UpdateLights();
 
             foreach (ParticleSystem ps in FXS)
             {
                 ParticleSystem.EmissionModule em = ps.emission;
                 em.enabled = false;
+            }
+            for (int i = 0; i < ledList.Count; i++)
+            {
+                ledList[i].material.SetColor("_EmissionColor", Color.cyan);
             }
         }
 
@@ -150,10 +152,18 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     public IEnumerator GettingEletrified ()
     {
+        for (int i = 0; i < ledList.Count; i++)
+        {
+            ledList[i].material.SetColor("_EmissionColor", Color.yellow);
+        }
         yield return new WaitForSeconds(puzzleData.timeOrangePressurePlate);
 
+        for (int i = 0; i < ledList.Count; i++)
+        {
+            ledList[i].material.SetColor("_EmissionColor", Color.red);
+        }
         isActivated = false;
-        UpdateLights();
+        //UpdateLights();
 
         foreach (ParticleSystem ps in FXS)
         {
