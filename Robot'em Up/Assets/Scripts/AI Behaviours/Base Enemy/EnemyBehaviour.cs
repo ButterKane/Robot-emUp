@@ -471,7 +471,7 @@ public class EnemyBehaviour : PawnController, IHitable
                 Analytics.CustomEvent("DamageWithBall", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 
                 animator.SetTrigger("HitTrigger");
-                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, _ball.transform.position, _impactVector, _impactVector);
+                FeedbackManager.SendFeedback("event.BallHittingEnemy", this, GetCenterPosition(), _impactVector, _impactVector);
                 EnergyManager.IncreaseEnergy(energyGainedOnHit);
 
                 Damage(_damages);
