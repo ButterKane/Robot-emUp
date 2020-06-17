@@ -16,6 +16,7 @@ public enum LinkState
 public class LinkController : MonoBehaviour
 {
 	[Separator("General Settings")]
+	public bool hidden;
 	public static LinkController i;
 	[ReadOnly] public PawnController firstPawn;
 	[ReadOnly] public PawnController secondPawn;
@@ -116,6 +117,7 @@ public class LinkController : MonoBehaviour
 	}
 	private void UpdateLink()
 	{
+		if (hidden) { lineRenderer.positionCount = 0; return; }
 		if (linkGameObject != null || linkDisabled)
 		{
 			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; WarningPanel.ClosePanelInstantly(); linkIsBroke = false; return;}
