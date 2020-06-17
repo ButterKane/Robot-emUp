@@ -194,9 +194,9 @@ public class AbilityListNavigation : MonoBehaviour
 
     public void PlayGif(int _gifImageIndex)
     {
-        int index = _gifImageIndex;
-        if (index >= gifImagesToPlay.Length - 1) { index = 0; currentGifImageIndex = 0;}
-        gifImage.sprite = gifImagesToPlay[index];
+        int i_index = _gifImageIndex;
+        if (i_index >= gifImagesToPlay.Length - 1) { i_index = 0; currentGifImageIndex = 0;}
+        gifImage.sprite = gifImagesToPlay[i_index];
     }
 
     void ReturnToMainMenu()
