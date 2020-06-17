@@ -13,6 +13,9 @@ public class PuzzleEletricPlate : PuzzleActivable
     public List<GameObject> IdleFx;
     public List<ParticleSystem> FXS;
     public float speedModifier = 0.5f;
+    List<Renderer> ledList = new List<Renderer>();
+    public Transform plateHolder;
+    int ledNB;
 
     // Update is called once per frame
     void Awake()
@@ -20,6 +23,19 @@ public class PuzzleEletricPlate : PuzzleActivable
         IdleFx = new List<GameObject>();
         pawnTrapped.Clear();
 
+        //GET ALL LEDS
+        for (int i = 0; i < plateHolder.childCount; i++)
+        {
+            print(i);
+            if(plateHolder.GetChild(i).name == "PlatePart_Side")
+            {
+                Renderer[] i_leds = plateHolder.GetChild(i).GetChild(0).GetChild(0).GetComponentsInChildren<Renderer>();
+                for (int j = 0; j < i_leds.Length; j++)
+                {
+                    ledList.Add(i_leds[j]);
+                }
+            }
+        }
     }
 
     void FixedUpdate()
@@ -98,12 +114,16 @@ public class PuzzleEletricPlate : PuzzleActivable
             StopAllCoroutines();
             isActivated = true;
 
-            UpdateLights();
+            //UpdateLights();
 
             foreach (ParticleSystem ps in FXS)
             {
                 ParticleSystem.EmissionModule em = ps.emission;
                 em.enabled = false;
+            }
+            for (int i = 0; i < ledList.Count; i++)
+            {
+                ledList[i].material.SetColor("_EmissionColor", Color.cyan);
             }
         }
 
@@ -132,10 +152,18 @@ public class PuzzleEletricPlate : PuzzleActivable
 
     public IEnumerator GettingEletrified ()
     {
+        for (int i = 0; i < ledList.Count; i++)
+        {
+            ledList[i].material.SetColor("_EmissionColor", Color.yellow);
+        }
         yield return new WaitForSeconds(puzzleData.timeOrangePressurePlate);
 
+        for (int i = 0; i < ledList.Count; i++)
+        {
+            ledList[i].material.SetColor("_EmissionColor", Color.red);
+        }
         isActivated = false;
-        UpdateLights();
+        //UpdateLights();
 
         foreach (ParticleSystem ps in FXS)
         {
@@ -145,7 +173,6 @@ public class PuzzleEletricPlate : PuzzleActivable
         }
         FeedbackManager.SendFeedback("event.PuzzleElectricPlateActivation", this);
     }
-
 
     public override void CustomShutDown()
     {
