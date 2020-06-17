@@ -16,6 +16,7 @@ public enum LinkState
 public class LinkController : MonoBehaviour
 {
 	[Separator("General Settings")]
+	public static LinkController i;
 	[ReadOnly] public PawnController firstPawn;
 	[ReadOnly] public PawnController secondPawn;
 
@@ -40,6 +41,7 @@ public class LinkController : MonoBehaviour
 	private float damageCount;
 
 	private LinkState linkState;
+	private bool linkDisabled;
 
 	private void Start ()
 	{
@@ -53,6 +55,7 @@ public class LinkController : MonoBehaviour
             secondPawn = GameManager.playerTwo;
         }
         linkGameObject = GenerateLinkHolder();
+		i = this;
 		ChangeLinkState(LinkState.Hidden);
     }
 	private void Update ()
@@ -73,6 +76,17 @@ public class LinkController : MonoBehaviour
 		DontDestroyOnLoad(i_newLinkHolder.gameObject);
 		GameManager.DDOL.Add(i_newLinkHolder.gameObject);
 		return i_newLinkHolder;
+	}
+
+	public void DisableLink()
+	{
+		lineRenderer.positionCount = 0;
+		linkDisabled = true;
+	}
+
+	public void EnableLink()
+	{
+		linkDisabled = false;
 	}
 	private void ChangeLinkState ( LinkState _newState )
 	{
@@ -102,7 +116,7 @@ public class LinkController : MonoBehaviour
 	}
 	private void UpdateLink()
 	{
-		if (linkGameObject != null)
+		if (linkGameObject != null || linkDisabled)
 		{
 			if (firstPawn.moveState == MoveState.Dead || secondPawn.moveState == MoveState.Dead) { lineRenderer.positionCount = 0; WarningPanel.ClosePanelInstantly(); linkIsBroke = false; return;}
 			float i_linkLength = Vector3.Distance(firstPawn.transform.position, secondPawn.transform.position);
