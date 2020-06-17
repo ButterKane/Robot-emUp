@@ -12,10 +12,16 @@ public class CustomElevator : MonoBehaviour
     public Transform visuals;
     public Transform emissiveVisuals;
     public AnimationCurve acceleration;
+    public bool startOnAwake = true;
 
     private void Awake ()
     {
         emissiveVisuals.gameObject.SetActive(false);
+        if (startOnAwake)
+        {
+            emissiveVisuals.gameObject.SetActive(true);
+            Activate();
+        }
     }
     public void EnableEmissive()
     {
