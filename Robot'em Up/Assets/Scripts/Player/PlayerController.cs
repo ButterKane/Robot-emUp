@@ -197,6 +197,7 @@ public class PlayerController : PawnController, IHitable
         StartCoroutine(DisableInputsTemporarly_C(reviveFreezeDuration * 2));
         FreezeTemporarly(reviveFreezeDuration);
         SetTargetable();
+        LinkController.i.EnableLink();
         List<ReviveInformations> i_newRevivablePlayers = new List<ReviveInformations>();
         StartCoroutine(ProjectEnemiesInRadiusAfterDelay_C(0.4f, reviveExplosionRadius, reviveExplosionDamage, DamageSource.ReviveExplosion));
         foreach (ReviveInformations inf in revivablePlayers)
@@ -223,6 +224,7 @@ public class PlayerController : PawnController, IHitable
         animator.SetTrigger("Dead");
         passController.DropBall();
         Freeze();
+        LinkController.i.DisableLink();
         DisableInput();
         StartCoroutine(HideAfterDelay_C(0.5f));
         StartCoroutine(ProjectEnemiesInRadiusAfterDelay_C(0.4f, reviveExplosionRadius, reviveExplosionDamage, DamageSource.DeathExplosion));
@@ -347,7 +349,6 @@ public class PlayerController : PawnController, IHitable
     private void UpdateWhenOutOfCamera()
     {
         if (GameManager.timeInZone < 1.5f || !Application.isPlaying || !forceInsideCameraView) { return; }
-        Debug.Log("Updating out of camera");
         Vector3 i_viewPortPosition = GameManager.mainCamera.WorldToViewportPoint(transform.position);
         float extents = GameManager.cameraGlobalSettings.outOfCameraMaxDistancePercentage;
         if (i_viewPortPosition.x > 1 + extents || i_viewPortPosition.x < -extents || i_viewPortPosition.y > 1 + extents || i_viewPortPosition.y < -extents)
