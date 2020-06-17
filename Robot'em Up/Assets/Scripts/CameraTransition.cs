@@ -5,6 +5,15 @@ using UnityEngine;
 public enum TransitionRequirement { OnePlayer, MiddlePoint }
 public class CameraTransition : MonoBehaviour
 {
+	SpriteRenderer renderer;
+	private void Awake ()
+	{
+		renderer = GetComponent<SpriteRenderer>();
+		if (renderer != null)
+		{
+			renderer.enabled = false;
+		}
+	}
 	public TransitionRequirement transitionCondition = TransitionRequirement.MiddlePoint;
 	public CameraBehaviour linkedCamera;
 	private void OnTriggerEnter ( Collider other )

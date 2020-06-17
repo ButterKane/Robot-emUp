@@ -105,6 +105,18 @@ public class PlayerController : PawnController, IHitable
     private void Update()
     {
         if (LoadingScreen.loading) { return; }
+        if (Input.GetKeyDown(KeyCode.F7))
+        {
+            Time.timeScale = 0.5f;
+        }
+        if (Input.GetKeyDown(KeyCode.F8))
+        {
+            Time.timeScale = 0.25f;
+        }
+        if (Input.GetKeyDown(KeyCode.F9))
+        {
+            Time.timeScale = 0.1f;
+        }
         UpdateMiddlePoint();
         GetInput();
         UpdateOverHeal();

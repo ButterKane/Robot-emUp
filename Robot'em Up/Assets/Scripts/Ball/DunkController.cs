@@ -265,6 +265,16 @@ public class DunkController : MonoBehaviour
 	IEnumerator DunkOnGround_C ()
 	{
 		ChangeState(DunkState.Receiving);
+		yield return new WaitForEndOfFrame();
+		if (playerController.isPlayer)
+		{
+			Debug.Log("Instantiating cam");
+			GameObject cinematicCam = Instantiate(Resources.Load<GameObject>("Cinematic/CinematicCamera"), pawnController.transform).gameObject;
+			cinematicCam.transform.position = pawnController.GetCenterPosition();
+			cinematicCam.transform.localRotation = Quaternion.identity;
+			cinematicCam.GetComponent<CinematicCamera>().StartAnimation();
+			Time.timeScale = 0.05f;
+		}
 		yield return new WaitForSeconds(dunkDashDelay);
 		ChangeState(DunkState.Dashing);
 		yield return FallOnGround_C(dunkDashSpeed);
