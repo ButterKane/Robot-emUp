@@ -8,7 +8,7 @@ public class NarrativeInteractiveElements : MonoBehaviour, IHitable
     [HideInInspector] public Transform player1Transform;
     [HideInInspector] public Transform player2Transform;
     [HideInInspector] public bool broken;
-    [HideInInspector] public bool angry;
+    public bool angry = false;
     [HideInInspector] public bool possessed;
     [SerializeField] protected bool lockable; public bool lockable_access { get { return lockable; } set { lockable = value; } }
     [SerializeField] protected float lockHitboxSize; public float lockHitboxSize_access { get { return lockHitboxSize; } set { lockHitboxSize = value; } }

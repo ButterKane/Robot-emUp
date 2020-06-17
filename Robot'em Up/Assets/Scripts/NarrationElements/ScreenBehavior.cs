@@ -31,6 +31,17 @@ public class ScreenBehavior : NarrativeInteractiveElements
                 AngryMatModification();
             }
         }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (angry)
+            {
+                SetAngryState(false);
+            }
+            else
+            {
+                SetAngryState(true);
+            }
+        }
     }
 
     public override void EndPossessionAnimationEvents()
