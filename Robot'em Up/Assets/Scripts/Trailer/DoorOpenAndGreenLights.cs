@@ -9,12 +9,20 @@ public class DoorOpenAndGreenLights : MonoBehaviour
     public float delayBetweenLedsAndOpen;
     public float delayBetweenLeds;
     public float greenLightIntensity;
+
+    public Animator[] shieldAnim;
+    int shieldAnimInt;
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.D))
         {
             StartCoroutine(OpenDoor());
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            shieldAnim[shieldAnimInt].SetTrigger("DeployTrigger");
+            shieldAnimInt++;
         }
     }
 
