@@ -73,21 +73,22 @@ MonoBehaviour:
   shakeDataInited: 0
   vibrationDataInited: 0
   soundDataInited: 1
-  vfxDataInited: 0
+  vfxDataInited: 1
   eventCalled: 0
   category:
     displayName: Puzzle
     displayColor: {r: 1, g: 0.8059104, b: 0.33490568, a: 1}
   soundData:
     soundName: PuzzleLinkDesactivate
+    delay: 0
     soundList:
-    - clip: {fileID: 8300000, guid: cbab679bf5498f24db2af5e742b00075, type: 3}
+    - clip: {fileID: 8300000, guid: b930446d042cca94db0b135a285a6030, type: 3}
       playChances: 1
-    volumeMultiplier: 0.5
+    volumeMultiplier: 0.13
   vfxData:
-    vfxPrefab: {fileID: 0}
-    offset: {x: 0, y: 0, z: 0}
-    scaleMultiplier: {x: 1, y: 1, z: 1}
+    vfxPrefab: {fileID: 177544, guid: 7bbb0c53be846834980c36dd3251a29c, type: 3}
+    offset: {x: 0, y: 3, z: 0}
+    scaleMultiplier: {x: 4, y: 4, z: 4}
     direction: 0
-    position: 0
+    position: 1
     attachToTarget: 0
