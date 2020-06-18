@@ -258,6 +258,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         VibrationManager.CancelAllVibrations();
 
+        mainMenu.transform.SetAsLastSibling();
         mainMenu.mainMenuCanvas.enabled = true;
         mainMenu.isMainMenuActive = true;
         // timeInZone = 0;
