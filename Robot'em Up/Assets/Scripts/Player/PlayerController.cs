@@ -567,6 +567,7 @@ public class PlayerController : PawnController, IHitable
         {
             if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
             {
+                animator.SetBool("Reviving", true);
                 reviving = true;
                 AddSpeedModifier(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
                 foreach (ReviveInformations p in revivablePlayers)
@@ -577,6 +578,7 @@ public class PlayerController : PawnController, IHitable
             else if (state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
             {
                 reviving = false;
+                animator.SetBool("Reviving", false);
             }
             else
             {
@@ -589,6 +591,7 @@ public class PlayerController : PawnController, IHitable
             if (reviving && state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
             {
                 reviving = false;
+                animator.SetBool("Reviving", false);
             }
         }
     }
