@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
         //Reset button
         GamePadState state1 = GamePad.GetState(PlayerIndex.One);
         GamePadState state2 = GamePad.GetState(PlayerIndex.Two);
-        if (state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed)
+        if ((state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed) && !mainMenu.mainMenuCanvas.enabled)
         {
             ResetScene();
         }
@@ -279,7 +279,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Canvas canvas in FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode != RenderMode.WorldSpace && canvas.name != "LoadingScreenCanvas")
+            if (canvas.renderMode != RenderMode.WorldSpace && (canvas.name != "LoadingScreenCanvas" && canvas.name != "LoadingScreenCanvas(Clone)"))
             {
                 mainCanvas = canvas;
                 DontDestroyOnLoad(mainCanvas.rootCanvas.transform);
@@ -476,7 +476,7 @@ public class GameManager : MonoBehaviour
         restartPanel.SetActive(false);
         DDOL.Add(restartPanel);
         DontDestroyOnLoad(restartPanel);
-        
+
         // the main Menu of the game
         if (mainMenu != null) { Destroy(mainMenu); }
         mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>();

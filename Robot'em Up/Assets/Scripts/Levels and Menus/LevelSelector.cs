@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class LevelSelector : MonoBehaviour
 {
 	public Font buttonFont;
+    public string[] levelNames;
 	public List<Button> buttons;
 	public List<string> scenesToHide;
 	private void Awake ()
@@ -45,7 +46,7 @@ public class LevelSelector : MonoBehaviour
 			Text i_newText = i_buttonText.AddComponent<Text>();
 			i_newText.alignment = TextAnchor.MiddleCenter;
 			i_newText.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x*0.7f, i_buttonTransform.sizeDelta.y * 0.5f);
-			i_newText.text = GetSceneNameFromBuildIndex(x);
+			i_newText.text = levelNames[x];
 			i_newText.fontSize = 8;
 			i_newText.font = buttonFont;
 			i_newText.transform.localPosition = Vector3.zero;
