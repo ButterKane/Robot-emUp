@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
         //Reset button
         GamePadState state1 = GamePad.GetState(PlayerIndex.One);
         GamePadState state2 = GamePad.GetState(PlayerIndex.Two);
-        if (state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed)
+        if (state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed || !mainMenu.mainMenuCanvas.enabled)
         {
             ResetScene();
         }
