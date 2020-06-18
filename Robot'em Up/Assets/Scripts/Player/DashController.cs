@@ -141,8 +141,10 @@ public class DashController : MonoBehaviour
 		switch (_newState)
 		{
 			case DashState.Dashing:
+				linkedPawn.animator.SetBool("Dashing", true);
 				break;
 			case DashState.None:
+				linkedPawn.animator.SetBool("Dashing", false);
 				if (currentDashFX) { Destroy(currentDashFX); }
 				break;
 		}
