@@ -20,9 +20,9 @@ public class CinematicCamera : MonoBehaviour
 	private Camera cameraComponent;
 	private void Start ()
 	{
-		//transform.localPosition = Vector3.zero;
-		//transform.localRotation = Quaternion.identity;
-		camObj = GetComponentInChildren<Camera>().transform;
+		transform.localPosition = Vector3.zero;
+		transform.localRotation = Quaternion.identity;
+		camObj = GetComponentInChildren<Cinemachine.CinemachineVirtualCamera>().transform;
 		cameraComponent = camObj.GetComponent<Camera>();
 		transform.localRotation = Quaternion.Euler(new Vector3(0, defaultRotationAngle, 0));
 		//DisableCamera();
@@ -38,6 +38,7 @@ public class CinematicCamera : MonoBehaviour
 			if (invertCamera) { rotation = -rotation; }
 			if (Input.GetKeyDown(triggerKey))
 			{
+				Debug.Log("Trigger");
 				DOTween.PauseAll();
 				DisableCamera();
 				EnableCamera();
@@ -61,12 +62,18 @@ public class CinematicCamera : MonoBehaviour
 
 	private void EnableCamera()
 	{
-		cameraComponent.enabled = true;
+		if (cameraComponent)
+		{
+			cameraComponent.enabled = true;
+		}
 	}
 
 	private void DisableCamera()
 	{
-		cameraComponent.enabled = false;
+		if (cameraComponent)
+		{
+			cameraComponent.enabled = false;
+		}
 		transform.localRotation = Quaternion.identity;
 	}
 }
