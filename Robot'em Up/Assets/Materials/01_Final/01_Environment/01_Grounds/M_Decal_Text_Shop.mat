@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Player01V1
-  m_Shader: {fileID: 4800000, guid: 4c454b7412f19564ba9227d497e12c6b, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 0
+  m_Name: M_Decal_Text_Shop
+  m_Shader: {fileID: 4800000, guid: df4322f26a7e85a4ab3b10f8acea75d6, type: 3}
+  m_ShaderKeywords: NO_TERRAIN
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2450
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -40,14 +40,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: cadbbeab9b1f1614e82a59fc867001f6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Normal:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -59,50 +55,40 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _TextureSample0:
-        m_Texture: {fileID: 2800000, guid: e20a592a2a69fcc469d929efa105da66, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _qMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _texcoord:
+    - _SpecularMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _ASEOutlineWidth: 0.06
+    - _BlendNormals: 0.5
     - _BumpScale: 1
+    - _ClipNormals: 0.1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NoExclusionMask: 0
+    - _NormalBlendOrClip: 0
+    - _NormalEdgeBlending: 0
+    - _NormalScale: 1
+    - _NormalsMask: 0
     - _OcclusionStrength: 1
-    - _OffsetRamp: 1
     - _Parallax: 0.02
+    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
-    - _SpecCoverage: 0.411
-    - _SpecTransition: 0.444
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TerrainClipHeight: 0.001
+    - _TerrainClipHeightPower: 1
+    - _TerrainDecal: 0
     - _UVSec: 0
     - _ZWrite: 1
-    - __dirty: 0
     m_Colors:
-    - _ASEOutlineColor: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 0}
-    - _BehindColor: {r: 0.8018868, g: 0.41715905, b: 0.16264686, a: 1}
-    - _Color: {r: 0.44805196, g: 0.44805196, b: 0.44805196, a: 1}
-    - _DirtColor: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
-    - _EmissiveCOlor: {r: 1, g: 1, b: 1, a: 0}
-    - _MetalTint01: {r: 1, g: 1, b: 1, a: 0}
-    - _MetalTint02: {r: 0.07600568, g: 0.1261777, b: 0.26415092, a: 0}
-    - _MetalTint03: {r: 0.9245283, g: 0.4984189, b: 0.23113208, a: 0}
-    - _RustColor: {r: 0.31572622, g: 0.3478012, b: 0.5188679, a: 0}
-    - _ShadowColor: {r: 1, g: 1, b: 1, a: 0}
-    - _SpecCOlor: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Tint: {r: 1, g: 1, b: 1, a: 1}
+    - _UV: {r: 1, g: 1, b: 0, a: 0}
