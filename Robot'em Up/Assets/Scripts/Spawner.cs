@@ -151,7 +151,6 @@ public class Spawner : MonoBehaviour
 		{
 			case SpawnerType.Air:
 				FeedbackManager.SendFeedback("event.SpawnerAerial", this);
-				yield return new WaitForSeconds(0.5f);
 				break;
 			case SpawnerType.Ground:
 				FeedbackManager.SendFeedback("event.SpawnerGround", this);
