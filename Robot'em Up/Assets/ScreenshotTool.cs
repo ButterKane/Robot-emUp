@@ -25,6 +25,19 @@ public class ScreenshotTool : MonoBehaviour
 					b.ChangeState(EnemyState.Hidden);
 				}
 			}
+
+			foreach (TurretBehaviour t in FindObjectsOfType<TurretBehaviour>())
+			{
+				state = !state;
+				if (state)
+				{
+					t.ChangingTurretState(TurretState.GettingOutOfGround);
+				}
+				else
+				{
+					t.ChangingTurretState(TurretState.Hiding);
+				}
+			}
 		}
 	}
 }
