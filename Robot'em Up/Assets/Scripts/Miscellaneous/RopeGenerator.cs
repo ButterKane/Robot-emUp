@@ -113,7 +113,7 @@ public class RopeGenerator : MonoBehaviour
 		// Find the amount of segments based on the distance and resolution
 		// Example: [resolution of 1.0 = 1 joint per unit of distance]
 		segments = (int)(Vector3.Distance(transform.position, target.position) * resolution);
-		line.SetVertexCount(segments);
+		line.positionCount = segments;
 		segmentPos = new Vector3[segments];
 		joints = new GameObject[segments];
 		segmentPos[0] = transform.position;

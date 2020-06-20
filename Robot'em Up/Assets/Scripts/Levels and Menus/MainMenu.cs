@@ -30,7 +30,7 @@ public class MainMenu : MonoBehaviour
 
     public GameObject inputRemapMenuPrefab;
     private GameObject inputRemapMenu;
-    private Canvas inputRemapMenuCanvas;
+    public Canvas inputRemapMenuCanvas;
 
     public Color defaultColor;
     public Color selectedColor;

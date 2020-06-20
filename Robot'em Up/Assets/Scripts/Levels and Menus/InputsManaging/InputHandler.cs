@@ -84,7 +84,7 @@ public class AxisAction
     {
         get
         {
-            for (int i = 0; i < axis.Length; i++)
+            for (int i = 0; i < axis.Length;)
             {
                 if (axis[i].axisState == null) { return 0; } else { return (float)axis[i].axisState; }
             }

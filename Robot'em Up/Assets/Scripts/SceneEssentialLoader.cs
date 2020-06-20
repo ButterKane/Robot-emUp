@@ -54,17 +54,7 @@ public class SceneEssentialLoader : MonoBehaviour
 
 		if (!LoadingScreen.instantiated)
 		{
-			Debug.Log("Instantiating");
 			Instantiate(Resources.Load("LoadingScreenCanvas"));
-		}
-
-		foreach (Light light in FindObjectsOfType<Light>())
-		{
-			if (light.type == LightType.Directional)
-			{
-				//GameManager.DDOL.Add(light.transform.root.gameObject);
-				//DontDestroyOnLoad(light.transform.root);
-			}
 		}
 
 		if (player1Position != null)

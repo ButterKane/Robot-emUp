@@ -99,7 +99,6 @@ public class PawnController : MonoBehaviour
 	private float customGravity;
 	protected float currentSpeed;
 	private List<SpeedCoef> speedCoefs = new List<SpeedCoef>();
-	private bool grounded = false;
 	private float timeInAir;
 	private bool rotationForced;
 	protected bool frozen;
@@ -303,7 +302,7 @@ public class PawnController : MonoBehaviour
     {
 		LockManager.UnlockTarget(transform);
 		FeedbackManager.SendFeedback(eventOnDeath, this);
-		Destroy(this.gameObject);
+		Destroy(gameObject);
     }
 	public virtual void Heal(int _amount)
 	{
@@ -342,8 +341,8 @@ public class PawnController : MonoBehaviour
 	}
 	public void Freeze()
 	{
-		rb.isKinematic = true;
 		rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+		rb.isKinematic = true;
 		rb.useGravity = false;
 		frozen = true;
 	}
@@ -545,14 +544,12 @@ public class PawnController : MonoBehaviour
 		if (!Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 1f, LayerMask.GetMask("Environment")))
 		{
 			timeInAir += Time.deltaTime;
-			grounded = false;
 		} else if (timeInAir > 0.2f) { 
 			FeedbackManager.SendFeedback(eventOnBeingGrounded, this);
 			if (isPlayer)
 			{
 				animator.SetTrigger("BackOnGroundTrigger");
 			}
-			grounded = true;
 			timeInAir = 0;
 			if (moveState == MoveState.Jumping)
 			{
