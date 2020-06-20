@@ -5,10 +5,12 @@ using UnityEngine.Audio;
 
 public class ScreenBehavior : NarrativeInteractiveElements
 {
+    public enum AIScreenState { Activated, Desactivated, Broken }
     public Transform leftEyeTransform;
     public Transform rightEyeTransform;
     public Transform topEyeTransform;
     public float maxEyeOffset;
+    private AIScreenState currentState = AIScreenState.Desactivated;
     Vector3 eyesWantedPosition;
 
     public Renderer myRend;
@@ -17,8 +19,11 @@ public class ScreenBehavior : NarrativeInteractiveElements
     public Material notPossessedMat;
     public float eyeLerpIntensity;
 
-    
 
+    private void Awake ()
+    {
+        currentState = AIScreenState.Desactivated;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -31,6 +36,39 @@ public class ScreenBehavior : NarrativeInteractiveElements
                 AngryMatModification();
             }
         }
+    }
+
+    public override void SetAIPossession ( bool _isPossessed )
+    {
+        base.SetAIPossession(_isPossessed);
+        if (_isPossessed)
+        {
+            ChangeState(AIScreenState.Activated);
+        } else
+        {
+            ChangeState(AIScreenState.Desactivated);
+        }
+    }
+
+    public void ChangeState(AIScreenState _state)
+    {
+        if (currentState == _state)
+        {
+            return;
+        }
+        switch (_state)
+        {
+            case AIScreenState.Activated:
+                FeedbackManager.SendFeedback("event.ScreenActivation", this);
+                break;
+            case AIScreenState.Desactivated:
+                FeedbackManager.SendFeedback("event.ScreenDesactivation", this);
+                break;
+            case AIScreenState.Broken:
+                break;
+        }
+        Debug.Log("Changing state: " + _state);
+        currentState = _state;
     }
 
     public override void EndPossessionAnimationEvents()
@@ -115,5 +153,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
         rightEyeTransform.gameObject.SetActive(false);
         leftEyeTransform.gameObject.SetActive(false);
         topEyeTransform.gameObject.SetActive(false);
+        ChangeState(AIScreenState.Broken);
     }
 }

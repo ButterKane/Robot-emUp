@@ -23,16 +23,18 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
 
     void OnTriggerEnter (Collider _other)
     {
-
-        if (_other.gameObject.GetComponent<PlayerController>())
+        PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
+        if (pc != null)
         {
-            if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
+            if (pc.playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
+                if (ToxicAreaManager.i.isInToxicArea_P1 == 0) { FeedbackManager.SendFeedback("event.ToxicAreaEnter", pc); }
                 ToxicAreaManager.i.isInToxicArea_P1++;
                 isPlayer1In = true;
             }
-            if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
+            if (pc.playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
+                if (ToxicAreaManager.i.isInToxicArea_P2 == 0) { FeedbackManager.SendFeedback("event.ToxicAreaEnter", pc); }
                 ToxicAreaManager.i.isInToxicArea_P2++;
                 isPlayer2In = true;
             }
@@ -41,17 +43,19 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
 
     void OnTriggerExit(Collider _other)
     {
-
-        if (_other.gameObject.GetComponent<PlayerController>())
+        PlayerController pc = _other.gameObject.GetComponent<PlayerController>();
+        if (pc != null)
         {
-            if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.One)
+            if (pc.playerIndex == XInputDotNetPure.PlayerIndex.One)
             {
                 ToxicAreaManager.i.isInToxicArea_P1--;
+                if (ToxicAreaManager.i.isInToxicArea_P1 == 0) { FeedbackManager.SendFeedback("event.ToxicAreaExit", pc); }
                 isPlayer1In = false;
             }
-            if (_other.gameObject.GetComponent<PlayerController>().playerIndex == XInputDotNetPure.PlayerIndex.Two)
+            if (pc.playerIndex == XInputDotNetPure.PlayerIndex.Two)
             {
                 ToxicAreaManager.i.isInToxicArea_P2--;
+                if (ToxicAreaManager.i.isInToxicArea_P2 == 0) { FeedbackManager.SendFeedback("event.ToxicAreaExit", pc); }
                 isPlayer2In = false;
             }
         }
@@ -62,6 +66,7 @@ public class ToxicAreaCollider : MonoBehaviour, IHitable
         if (_source == DamageSource.Dunk || _source == DamageSource.RedBarrelExplosion)
         {
             Destroy(gameObject);
+            FeedbackManager.SendFeedback("event.ToxicAreaDestruction", this);
             if (isPlayer1In)
             {
                 ToxicAreaManager.i.isInToxicArea_P1--;
