@@ -50,7 +50,7 @@ public class OldBoss_MainTurret : MonoBehaviour
         {
             multiplier = -1;
         }
-        if (cyclePS.active)
+        if (cyclePS.activeSelf)
         {
             cyclePS.SetActive(false);
             uncyclePS.SetActive(true);

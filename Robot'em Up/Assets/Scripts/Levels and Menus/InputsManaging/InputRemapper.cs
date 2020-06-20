@@ -36,7 +36,7 @@ public class InputRemapper : MonoBehaviour
     private bool assigningNewInput;
     private float allocatedTimeToInput = 1;
     private float timeLeftToInput;
-    private List<CustomKeyCode> sentInputs;
+    public List<CustomKeyCode> sentInputs;
 
     private void Start()
     {
