@@ -147,6 +147,19 @@ public class Spawner : MonoBehaviour
 	}
 	IEnumerator SpawnEnemy_C(EnemyBehaviour _enemy, bool _addSmallRandomDelay, float _spawnSpeedOverride)
 	{
+		switch (type)
+		{
+			case SpawnerType.Air:
+				FeedbackManager.SendFeedback("event.SpawnerAerial", this);
+				yield return new WaitForSeconds(0.5f);
+				break;
+			case SpawnerType.Ground:
+				FeedbackManager.SendFeedback("event.SpawnerGround", this);
+				break;
+			case SpawnerType.Underground:
+				FeedbackManager.SendFeedback("event.SpawnerWall", this);
+				break;
+		}
 		if (_spawnSpeedOverride != -1)
 		{
 			spawnDuration = _spawnSpeedOverride;
