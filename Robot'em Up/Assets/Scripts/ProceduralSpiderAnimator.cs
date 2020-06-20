@@ -56,7 +56,6 @@ public class ProceduralSpiderAnimator : MonoBehaviour
 		bool isMoving = false;
 		foreach (ProceduralSpiderLegAnimator leg in forwardLegs)
 		{
-			Debug.Log("Applying speed leg");
 			leg.legSpeed = moveSpeed;
 			if (!leg.isGrounded)
 			{
@@ -78,10 +77,8 @@ public class ProceduralSpiderAnimator : MonoBehaviour
 		{
 			foreach (ProceduralSpiderLegAnimator leg in forwardLegs)
 			{
-				Debug.Log("Should move leg?");
 				if (leg.ShouldMove())
 				{
-					Debug.Log("Moving leg");
 					leg.MoveLeg();
 					break;
 				}
