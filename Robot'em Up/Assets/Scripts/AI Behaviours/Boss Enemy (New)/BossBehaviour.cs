@@ -184,7 +184,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		ChangePhase(BossPhase.PhaseTwo);
 
-		MusicManager.PlayMusic("BattleThemeBoss");
+		//MusicManager.PlayMusic("BattleThemeBoss");
 	}
 	public void ChangePhase(BossPhase _newPhase)
 	{
