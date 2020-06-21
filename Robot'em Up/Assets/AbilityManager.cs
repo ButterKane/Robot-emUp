@@ -51,10 +51,10 @@ public class AbilityManager : MonoBehaviour
 	{
 		//Check that the upgrade is better than the current
 		int upgradeValue = (int)_upgrade;
-		if (upgradeValue > (int)unlockedAbilities[_ability])
+		if (upgradeValue > 0)
 		{
 			//Unlocking upgrade
-			unlockedAbilities[_ability] = _upgrade;
+			unlockedAbilities[_ability] = unlockedAbilities[_ability] + 1;
 			SaveUpgrades();
 			UpdateUpgrades();
 			Debug.Log("Upgraded " + _ability + " with " + _upgrade);

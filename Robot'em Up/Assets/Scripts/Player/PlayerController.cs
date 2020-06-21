@@ -108,14 +108,17 @@ public class PlayerController : PawnController, IHitable
         UpdateMiddlePoint();
         GetInput();
         UpdateOverHeal();
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (playerIndex == PlayerIndex.One)
         {
-            AbilityManager.UpgradeAbility(ConcernedAbility.PerfectReception, Upgrade.Upgrade1);
-            //AbilityManager.UnlockAllAbilities();
-        }
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            AbilityManager.ResetUpgrades();
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                AbilityManager.UpgradeAbility(ConcernedAbility.PerfectReception, Upgrade.Upgrade1);
+                //AbilityManager.UnlockAllAbilities();
+            }
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                AbilityManager.ResetUpgrades();
+            }
         }
     }
     protected override void LateUpdate()

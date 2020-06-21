@@ -203,6 +203,19 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    public void ShowSelector()
+    {
+        selectorOutline.enabled = true;
+        selectorArrow.enabled = true;
+
+    }
+
+    public void HideSelector()
+    {
+        selectorOutline.enabled = false;
+        selectorArrow.enabled = false;
+    }
+
     void HideButtons()
     {
         if (selectedButton != null)
@@ -260,6 +273,7 @@ public class MainMenu : MonoBehaviour
 
     void SelectButton ( Button _button, bool _showAnimation = true )
     {
+        if (creditShown) { return; }
         if (selectedButton != null)
         {
             if (selectedButton == _button) { return; }

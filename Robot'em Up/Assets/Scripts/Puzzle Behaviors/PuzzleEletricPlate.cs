@@ -26,7 +26,6 @@ public class PuzzleEletricPlate : PuzzleActivable
         //GET ALL LEDS
         for (int i = 0; i < plateHolder.childCount; i++)
         {
-            print(i);
             if(plateHolder.GetChild(i).name == "PlatePart_Side")
             {
                 Renderer[] i_leds = plateHolder.GetChild(i).GetChild(0).GetChild(0).GetComponentsInChildren<Renderer>();
