@@ -119,7 +119,7 @@ public class PuzzleElevator : PuzzleActivable
 
         if (state == ElevatorState.MovingDown)
         {
-            Debug.Log(transform.name + " " + !isActivated + " " + !IsBlocked() + " " + delayBlocked);
+            Debug.Log(transform.name + " " + isActivated + " " + IsBlocked() + " " + delayBlocked);
         }
         if (state == ElevatorState.MovingDown && !isActivated && !IsBlocked() && delayBlocked <= 0)
         {
