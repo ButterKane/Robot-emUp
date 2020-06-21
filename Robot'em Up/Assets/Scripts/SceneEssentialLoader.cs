@@ -51,6 +51,9 @@ public class SceneEssentialLoader : MonoBehaviour
 		GameManager.DDOL.Add(GameManager.i.gameObject);
 
 		GameManager.cameraBrain.enabled = true;
+		GameObject mainCam = Camera.main.gameObject;
+		mainCam.SetActive(false);
+		mainCam.SetActive(true);
 
 		if (!LoadingScreen.instantiated)
 		{
