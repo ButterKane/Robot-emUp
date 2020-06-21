@@ -8,6 +8,7 @@ public class SceneLoader : MonoBehaviour
 	private int buildIndex;
 	private void Awake ()
 	{
+		/*
 		int countLoaded = SceneManager.sceneCount;
 		Scene[] loadedScenes = new Scene[countLoaded];
 
@@ -20,6 +21,8 @@ public class SceneLoader : MonoBehaviour
 		{
 			buildIndex = loadedScenes[countLoaded - 2].buildIndex;
 		}
+		*/
+		buildIndex = gameObject.scene.buildIndex;
 	}
 
 	public void LoadNextLevel ()
@@ -28,7 +31,9 @@ public class SceneLoader : MonoBehaviour
 		{
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
 			{
-				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive));
+				bool activateScene = false;
+				if (i == buildIndex + 1) { activateScene = true; }
+				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive, activateScene));
 			}
 		}
 
@@ -46,22 +51,29 @@ public class SceneLoader : MonoBehaviour
 			if (i <= 0) { continue; }
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
 			{
-				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive));
+				bool activateScene = false;
+				if (i == buildIndex - 1) { activateScene = true; }
+				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive, activateScene));
 			}
 		}
 		if (SceneManager.GetSceneByBuildIndex(buildIndex + 2).isLoaded)
 		{
 			StartCoroutine(UnloadLevelAsynchronously_C(buildIndex + 2, UnloadSceneOptions.None));
 		}
+		GameManager.ChangeCurrentZone(GameManager.GetSceneNameFromIndex(buildIndex - 1));
 	}
 
-	IEnumerator LoadLevelAsynchronously_C ( int _buildIndex, LoadSceneMode _mode )
+	IEnumerator LoadLevelAsynchronously_C ( int _buildIndex, LoadSceneMode _mode, bool _setActiveScene = false )
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(_buildIndex, _mode);
 		asyncLoad.allowSceneActivation = false;
 		while (asyncLoad.progress < 0.9f)
 		{
 			yield return null;
+		}
+		if (_setActiveScene)
+		{
+			SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(_buildIndex));
 		}
 		asyncLoad.allowSceneActivation = true;
 	}
