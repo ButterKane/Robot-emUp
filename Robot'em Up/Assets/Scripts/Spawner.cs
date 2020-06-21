@@ -243,7 +243,10 @@ public class Spawner : MonoBehaviour
 			
 		}
 		spawning = false;
-		animator.SetTrigger("Close");
+		if (animator)
+		{
+			animator.SetTrigger("Close");
+		}
 		_enemy.ChangeState(EnemyState.Spawning);
 		if (_enemy.GetNavMesh() != null) { _enemy.GetNavMesh().enabled = false; }
 		yield return new WaitForSeconds(delayBeforeActivation);
