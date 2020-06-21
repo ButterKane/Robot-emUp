@@ -75,6 +75,7 @@ public class MomentumManager: MonoBehaviour
 
 	public static bool DecreaseMomentum ( float _amount )
 	{
+		Debug.Log("Decreasing momentum");
 		if (wantedMomentum < _amount)
 		{
 			wantedMomentum = 0;

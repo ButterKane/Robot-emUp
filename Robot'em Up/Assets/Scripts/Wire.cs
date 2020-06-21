@@ -17,11 +17,12 @@ public class Wire : MonoBehaviour
 	private void Awake ()
 	{
 		lr = GetComponent<LineRenderer>();
+		lr.sharedMaterial = new Material(lr.material);
 	}
 	public void Init ()
 	{
 		lr = gameObject.AddComponent<LineRenderer>();
-		lr.sharedMaterial = Resources.Load<Material>("PuzzleResource/M_WireMaterial");
+		lr.sharedMaterial = new Material(Resources.Load<Material>("PuzzleResource/M_WireMaterial"));
 		lr.useWorldSpace = false;
 		lr.SetPosition(1, transform.position + Vector3.forward * 15 + Vector3.up * 0.01f);
 	}
@@ -40,7 +41,7 @@ public class Wire : MonoBehaviour
 	public void ApplySettings()
 	{
 		if (lr == null) { lr = GetComponent<LineRenderer>(); }
-		lr.sharedMaterial = Resources.Load<Material>("PuzzleResource/M_WireMaterial");
+		//lr.sharedMaterial = new Material(Resources.Load<Material>("PuzzleResource/M_WireMaterial"));
 		lr.startWidth = width;
 		lr.endWidth = width;
 		lr.sharedMaterial.SetColor("_LinkChargedColor", activatedColor);
