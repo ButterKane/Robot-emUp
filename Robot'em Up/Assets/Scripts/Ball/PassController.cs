@@ -138,7 +138,10 @@ public class PassController : MonoBehaviour
 
 		GameObject i_perfectReceptionFX = FeedbackManager.SendFeedback("event.PlayerPerfectReception", linkedPawn, handTransform.position, _ball.GetCurrentDirection(), default, !isPlayer).GetVFX();
 		ParticleColorer.ReplaceParticleColor(i_perfectReceptionFX, Color.white, ballDatas.colorOverDamage.Evaluate(i_lerpValue));
-		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
+		if (isPlayer)
+		{
+			MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPerfectReception);
+		}
 		Collider[] i_hitColliders = Physics.OverlapSphere(transform.position, perfectReceptionExplosionRadius);
 		List<IHitable> i_hitTargets = new List<IHitable>();
 		int i = 0;
@@ -327,8 +330,11 @@ public class PassController : MonoBehaviour
 		BallBehaviour i_shotBall = currentBall;
 		currentBall = null;
 		didPerfectReception = false;
-		MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
-		MomentumManager.DisableMomentumExpontentialLoss();
+		if (isPlayer)
+		{
+			MomentumManager.IncreaseMomentum(MomentumManager.datas.momentumGainedOnPass);
+			MomentumManager.DisableMomentumExpontentialLoss();
+		}
 		// Throw a curve pass
 		if (targetedPawn != null)
 		{
