@@ -122,6 +122,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void Reconstruct ()
 	{
 		StartCoroutine(Reconstruct_C());
+
+		MusicManager.PlayMusic("BattleThemeBoss");
 	}
 
 	public void EnableTurretsInstantly ()
@@ -181,6 +183,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void EnablePhaseTwo()
 	{
 		ChangePhase(BossPhase.PhaseTwo);
+
+		MusicManager.PlayMusic("BattleThemeBoss");
 	}
 	public void ChangePhase(BossPhase _newPhase)
 	{
@@ -221,6 +225,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void StartBulletStorm ()
 	{
 		bulletStormEnabled = true;
+		MusicManager.PlayMusic("BattleThemeBossBullet");
 	}
 
 	public void StopBulletStorm ()
@@ -316,6 +321,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	}
 	public void FallOnGround ()
 	{
+
+		MusicManager.StopMusic(5);
 		destroyed = true;
 		foreach (BossLeg leg in legs)
 		{
