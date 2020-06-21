@@ -65,15 +65,15 @@ public class SettingsMenu : MonoBehaviour
         }
         foreach (var slider in sliderSettings)
         {
-            Debug.Log("Current setting " + slider.Key + " with value " + slider.Value);
+          //  Debug.Log("Current setting " + slider.Key + " with value " + slider.Value);
         }
         foreach (var multiChoice in multiChoiceSettings)
         {
-            Debug.Log("Current setting " + multiChoice.Key + " with value " + multiChoice.Value);
+          //  Debug.Log("Current setting " + multiChoice.Key + " with value " + multiChoice.Value);
         }
         foreach (var toggle in toggleSettings)
         {
-            Debug.Log("Current setting " + toggle.Key + " with value " + toggle.Value);
+          //  Debug.Log("Current setting " + toggle.Key + " with value " + toggle.Value);
         }
 
     }

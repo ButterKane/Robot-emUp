@@ -25,6 +25,10 @@ public class ToxicAreaManager : MonoBehaviour
     private Slider playerTwoToxicBarSlider;
     private float inflictDamage_P1;
     private float inflictDamage_P2;
+    public float delayBeforeSendingFeedback = 1f;
+
+    private float currentDelayBeforeFeedback_P1;
+    private float currentDelayBeforeFeedback_P2;
 
     // Start is called before the first frame update
     void Awake()
@@ -130,6 +134,7 @@ public class ToxicAreaManager : MonoBehaviour
                 // poisonedSprite_P1.gameObject.SetActive(true);
                 inflictDamage_P1 = 0.5f;
                 GameManager.playerOne.Damage(damageWhenPoisened_multiplier);
+                FeedbackManager.SendFeedback("event.ToxicAreaDamage", GameManager.playerOne, GameManager.playerOne.GetCenterPosition(), Vector3.up, Vector3.up);
             }
             else if (!GameManager.alivePlayers.Contains(GameManager.playerOne))
             {
@@ -145,6 +150,7 @@ public class ToxicAreaManager : MonoBehaviour
                 //  poisonedSprite_P2.gameObject.SetActive(true);
                 inflictDamage_P2 = 0.5f;
                 GameManager.playerTwo.Damage(damageWhenPoisened_multiplier);
+                FeedbackManager.SendFeedback("event.ToxicAreaDamage", GameManager.playerTwo, GameManager.playerTwo.GetCenterPosition(), Vector3.up, Vector3.up);
             }
             else if (!GameManager.alivePlayers.Contains(GameManager.playerTwo))
             {
@@ -158,7 +164,6 @@ public class ToxicAreaManager : MonoBehaviour
 
     public void ToxicAreaEntry()
     {
-        Debug.Log("ToxicAreaEntry");
         areaActivated = true;
         //playerOneToxicBar.gameObject.SetActive(true);
         //playerTwoToxicBar.gameObject.SetActive(true);
@@ -167,7 +172,6 @@ public class ToxicAreaManager : MonoBehaviour
 
     public void ToxicAreaLeaving()
     {
-        Debug.Log("ToxicAreaLeaving");
         areaActivated = false;
         //playerOneToxicBar.gameObject.SetActive(false);
         //playerTwoToxicBar.gameObject.SetActive(false);

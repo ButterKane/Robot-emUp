@@ -30,7 +30,7 @@ public class MainMenu : MonoBehaviour
 
     public GameObject inputRemapMenuPrefab;
     private GameObject inputRemapMenu;
-    private Canvas inputRemapMenuCanvas;
+    public Canvas inputRemapMenuCanvas;
 
     public Color defaultColor;
     public Color selectedColor;
@@ -55,8 +55,12 @@ public class MainMenu : MonoBehaviour
     public float menuHiddenPosition = 1.25f;
     public float menuTransitionSpeed = 0.4f;
 
+    private Animator animator;
+    private bool creditShown = false;
+
     private void Start()
     {
+        animator = GetComponent<Animator>();
         buttons = menuButtons;
         if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }
         waitForAResetOne = true;
@@ -146,9 +150,16 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed && sceneList != null && sceneList.gameObject.activeSelf == true)
+                if (i_state.Buttons.B == ButtonState.Pressed)
                 {
-                    CloseLevelSelector();
+                    if (sceneList != null && sceneList.gameObject.activeSelf)
+                    {
+                        CloseLevelSelector();
+                    }
+                    if (creditShown)
+                    {
+                        HideCredits();
+                    }
                 }
                 else { waitForBResetOne = true; }
 
@@ -172,6 +183,25 @@ public class MainMenu : MonoBehaviour
             }
         }
 	}
+
+
+    public void ShowCredits()
+    {
+        if (!creditShown)
+        {
+            creditShown = true;
+            animator.SetTrigger("ShowCredits");
+        }
+    }
+
+    public void HideCredits()
+    {
+        if (creditShown)
+        {
+            creditShown = false;
+            animator.SetTrigger("HideCredits");
+        }
+    }
 
     void HideButtons()
     {
