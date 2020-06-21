@@ -7,6 +7,11 @@ public class CameraTransition : MonoBehaviour
 {
 	public TransitionRequirement transitionCondition = TransitionRequirement.MiddlePoint;
 	public CameraBehaviour linkedCamera;
+
+	private void Awake ()
+	{
+		GetComponent<SpriteRenderer>().enabled = false;
+	}
 	private void OnTriggerEnter ( Collider other )
 	{
 		switch (transitionCondition)

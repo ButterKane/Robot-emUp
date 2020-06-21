@@ -108,8 +108,11 @@ public class EnemyRedBarrel : EnemyBehaviour
     #region Coroutines
     private IEnumerator CancelExplosionSequence_C()
     {
-        StopCoroutine(Explosion_C);
-        Explosion_C = null;
+        if (Explosion_C != null)
+        {
+            StopCoroutine(Explosion_C);
+            Explosion_C = null;
+        }
         willExplode = false;
         explosionRadiusTransform.gameObject.SetActive(false);
         explosionGrowingRenderer.localScale = Vector3.zero;
