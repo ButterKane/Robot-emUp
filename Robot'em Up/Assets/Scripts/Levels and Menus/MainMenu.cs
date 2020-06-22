@@ -273,7 +273,12 @@ public class MainMenu : MonoBehaviour
 
     void SelectButton ( Button _button, bool _showAnimation = true )
     {
-        if (creditShown) { return; }
+        AnimatorClipInfo[] currentClipInfo = null;
+        if (animator != null)
+        {
+            currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        }
+        if (creditShown || (currentClipInfo != null && currentClipInfo[0].clip.name != "MainMenu")) { return; }
         if (selectedButton != null)
         {
             if (selectedButton == _button) { return; }

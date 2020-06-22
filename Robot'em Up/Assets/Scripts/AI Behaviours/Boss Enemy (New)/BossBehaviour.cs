@@ -13,10 +13,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	[Header("References")]
 	public BossTileGenerator tileGenerator;
 	public Transform zoneCenter;
+	public Transform pelvis;
 	public List<BossLeg> legs;
 	public Transform topPart;
-	public Transform shoulderLeft;
-	public Transform shoulderRight;
 	public List<Spawner> minionSpawners;
 
 	[Header("Informations")]
@@ -60,6 +59,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	private bool destroyed;
 	private bool groundAttackActivated;
 	private Animator healthBarAnimator;
+	private GameObject punchObject;
+	private GameObject hammerObject;
 	public Animator animator;
 	[HideInInspector] public List<BossTile> tiles;
 
@@ -83,7 +84,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		CheckForModeTransition();
 		UpdateHealthBars();
 		UpdateCooldowns();
-		UpdateShoulderRotation();
 		UpdateStormBulletMode();
 		UpdateTeaBag();
 	}
@@ -126,32 +126,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		MusicManager.PlayMusic("BattleThemeBoss");
 	}
 
-	public void EnableTurretsInstantly ()
-	{
-		EnableTurrets(-1);
-	}
-	public void EnableTurrets(float _spawnSpeedOverride = -1)
-	{
-		shoulderRotationEnabled = true;
-		foreach (Spawner s in minionSpawners)
-		{
-			minions.Add(s.SpawnEnemy(bossDatas.rangeModeSettings.enemyToSpawn, false, _spawnSpeedOverride));
-		}
-	}
-
-	public void DisableTurrets ()
-	{
-		shoulderRotationEnabled = false;
-		for (int i = 0; i < minions.Count; i++)
-		{
-			if (minions != null && minions[i] != null && minions[i].transform.parent != null && minionSpawners[i] != null)
-			{
-				minionSpawners[i].RetractEnemy(minions[i]);
-			}
-		}
-		minions.Clear();
-	}
-
 	public Vector3 GetGroundPosition()
 	{
 		RaycastHit hit;
@@ -166,6 +140,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		timeSinceLastModeChange = 0;
 		if (currentMode != null)
 		{
+			if (punchObject != null) { punchObject.GetComponent<BossPunch>().StopAllCoroutines(); Destroy(punchObject); }
+			if (hammerObject != null) { hammerObject.GetComponent<BossPunch>().StopAllCoroutines(); Destroy(hammerObject); }
 			foreach (string s in currentMode.actionsOnEnd)
 			{
 				InvokeMethod(s);
@@ -183,8 +159,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void EnablePhaseTwo()
 	{
 		ChangePhase(BossPhase.PhaseTwo);
-
-		//MusicManager.PlayMusic("BattleThemeBoss");
 	}
 	public void ChangePhase(BossPhase _newPhase)
 	{
@@ -197,19 +171,19 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		if (punchCurrentCD <= 0)
 		{
 			punchCurrentCD = bossDatas.punchSettings.cooldown;
-			GameObject punchObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossPunch"));
+			punchObject = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossPunch"));
 			Vector3 newPunchPosition = transform.position + (topPart.forward * bossDatas.punchSettings.distance);
 			RaycastHit hit;
-			if (Physics.Raycast(punchObj.transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+			if (Physics.Raycast(punchObject.transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
 			{
 				newPunchPosition.y = hit.point.y;
 			}
-			punchObj.transform.position = newPunchPosition;
+			punchObject.transform.position = newPunchPosition;
 			Vector3 punchForwardFlat = currentTarget.transform.position - transform.position;
 			punchForwardFlat.y = 0;
-			punchObj.transform.rotation = Quaternion.LookRotation(punchForwardFlat);
-			punchObj.transform.localScale = Vector3.one * bossDatas.punchSettings.hitboxSize;
-			BossPunch punchScript = punchObj.GetComponent<BossPunch>();
+			punchObject.transform.rotation = Quaternion.LookRotation(punchForwardFlat);
+			punchObject.transform.localScale = Vector3.one * bossDatas.punchSettings.hitboxSize;
+			BossPunch punchScript = punchObject.GetComponent<BossPunch>();
 			punchScript.punchChargeDuration = bossDatas.punchSettings.chargeDuration;
 			punchScript.punchChargeSpeedCurve = bossDatas.punchSettings.chargeSpeedCurve;
 			punchScript.punchDamages = bossDatas.punchSettings.damages;
@@ -218,7 +192,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			punchScript.punchPushForce = bossDatas.punchSettings.pushForce;
 			punchScript.punchPushHeight = bossDatas.punchSettings.pushHeight;
 			punchScript.StartPunch(animator);
-			Freeze(bossDatas.punchSettings.chargeDuration);
+			Freeze(bossDatas.punchSettings.chargeDuration + 1);
 		}
 	}
 	
@@ -231,11 +205,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public void StopBulletStorm ()
 	{
 		bulletStormEnabled = false;
-	}
-
-	public void DetachTurrets()
-	{
-		StartCoroutine(DetachTurrets_C());
 	}
 
 	public void HammerPunch()
@@ -259,25 +228,25 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			}
 			if (nearestTile == null) { return; }
 			hammerCurrentCD = bossDatas.hammerSettings.cooldown;
-			GameObject hammerObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossHammer"));
+			hammerObject = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossHammer"));
 			Vector3 newHammerPosition = nearestTile.transform.position + Vector3.up * 1f;
 			RaycastHit hit;
-			if (Physics.Raycast(hammerObj.transform.position, Vector3.down, out hit, 100f, LayerMask.GetMask("Environment")))
+			if (Physics.Raycast(hammerObject.transform.position, Vector3.down, out hit, 100f, LayerMask.GetMask("Environment")))
 			{
 				newHammerPosition.y = hit.point.y;
 			}
-			hammerObj.transform.position = newHammerPosition;
+			hammerObject.transform.position = newHammerPosition;
 			Vector3 hammerForwardFlat = currentTarget.transform.position - transform.position;
 			hammerForwardFlat.y = 0;
-			hammerObj.transform.rotation = Quaternion.identity;
-			hammerObj.transform.localScale = Vector3.one * 10f;
-			BossPunch hammerScript = hammerObj.GetComponent<BossPunch>();
+			hammerObject.transform.rotation = Quaternion.identity;
+			hammerObject.transform.localScale = Vector3.one * 10f;
+			BossPunch hammerScript = hammerObject.GetComponent<BossPunch>();
 			hammerScript.fillColorCharging = bossDatas.hammerSettings.chargingColor;
 			hammerScript.fillColorHit = bossDatas.hammerSettings.hitColor;
 			hammerScript.punchChargeDuration = bossDatas.hammerSettings.chargeDuration;
 			hammerScript.punchChargeSpeedCurve = bossDatas.hammerSettings.chargeSpeedCurve;
 			hammerScript.StartPunch(animator);
-			Freeze(bossDatas.hammerSettings.chargeDuration);
+			Freeze(bossDatas.hammerSettings.chargeDuration + 1);
 		}
 	}
 
@@ -355,9 +324,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		firstPhaseCurrentHealth = bossDatas.globalSettings.firstPhaseHP;
 		secondPhaseCurrentHealth = bossDatas.globalSettings.secondPhaseHP;
 		minions = new List<EnemyBehaviour>();
-		shoulderInitialRotation = new List<Quaternion>();
-		shoulderInitialRotation.Add(shoulderLeft.transform.localRotation);
-		shoulderInitialRotation.Add(shoulderRight.transform.localRotation);
 		tiles = new List<BossTile>();
 	}
 	private void GenerateHealthBars ()
@@ -586,20 +552,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		return currentHP;
 	}
 
-	private void UpdateShoulderRotation()
-	{
-		if (shoulderRotationEnabled && minions != null && minions.Count > 1 && minions[0].focusedPawnController != null && minions[1].focusedPawnController != null)
-		{
-			Vector3 leftShoulderLookDirection = shoulderLeft.transform.position - minions[0].focusedPawnController.transform.position;
-			shoulderLeft.transform.rotation = Quaternion.Lerp(shoulderLeft.transform.rotation, Quaternion.LookRotation(leftShoulderLookDirection), bossDatas.rangeModeSettings.shoulderRotationSpeed);
-			Vector3 rightShoulderLookDirection = shoulderRight.transform.position - minions[1].focusedPawnController.transform.position;
-			shoulderRight.transform.rotation = Quaternion.Lerp(shoulderRight.transform.rotation, Quaternion.LookRotation(rightShoulderLookDirection), bossDatas.rangeModeSettings.shoulderRotationSpeed);
-		} else
-		{
-			shoulderLeft.transform.localRotation = Quaternion.Lerp(shoulderLeft.transform.localRotation, shoulderInitialRotation[0], bossDatas.rangeModeSettings.shoulderRotationSpeed);
-			shoulderRight.transform.localRotation = Quaternion.Lerp(shoulderRight.transform.localRotation, shoulderInitialRotation[1], bossDatas.rangeModeSettings.shoulderRotationSpeed);
-		}
-	}
 
 	private void UpdateTeaBag()
 	{
@@ -686,8 +638,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		GameObject laserObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
 		laserObj.transform.parent = transform;
 		laserObj.transform.localPosition = new Vector3(0f, -3.5f, 0f);
-		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(transform);
+		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(pelvis);
 		laserObj.transform.parent = null;
+		Freeze(bossDatas.laserSettings.duration + 1f);
 	}
 	IEnumerator Freeze_C(float _duration)
 	{
@@ -725,31 +678,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		weakPointsActivated = false;
 	}
 
-	IEnumerator DetachTurrets_C()
-	{
-		EnableTurrets(0.15f);
-		shoulderRotationEnabled = false;
-		yield return new WaitForSeconds(0.25f);
-		foreach (EnemyBehaviour e in minions)
-		{
-			e.enabled = false;
-			e.transform.rotation = Quaternion.LookRotation(Vector3.forward);
-			e.transform.SetParent(null);
-			Vector3 endPosition = transform.position;
-			RaycastHit hit;
-			Vector3 shoulderCenterPosition = transform.position;
-			shoulderCenterPosition.y = e.transform.position.y;
-			shoulderCenterPosition.z = e.transform.position.z;
-			if (Physics.Raycast(e.transform.position + ((e.transform.position - shoulderCenterPosition).normalized * 10) - (Vector3.forward * 10), Vector3.down, out hit, 50, LayerMask.GetMask("Environment")))
-			{
-				endPosition = hit.point;
-				StartCoroutine(MoveTurretToPosition_C(e, endPosition, 1f));
-				yield return null;
-			}
-
-		}
-	}
-
 	IEnumerator MoveTurretToPosition_C(EnemyBehaviour _turret, Vector3 _endPosition, float _duration)
 	{
 		Vector3 startPosition = _turret.transform.position;
@@ -763,7 +691,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		yield return null;
 		_turret.transform.position = _endPosition;
 		_turret.enabled = true;
-		DisableTurrets();
 	}
 
 	IEnumerator GroundAttack_C()
