@@ -72,7 +72,16 @@ public class Retriever : MonoBehaviour
 				playerController.Heal(i_corePart.healthValue);
 			}
 		}
-    }
+		if (other.tag == "Ball")
+		{
+			BallBehaviour i_ballBehaviour = other.GetComponent<BallBehaviour>();
+			if (i_ballBehaviour.GetState() == BallState.Flying)
+			{
+				if (i_ballBehaviour.GetCurrentThrower() == pawnController && (i_ballBehaviour.GetCurrentBounceCount() < passController.minBouncesBeforePickingOwnBall || i_ballBehaviour.GetTimeFlying() < passController.delayBeforePickingOwnBall)) { return; }
+				passController.Receive(i_ballBehaviour);
+			}
+		}
+	}
 
 	#region Public functions
 	public void AllowPlayerRevive(ReviveInformations parts)

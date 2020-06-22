@@ -279,7 +279,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Canvas canvas in FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode != RenderMode.WorldSpace && (canvas.name != "LoadingScreenCanvas" && canvas.name != "LoadingScreenCanvas(Clone)"))
+            if (canvas.renderMode != RenderMode.WorldSpace && (canvas.name != "LoadingScreenCanvas" && canvas.name != "LoadingScreenCanvas(Clone)") && canvas.name != "EndGame")
             {
                 mainCanvas = canvas;
                 DontDestroyOnLoad(mainCanvas.rootCanvas.transform);

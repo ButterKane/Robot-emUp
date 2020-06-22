@@ -76,7 +76,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 32.641693}
+  - {x: 0, y: 0, z: 86.20718}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 8
@@ -156,38 +156,6 @@ MonoBehaviour:
   lr: {fileID: 440047810830629229}
   laserHitEffect: {fileID: 440047812440129341}
   col: {fileID: 440047810830629227}
-  damagesOnEnter: 50
-  damagesPerSecond: 1000
-  defaultWidth: 8
-  chargingWidth: 1
-  chargeDuration: 1
-  chargeDelay: 1
-  chargeSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  maxLength: 200
-  maxLengthIncrementationSpeed: 50
 --- !u!65 &440047810830629227
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -199,8 +167,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 32.641693}
-  m_Center: {x: 0, y: 0, z: 16.320847}
+  m_Size: {x: 1, y: 1, z: 86.20718}
+  m_Center: {x: 0, y: 0, z: 43.10359}
 --- !u!1 &440047810991906664
 GameObject:
   m_ObjectHideFlags: 0
@@ -9677,7 +9645,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 440047811759051208}
   m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: -0.00000011920929, z: 42.100002}
+  m_LocalPosition: {x: -1.2, y: 3.0800004, z: 53.940002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4058458348468771349}
@@ -9761,7 +9729,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 42.100002}
+  - {x: 0, y: 0, z: 86.20718}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 8
@@ -9841,38 +9809,6 @@ MonoBehaviour:
   lr: {fileID: 440047811768266541}
   laserHitEffect: {fileID: 440047811759051208}
   col: {fileID: 440047811768266542}
-  damagesOnEnter: 50
-  damagesPerSecond: 1000
-  defaultWidth: 8
-  chargingWidth: 1
-  chargeDuration: 1
-  chargeDelay: 1
-  chargeSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  maxLength: 200
-  maxLengthIncrementationSpeed: 50
 --- !u!65 &440047811768266542
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9884,8 +9820,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 42.100002}
-  m_Center: {x: 0, y: 0, z: 21.050001}
+  m_Size: {x: 1, y: 1, z: 86.20718}
+  m_Center: {x: 0, y: 0, z: 43.10359}
 --- !u!1 &440047811835144324
 GameObject:
   m_ObjectHideFlags: 0
@@ -9904,7 +9840,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &440047811835144325
 Transform:
   m_ObjectHideFlags: 0
@@ -24233,8 +24169,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 440047812440129341}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 32.641693}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.2, y: 3.0800002, z: -59.54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 440047810991906665}
@@ -24288,8 +24224,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c186d7455cccf4c44a465c02a84d3ca0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 12
-  rotationSpeed: 15
 --- !u!1 &440047812641833509
 GameObject:
   m_ObjectHideFlags: 0
