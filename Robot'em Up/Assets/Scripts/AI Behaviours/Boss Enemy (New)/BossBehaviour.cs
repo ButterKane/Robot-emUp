@@ -18,6 +18,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	public List<BossLeg> legs;
 	public Transform topPart;
 	public List<Spawner> minionSpawners;
+	public GameObject bossPointer;
 
 	[Header("Informations")]
 	[ReadOnly] public BossPhase currentPhase;
@@ -370,6 +371,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	private void GetReferences()
 	{
+		bossPointer.SetActive(false);
 		bossDatas = BossSettings.GetDatas();
 		navMesh = GetComponent<NavMeshAgent>();
 	}
@@ -658,6 +660,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	IEnumerator Stagger_C()
 	{
 		yield return new WaitForSeconds(2f);
+		bossPointer.SetActive(true);
 		transform.forward = -Vector3.forward;
 		animator.SetTrigger("Stagger");
 	}
@@ -710,6 +713,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		if (_source == DamageSource.Dunk)
 		{
 			hitByDunk = true;
+			bossPointer.SetActive(false);
 		}
 	}
 }
