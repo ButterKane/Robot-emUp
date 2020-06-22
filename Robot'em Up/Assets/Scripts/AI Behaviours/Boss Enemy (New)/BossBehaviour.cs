@@ -13,6 +13,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	[Header("References")]
 	public BossTileGenerator tileGenerator;
 	public Transform zoneCenter;
+	public Transform laserDirector;
 	public Transform pelvis;
 	public List<BossLeg> legs;
 	public Transform topPart;
@@ -174,9 +175,10 @@ public class BossBehaviour : MonoBehaviour, IHitable
 			punchObject = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossPunch"));
 			Vector3 newPunchPosition = transform.position + (topPart.forward * bossDatas.punchSettings.distance);
 			RaycastHit hit;
-			if (Physics.Raycast(punchObject.transform.position, Vector3.down, out hit, 20f, LayerMask.GetMask("Environment")))
+			Debug.Log(punchObject.transform.position);
+			if (Physics.Raycast(newPunchPosition, Vector3.down, out hit, 200, LayerMask.GetMask("Environment")))
 			{
-				newPunchPosition.y = hit.point.y;
+				newPunchPosition.y = hit.point.y + 0.1f;
 			}
 			punchObject.transform.position = newPunchPosition;
 			Vector3 punchForwardFlat = currentTarget.transform.position - transform.position;
@@ -285,7 +287,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		animator.SetTrigger("Death");
 		FeedbackManager.SendFeedback("event.BossDeath", this);
-
+		EndGameCredits.DisplayEndGameCredits(4);
 		MusicManager.StopMusic(4);
 	}
 	public void FallOnGround ()
@@ -637,8 +639,9 @@ public class BossBehaviour : MonoBehaviour, IHitable
 		yield return new WaitForSeconds(_delay);
 		GameObject laserObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
 		laserObj.transform.parent = transform;
-		laserObj.transform.localPosition = new Vector3(0f, -3.5f, 0f);
+		laserObj.transform.localPosition = new Vector3(0f, -1f, 0f);
 		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(pelvis);
+		laserObj.GetComponent<BossLaserGenerator>().FollowTransform(laserDirector);
 		laserObj.transform.parent = null;
 		Freeze(bossDatas.laserSettings.duration + 1f);
 	}
