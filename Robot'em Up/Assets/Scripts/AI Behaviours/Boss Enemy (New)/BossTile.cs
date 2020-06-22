@@ -66,12 +66,13 @@ public class BossTile : MonoBehaviour
 		currentElectricalPlate.Desactivate();
 		//electricalPlate.transform.localScale = new Vector3(1f, 1f, 1f);
 		Vector3 startPosition = transform.position + Vector3.down * 5f;
-		Vector3 endPosition = transform.position + Vector3.down;
+		Vector3 endPosition = transform.position;
 		for (float i = 0; i < 1f; i+=Time.deltaTime)
 		{
 			electricalPlate.transform.position = Vector3.Lerp(startPosition, endPosition, i / 1f);
 			yield return null;
 		}
+		electricalPlate.transform.position = endPosition;
 		yield return new WaitForSeconds(bossSettings.electricalPlateSettings.duration);
 		DespawnElectricalPlate();
 	}
@@ -79,13 +80,14 @@ public class BossTile : MonoBehaviour
 	IEnumerator DespawnElectricalPlate_C()
 	{
 		currentElectricalPlate.Desactivate();
-		Vector3 startPosition = transform.position + Vector3.down;
+		Vector3 startPosition = transform.position;
 		Vector3 endPosition = transform.position + Vector3.down * 5f;
 		for (float i = 0; i < 1f; i += Time.deltaTime)
 		{
 			currentElectricalPlate.transform.position = Vector3.Lerp(startPosition, endPosition, i / 1f);
 			yield return null;
 		}
+		electricalPlate.transform.position = endPosition;
 		Destroy(currentElectricalPlate.gameObject);
 	}
 
