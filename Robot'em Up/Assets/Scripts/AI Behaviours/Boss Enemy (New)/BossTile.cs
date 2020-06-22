@@ -7,9 +7,9 @@ public class BossTile : MonoBehaviour
 	public Transform visuals;
 
 	private float currentElectricalPlateToggleCD;
-
 	private PuzzleEletricPlate currentElectricalPlate;
 	private BossSettings bossSettings;
+	public GameObject electricalPlate;
 
 	private void Awake ()
 	{
@@ -61,12 +61,12 @@ public class BossTile : MonoBehaviour
 
 	IEnumerator SpawnElectricalPlate_C ()
 	{
-		GameObject electricalPlate = Instantiate(bossSettings.electricalPlateSettings.platePrefab, transform);
+		electricalPlate.SetActive(true);
 		currentElectricalPlate = electricalPlate.GetComponent<PuzzleEletricPlate>();
 		currentElectricalPlate.Desactivate();
-		electricalPlate.transform.localScale = new Vector3(1f, 0.1f, 1f);
+		//electricalPlate.transform.localScale = new Vector3(1f, 1f, 1f);
 		Vector3 startPosition = transform.position + Vector3.down * 5f;
-		Vector3 endPosition = transform.position + Vector3.down * -0.1f;
+		Vector3 endPosition = transform.position + Vector3.down;
 		for (float i = 0; i < 1f; i+=Time.deltaTime)
 		{
 			electricalPlate.transform.position = Vector3.Lerp(startPosition, endPosition, i / 1f);
@@ -79,7 +79,7 @@ public class BossTile : MonoBehaviour
 	IEnumerator DespawnElectricalPlate_C()
 	{
 		currentElectricalPlate.Desactivate();
-		Vector3 startPosition = transform.position + Vector3.down * -0.1f;
+		Vector3 startPosition = transform.position + Vector3.down;
 		Vector3 endPosition = transform.position + Vector3.down * 5f;
 		for (float i = 0; i < 1f; i += Time.deltaTime)
 		{
