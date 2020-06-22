@@ -659,8 +659,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	IEnumerator Stagger_C()
 	{
-		yield return new WaitForSeconds(2f);
 		bossPointer.SetActive(true);
+		yield return new WaitForSeconds(2f);
 		transform.forward = -Vector3.forward;
 		animator.SetTrigger("Stagger");
 	}
