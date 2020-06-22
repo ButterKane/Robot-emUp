@@ -7,12 +7,17 @@ public class BossLaserGenerator : MonoBehaviour
 	BossSettings bossDatas;
 	private Transform attachedTransform;
 	private Vector3 localPosition;
+	private Transform forwardTransform;
 	private void Awake ()
 	{
 		bossDatas = BossSettings.GetDatas();
 		StartCoroutine(DestroyAfterDelay_C(bossDatas.laserSettings.duration));
 	}
 
+	public void FollowTransform(Transform _transform)
+	{
+		forwardTransform = _transform;
+	}
 	public void AttachToTransform(Transform _transform)
 	{
 		attachedTransform = _transform;
@@ -24,7 +29,11 @@ public class BossLaserGenerator : MonoBehaviour
 		{
 			transform.position = attachedTransform.position + localPosition;
 		}
-		transform.Rotate(Vector3.up, Time.deltaTime * bossDatas.laserSettings.rotationSpeed);
+		if (forwardTransform != null)
+		{
+			transform.forward = forwardTransform.forward;
+		}
+		//transform.Rotate(Vector3.up, Time.deltaTime * bossDatas.laserSettings.rotationSpeed);
 	}
 
 	IEnumerator DestroyAfterDelay_C(float _duration)
