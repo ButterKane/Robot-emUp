@@ -9,6 +9,17 @@ using UnityEngine.SceneManagement;
 [ExecuteAlways]
 public class PlayerController : PawnController, IHitable
 {
+    //Key inputs;
+    public static KeyCode leftKey = KeyCode.Q;
+    public static KeyCode rightKey = KeyCode.D;
+    public static KeyCode upKey = KeyCode.Z;
+    public static KeyCode downKey = KeyCode.S;
+    private static KeyCode dashKey = KeyCode.LeftShift;
+    private static KeyCode dunkKey = KeyCode.Space;
+    private static KeyCode grabKey = KeyCode.LeftControl;
+    private static KeyCode highlightBall = KeyCode.H;
+
+
     [Space(2)]
     [Separator("Player settings")]
     public PlayerIndex playerIndex;
@@ -63,6 +74,7 @@ public class PlayerController : PawnController, IHitable
     private float timeSinceLastHeal;
     private float rbPressDuration;
     private bool reviving;
+    public ControllerType controllerType;
 
     //Other
     private Coroutine freezeCoroutine;
@@ -79,6 +91,8 @@ public class PlayerController : PawnController, IHitable
     private Camera cam;
     private PlayerUI ui;
     public Collider mainCollider;
+
+    public enum ControllerType { Keyboard, Gamepad }
     public void Start()
     {
         base.Awake();
@@ -94,6 +108,7 @@ public class PlayerController : PawnController, IHitable
         dashController = GetComponent<DashController>();
         extendingArmsController = GetComponent<ExtendingArmsController>();
         ui = GetComponent<PlayerUI>();
+        animator.SetTrigger("BackOnGroundTrigger");
 
         //Set pass target
         passController.SetTargetedPawn(GetOtherPlayer());
@@ -311,17 +326,42 @@ public class PlayerController : PawnController, IHitable
     #endregion
 
     #region Private functions
+
+    private void UpdateControllerType()
+    {
+        int connectedGamepadAmount = GamepadChecker.instance.GetConnectedGamepadAmount();
+        if (connectedGamepadAmount <= 0)
+        {
+            //Display screen "connect gamepad"
+            controllerType = ControllerType.Keyboard;
+        } else if (connectedGamepadAmount == 1)
+        {
+            if (playerIndex == PlayerIndex.One)
+            {
+                controllerType = ControllerType.Gamepad;
+            } else
+            {
+                controllerType = ControllerType.Keyboard;
+            }
+        } else
+        {
+            controllerType = ControllerType.Gamepad;
+        }
+    }
     private void GetInput()
     {
+        UpdateControllerType();
         if (!Application.isPlaying || inputDisabled) { return; }
-        if (HasGamepad())
-        {
-            GamepadInput();
-        }
-        else
-        {
-            Debug.LogWarning("Error: No gamepad detected.");
-        }
+        state = GamePad.GetState(playerIndex);
+        GetMoveAndLookInput(out moveInput, out lookInput);
+        CheckAim();
+        CheckPass();
+        CheckDunk();
+        CheckClimb();
+        CheckDash();
+        CheckHighlight();
+        CheckRevive();
+        CheckGrapple();
     }
     private void GenerateMiddlePoint()
     {
@@ -370,14 +410,7 @@ public class PlayerController : PawnController, IHitable
     {
         state = GamePad.GetState(playerIndex);
         GetMoveAndLookInput(out moveInput, out lookInput);
-        CheckRightStick();
-        CheckLeftStick();
-        CheckButtons();
-        CheckRightTrigger();
-        CheckLeftTrigger();
         CheckRightShoulder();
-        CheckLeftShoulder();
-        CheckBothTriggers();
 
         //CheckMoveAndLook(out moveInput, out lookInput);
         //CheckAim();
@@ -389,7 +422,31 @@ public class PlayerController : PawnController, IHitable
         //CheckInteraction();
     }
 
-    // Old input system
+    private void KeyboardInput ()
+    {
+        GetMoveAndLookInput(out moveInput, out lookInput);
+        /*
+        CheckRightStick();
+        CheckLeftStick();
+        CheckButtons();
+        CheckRightTrigger();
+        CheckLeftTrigger();
+        CheckRightShoulder();
+        CheckLeftShoulder();
+        CheckBothTriggers();
+        */
+    }
+
+    //Keyboard inputs
+
+    private void CheckClimb()
+    {
+        if (moveInput.magnitude > 0.5f)
+        {
+            Climb();
+        }
+    }
+
     private void GetMoveAndLookInput(out Vector3 _moveInput, out Vector3 _lookInput)
     {
         _lookInput = lookInput;
@@ -404,10 +461,28 @@ public class PlayerController : PawnController, IHitable
             i_camRightNormalized = i_camRightNormalized.normalized;
             if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
             {
-                _moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
-                _moveInput.y = 0;
-                _moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
-                _lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
+                switch (controllerType)
+                {
+                    case ControllerType.Gamepad:
+                        _moveInput = (state.ThumbSticks.Left.X * i_camRightNormalized) + (state.ThumbSticks.Left.Y * i_camForwardNormalized);
+                        _moveInput.y = 0;
+                        _moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
+                        _lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
+                        Debug.Log(_lookInput.magnitude);
+                        break;
+                    case ControllerType.Keyboard:
+                        int horizontalInput = 0;
+                        if (Input.GetKey(leftKey)) horizontalInput--;
+                        if (Input.GetKey(rightKey)) horizontalInput++;
+                        int verticalInput = 0;
+                        if (Input.GetKey(upKey)) verticalInput++;
+                        if (Input.GetKey(downKey)) verticalInput--;
+                        _moveInput = horizontalInput * i_camRightNormalized + verticalInput * i_camForwardNormalized;
+                        _moveInput.y = 0;
+                        _moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
+                        _lookInput = GetMouseLookedDirection();
+                        break;
+                }
             }
             else
             {
@@ -415,53 +490,183 @@ public class PlayerController : PawnController, IHitable
             }
         }
     }
-    private void CheckRightStick()
+
+    private Vector3 GetMouseLookedDirection()
     {
-        if (lookInput.magnitude > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold*100)/100)
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = Vector3.Distance(transform.position, cam.transform.position);
+        Vector3 mouseWorldPos = cam.ScreenToWorldPoint(mousePos);
+        RaycastHit hit;
+        Ray ray = cam.ScreenPointToRay(mousePos);
+        Debug.DrawLine(ray.origin, ray.origin + ray.direction * 500, Color.red);
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Environment")))
         {
-            passController.SetLookDirection(lookInput);
-            if (!rightButtonWaitForRelease)
+            mouseWorldPos = hit.point;
+        }
+        mouseWorldPos.y = transform.position.y;
+        Vector3 mouseDirection = mouseWorldPos - transform.position;
+        mouseDirection = Vector3.ClampMagnitude(mouseDirection / 13f, 1f); //mouse direction is divided by 1/sensivity
+        return mouseDirection;
+    }
+
+    private void CheckRightShoulder()
+    {
+        if (state.Buttons.RightShoulder == ButtonState.Pressed)
+        {
+            rightButtonWaitForRelease = true;
+            rbPressDuration += Time.deltaTime;
+            if (extendingArmsController != null && targetedGrabbable.Count > 0)
             {
-                passController.Aim();
+                float i_pressPercent = rbPressDuration / extendingArmsController.minGrabHoldDuration;
+                i_pressPercent = Mathf.Clamp(i_pressPercent, 0f, 1f);
+                extendingArmsController.UpdateDecalSize(i_pressPercent);
+
+                prioritaryGrabInformation = GetPrioritaryGrabInformation();
+                if (prioritaryGrabInformation != null)
+                {
+                    passController.StopAim();
+                    extendingArmsController.TogglePreview(true);
+                    ForceLookAt(prioritaryGrabInformation.targetedPosition.position); //Player will rotate toward look input
+                }
+            }
+            else if (extendingArmsController != null)
+            {
+                extendingArmsController.TogglePreview(false);
+            }
+        }
+        else if (state.Buttons.RightShoulder == ButtonState.Released && rightButtonWaitForRelease)
+        {
+            rightButtonWaitForRelease = false;
+            if (extendingArmsController != null)
+            {
+                extendingArmsController.TogglePreview(false);
+                if (rbPressDuration >= extendingArmsController.minGrabHoldDuration && targetedGrabbable.Count > 0)
+                {
+                    extendingArmsController.ExtendArm();
+                }
+            }
+            rbPressDuration = 0;
+        }
+    }
+
+    private void CheckRevive()
+    {
+        bool canRevive = false;
+        switch (controllerType)
+        {
+            case ControllerType.Gamepad:
+                if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold) canRevive = true;
+                break;
+            case ControllerType.Keyboard:
+                if (Input.GetMouseButton(0)) canRevive = true;
+                break;
+        }
+        if (revivablePlayers.Count > 0)
+        {
+            if (canRevive)
+            {
+                animator.SetBool("Reviving", true);
+                reviving = true;
+                AddSpeedModifier(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
+                foreach (ReviveInformations p in revivablePlayers)
+                {
+                    p.linkedPanel.FillAssemblingSlider();
+                }
+            }
+            else
+            {
+                reviving = false;
+                animator.SetBool("Reviving", false);
+                UnFreeze();
+                SetTargetable();
             }
         }
         else
         {
-            passController.StopAim();
+            if (reviving && !canRevive)
+            {
+                reviving = false;
+                animator.SetBool("Reviving", false);
+            }
         }
     }
-    private void CheckLeftStick()
+
+    // New Input System methods
+    private void CheckDunk()
     {
-        if (moveInput.magnitude > 0.5f)
+        bool canDunk = false;
+        switch (controllerType)
         {
-            Climb();
+            case ControllerType.Keyboard:
+                if (Input.GetKeyDown(dunkKey) && revivablePlayers.Count <= 0) canDunk = true;
+                break;
+            case ControllerType.Gamepad:
+                if (state.Buttons.Y == ButtonState.Pressed && revivablePlayers.Count <= 0) canDunk = true;
+                break;
         }
+        if (canDunk) dunkController.Dunk();
     }
-    private void CheckButtons()
+    private void CheckPass()
     {
-        if (state.Buttons.Y == ButtonState.Pressed && revivablePlayers.Count <= 0)
+        bool canPass = false;
+        switch (controllerType)
         {
-            dunkController.Dunk();
+            case ControllerType.Keyboard:
+                if (Input.GetMouseButton(0) && revivablePlayers.Count <= 0) canPass = true;
+                break;
+            case ControllerType.Gamepad:
+                if (state.Triggers.Right > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold) && revivablePlayers.Count <= 0) canPass = true;
+                break;
         }
-    }
-    private void CheckRightTrigger()
-    {
-        if (state.Triggers.Right > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold) && revivablePlayers.Count <= 0)
+        if (canPass)
         {
             if (revivablePlayers.Count <= 0)
             {
                 if (!rightTriggerWaitForRelease) { passController.TryReception(); passController.Shoot(); }
                 rightTriggerWaitForRelease = true;
             }
-        }
-        else
+        } else
         {
             rightTriggerWaitForRelease = false;
         }
     }
-    private void CheckLeftTrigger()
+    private void CheckAim ()
     {
-        if (state.Triggers.Left > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold))
+        bool canAim = false;
+        switch (controllerType)
+        {
+            case ControllerType.Keyboard:
+                if (Input.GetMouseButton(1)) canAim = true;
+                break;
+            case ControllerType.Gamepad:
+                if (lookInput.magnitude > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold * 100) / 100) canAim = true;
+                break;
+        }
+        if (canAim)
+        {
+            passController.SetLookDirection(lookInput);
+            if (!rightButtonWaitForRelease)
+            {
+                passController.Aim();
+            }
+        } else
+        {
+            passController.StopAim();
+        }
+    }
+    private void CheckDash()
+    {
+        bool canDash = false;
+        switch (controllerType)
+        {
+            case ControllerType.Gamepad:
+                if (state.Triggers.Left > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold)) canDash = true;
+                break;
+            case ControllerType.Keyboard:
+                if (Input.GetKey(dashKey)) canDash = true;
+                break;
+        }
+        if (canDash)
         {
             leftTriggerWaitForRelease = true;
             if (dashUsed == false && !reviving)
@@ -510,11 +715,20 @@ public class PlayerController : PawnController, IHitable
                 leftTriggerWaitForRelease = false;
             }
         }
-
     }
-    private void CheckRightShoulder()
+    private void CheckGrapple()
     {
-        if (state.Buttons.RightShoulder == ButtonState.Pressed)
+        bool canGrapple = false;
+        switch (controllerType)
+        {
+            case ControllerType.Gamepad:
+                if (state.Buttons.RightShoulder == ButtonState.Pressed) canGrapple = true;
+                break;
+            case ControllerType.Keyboard:
+                if (Input.GetKey(grabKey)) canGrapple = true;
+                break;
+        }
+        if (canGrapple)
         {
             rightButtonWaitForRelease = true;
             rbPressDuration += Time.deltaTime;
@@ -551,149 +765,29 @@ public class PlayerController : PawnController, IHitable
             rbPressDuration = 0;
         }
     }
-    private void CheckLeftShoulder()
+    private void CheckHighlight()
     {
-        if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease)
+        bool canHighlight = false;
+        switch (controllerType)
         {
-           // Highlighter.HighlightBall(); //Cut for the moment
-            leftShouldWaitForRelease = true;
+            case ControllerType.Keyboard:
+                if (Input.GetKey(highlightBall) && !leftShouldWaitForRelease) canHighlight = true;
+                break;
+            case ControllerType.Gamepad:
+                if (state.Buttons.LeftShoulder == ButtonState.Pressed && !leftShouldWaitForRelease) canHighlight = true;
+                break;
         }
-        else if (state.Buttons.LeftShoulder == ButtonState.Released)
+        if (canHighlight)
+        {
+             Highlighter.HighlightBall();
+            leftShouldWaitForRelease = true;
+        } 
+        else
         {
             leftShouldWaitForRelease = false;
         }
-
-    }
-    private void CheckBothTriggers()
-    {
-        if (revivablePlayers.Count > 0)
-        {
-            if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold)
-            {
-                animator.SetBool("Reviving", true);
-                reviving = true;
-                AddSpeedModifier(new SpeedCoef(reviveSpeedCoef, Time.deltaTime, SpeedMultiplierReason.Reviving, false));
-                foreach (ReviveInformations p in revivablePlayers)
-                {
-                    p.linkedPanel.FillAssemblingSlider();
-                }
-            }
-            else if (state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
-            {
-                reviving = false;
-                animator.SetBool("Reviving", false);
-            }
-            else
-            {
-                UnFreeze();
-                SetTargetable();
-            }
-        }
-        else
-        {
-            if (reviving && state.Triggers.Right <= 0 && state.Triggers.Left <= 0)
-            {
-                reviving = false;
-                animator.SetBool("Reviving", false);
-            }
-        }
     }
 
-    // New Input System methods
-    private void CheckDunk()
-    {
-        if (bindings.dunk.keyDown && revivablePlayers.Count <= 0)
-        {
-            dunkController.Dunk();
-        }
-    }
-    private void CheckPass()
-    {
-        if (bindings.throwBall.keyDown && revivablePlayers.Count <= 0)
-        {
-            passController.TryReception();
-            passController.Shoot();
-        }
-    }
-    private void CheckAim()
-    {
-        if (lookInput.magnitude > PlayerPrefs.GetFloat("REU_Trigger_Treshold", triggerTreshold))
-        {
-            passController.SetLookDirection(lookInput);
-            passController.Aim();
-        }
-        else
-        {
-            passController.StopAim();
-        }
-    }
-    private void CheckDash()
-    {
-        if (dashUsed) { dashBuffer += Time.deltaTime; }
-        if (dashBuffer >= delayBeforeDash) { dashUsed = false; }
-        if (bindings.dash.keyDown)
-        {
-            if (!dashUsed && !reviving)
-            {
-                Vector3 dashDirection = moveInput;
-                if (moveInput.magnitude <= 0)
-                {
-                    dashDirection = transform.forward;
-                }
-                dashController.Dash(dashDirection);
-                dashBuffer = 0;
-                dashUsed = true;
-            }
-        }
-    }
-    private void CheckGrapple()
-    {
-        if (bindings.grapple.key)
-        {
-            rbPressDuration += Time.deltaTime;
-            if (extendingArmsController != null && targetedGrabbable.Count > 0)
-            {
-                float i_pressPercent = rbPressDuration / extendingArmsController.minGrabHoldDuration;
-                i_pressPercent = Mathf.Clamp(i_pressPercent, 0f, 1f);
-                extendingArmsController.UpdateDecalSize(i_pressPercent);
-
-                prioritaryGrabInformation = GetPrioritaryGrabInformation();
-                if (prioritaryGrabInformation != null)
-                {
-                    passController.StopAim();
-                    extendingArmsController.TogglePreview(true);
-                    ForceLookAt(prioritaryGrabInformation.targetedPosition.position); //Player will rotate toward look input
-                }
-            }
-            else if (extendingArmsController != null)
-            {
-                extendingArmsController.TogglePreview(false);
-            }
-        }
-        else if (bindings.grapple.keyUp)
-        {
-            if (extendingArmsController != null)
-            {
-                extendingArmsController.TogglePreview(false);
-                if (rbPressDuration >= extendingArmsController.minGrabHoldDuration && targetedGrabbable.Count > 0)
-                {
-                    extendingArmsController.ExtendArm();
-                }
-            }
-            rbPressDuration = 0;
-        }
-    }
-    private void CheckDetectBall()
-    {
-        if (bindings.detectBall.keyDown)
-        {
-            Highlighter.HighlightBall();
-        }
-    }
-    private void CheckInteraction()
-    {
-        // Nothing yet
-    }
     private void CheckMoveAndLook(out Vector3 _moveInput, out Vector3 _lookInput)
     {
         _lookInput = lookInput;
@@ -731,18 +825,6 @@ public class PlayerController : PawnController, IHitable
                 currentHealth -= Time.deltaTime * (overHealDecaySpeedCurve.Evaluate(i_lerpValue) / overHealDecaySpeed);
             }
         }
-    }
-    private bool HasGamepad()
-    {
-        string[] i_names = Input.GetJoystickNames();
-        for (int i = 0; i < i_names.Length; i++)
-        {
-            if (i_names[i].Length > 0)
-            {
-                return true;
-            }
-        }
-        return false;
     }
     private void GenerateReviveParts()
     {

@@ -129,16 +129,16 @@ public class PlayerGhostAI : MonoBehaviour
                 break;
             case GhostType.Passing:
                 pawnController.canMove = false;
+                transform.LookAt(passTarget.transform.position);
                 if (currentCooldown <= 0)
                 {
-                    transform.LookAt(passTarget.transform.position);
                     passController.Shoot();
                     currentCooldown = actionCooldown;
                 }
                 else
                 {
                     passController.Aim();
-                   // passController.SetLookDirection(Vector3.MoveTowards(transform.position,passTarget.transform.position, 100));
+                    passController.SetLookDirection(passTarget.transform.position - transform.position);
                     currentCooldown -= Time.deltaTime;
                 }
                 break;

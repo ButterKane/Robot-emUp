@@ -60,6 +60,11 @@ public class SceneEssentialLoader : MonoBehaviour
 			Instantiate(Resources.Load("LoadingScreenCanvas"));
 		}
 
+		if (GamepadChecker.instance == null)
+		{
+			Instantiate(Resources.Load("GamepadChecker"));
+		}
+
 		if (player1Position != null)
 		{
 			player1.transform.position = player1Position.position;
@@ -88,6 +93,7 @@ public class SceneEssentialLoader : MonoBehaviour
 				virtualCam = cameraPosition.gameObject.AddComponent<CinemachineVirtualCamera>();
 			}
 			cameraPosition.transform.SetParent(null);
+			virtualCam.m_LookAt = PlayerController.GetMiddlePoint().transform;
 			virtualCam.m_Priority = 11;
 		}
 

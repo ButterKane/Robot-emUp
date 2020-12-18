@@ -458,7 +458,7 @@ public class PawnController : MonoBehaviour
 	{
 		if (moveState == MoveState.Blocked || moveState == MoveState.Pushed) { return; }
 		//Rotation while moving
-		if (moveInput.magnitude >= 0.5f && !rotationForced)
+		if (moveInput.magnitude >= 0.4f && !rotationForced)
 			turnRotation = Quaternion.Euler(0, Mathf.Atan2(moveInput.x, moveInput.z) * 180 / Mathf.PI, 0);
 
 		//Rotation while aiming or shooting

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteAlways]
 public class ParticleAutoDestroyer : MonoBehaviour
 {
 	private ParticleSystem ps;

@@ -150,7 +150,7 @@ public class MainMenu : MonoBehaviour
                     if (i == 0) { waitForAResetOne = false; }
                     if (i == 1) { waitForAResetTwo = false; }
                 }
-                if (i_state.Buttons.B == ButtonState.Pressed)
+                if (i_state.Buttons.B == ButtonState.Pressed || Input.GetKeyDown(KeyCode.Escape))
                 {
                     if (sceneList != null && sceneList.gameObject.activeSelf)
                     {

@@ -152,6 +152,7 @@ public class GameManager : MonoBehaviour
         {
             FindMainCanvas();
         }
+        /*
         if (Input.GetKeyDown(KeyCode.B))
         {
             ResetBall();
@@ -174,10 +175,15 @@ public class GameManager : MonoBehaviour
                 LoadSceneByIndex(GetSceneIndexFromName(GetCurrentZoneName()) - 1);
             }
         }
+        */
         //Reset button
         GamePadState state1 = GamePad.GetState(PlayerIndex.One);
         GamePadState state2 = GamePad.GetState(PlayerIndex.Two);
         if ((state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed) && !mainMenu.mainMenuCanvas.enabled)
+        {
+            ResetScene();
+        }
+        if (Input.GetKeyDown(KeyCode.R) && !mainMenu.mainMenuCanvas.enabled)
         {
             ResetScene();
         }
