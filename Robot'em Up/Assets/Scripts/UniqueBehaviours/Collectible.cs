@@ -36,6 +36,9 @@ public class Collectible : MonoBehaviour
     public GameObject aButtonPlayer2;
     public TextMeshPro tmp_field;
 
+    public Sprite gamepadInputSprite;
+    public Sprite keyboardInputSprite;
+
     [Header("Variables to tweak")]
     public float ratioBeforeTriggerOut;
     public float timeToPressA;
@@ -72,6 +75,8 @@ public class Collectible : MonoBehaviour
     float emissiveCurveTimerPlayer1;
     float emissiveCurveTimerPlayer2;
     float indicatorCurveTimer;
+    private SpriteRenderer player1SR;
+    private SpriteRenderer player2SR;
 
     void Awake()
     {
@@ -80,6 +85,8 @@ public class Collectible : MonoBehaviour
         state1 = GamePad.GetState(playerIndex1);
         state2 = GamePad.GetState(playerIndex2);
         tmp_field.text = displayedText;
+        player1SR = aButtonPlayer1.GetComponent<SpriteRenderer>();
+        player2SR = aButtonPlayer2.GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -87,6 +94,29 @@ public class Collectible : MonoBehaviour
         CheckPlayerCompletion();
         CompletionEmissiveUpdate();
         IndicatorAppearance();
+        UpdateIndicatorController();
+    }
+
+    private void UpdateIndicatorController()
+    {
+        switch (GameManager.playerOne.controllerType)
+        {
+            case PlayerController.ControllerType.Gamepad:
+                player1SR.sprite = gamepadInputSprite;
+                break;
+            case PlayerController.ControllerType.Keyboard:
+                player1SR.sprite = keyboardInputSprite;
+                break;
+        }
+        switch (GameManager.playerTwo.controllerType)
+        {
+            case PlayerController.ControllerType.Gamepad:
+                player2SR.sprite = gamepadInputSprite;
+                break;
+            case PlayerController.ControllerType.Keyboard:
+                player2SR.sprite = keyboardInputSprite;
+                break;
+        }
     }
 
     void IndicatorAppearance()
@@ -133,7 +163,7 @@ public class Collectible : MonoBehaviour
         {
             //UPDATE RATIO COMPLETION
             state1 = GamePad.GetState(playerIndex1);
-            if (player1InRange && state1.Buttons.A == ButtonState.Pressed) // With new system => InteractButton 
+            if (player1InRange && GameManager.playerOne.IsPickingAbility())
             {
                 PlayerRatioUpdate(true, Mathf.Clamp01(player1PressRatio + Time.deltaTime / timeToPressA));
             }
@@ -143,7 +173,7 @@ public class Collectible : MonoBehaviour
             }
 
             state2 = GamePad.GetState(playerIndex2);
-            if (player2InRange && state2.Buttons.A == ButtonState.Pressed) // With new system => InteractButton 
+            if (player2InRange && GameManager.playerTwo.IsPickingAbility())
             {
                 PlayerRatioUpdate(false, Mathf.Clamp01(player2PressRatio + Time.deltaTime / timeToPressA));
             }

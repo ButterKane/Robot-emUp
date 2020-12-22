@@ -49,6 +49,7 @@ public class GrabbableInformation : MonoBehaviour
 		pgp.lr.startWidth = datas.ingameLineRendererWidth;
 		pgp.lr.endWidth = datas.ingameLineRendererWidth;
 		pgp.uiPreview = Instantiate(datas.grabAvailableUIPreview);
+		pgp.uiPreview.GetComponent<GrabPreview>().Init(player.controllerType);
 		pgp.uiPreview.transform.SetParent(GameManager.mainCanvas.transform);
 		playerGrabPreview.Add(pgp);
 	}

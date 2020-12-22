@@ -163,7 +163,7 @@ public class DunkController : MonoBehaviour
 	{
 		if (CanDunk() && currentDunkReadyPanel != null)
 		{
-			if (!currentDunkReadyPanel.activeSelf) { if (enableDunkReadyPanel) { currentDunkReadyPanel.SetActive(true); } }
+			if (!currentDunkReadyPanel.activeSelf) { if (enableDunkReadyPanel) { currentDunkReadyPanel.SetActive(true); currentDunkReadyPanel.GetComponent<DunkReadyPanel>().Init(playerController.controllerType); } }
 			if (currentDunkReadyFX == null) { currentDunkReadyFX = FeedbackManager.SendFeedback("event.DunkReady", this, pawnController.GetCenterPosition(), Vector3.up, Vector3.up, !isPlayer).GetVFX(); }
 			currentDunkReadyPanel.transform.position = GameManager.mainCamera.WorldToScreenPoint(pawnController.GetHeadPosition());
 		}

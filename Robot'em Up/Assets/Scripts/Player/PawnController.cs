@@ -818,6 +818,11 @@ public class PawnController : MonoBehaviour
 			moveState = MoveState.Pushed;
 			moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.heavyPushAirControlSpeed;
 			Vector3 newPosition = Vector3.Lerp(initialPosition, endPosition, pushDatas.heavyPushSpeedCurve.Evaluate(i / i_pushDuration)) + moveOffset;
+			//Get ground of new position
+			RaycastHit hit;
+			if (Physics.Raycast(newPosition + Vector3.up * 3, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Environment"))) {
+				newPosition = hit.point;
+			}
 
 			//check of collision
 			Collider hitCollider = CheckForCollision();
@@ -859,6 +864,12 @@ public class PawnController : MonoBehaviour
 			i_moveOffset += new Vector3(moveInput.x, 0, moveInput.z) * Time.deltaTime * pushDatas.lightPushAircontrolSpeed;
 			Vector3 i_newPosition = Vector3.Lerp(i_initialPosition, i_endPosition, pushDatas.lightPushSpeedCurve.Evaluate(i / _pushDuration)) + i_moveOffset;
 			Vector3 i_newDirection = i_newPosition - transform.position;
+
+			//Get ground of new position
+			RaycastHit hit;
+			if (Physics.Raycast(i_newPosition + Vector3.up * 3, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Environment"))) {
+				i_newPosition = hit.point;
+			}
 
 			//check of collision
 			Collider i_hitCollider = CheckForCollision();

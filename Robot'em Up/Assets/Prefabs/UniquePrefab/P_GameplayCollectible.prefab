@@ -337,6 +337,53 @@ Transform:
   m_Father: {fileID: 8163849488383015298}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6450353228743381789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7133127148809120669}
+  - component: {fileID: 2961406166985964274}
+  m_Layer: 0
+  m_Name: Billboard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7133127148809120669
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6450353228743381789}
+  m_LocalRotation: {x: -0.110941045, y: -0.6983554, z: 0.11094295, w: -0.6983434}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 7380145789208831528}
+  - {fileID: 7380145788838659680}
+  - {fileID: 7380145788498989385}
+  m_Father: {fileID: 7380145789213625209}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2961406166985964274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6450353228743381789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ec44ed11e3fdf541937f2a2b8c62d87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invert: 0
 --- !u!1 &7380145787695853150
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,7 +855,7 @@ Transform:
   - {fileID: 7380145787695853145}
   - {fileID: 7380145788494760749}
   - {fileID: 7380145787959374383}
-  m_Father: {fileID: 7380145789213625209}
+  m_Father: {fileID: 7133127148809120669}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7380145788498989386
@@ -969,7 +1016,7 @@ Transform:
   - {fileID: 7380145788730093196}
   - {fileID: 7380145789352229957}
   - {fileID: 7380145787818824846}
-  m_Father: {fileID: 7380145789213625209}
+  m_Father: {fileID: 7133127148809120669}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7380145788838659681
@@ -1052,7 +1099,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: -0.1299888}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7380145789213625209}
+  m_Father: {fileID: 7133127148809120669}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1250,17 +1297,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7380145789213625208}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.000037983056}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7380145789208831528}
-  - {fileID: 7380145788838659680}
-  - {fileID: 7380145788498989385}
+  - {fileID: 7133127148809120669}
   - {fileID: 7380145789735482361}
   m_Father: {fileID: 7380145789442060094}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 179.996, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &7380145789352229956
 GameObject:
   m_ObjectHideFlags: 0
@@ -1536,6 +1581,9 @@ MonoBehaviour:
   aButtonPlayer1: {fileID: 7380145788838659687}
   aButtonPlayer2: {fileID: 7380145788498989384}
   tmp_field: {fileID: 7380145789208831529}
+  gamepadInputSprite: {fileID: 21300000, guid: 6390b3170b8bf6147a0e0297328d09e3, type: 3}
+  keyboardInputSprite: {fileID: 21300000, guid: f4658040536ee7c418f7dff855fc542f,
+    type: 3}
   ratioBeforeTriggerOut: 1.5
   timeToPressA: 1
   delayBeforeOpeningMenu: 1.7
@@ -1706,7 +1754,7 @@ Transform:
   m_LocalScale: {x: 9.294496, y: 9.294496, z: 9.294496}
   m_Children: []
   m_Father: {fileID: 7380145789213625209}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90.00001, y: 0, z: 0}
 --- !u!33 &7380145789735482363
 MeshFilter:

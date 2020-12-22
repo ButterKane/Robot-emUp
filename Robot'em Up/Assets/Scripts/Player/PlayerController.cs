@@ -75,6 +75,7 @@ public class PlayerController : PawnController, IHitable
     private float rbPressDuration;
     private bool reviving;
     public ControllerType controllerType;
+    private bool pickingAbility;
 
     //Other
     private Coroutine freezeCoroutine;
@@ -158,6 +159,11 @@ public class PlayerController : PawnController, IHitable
             }
         }
         return i_nearestPlayer;
+    }
+
+    public bool IsPickingAbility ()
+    {
+        return pickingAbility;
     }
     public static Transform GetMiddlePoint()
     {
@@ -362,6 +368,20 @@ public class PlayerController : PawnController, IHitable
         CheckHighlight();
         CheckRevive();
         CheckGrapple();
+        CheckPickAbility();
+    }
+
+    private void CheckPickAbility()
+    {
+        switch (controllerType)
+        {
+            case ControllerType.Gamepad:
+                if (state.Buttons.A == ButtonState.Pressed) pickingAbility = true; else pickingAbility = false;
+                break;
+            case ControllerType.Keyboard:
+                if (Input.GetMouseButton(1)) pickingAbility = true; else pickingAbility = false;
+                break;
+        }
     }
     private void GenerateMiddlePoint()
     {
@@ -405,40 +425,6 @@ public class PlayerController : PawnController, IHitable
             rb.AddForce(i_direction * i_intensity, ForceMode.Impulse);
         }
     }
-
-    private void GamepadInput()
-    {
-        state = GamePad.GetState(playerIndex);
-        GetMoveAndLookInput(out moveInput, out lookInput);
-        CheckRightShoulder();
-
-        //CheckMoveAndLook(out moveInput, out lookInput);
-        //CheckAim();
-        //CheckDunk();
-        //CheckPass();
-        //CheckDash();
-        //CheckGrapple();
-        //CheckDetectBall();
-        //CheckInteraction();
-    }
-
-    private void KeyboardInput ()
-    {
-        GetMoveAndLookInput(out moveInput, out lookInput);
-        /*
-        CheckRightStick();
-        CheckLeftStick();
-        CheckButtons();
-        CheckRightTrigger();
-        CheckLeftTrigger();
-        CheckRightShoulder();
-        CheckLeftShoulder();
-        CheckBothTriggers();
-        */
-    }
-
-    //Keyboard inputs
-
     private void CheckClimb()
     {
         if (moveInput.magnitude > 0.5f)
@@ -468,7 +454,6 @@ public class PlayerController : PawnController, IHitable
                         _moveInput.y = 0;
                         _moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
                         _lookInput = (state.ThumbSticks.Right.X * i_camRightNormalized) + (state.ThumbSticks.Right.Y * i_camForwardNormalized);
-                        Debug.Log(_lookInput.magnitude);
                         break;
                     case ControllerType.Keyboard:
                         int horizontalInput = 0;
@@ -498,7 +483,6 @@ public class PlayerController : PawnController, IHitable
         Vector3 mouseWorldPos = cam.ScreenToWorldPoint(mousePos);
         RaycastHit hit;
         Ray ray = cam.ScreenPointToRay(mousePos);
-        Debug.DrawLine(ray.origin, ray.origin + ray.direction * 500, Color.red);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Environment")))
         {
             mouseWorldPos = hit.point;
@@ -508,47 +492,6 @@ public class PlayerController : PawnController, IHitable
         mouseDirection = Vector3.ClampMagnitude(mouseDirection / 13f, 1f); //mouse direction is divided by 1/sensivity
         return mouseDirection;
     }
-
-    private void CheckRightShoulder()
-    {
-        if (state.Buttons.RightShoulder == ButtonState.Pressed)
-        {
-            rightButtonWaitForRelease = true;
-            rbPressDuration += Time.deltaTime;
-            if (extendingArmsController != null && targetedGrabbable.Count > 0)
-            {
-                float i_pressPercent = rbPressDuration / extendingArmsController.minGrabHoldDuration;
-                i_pressPercent = Mathf.Clamp(i_pressPercent, 0f, 1f);
-                extendingArmsController.UpdateDecalSize(i_pressPercent);
-
-                prioritaryGrabInformation = GetPrioritaryGrabInformation();
-                if (prioritaryGrabInformation != null)
-                {
-                    passController.StopAim();
-                    extendingArmsController.TogglePreview(true);
-                    ForceLookAt(prioritaryGrabInformation.targetedPosition.position); //Player will rotate toward look input
-                }
-            }
-            else if (extendingArmsController != null)
-            {
-                extendingArmsController.TogglePreview(false);
-            }
-        }
-        else if (state.Buttons.RightShoulder == ButtonState.Released && rightButtonWaitForRelease)
-        {
-            rightButtonWaitForRelease = false;
-            if (extendingArmsController != null)
-            {
-                extendingArmsController.TogglePreview(false);
-                if (rbPressDuration >= extendingArmsController.minGrabHoldDuration && targetedGrabbable.Count > 0)
-                {
-                    extendingArmsController.ExtendArm();
-                }
-            }
-            rbPressDuration = 0;
-        }
-    }
-
     private void CheckRevive()
     {
         bool canRevive = false;
@@ -785,32 +728,6 @@ public class PlayerController : PawnController, IHitable
         else
         {
             leftShouldWaitForRelease = false;
-        }
-    }
-
-    private void CheckMoveAndLook(out Vector3 _moveInput, out Vector3 _lookInput)
-    {
-        _lookInput = lookInput;
-        _moveInput = moveInput;
-        if (cam != null)
-        {
-            Vector3 i_camForwardNormalized = cam.transform.forward;
-            i_camForwardNormalized.y = 0;
-            i_camForwardNormalized = i_camForwardNormalized.normalized;
-            Vector3 i_camRightNormalized = cam.transform.right;
-            i_camRightNormalized.y = 0;
-            i_camRightNormalized = i_camRightNormalized.normalized;
-            if ((currentPawnState != null && !currentPawnState.preventMoving) || currentPawnState == null)
-            {
-                _moveInput = (bindings.moveStickVector.x * i_camRightNormalized) + (bindings.moveStickVector.y * i_camForwardNormalized);
-                _moveInput.y = 0;
-                _moveInput = _moveInput.normalized * ((_moveInput.magnitude - pawnMovementValues.deadzone) / (1 - pawnMovementValues.deadzone));
-                _lookInput = (bindings.aimStickVector.x * i_camRightNormalized) + (bindings.aimStickVector.y * i_camForwardNormalized);
-            }
-            else
-            {
-                _moveInput = Vector3.zero;
-            }
         }
     }
 
