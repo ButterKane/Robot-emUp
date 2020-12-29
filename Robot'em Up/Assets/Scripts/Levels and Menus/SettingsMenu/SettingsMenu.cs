@@ -31,7 +31,7 @@ public class SettingsMenu : MonoBehaviour
     [ReadOnly] public int selectedSettingIndex;
     [ReadOnly] public string selectedSettingName;
     public float normalRestTimeOfJoystick = 0.5f;
-    public MainMenu scriptLinkedToThisOne;
+    public IngameMenu scriptLinkedToThisOne;
     public InputRemapper inputRemapper;
 
     [Separator("Slider variables")]
@@ -375,8 +375,7 @@ public class SettingsMenu : MonoBehaviour
 
         //Time.timeScale = 0; // make sure it is still stopped
         settingsMenuIsActive = false;
-        scriptLinkedToThisOne.waitForBResetOne = true;
-        scriptLinkedToThisOne.isMainMenuActive = true;
+        scriptLinkedToThisOne.OpenMainPanel();
 
         GetComponent<Canvas>().enabled = false;
     }

@@ -128,8 +128,8 @@ public class PlayerController : PawnController, IHitable
         {
             if (Input.GetKeyDown(KeyCode.F1))
             {
-                AbilityManager.UpgradeAbility(ConcernedAbility.PerfectReception, Upgrade.Upgrade1);
-                //AbilityManager.UnlockAllAbilities();
+                //AbilityManager.UpgradeAbility(ConcernedAbility.PerfectReception, Upgrade.Upgrade1);
+                AbilityManager.UnlockAllAbilities();
             }
             if (Input.GetKeyDown(KeyCode.F2))
             {
@@ -335,6 +335,7 @@ public class PlayerController : PawnController, IHitable
 
     private void UpdateControllerType()
     {
+        if (GamepadChecker.instance == null) return;
         int connectedGamepadAmount = GamepadChecker.instance.GetConnectedGamepadAmount();
         if (connectedGamepadAmount <= 0)
         {

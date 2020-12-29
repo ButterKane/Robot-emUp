@@ -8,13 +8,15 @@ using XInputDotNetPure;
 
 public class AbilityListNavigation : MonoBehaviour
 {
+    public static AbilityListNavigation instance;
+
     [Separator("References")]
     public Image gifImage;
     public TextMeshProUGUI descriptionName;
     public TextMeshProUGUI descriptionMainText;
     public TextMeshProUGUI descriptionUpgrade1;
     public TextMeshProUGUI descriptionUpgrade2;
-    public AbilityListOrganizer organizer;
+    public RectTransform holder;
 
     [Separator ("Variables")]
     public AbilityGroupData[] abilitiesData;
@@ -24,7 +26,7 @@ public class AbilityListNavigation : MonoBehaviour
     public Color notAvailableColor;
     [Range(0, 1)] public float joystickTreshold = 0.6f;
 
-    [ReadOnly] public MainMenu scriptLinkedToThisOne;
+    [ReadOnly] public IngameMenu scriptLinkedToThisOne;
 
     private AbilityGroupData selectedAbility;
     [ReadOnly] public int selectedAbilityIndex;
@@ -37,17 +39,22 @@ public class AbilityListNavigation : MonoBehaviour
     public bool isNavigationAllowed = true;
     private bool waitForJoystickResetOne;
     private bool waitForJoystickResetTwo;
-    // Start is called before the first frame update
-    void Start()
+    private Canvas canvas;
+
+    private void Awake ()
+    {
+        instance = this;
+    }
+    private void Start()
     {
         isNavigationAllowed = false;
         GetAvailableAbilitiesDatas();
         GetUpgradeLevelsToDisplayInAbilities();
         ResetDisplay();
+        canvas = GetComponent<Canvas>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (isNavigationAllowed)
@@ -108,8 +115,7 @@ public class AbilityListNavigation : MonoBehaviour
                     }
                 }
                 
-                if (i_state.Buttons.B == ButtonState.Pressed) { ReturnToMainMenu(); }
-                if (i_state.Buttons.Start == ButtonState.Pressed) { ReturnToMainMenu(); scriptLinkedToThisOne.Close(); }
+                if (i_state.Buttons.B == ButtonState.Pressed || i_state.Buttons.Start == ButtonState.Pressed) { ReturnToMainMenu(); }
             }
             
             if (gifImagesToPlay != null && gifImagesToPlay.Length != 0)
@@ -191,9 +197,9 @@ public class AbilityListNavigation : MonoBehaviour
         }
         selectedAbility.backgroundImage.color = selectedColor;
     }
-
     public void PlayGif(int _gifImageIndex)
     {
+        if (!canvas.gameObject.activeSelf) return;
         int i_index = _gifImageIndex;
         if (i_index >= gifImagesToPlay.Length - 1) { i_index = 0; currentGifImageIndex = 0;}
         gifImage.sprite = gifImagesToPlay[i_index];
@@ -203,12 +209,7 @@ public class AbilityListNavigation : MonoBehaviour
     {
         isNavigationAllowed = false;
         FeedbackManager.SendFeedback("event.MenuBack", this);
-
-        Time.timeScale = 0; // make sure it is still stopped
-
-        scriptLinkedToThisOne.waitForBResetOne = true;
-        scriptLinkedToThisOne.isMainMenuActive = true;
-
+        scriptLinkedToThisOne.OpenMainPanel();
         GetComponent<Canvas>().enabled = false;
     }
 
@@ -323,7 +324,6 @@ public class AbilityListNavigation : MonoBehaviour
 
         i_concernedtext.outlineWidth = 0.147f;
         GetAvailableAbilitiesDatas();
-        organizer.OrganizeAbilities();
         DisplayAbility();
         yield return new WaitForSecondsRealtime(0.5f);
         isNavigationAllowed = true;
@@ -370,7 +370,6 @@ public class AbilityListNavigation : MonoBehaviour
                 break;
         }
         GetAvailableAbilitiesDatas();
-        organizer.OrganizeAbilities();
         DisplayAbility();
         i_concernedtext.alpha = 1;
         float animTime = 1.5f;
@@ -383,7 +382,6 @@ public class AbilityListNavigation : MonoBehaviour
 
         i_concernedtext.outlineWidth = 0.147f;
         GetAvailableAbilitiesDatas();
-        organizer.OrganizeAbilities();
         DisplayAbility();
         yield return new WaitForSecondsRealtime(0.5f);
         isNavigationAllowed = true;

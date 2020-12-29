@@ -68,7 +68,6 @@ public class MainMenu : MonoBehaviour
         if (sceneList != null) { sceneList.gameObject.SetActive(false); }
         SelectButton(buttons[0]);
         GameManager gm = GameManager.i;
-        InitiateSubMenus();
         if (!showOnAwake)
         {
             mainMenuCanvas.enabled = false;
@@ -78,7 +77,6 @@ public class MainMenu : MonoBehaviour
             mainMenuCanvas.enabled = true;
             isMainMenuActive = true;
         }
-        RestoreButtons();
     }
 
 	private void Update ()
@@ -162,15 +160,6 @@ public class MainMenu : MonoBehaviour
                     }
                 }
                 else { waitForBResetOne = true; }
-
-                if (i_state.Buttons.Start == ButtonState.Pressed)
-                {
-                    if (waitForStartReset) { return; } else { waitForStartReset = true; Close(); }
-                }
-                else if (i_state.Buttons.Start == ButtonState.Released)
-                {
-                    waitForStartReset = false;
-                }
             }
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -253,22 +242,6 @@ public class MainMenu : MonoBehaviour
     {
         SelectButton(buttons[2], false);
     }
-    void RestoreButtons ()
-    {
-        float i = 0;
-        foreach (Button b in menuButtons)
-        {
-            if (i == menuButtons.Count - 1)
-            {
-                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
-            }
-            else
-            {
-                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
-            }
-            i++;
-        }
-    }
 
 
     void SelectButton ( Button _button, bool _showAnimation = true )
@@ -282,76 +255,42 @@ public class MainMenu : MonoBehaviour
         if (selectedButton != null)
         {
             if (selectedButton == _button) { return; }
-            if (_showAnimation)
-            {
-                 selectedButton.transform.DOMoveX(Screen.width * menuDefaultPosition, 0.1f);
-            }
         }
         selectedButton = _button;
         selectedButtonDefaultPosition = selectedButton.transform.position.x;
         RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
         if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), i_buttonTransform); }
-        float leftValue = i_buttonTransform.sizeDelta.x;
-        selectorArrow.rectTransform.position = i_buttonTransform.position + (Vector3.left * (leftValue / 2f)) + (Vector3.left * 70);
-        Image buttonImage = i_buttonTransform.GetComponent<Image>();
+        selectorArrow.rectTransform.position = i_buttonTransform.position;
+
+        //Reset every button color
         foreach (Button b in buttons)
         {
             if (b.name != "BUTTON_Quit")
             {
-                b.GetComponent<Image>().color = defaultColor;
-            }
-            TextMeshProUGUI tmp = b.GetComponentInChildren<TextMeshProUGUI>();
-            if (tmp != null)
-            {
-                tmp.color = defaultColor;
-            }
-            else
-            {
-                Text txt = b.GetComponentInChildren<Text>();
-                if (txt != null)
+                TextMeshProUGUI tmp = b.GetComponentInChildren<TextMeshProUGUI>();
+                if (tmp != null)
                 {
-                    txt.color = defaultColor;
+                    tmp.color = defaultColor;
                 }
             }
         }
-        if (_button.name != "BUTTON_Quit") {
-            buttonImage.color = selectedColor;
-        }
-        if (_showAnimation)
+        Color wantedColor = selectedColor;
+        if (selectedButton.name == "BUTTON_Quit")
         {
-            _button.transform.DOMoveX(Screen.width * menuSelectedPosition, 0.1f);
+            wantedColor = selectedButton.GetComponent<Image>().color;
         }
-        if (buttonImage != null)
+        TextMeshProUGUI tmpro = selectedButton.GetComponentInChildren<TextMeshProUGUI>();
+        if (tmpro != null)
         {
-            TextMeshProUGUI tmpro = buttonImage.GetComponentInChildren<TextMeshProUGUI>();
-            if (tmpro != null)
-            {
-                tmpro.color = selectedColor;
-            } else
-            {
-                Text txt = buttonImage.GetComponentInChildren<Text>();
-                if (txt != null)
-                {
-                    txt.color = selectedColor;
-                }
-            }
+            tmpro.color = wantedColor;
         }
-        selectorArrow.color = buttonImage.color;
-        selectorOutline.transform.SetParent(_button.transform);
-        selectorOutline.transform.localPosition = Vector3.zero;
-        selectorOutline.rectTransform.sizeDelta = new Vector2(i_buttonTransform.sizeDelta.x, i_buttonTransform.sizeDelta.y) ;
-        selectorOutline.transform.localScale = Vector3.one;
-        selectorOutline.color = buttonImage.color;
+        selectorArrow.color = wantedColor;
+        selectorOutline.transform.position = i_buttonTransform.position;
+        selectorOutline.rectTransform.transform.localScale = new Vector3(0, selectorOutline.rectTransform.transform.localScale.y, 1);
+        selectorOutline.rectTransform.DOScaleX(-1f, 0.2f).SetUpdate(true).SetEase(Ease.OutSine);
+        selectorOutline.color = wantedColor;
         selectedButtonIndex = buttons.IndexOf(_button);
     }
-
-    public void Close ()
-    {
-        GameManager.i.waitForStartReset = true;
-        FeedbackManager.SendFeedback("event.ClosePauseMenu", this);
-        GameManager.CloseLevelMenu();
-    }
-
     public void QuitGame ()
     {
         Application.Quit();
@@ -412,7 +351,6 @@ public class MainMenu : MonoBehaviour
     {
         sceneList.gameObject.SetActive(false);
         Time.timeScale = 1;
-        RestoreButtons();
         SelectLevelSelectorButton();
     }
 
@@ -438,68 +376,6 @@ public class MainMenu : MonoBehaviour
         FeedbackManager.SendFeedback("event.PressSettings", this);
         inputRemapMenuCanvas.enabled = true;
         isMainMenuActive = false;
-    }
-
-    public void OpenAbilitiesMenu()
-    {
-        FeedbackManager.SendFeedback("event.PressSettings", this);
-        abilitiesMenuCanvas.enabled = true;
-        AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
-        i_script.GetUpgradeLevelsToDisplayInAbilities();
-        i_script.organizer.OrganizeAbilities();
-        i_script.ResetDisplay();
-        isMainMenuActive = false;
-        i_script.isNavigationAllowed = true;
-    }
-
-    public void OpenAbilitiesMenuAtSpecificOne(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
-    {
-        abilitiesMenuCanvas.enabled = true;
-        AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
-        if (_concernedAbility == ConcernedAbility.PerfectReception)
-        {
-            i_script.GoToSpecificAbility(_concernedAbility);
-            i_script.UnlockNextUpgradeForPerfectReception();
-        }
-        else
-        {
-            i_script.GoToSpecificAbility(_concernedAbility);
-            i_script.UnlockUpgrade(_newAbilityLevel);
-        }
-        //AbilityManager.UnlockAbility(_concernedAbility, _newAbilityLevel)
-        i_script.isNavigationAllowed = true;
-        isMainMenuActive = false;
-    }
-
-    public bool DoesAbilityMenuExist()
-    {
-        if(abilitiesMenu != null) { return true; }
-        else { return false; }
-    }
-
-    public void InitiateSubMenus()
-    {
-        if (optionMenuPrefab != null && optionMenu == null)
-        {
-            optionMenu = Instantiate(optionMenuPrefab, gameObject.transform);
-            optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
-            optionMenuCanvas = optionMenu.GetComponent<Canvas>();
-            optionMenuCanvas.enabled = false;
-        }
-        if (abilitiesMenuPrefab != null && abilitiesMenu == null)
-        {
-            abilitiesMenu = Instantiate(abilitiesMenuPrefab, gameObject.transform);
-            abilitiesMenu.GetComponent<AbilityListNavigation>().scriptLinkedToThisOne = this;
-            abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
-            abilitiesMenuCanvas.enabled = false;
-        }
-        //if (inputRemapMenuPrefab != null && inputRemapMenu == null)
-        //{
-        //    inputRemapMenu = Instantiate(abilitiesMenuPrefab);
-        //    inputRemapMenu.GetComponent<InputRemapper>().scriptLinkedToThisOne = this;
-        //    inputRemapMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
-        //    inputRemapMenuCanvas.enabled = false;
-        //}
     }
 
     void SelectNextButton()

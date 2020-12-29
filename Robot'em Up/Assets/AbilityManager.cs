@@ -57,7 +57,6 @@ public class AbilityManager : MonoBehaviour
 			unlockedAbilities[_ability] = unlockedAbilities[_ability] + 1;
 			SaveUpgrades();
 			UpdateUpgrades();
-			Debug.Log("Upgraded " + _ability + " with " + _upgrade);
 		}
 	}
 	public static void ResetUpgrades()

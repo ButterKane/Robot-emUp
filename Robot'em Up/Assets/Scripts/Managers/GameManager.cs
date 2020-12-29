@@ -73,14 +73,13 @@ public class GameManager : MonoBehaviour
 
     // UI stuff
     private static GameObject restartPanel;
-    private static MainMenu mainMenu;
+    private static IngameMenu ingameMenu;
     private static bool menuCalledOne = false;
     private static bool menuCalledTwo = false;
     [NonSerialized] public bool waitForStartReset;
     private static bool deathPanelCalled = false;
     public static List<GameObject> DDOL;
     public static string currentZoneName;
-    public static List<PlayerController> disabledInputs;
 
 
     // Settings variables
@@ -129,7 +128,6 @@ public class GameManager : MonoBehaviour
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         cameraBrain = Camera.main.GetComponent<Cinemachine.CinemachineBrain>();
-        disabledInputs = new List<PlayerController>();
     }
 
     private void Start()
@@ -179,11 +177,11 @@ public class GameManager : MonoBehaviour
         //Reset button
         GamePadState state1 = GamePad.GetState(PlayerIndex.One);
         GamePadState state2 = GamePad.GetState(PlayerIndex.Two);
-        if ((state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed) && !mainMenu.mainMenuCanvas.enabled)
+        if ((state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed) && !ingameMenu.IsOpened())
         {
             ResetScene();
         }
-        if (Input.GetKeyDown(KeyCode.R) && !mainMenu.mainMenuCanvas.enabled)
+        if (Input.GetKeyDown(KeyCode.R) && !ingameMenu.IsOpened())
         {
             ResetScene();
         }
@@ -248,37 +246,6 @@ public class GameManager : MonoBehaviour
                 return i;
         }
         return -1;
-    }
-
-    public static void OpenLevelMenu()
-    {
-        mainMenu.waitForStartReset = true;
-        foreach (PlayerController p in GameManager.players)
-        {
-            if (!p.IsInputDisabled())
-            {
-                p.DisableInput();
-                disabledInputs.Add(p);
-            }
-        }
-        Time.timeScale = 0f;
-        VibrationManager.CancelAllVibrations();
-
-        mainMenu.transform.SetAsLastSibling();
-        mainMenu.mainMenuCanvas.enabled = true;
-        mainMenu.isMainMenuActive = true;
-        // timeInZone = 0;
-    }
-
-    public static void CloseLevelMenu()
-    {
-        foreach (PlayerController p in disabledInputs)
-        {
-            p.EnableInput();
-        }
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100;
-        mainMenu.mainMenuCanvas.enabled = false;
-        mainMenu.isMainMenuActive = false;
     }
 
     public void FindMainCanvas()
@@ -362,48 +329,15 @@ public class GameManager : MonoBehaviour
 
     public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
-        if(mainMenu == null) { mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>(); }
-        if (!mainMenu.DoesAbilityMenuExist()) { mainMenu.InitiateSubMenus(); }
         AbilityManager.UpgradeAbility(_concernedAbility, _newAbilityLevel);
-        OpenLevelMenu();
-        mainMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
+        ingameMenu.Open();
+        ingameMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
     }
     #endregion
 
     #region Private functions
     void UpdateSceneLoader()
     {
-        GamePadState state = GamePad.GetState(PlayerIndex.One);
-        for (int i = 0; i < 2; i++)
-        {
-            if (i == 0) { state = GamePad.GetState(PlayerIndex.One); }
-            if (i == 1) { state = GamePad.GetState(PlayerIndex.Two); }
-            if (state.Buttons.Start == ButtonState.Pressed)
-            {
-                if (i == 0) { if (menuCalledOne) { return; } }
-                if (i == 1) { if (menuCalledTwo) { return; } }
-                if (waitForStartReset) { return; }
-                if (mainMenu != null && !mainMenu.mainMenuCanvas.enabled)
-                {
-                    OpenLevelMenu();
-                    if (i == 0) { menuCalledOne = true; }
-                    if (i == 1) { menuCalledTwo = true; }
-                }
-                //else if (mainMenu != null)
-                //{
-                //    CloseLevelMenu();
-                //    if (i == 0) { menuCalledOne = true; }
-                //    if (i == 1) { menuCalledTwo = true; }
-                //}
-            }
-            if (state.Buttons.Start == ButtonState.Released)
-            {
-                if (i == 0) { menuCalledOne = false; }
-                if (i == 1) { menuCalledTwo = false; }
-                waitForStartReset = false;
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             LoadSceneByIndex(0);
@@ -484,9 +418,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(restartPanel);
 
         // the main Menu of the game
-        if (mainMenu != null) { Destroy(mainMenu); }
-        mainMenu = mainCanvas.gameObject.GetComponentInChildren<MainMenu>();
-        mainMenu.InitiateSubMenus();
+        if (ingameMenu != null) { Destroy(ingameMenu); }
+        ingameMenu = mainCanvas.gameObject.GetComponentInChildren<IngameMenu>();
+        ingameMenu.InitiateSubMenus();
     }
 
     private static void DestroyDDOL()
