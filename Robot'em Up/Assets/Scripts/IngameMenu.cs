@@ -9,6 +9,8 @@ using DG.Tweening;
 
 public class IngameMenu : MonoBehaviour
 {
+    public static IngameMenu instance;
+
     [Header("Settings")]
     [SerializeField] private Color selectedColor;
     [SerializeField] private Color defaultColor;
@@ -36,8 +38,6 @@ public class IngameMenu : MonoBehaviour
     private Canvas optionMenuCanvas;
 
     public GameObject abilitiesMenuPrefab;
-    private GameObject abilitiesMenu;
-    private Canvas abilitiesMenuCanvas;
 
     private bool subMenuOpened;
 
@@ -49,6 +49,7 @@ public class IngameMenu : MonoBehaviour
 
     private void Awake ()
 	{
+        instance = this;
 		canvas = GetComponent<Canvas>();
 		canvas.enabled = false;
 		opened = false;
@@ -188,7 +189,7 @@ public class IngameMenu : MonoBehaviour
         holder.gameObject.SetActive(true);
     }
 
-    private void CloseMainPanel()
+    public void CloseMainPanel()
     {
         if (transitionTween != null) transitionTween.Kill(true);
         if (selectorOutlineTween != null) selectorOutlineTween.Kill(true);
@@ -229,6 +230,7 @@ public class IngameMenu : MonoBehaviour
     {
         selectedButtonIndex++;
         selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count - 1);
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         SelectButton(buttons[selectedButtonIndex]);
     }
 
@@ -236,11 +238,11 @@ public class IngameMenu : MonoBehaviour
     {
         selectedButtonIndex--;
         selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count - 1);
+        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         SelectButton(buttons[selectedButtonIndex]);
     }
     private void SelectButton ( Button _button, bool _showAnimation = true )
     {
-        FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         selectedButton = _button;
         RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
         selectorArrow.rectTransform.position = i_buttonTransform.position;
@@ -287,40 +289,14 @@ public class IngameMenu : MonoBehaviour
     public void OpenAbilitiesMenu ()
     {
         subMenuOpened = true;
-        CloseMainPanel();
-        FeedbackManager.SendFeedback("event.PressSettings", this);
-        abilitiesMenuCanvas.enabled = true;
-        AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
-        i_script.GetUpgradeLevelsToDisplayInAbilities();
-        i_script.ResetDisplay();
-        i_script.isNavigationAllowed = true;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(i_script.holder);
+        AbilityMenu.instance.Open();
     }
 
     public void OpenAbilitiesMenuAtSpecificOne ( ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel )
     {
         subMenuOpened = true;
-        CloseMainPanel();
-        abilitiesMenuCanvas.enabled = true;
-        AbilityListNavigation i_script = abilitiesMenu.GetComponent<AbilityListNavigation>();
-        if (_concernedAbility == ConcernedAbility.PerfectReception)
-        {
-            i_script.GoToSpecificAbility(_concernedAbility);
-            i_script.UnlockNextUpgradeForPerfectReception();
-        }
-        else
-        {
-            i_script.GoToSpecificAbility(_concernedAbility);
-            i_script.UnlockUpgrade(_newAbilityLevel);
-        }
-        i_script.isNavigationAllowed = true;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(i_script.holder);
-    }
-
-    public bool DoesAbilityMenuExist ()
-    {
-        if (abilitiesMenu != null) { return true; }
-        else { return false; }
+        AbilityMenu.instance.Open();
+        AbilityMenu.instance.HighlightUpgrade(_concernedAbility, _newAbilityLevel);
     }
 
     public void InitiateSubMenus ()
@@ -332,12 +308,11 @@ public class IngameMenu : MonoBehaviour
             optionMenuCanvas = optionMenu.GetComponent<Canvas>();
             optionMenuCanvas.enabled = false;
         }
-        if (abilitiesMenuPrefab != null && abilitiesMenu == null)
+        if (abilitiesMenuPrefab != null && AbilityMenu.instance == null)
         {
-            abilitiesMenu = Instantiate(abilitiesMenuPrefab, gameObject.transform);
-            abilitiesMenu.GetComponent<AbilityListNavigation>().scriptLinkedToThisOne = this;
-            abilitiesMenuCanvas = abilitiesMenu.GetComponent<Canvas>();
-            abilitiesMenuCanvas.enabled = false;
+            GameObject abilityMenu = Instantiate(abilitiesMenuPrefab, gameObject.transform);
+            abilityMenu.transform.localScale = Vector3.one;
+            AbilityMenu.instance.Close();
         }
     }
 }

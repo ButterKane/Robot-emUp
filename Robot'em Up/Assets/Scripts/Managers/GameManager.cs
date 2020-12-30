@@ -330,8 +330,8 @@ public class GameManager : MonoBehaviour
     public static void PickedUpAnUpgrade(ConcernedAbility _concernedAbility, Upgrade _newAbilityLevel)
     {
         AbilityManager.UpgradeAbility(_concernedAbility, _newAbilityLevel);
-        ingameMenu.Open();
-        ingameMenu.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
+        IngameMenu.instance.Open();
+        IngameMenu.instance.OpenAbilitiesMenuAtSpecificOne(_concernedAbility, _newAbilityLevel);
     }
     #endregion
 
@@ -418,9 +418,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(restartPanel);
 
         // the main Menu of the game
-        if (ingameMenu != null) { Destroy(ingameMenu); }
-        ingameMenu = mainCanvas.gameObject.GetComponentInChildren<IngameMenu>();
-        ingameMenu.InitiateSubMenus();
+       // if (ingameMenu != null) { Destroy(ingameMenu); }
+       // ingameMenu = mainCanvas.gameObject.GetComponentInChildren<IngameMenu>();
+       // ingameMenu.InitiateSubMenus();
     }
 
     private static void DestroyDDOL()

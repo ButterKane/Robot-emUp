@@ -15,18 +15,21 @@ public class PressableUITrigger : MonoBehaviour
 	public Image image;
 	public float animationSpeed;
 	private bool held;
+	private PlayerController.ControllerType controllerType;
 
 
-	public void Init ( PlayerIndex _playerIndex)
+	public void Init ( PlayerIndex _playerIndex, PlayerController.ControllerType controllerType)
 	{
 		playerIndex = _playerIndex;
 		state = GamePad.GetState(_playerIndex);
 		image.sprite = defaultButtonSprite;
+		this.controllerType = controllerType;
 	}
 
 	
 	private void Update ()
 	{
+		if (controllerType == PlayerController.ControllerType.Keyboard) return;
 		state = GamePad.GetState(playerIndex);
 		switch (trigger)
 		{

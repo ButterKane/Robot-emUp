@@ -17,10 +17,10 @@ public enum ConcernedAbility
 
 public enum Upgrade
 {
+    Locked,
     Base,
     Upgrade1,
-    Upgrade2,
-    Upgrade3
+    Upgrade2
 }
 
 public class Collectible : MonoBehaviour

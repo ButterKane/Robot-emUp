@@ -60,6 +60,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1;
         animator = GetComponent<Animator>();
         buttons = menuButtons;
         if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }

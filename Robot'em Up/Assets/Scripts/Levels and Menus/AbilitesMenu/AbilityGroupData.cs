@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class AbilityGroupData : MonoBehaviour
 {
     [Separator("References")]
     public Image backgroundImage;
+    public TextMeshProUGUI text;
 
     [Separator("Ability Datas")]
     public ConcernedAbility ability;

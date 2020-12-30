@@ -14,6 +14,8 @@ public class SettingsMenu : MonoBehaviour
     public static Dictionary<string, int> multiChoiceSettings = new Dictionary<string, int>();
     public static Dictionary<string, bool> toggleSettings = new Dictionary<string, bool>();
 
+    public static SettingsMenu instance;
+
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
     public List<GameObject> menuCategories = new List<GameObject>();
@@ -58,6 +60,7 @@ public class SettingsMenu : MonoBehaviour
 
     void Awake()
     {
+        instance = this;
         ComputeSettings();
         foreach (var category in menuCategories)
         {
@@ -85,6 +88,11 @@ public class SettingsMenu : MonoBehaviour
         selectedCategoryIndex = 0;
         ChangeCategory(0);
         CheckDefaultValueOrNot();
+    }
+
+    public static void SetSelectedSetting(UIBehaviour setting)
+    {
+        instance.selectedSetting = setting;
     }
 
     void ChangeCategory(int _plusOrMinus)
@@ -154,12 +162,13 @@ public class SettingsMenu : MonoBehaviour
 
     void Update()
     {
-        currentCategory = selectedCategory.name;
-        selectedSettingName = selectedSetting.gameObject.name;
 
         GamePadState i_state = GamePad.GetState(PlayerIndex.One);
         if (settingsMenuIsActive)
         {
+            currentCategory = selectedCategory.name;
+            selectedSettingName = selectedSetting.gameObject.name;
+
             // Managing Up and Down
             if (i_state.ThumbSticks.Left.Y > joystickTreshold || i_state.DPad.Up == ButtonState.Pressed)
             {

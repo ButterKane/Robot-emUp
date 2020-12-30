@@ -26,6 +26,14 @@ public class AbilityManager : MonoBehaviour
 		SaveUpgrades();
 	}
 
+	private void Update ()
+	{
+		if (Input.GetKeyDown(KeyCode.P))
+		{
+			Debug.Log("Current upgrades: " + SaveUpgrades());
+		}
+	}
+
 	public static Upgrade GetAbilityLevel (ConcernedAbility _ability)
 	{
 		if (unlockedAbilities.ContainsKey(_ability)) {
@@ -49,12 +57,16 @@ public class AbilityManager : MonoBehaviour
     }
 	public static void UpgradeAbility(ConcernedAbility _ability, Upgrade _upgrade)
 	{
+		//Get current ability level
+		int currentAbilityLevel = (int)GetAbilityLevel(_ability);
+
 		//Check that the upgrade is better than the current
 		int upgradeValue = (int)_upgrade;
-		if (upgradeValue > 0)
+		if (upgradeValue > currentAbilityLevel)
 		{
 			//Unlocking upgrade
-			unlockedAbilities[_ability] = unlockedAbilities[_ability] + 1;
+			//unlockedAbilities[_ability] = unlockedAbilities[_ability] + 1;
+			unlockedAbilities[_ability] = _upgrade;
 			SaveUpgrades();
 			UpdateUpgrades();
 		}
@@ -70,7 +82,7 @@ public class AbilityManager : MonoBehaviour
 		unlockedAbilities = new Dictionary<ConcernedAbility, Upgrade>();
 		foreach (ConcernedAbility ability in System.Enum.GetValues(typeof(ConcernedAbility)))
 		{
-			unlockedAbilities.Add(ability, Upgrade.Upgrade3);
+			unlockedAbilities.Add(ability, Upgrade.Upgrade2);
 		}
 		SaveUpgrades();
 		UpdateUpgrades();
@@ -110,7 +122,7 @@ public class AbilityManager : MonoBehaviour
 		}
 		UpdateUpgrades();
 	}
-	private static void SaveUpgrades()
+	private static string SaveUpgrades()
 	{
 		StringBuilder str = new StringBuilder();
 		foreach (KeyValuePair<ConcernedAbility, Upgrade> pair in unlockedAbilities)
@@ -121,13 +133,21 @@ public class AbilityManager : MonoBehaviour
 			str.Append(",");
 		}
 		PlayerPrefs.SetString("savedUpgrades", str.ToString());
+		return str.ToString();
 	}
 	private static void GenerateNewDictionnary ()
 	{
 		unlockedAbilities = new Dictionary<ConcernedAbility, Upgrade>();
 		foreach (ConcernedAbility ability in System.Enum.GetValues(typeof(ConcernedAbility)))
 		{
-			unlockedAbilities.Add(ability, Upgrade.Base);
+			if (ability == ConcernedAbility.PerfectReception)
+			{
+				unlockedAbilities.Add(ability, Upgrade.Locked);
+			}
+			else
+			{
+				unlockedAbilities.Add(ability, Upgrade.Base);
+			}
 		}
 	}
 }

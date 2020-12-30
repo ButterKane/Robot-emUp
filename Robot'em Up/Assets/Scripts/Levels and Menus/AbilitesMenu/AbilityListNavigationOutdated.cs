@@ -266,9 +266,6 @@ public class AbilityListNavigation : MonoBehaviour
                     case Upgrade.Upgrade2:
                         availableAbilitesData[i].isUpgrade1Unlocked = true;
                         break;
-                    case Upgrade.Upgrade3:
-                        availableAbilitesData[i].isUpgrade2Unlocked = true;
-                        break;
                 }
             }
             else
@@ -339,7 +336,7 @@ public class AbilityListNavigation : MonoBehaviour
         {
             if (selectedAbility.isUpgrade1Unlocked)
             {
-                _newLevel = Upgrade.Upgrade3;
+                _newLevel = Upgrade.Upgrade2;
             }
             else
             {
@@ -350,7 +347,6 @@ public class AbilityListNavigation : MonoBehaviour
         {
             _newLevel = Upgrade.Upgrade1;
         }
-        Debug.Log("New level is " + _newLevel);
         TextMeshProUGUI i_concernedtext = null;
         switch (_newLevel)
         {
@@ -361,10 +357,6 @@ public class AbilityListNavigation : MonoBehaviour
             case Upgrade.Upgrade2:
                 i_concernedtext = descriptionUpgrade1;
                 selectedAbility.isUpgrade1Unlocked = true;
-                break;
-            case Upgrade.Upgrade3:
-                i_concernedtext = descriptionUpgrade2;
-                selectedAbility.isUpgrade2Unlocked = true;
                 break;
             default:
                 break;

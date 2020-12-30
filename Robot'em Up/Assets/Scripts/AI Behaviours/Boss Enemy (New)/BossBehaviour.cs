@@ -63,6 +63,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	private Animator healthBarAnimator;
 	private GameObject punchObject;
 	private GameObject hammerObject;
+	private GameObject laserObject;
 	public Animator animator;
 	[HideInInspector] public List<BossTile> tiles;
 
@@ -139,11 +140,14 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	}
 	public void ChangeMode(BossMode _newMode)
 	{
+		if (_newMode == null) { Debug.Log("Changing to null mode ! " + " previous mode: " + currentMode); }
 		timeSinceLastModeChange = 0;
 		if (currentMode != null)
 		{
+			animator.SetTrigger("Reconstruct");
 			if (punchObject != null) { punchObject.GetComponent<BossPunch>().StopAllCoroutines(); Destroy(punchObject); }
 			if (hammerObject != null) { hammerObject.GetComponent<BossPunch>().StopAllCoroutines(); Destroy(hammerObject); }
+			if (laserObject != null) { laserObject.GetComponent<BossLaserGenerator>().StopAllCoroutines(); Destroy(laserObject); }
 			foreach (string s in currentMode.actionsOnEnd)
 			{
 				InvokeMethod(s);
@@ -172,6 +176,8 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		if (punchCurrentCD <= 0)
 		{
+			animator.ResetTrigger("Punch");
+			animator.ResetTrigger("Punch2");
 			punchCurrentCD = bossDatas.punchSettings.cooldown;
 			punchObject = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/BossPunch"));
 			Vector3 newPunchPosition = transform.position + (topPart.forward * bossDatas.punchSettings.distance);
@@ -517,16 +523,22 @@ public class BossBehaviour : MonoBehaviour, IHitable
 
 	private BossMode PickRandomMode(List<BossModeTransitionChances> bossModes)
 	{
-		int randomNumber;
-		for (int i = 0; i <= bossModes.Count; i++)
+		float weightSum = 0f;
+		for (int i = 0; i < bossModes.Count; ++i)
 		{
-			randomNumber = Random.Range(0, 101);
-			if (bossModes[i].chances > randomNumber)
-			{
-				return bossModes[i].mode;
-			}
+			weightSum += bossModes[i].chances;
 		}
-		return null;
+		int index = 0;
+		int lastIndex = bossModes.Count - 1;
+		while (index < lastIndex)
+		{
+			if (Random.Range(0, weightSum) < bossModes[index].chances)
+			{
+				return bossModes[index].mode;
+			}
+			weightSum -= bossModes[index++].chances;
+		}
+		return bossModes[lastIndex].mode;
 	}
 
 	private void SpawnElectricalPlates()
@@ -639,12 +651,12 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		Freeze(1f);
 		yield return new WaitForSeconds(_delay);
-		GameObject laserObj = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
-		laserObj.transform.parent = transform;
-		laserObj.transform.localPosition = new Vector3(0f, -1f, 0f);
-		laserObj.GetComponent<BossLaserGenerator>().AttachToTransform(pelvis);
-		laserObj.GetComponent<BossLaserGenerator>().FollowTransform(laserDirector);
-		laserObj.transform.parent = null;
+		laserObject = Instantiate(Resources.Load<GameObject>("EnemyResource/BossResource/LaserGenerator"));
+		laserObject.transform.parent = transform;
+		laserObject.transform.localPosition = new Vector3(0f, -1f, 0f);
+		laserObject.GetComponent<BossLaserGenerator>().AttachToTransform(pelvis);
+		laserObject.GetComponent<BossLaserGenerator>().FollowTransform(laserDirector);
+		laserObject.transform.parent = null;
 		Freeze(bossDatas.laserSettings.duration + 1f);
 	}
 	IEnumerator Freeze_C(float _duration)

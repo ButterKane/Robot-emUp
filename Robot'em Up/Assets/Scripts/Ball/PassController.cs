@@ -114,19 +114,19 @@ public class PassController : MonoBehaviour
 		float i_lerpValue = (_ball.GetCurrentDamageModifier() - 1f) / (ballDatas.maxDamageModifierOnPerfectReception - 1f);
 		switch (perfectReceptionUpgrade)
 		{
-			case Upgrade.Upgrade1:
+			case Upgrade.Base:
 				if (i_lerpValue <= 0.1f)
 				{
 					canChargeBall = true;
 				}
 				break;
-			case Upgrade.Upgrade2:
+			case Upgrade.Upgrade1:
 				if (i_lerpValue <= 0.6f)
 				{
 					canChargeBall = true;
 				}
 				break;
-			case Upgrade.Upgrade3:
+			case Upgrade.Upgrade2:
 				canChargeBall = true;
 				break;
 		}
@@ -162,7 +162,7 @@ public class PassController : MonoBehaviour
 	public void TryReception () //Player tries to do a perfect reception
 	{
 		if (didPerfectReception || perfectReceptionBuffer > 0) { return; }
-		if (AbilityManager.GetAbilityLevel(ConcernedAbility.PerfectReception) == Upgrade.Base) { return; } //If player hasn't unlocked perfect reception
+		if (AbilityManager.GetAbilityLevel(ConcernedAbility.PerfectReception) == Upgrade.Locked) { return; } //If player hasn't unlocked perfect reception
 		BallBehaviour i_mainBall = BallBehaviour.instance;
 		if (i_mainBall.GetCurrentThrower() == linkedPawn) { return; }
 		if (currentBall == null)

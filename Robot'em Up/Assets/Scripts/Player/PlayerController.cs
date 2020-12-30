@@ -502,7 +502,7 @@ public class PlayerController : PawnController, IHitable
                 if (state.Triggers.Right > triggerTreshold && state.Triggers.Left > triggerTreshold) canRevive = true;
                 break;
             case ControllerType.Keyboard:
-                if (Input.GetMouseButton(0)) canRevive = true;
+                if (Input.GetMouseButton(0) && Input.GetMouseButton(1)) canRevive = true;
                 break;
         }
         if (revivablePlayers.Count > 0)

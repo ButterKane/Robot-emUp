@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7235452888359343977}
-  - component: {fileID: 4908762513304225798}
+  - component: {fileID: 2059409447823144241}
+  - component: {fileID: 6195216066543571395}
   m_Layer: 5
-  m_Name: SettingsCategoryParent
+  m_Name: P_Menu_SettingsCategoryParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +37,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -44.778442}
   m_SizeDelta: {x: 521.9, y: 275}
   m_Pivot: {x: 0, y: 0.5}
---- !u!114 &4908762513304225798
+--- !u!114 &2059409447823144241
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,13 +46,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 7235452888359343976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3c1d714a4d6a7c41bdc836367fb7455, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftMargin: 10
-  spaceBetweenBoxes: 20
-  boxesHeight: 40
-  boxesWidth: 470
-  settingsToOrganize:
-  - {fileID: 0}
-  childrenObjects: []
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 5
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+--- !u!114 &6195216066543571395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7235452888359343976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 759637caba48ffc4b8ee0e4b4360979d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  childrens: []

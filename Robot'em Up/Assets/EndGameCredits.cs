@@ -43,6 +43,8 @@ public class EndGameCredits : MonoBehaviour
 	}
 	IEnumerator BlurScreen_C()
 	{
+		GameManager.playerOne.Freeze();
+		GameManager.playerTwo.Freeze();
 		for (float i = 0; i < 1f; i+=Time.deltaTime)
 		{
 			float blurValue = Mathf.Lerp(0f, 2f, i / 1f);
@@ -62,6 +64,8 @@ public class EndGameCredits : MonoBehaviour
 				if (i == 1) { i_state = GamePad.GetState(PlayerIndex.Two); }
 				if (i_state.Buttons.B == ButtonState.Pressed || i_state.Buttons.Back == ButtonState.Pressed)
 				{
+					GameManager.playerOne.UnFreeze();
+					GameManager.playerTwo.UnFreeze();
 					MusicManager.StopMusic();
 					GameManager.LoadSceneByIndex(0);
 				}
