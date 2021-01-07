@@ -155,7 +155,7 @@ public class IngameMenu : MonoBehaviour
         {
             p.EnableInput();
         }
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed) / 100f;
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         opened = false;
     }
 
@@ -280,11 +280,7 @@ public class IngameMenu : MonoBehaviour
     public void OpenSettingsMenu ()
     {
         subMenuOpened = true;
-        CloseMainPanel();
-        FeedbackManager.SendFeedback("event.PressSettings", this);
-        optionMenuCanvas.enabled = true;
-        optionMenu.GetComponent<SettingsMenu>().CheckListWhenLaunchingSettings();
-        optionMenu.GetComponent<SettingsMenu>().settingsMenuIsActive = true;
+        SettingsMenu.instance.Open();
     }
     public void OpenAbilitiesMenu ()
     {
@@ -301,12 +297,11 @@ public class IngameMenu : MonoBehaviour
 
     public void InitiateSubMenus ()
     {
-        if (optionMenuPrefab != null && optionMenu == null)
+        if (optionMenuPrefab != null && SettingsMenu.instance == null)
         {
             optionMenu = Instantiate(optionMenuPrefab, gameObject.transform);
-            optionMenu.GetComponent<SettingsMenu>().scriptLinkedToThisOne = this;
-            optionMenuCanvas = optionMenu.GetComponent<Canvas>();
-            optionMenuCanvas.enabled = false;
+            optionMenu.transform.localScale = Vector3.one;
+            SettingsMenu.instance.Close();
         }
         if (abilitiesMenuPrefab != null && AbilityMenu.instance == null)
         {

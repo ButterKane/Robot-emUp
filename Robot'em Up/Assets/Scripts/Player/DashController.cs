@@ -217,7 +217,7 @@ public class DashController : MonoBehaviour
 				GenerateClone();
 				i_cloneCounter = 0;
 			}
-			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition(), dashHitboxSize, i_dashDirection.normalized, 0.4f) ;
+			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition(), dashHitboxSize, i_dashDirection.normalized, 0.1f) ;
 			foreach (RaycastHit hit in hits)
 			{
 				PlayerController hitPawn = hit.collider.transform.gameObject.GetComponent<PlayerController>();
@@ -243,6 +243,7 @@ public class DashController : MonoBehaviour
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{
 					StartCoroutine(StopDash_C());
+					//linkedPawn.WallSplat(WallSplatForce.Heavy, _startPosition - _endPosition);
 				}
 			}
 			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashSpeedCurve.Evaluate(i/duration));
@@ -258,6 +259,8 @@ public class DashController : MonoBehaviour
 	{
 		GenerateClone();
 		ChangeState(DashState.None);
+		linkedPawn.WallSplat(WallSplatForce.Light, -transform.forward);
+		FeedbackManager.SendFeedback("event.DashHit", transform);
 		yield return null;
 	}
 	IEnumerator FadePlayerSpeed()

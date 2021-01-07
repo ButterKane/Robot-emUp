@@ -52,7 +52,7 @@ public class MusicManager : MonoBehaviour
 	}
 	public static void ChangeVolume(float _newVolume)
 	{
-		instance.volumeMultiplier = _newVolume;
+		instance.volumeMultiplier = _newVolume * PlayerPrefs.GetFloat("music.volume", 1f);
 		foreach (MusicInformation mi in instance.currentMusicInformations)
 		{
 			mi.linkedSource.volume = instance.volumeMultiplier;
@@ -60,7 +60,7 @@ public class MusicManager : MonoBehaviour
 	}
 	public static void ResetVolume()
 	{
-		instance.volumeMultiplier = 1;
+		instance.volumeMultiplier = PlayerPrefs.GetFloat("music.volume", 1f);
 		foreach (MusicInformation mi in instance.currentMusicInformations)
 		{
 			mi.linkedSource.volume = instance.volumeMultiplier;

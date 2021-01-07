@@ -46,7 +46,6 @@ public class FeedbackCallback
 
 public class FeedbackManager
 {
-    public static float fXVolumeSettingsMod = 0.8f;
     public static FeedbackDatas feedbacksDatas;
 	public static FeedbackCallback SendFeedback (string _eventName, Object _target)
 	{
@@ -97,7 +96,7 @@ public class FeedbackManager
             i_modifiedSoundData.soundName = i_feedback.soundData.soundName;
             i_modifiedSoundData.soundList = i_feedback.soundData.soundList;
             i_modifiedSoundData.delay = i_feedback.soundData.delay;
-            i_modifiedSoundData.volumeMultiplier = i_feedback.soundData.volumeMultiplier * PlayerPrefs.GetFloat("REU_SFX Volume", fXVolumeSettingsMod);  
+            i_modifiedSoundData.volumeMultiplier = i_feedback.soundData.volumeMultiplier * PlayerPrefs.GetFloat("sfx.volume", 1f);  
 
             SoundManager.PlaySound(i_modifiedSoundData, newTarget.transform.position, newTarget.transform);
 		}

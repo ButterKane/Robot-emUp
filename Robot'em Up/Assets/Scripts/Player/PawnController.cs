@@ -667,7 +667,7 @@ public class PawnController : MonoBehaviour
 		}
 		currentPawnState = null;
 	}
-	private void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
+	public void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
 	{
 		if (currentPawnState != null && currentPawnState.name == "WallSplatted") { return; }
 		Vector3 i_normalDirectionNormalized = _normalDirection.normalized;

@@ -10,6 +10,6 @@ public class SettingsMenuTab : MonoBehaviour
 	{
 		childrens = gameObject.GetComponentsInChildren<UIBehaviour>();
 		if (childrens != null && childrens.Length > 0)
-			SettingsMenu.SetSelectedSetting(childrens[0].SelectThisSetting());
+			SettingsMenuOld.SetSelectedSetting(childrens[0].SelectThisSetting());
 	}
 }

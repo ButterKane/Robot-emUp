@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof (SettingsMenu))]
+[CustomEditor(typeof (SettingsMenuOld))]
 public class SettingMenuEditor : Editor
 {
     // Start is called before the first frame update
@@ -22,7 +22,7 @@ public class SettingMenuEditor : Editor
     {
         DrawDefaultInspector();
 
-        SettingsMenu myScript = (SettingsMenu)target;
+        SettingsMenuOld myScript = (SettingsMenuOld)target;
         if (GUILayout.Button("Compute settings values"))
         {
             myScript.ComputeSettings();

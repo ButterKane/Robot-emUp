@@ -11,7 +11,6 @@ public class PostProcessManager : MonoBehaviour
     private ChromaticAberration chromaticAberration;
     private ColorGrading colorGrading;
     private Grain grain;
-    private float defaultContrast = 0;
 
     private void Awake()
     {
@@ -64,9 +63,9 @@ public class PostProcessManager : MonoBehaviour
         grain.intensity.value = GetValue(_datas.minMaxGrain, _momentumValue);
     }
 
-    public void UpdateContrastWithSettings()
+    public void SetContrast(float value)
     {
-        colorGrading.contrast.value = PlayerPrefs.GetFloat("REU_Contrast", defaultContrast);
+        colorGrading.contrast.value = value;
     }
 
     public static float GetValue(Vector2 _value, float _retrievedMomentumValue)

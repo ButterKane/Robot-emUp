@@ -59,16 +59,12 @@ public class AbilityMenu : MonoBehaviour
 
 	private void GetInputs()
 	{
-		if (Input.GetKeyDown(KeyCode.P))
-		{
-			HighlightUpgrade(ConcernedAbility.PerfectReception, Upgrade.Base);
-		}
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
 		if (opened && canInteract)
 		{
 			if (i_state.Buttons.Start == ButtonState.Pressed)
 			{
-				if (waitForStartReset || !opened) return;
+				if (waitForStartReset) return;
 				Close();
 				waitForStartReset = true;
 			}
@@ -78,7 +74,7 @@ public class AbilityMenu : MonoBehaviour
 			}
 			if (i_state.Buttons.B == ButtonState.Pressed)
 			{
-				if (waitForBReset || !opened) return;
+				if (waitForBReset) return;
 				Close();
 				waitForBReset = true;
 			}
@@ -88,13 +84,13 @@ public class AbilityMenu : MonoBehaviour
 			}
 			if (i_state.ThumbSticks.Left.Y > 0.3f)
 			{
-				if (waitForJoystickReset || !opened) return;
+				if (waitForJoystickReset) return;
 				SelectPreviousAbility();
 				waitForJoystickReset = true;
 			}
 			else if (i_state.ThumbSticks.Left.Y < -0.3f)
 			{
-				if (waitForJoystickReset || !opened) return;
+				if (waitForJoystickReset) return;
 				SelectNextAbility();
 				waitForJoystickReset = true;
 			}
@@ -109,7 +105,7 @@ public class AbilityMenu : MonoBehaviour
 	{
 		if (opened) return;
 		transform.localScale = Vector3.one;
-		FeedbackManager.SendFeedback("event.MenuBack", this);
+		FeedbackManager.SendFeedback("event.PressSettings", this);
 		IngameMenu.instance.CloseMainPanel();
 		canvas.enabled = true;
 		opened = true;

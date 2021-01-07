@@ -8,13 +8,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using XInputDotNetPure;
 
-public class SettingsMenu : MonoBehaviour
+public class SettingsMenuOld : MonoBehaviour
 {
     public static Dictionary<string, int> sliderSettings = new Dictionary<string, int>();
     public static Dictionary<string, int> multiChoiceSettings = new Dictionary<string, int>();
     public static Dictionary<string, bool> toggleSettings = new Dictionary<string, bool>();
 
-    public static SettingsMenu instance;
+    public static SettingsMenuOld instance;
 
     //private List<GameObject> categories = new List<GameObject>();
     public SettingsDescriptionManaging descriptionManaging;
@@ -27,7 +27,7 @@ public class SettingsMenu : MonoBehaviour
     [ReadOnly] public string currentCategory;
     private GameObject selectedCategory;
     private int selectedCategoryIndex;
-    private SettingsMenuOrganizer settingsParentScript;
+    private SettingsMenuOrganizerOld settingsParentScript;
     //private GameObject[] currentCategorySettings;
     private UIBehaviour selectedSetting;
     [ReadOnly] public int selectedSettingIndex;
@@ -107,7 +107,7 @@ public class SettingsMenu : MonoBehaviour
         {
             FeedbackManager.SendFeedback("event.SwitchSettingsPage", this);
             selectedCategoryIndex += i_addition;
-            settingsParentScript = menuCategories[selectedCategoryIndex].GetComponent<SettingsMenuOrganizer>();
+            settingsParentScript = menuCategories[selectedCategoryIndex].GetComponent<SettingsMenuOrganizerOld>();
 
             DisplayCategory();
 
@@ -372,7 +372,7 @@ public class SettingsMenu : MonoBehaviour
     void ResetToDefault()
     {
         FeedbackManager.SendFeedback("event.SettingsResetToDefault", this);
-        selectedCategory.GetComponent<SettingsMenuOrganizer>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
+        selectedCategory.GetComponent<SettingsMenuOrganizerOld>().selectedSettingInChildren.ResetValueToDefault(); // Reset the current setting to its default value
         CheckDefaultValueOrNot();
     }
 
@@ -411,7 +411,7 @@ public class SettingsMenu : MonoBehaviour
     {
         for (int i = 0; i < menuCategories.Count; i++)
         {
-            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizerOld>().childrenObjects;
 
             for (int j = 0; j < i_settingsRef.Length; j++)
             {
@@ -460,7 +460,7 @@ public class SettingsMenu : MonoBehaviour
 
         for (int i = 0; i < menuCategories.Count; i++)
         {
-            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizerOld>().childrenObjects;
 
             for (int j = 0; j < i_settingsRef.Length; j++)
             {
@@ -509,7 +509,7 @@ public class SettingsMenu : MonoBehaviour
     {
         for (int i = 0; i < menuCategories.Count; i++)
         {
-            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizerOld>().childrenObjects;
 
             for (int j = 0; j < i_settingsRef.Length; j++)
             {
@@ -611,7 +611,7 @@ public class SettingsMenu : MonoBehaviour
             PlayerPrefs.SetFloat("REU_Contrast", valueContrast);
             if (PostProcessManager.i != null)
             {
-                PostProcessManager.i.UpdateContrastWithSettings();
+                //PostProcessManager.i.UpdateContrastWithSettings();
             }
             // It's post process wesh
         }
@@ -653,8 +653,8 @@ public class SettingsMenu : MonoBehaviour
 
             if (GameManager.i != null)
             {
-                if (valueDifficulty == 0) { GameManager.ChangeDifficulty(true, valueDifficulty); }
-                else { GameManager.ChangeDifficulty(false, valueDifficulty); }
+               // if (valueDifficulty == 0) { GameManager.ChangeDifficulty(true, valueDifficulty); }
+               // else { GameManager.ChangeDifficulty(false, valueDifficulty); }
             }
         }
 
@@ -725,7 +725,7 @@ public class SettingsMenu : MonoBehaviour
     {
         for (int i = 0; i < menuCategories.Count; i++)
         {
-            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizer>().childrenObjects;
+            GameObject[] i_settingsRef = menuCategories[i].GetComponent<SettingsMenuOrganizerOld>().childrenObjects;
 
             for (int j = 0; j < i_settingsRef.Length; j++)
             {

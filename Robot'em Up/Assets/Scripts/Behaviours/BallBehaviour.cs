@@ -642,9 +642,9 @@ public class BallBehaviour : MonoBehaviour
 	}
 	IEnumerator SlowTimeScale_C ()
 	{
-		Time.timeScale = Mathf.Min(ballInformations.ballDatas.timescaleOnHit, PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100);
+		Time.timeScale = ballInformations.ballDatas.timescaleOnHit * PlayerPrefs.GetFloat("gamespeed", 1f);
 		yield return new WaitForSeconds(ballInformations.ballDatas.timescaleDurationOnHit);
-		Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.gameSpeed)/100;
-    }
+		Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
+	}
 	#endregion
 }

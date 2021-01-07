@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEditor;
 
 
-[CustomEditor(typeof(SettingsMenuOrganizer))]
+[CustomEditor(typeof(SettingsMenuOrganizerOld))]
 public class SettingsMenuOrganizerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        SettingsMenuOrganizer myScript = (SettingsMenuOrganizer)target;
+        SettingsMenuOrganizerOld myScript = (SettingsMenuOrganizerOld)target;
         if (GUILayout.Button("Get Quarantinable Settings"))
         {
             myScript.GetQuarantinableSettings();

@@ -12,6 +12,7 @@ using UnityEngine.Events;
 
 public class MainMenu : MonoBehaviour
 {
+    public static MainMenu instance;
 	private List<Button> buttons = new List<Button>();
 
     public bool showOnAwake = false;
@@ -55,19 +56,26 @@ public class MainMenu : MonoBehaviour
     public float menuHiddenPosition = 1.25f;
     public float menuTransitionSpeed = 0.4f;
 
+    private int firstShownLevelIndex;
+    private int lastShownLevelIndex;
+
     private Animator animator;
     private bool creditShown = false;
 
+    public Image levelSelectorUpArrow;
+    public Image levelSelectorDownArrow;
+
     private void Start()
     {
-        Time.timeScale = 1;
+        instance = this;
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         animator = GetComponent<Animator>();
         buttons = menuButtons;
         if (mainMenuCanvas == null) { mainMenuCanvas = GetComponent<Canvas>(); }
         waitForAResetOne = true;
         waitForAResetTwo = true;
         if (sceneList != null) { sceneList.gameObject.SetActive(false); }
-        SelectButton(buttons[0]);
+       // SelectButton(buttons[0]);
         GameManager gm = GameManager.i;
         if (!showOnAwake)
         {
@@ -78,6 +86,9 @@ public class MainMenu : MonoBehaviour
             mainMenuCanvas.enabled = true;
             isMainMenuActive = true;
         }
+        levelSelectorDownArrow.enabled = false;
+        levelSelectorUpArrow.enabled = false;
+        Invoke("SelectDefaultButton", Time.deltaTime);
     }
 
 	private void Update ()
@@ -208,6 +219,11 @@ public class MainMenu : MonoBehaviour
 
     void HideButtons()
     {
+        foreach (Button b in menuButtons)
+        {
+            b.gameObject.SetActive(false);
+        }
+        /*
         if (selectedButton != null)
         {
             DOTween.Complete(selectedButton);
@@ -217,6 +233,7 @@ public class MainMenu : MonoBehaviour
         {
             HideButtons2();
         }
+        */
     }
 
     void HideButtons2()
@@ -260,7 +277,6 @@ public class MainMenu : MonoBehaviour
         selectedButton = _button;
         selectedButtonDefaultPosition = selectedButton.transform.position.x;
         RectTransform i_buttonTransform = _button.GetComponent<RectTransform>();
-        if (sceneList != null) { CenterScrollOnItem(sceneList.GetComponent<LevelSelector>().GetComponent<ScrollRect>(), i_buttonTransform); }
         selectorArrow.rectTransform.position = i_buttonTransform.position;
 
         //Reset every button color
@@ -283,12 +299,11 @@ public class MainMenu : MonoBehaviour
         TextMeshProUGUI tmpro = selectedButton.GetComponentInChildren<TextMeshProUGUI>();
         if (tmpro != null)
         {
-            tmpro.color = wantedColor;
+            //tmpro.color = wantedColor;
         }
         selectorArrow.color = wantedColor;
-        selectorOutline.transform.position = i_buttonTransform.position;
-        selectorOutline.rectTransform.transform.localScale = new Vector3(0, selectorOutline.rectTransform.transform.localScale.y, 1);
-        selectorOutline.rectTransform.DOScaleX(-1f, 0.2f).SetUpdate(true).SetEase(Ease.OutSine);
+        selectorOutline.transform.DOMove(i_buttonTransform.position, 0.1f).SetEase(Ease.OutSine).SetUpdate(true);
+        //selectorOutline.rectTransform.transform.localScale = new Vector3(0, selectorOutline.rectTransform.transform.localScale.y, 1);
         selectorOutline.color = wantedColor;
         selectedButtonIndex = buttons.IndexOf(_button);
     }
@@ -311,13 +326,21 @@ public class MainMenu : MonoBehaviour
         sceneList.gameObject.SetActive(true);
         LevelSelector lselector = sceneList.GetComponent<LevelSelector>();
         buttons = lselector.buttons;
-        SelectDefaultButton();
+        Invoke("SelectDefaultButton", Time.deltaTime);
         float i = 0;
+        foreach (Button b in buttons)
+        {
+            b.gameObject.SetActive(true);
+        }
+        firstShownLevelIndex = 0;
+        lastShownLevelIndex = 6;
+        CenterScrollOnItem(sceneList.transform.Find("Scrollbar").GetComponent<Scrollbar>(), 0);
+        /*
         foreach (Button b in buttons)
         {
             if (i == buttons.Count - 1)
             {
-                b.transform.DOMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
+                b.transform.DOLocalMoveX(Screen.width * menuDefaultPosition, menuTransitionSpeed + i * 0.025f);
             }
             else
             {
@@ -325,13 +348,22 @@ public class MainMenu : MonoBehaviour
             }
             i++;
         }
+        */
     }
 
     public void CloseLevelSelector ()
     {
+        levelSelectorDownArrow.enabled = false;
+        levelSelectorUpArrow.enabled = false;
         FeedbackManager.SendFeedback("event.PressExit", this);
         float i = 0;
         bool callBackCalled = false;
+        foreach (Button b in buttons)
+        {
+            b.gameObject.SetActive(true);
+        }
+        HideLevelSelector();
+        /*
         foreach (Button b in buttons)
         {
             if (i >= buttons.Count - 1 || i >= 5 && !callBackCalled)
@@ -345,14 +377,19 @@ public class MainMenu : MonoBehaviour
             }
             i++;
         }
+        */
         buttons = menuButtons;
     }
 
     private void HideLevelSelector()
     {
         sceneList.gameObject.SetActive(false);
-        Time.timeScale = 1;
-        SelectLevelSelectorButton();
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
+        foreach (Button b in menuButtons)
+        {
+            b.gameObject.SetActive(true);
+        }
+        Invoke("SelectLevelSelectorButton", Time.deltaTime);
     }
 
     public void StartGame ()
@@ -366,10 +403,22 @@ public class MainMenu : MonoBehaviour
     public void GoToSettings ()
     {
         FeedbackManager.SendFeedback("event.PressSettings", this);
-        optionMenuCanvas.enabled = true;
-        optionMenu.GetComponent<SettingsMenu>().CheckListWhenLaunchingSettings();
-        optionMenu.GetComponent<SettingsMenu>().settingsMenuIsActive = true;
+        SettingsMenu.instance.Open();
         isMainMenuActive = false;
+        foreach (Button b in menuButtons)
+        {
+            b.gameObject.SetActive(false);
+        }
+    }
+
+    public void CloseSettings()
+    {
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
+        foreach (Button b in menuButtons)
+        {
+            b.gameObject.SetActive(true);
+        }
+        Invoke("SelectLevelSelectorButton", Time.deltaTime);
     }
 
     public void OpenInputRemap()
@@ -384,57 +433,81 @@ public class MainMenu : MonoBehaviour
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         selectedButtonIndex++;
 		selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count-1);
-		SelectButton(buttons[selectedButtonIndex]);
-	}
+        if (sceneList != null && sceneList.gameObject.activeSelf) { CenterScrollOnItem(sceneList.transform.Find("Scrollbar").GetComponent<Scrollbar>(), 1); }
+        SelectButton(buttons[selectedButtonIndex]);
+    }
 
 	void SelectPreviousButton()
 	{
         FeedbackManager.SendFeedback("event.MenuUpAndDown", this);
         selectedButtonIndex--;
 		selectedButtonIndex = Mathf.Clamp(selectedButtonIndex, 0, buttons.Count-1);
-		SelectButton(buttons[selectedButtonIndex]);
-	}
+        if (sceneList != null && sceneList.gameObject.activeSelf) { CenterScrollOnItem(sceneList.transform.Find("Scrollbar").GetComponent<Scrollbar>(), -1); }
+        SelectButton(buttons[selectedButtonIndex]);
+    }
 
 	public void LoadScene(string _name)
 	{
 		GameManager.LoadSceneByIndex(GameManager.GetSceneIndexFromName(_name));
 	}
 
-	public void CenterScrollOnItem ( ScrollRect _scroll, RectTransform _target )
+	public void CenterScrollOnItem ( Scrollbar scrollbar, int direction )
 	{
-		// Item is here
-		RectTransform i_scrollTransform = _scroll.GetComponent<RectTransform>();
-		Mask i_mask = i_scrollTransform.GetComponentInChildren<Mask>();
-		var i_itemCenterPositionInScroll = GetWorldPointInWidget(i_scrollTransform, GetWidgetWorldPoint(_target));
-		// But must be here
-		var i_targetPositionInScroll = GetWorldPointInWidget(i_scrollTransform, GetWidgetWorldPoint(i_mask.rectTransform));
-		// So it has to move this distance
-		var i_difference = i_targetPositionInScroll - i_itemCenterPositionInScroll;
-		i_difference.z = 0f;
-
-		//clear axis data that is not enabled in the scrollrect
-		if (!_scroll.horizontal)
-		{
-			i_difference.x = 0f;
-		}
-		if (!_scroll.vertical)
-		{
-			i_difference.y = 0f;
-		}
-
-		var i_normalizedDiff = new Vector2(
-			i_difference.x / (_scroll.content.rect.size.x - i_scrollTransform.rect.size.x),
-			i_difference.y / (_scroll.content.rect.size.y - i_scrollTransform.rect.size.y));
-
-		var newNormalizedPosition = _scroll.normalizedPosition - i_normalizedDiff;
-		if (_scroll.movementType != ScrollRect.MovementType.Unrestricted)
-		{
-			newNormalizedPosition.x = Mathf.Clamp01(newNormalizedPosition.x);
-			newNormalizedPosition.y = Mathf.Clamp01(newNormalizedPosition.y);
-		}
-
-		_scroll.normalizedPosition = newNormalizedPosition;
+        float newScrollValue = scrollbar.value;
+        switch (direction)
+        {
+            case 1:
+                //Scrolling down
+                if (selectedButtonIndex >= lastShownLevelIndex + 1 && selectedButtonIndex <= buttons.Count - 1)
+                {
+                    newScrollValue = Mathf.Clamp(scrollbar.value - (1f / scrollbar.numberOfSteps), 0f, 1f);
+                    //StartCoroutine(ScrollBar_C(scrollbar, newScrollValue));
+                    scrollbar.value = newScrollValue;
+                    firstShownLevelIndex = Mathf.Clamp(firstShownLevelIndex + 1, 0, buttons.Count - 1);
+                    lastShownLevelIndex = Mathf.Clamp(lastShownLevelIndex + 1, 0, buttons.Count - 1);
+                }
+                break;
+            case -1:
+                //Scrolling up
+                if (selectedButtonIndex < firstShownLevelIndex && selectedButtonIndex >= 0)
+                {
+                    newScrollValue = Mathf.Clamp(scrollbar.value + (1f / scrollbar.numberOfSteps), 0f, 1f);
+                    scrollbar.value = newScrollValue;
+                   // StartCoroutine(ScrollBar_C(scrollbar, newScrollValue));
+                    firstShownLevelIndex = Mathf.Clamp(firstShownLevelIndex - 1, 0, buttons.Count - 1);
+                    lastShownLevelIndex = Mathf.Clamp(lastShownLevelIndex - 1, 0, buttons.Count - 1);
+                }
+                break;
+            case 0:
+                //Reset scrollbar
+                scrollbar.value = 1;
+                break;
+        }
+        if (firstShownLevelIndex > 0)
+        {
+            levelSelectorUpArrow.enabled = true;
+        } else
+        {
+            levelSelectorUpArrow.enabled = false;
+        }
+        if (lastShownLevelIndex < buttons.Count -1)
+        {
+            levelSelectorDownArrow.enabled = true;
+        } else
+        {
+            levelSelectorDownArrow.enabled = false;
+        }
 	}
+
+    IEnumerator ScrollBar_C(Scrollbar sb, float value)
+    {
+        float initValue = sb.value;
+        for (float i = 0; i < 1f; i+= Time.deltaTime * 10f)
+        {
+            sb.value = Mathf.Lerp(initValue, value, i / 1f);
+            yield return null;
+        }
+    }
 
 	private Vector3 GetWidgetWorldPoint ( RectTransform _target )
 	{

@@ -81,23 +81,12 @@ public class GameManager : MonoBehaviour
     public static List<GameObject> DDOL;
     public static string currentZoneName;
 
-
-    // Settings variables
-    [Tooltip("gameSpeed: 100 = TimeScale: 1")]
-    public float gameSpeed = 100; // as in 100% of normal speed
-    [ReadOnly] public float damageTakenSettingsMod = 1;
-    [ReadOnly] public float aimAssistanceSettingsMod = 0; // Get PlayerPrefs.GetFloat("REU_Assisting Aim", aimAssistanceSettingsMod);
-    [ReadOnly] public int enemiesAgressivity = 1;
-    [ReadOnly] public bool isDifficultyAdaptative = true;
-    [ReadOnly] public int currentDifficultySetting = 0;
-
     private void Awake()
     {
         i = this;
         deathPanelCalled = false;
         DDOL = new List<GameObject>();
-        Time.timeScale = (PlayerPrefs.GetFloat("REU_GameSpeed", gameSpeed)/100); 
-        ChangeDifficulty(null, null); // initialisation, with base  
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         deadPlayers = new List<PlayerController>();
         alivePlayers = new List<PlayerController>();
         players = new List<PlayerController>();
@@ -128,6 +117,9 @@ public class GameManager : MonoBehaviour
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         cameraBrain = Camera.main.GetComponent<Cinemachine.CinemachineBrain>();
+
+        Debug.Log("Applying default values");
+        SettingsDefaultValues.ApplyDefaultSettings(); //Ensure that settings are set to default value if no saved value is found
     }
 
     private void Start()
@@ -138,11 +130,15 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (LoadingScreen.loading) { return; }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            FeedbackManager.SendFeedback("event.DunkJumping", playerOne);
+        }
         timeInZone += Time.deltaTime;
         if (deadPlayers.Count >= 2 && !deathPanelCalled)
         {
             cameraBrain.enabled = false;
-            Time.timeScale = 0.5f;
+            Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f) / 5f; //Slow time when players are dead
             deathPanelCalled = true;
             restartPanel.SetActive(true);
         }
@@ -177,7 +173,7 @@ public class GameManager : MonoBehaviour
         //Reset button
         GamePadState state1 = GamePad.GetState(PlayerIndex.One);
         GamePadState state2 = GamePad.GetState(PlayerIndex.Two);
-        if ((state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed) && !ingameMenu.IsOpened())
+        if ((state1.Buttons.Back == ButtonState.Pressed || state2.Buttons.Back == ButtonState.Pressed) && !IngameMenu.instance.IsOpened())
         {
             ResetScene();
         }
@@ -212,9 +208,10 @@ public class GameManager : MonoBehaviour
         newAction += DestroyDDOL; 
         LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         timeInZone = 0;
-        EndlessUI.instance.HideEndlessUI();
+        if (EndlessUI.instance != null) 
+            EndlessUI.instance.HideEndlessUI();
     }
 
     public static void LoadNextScene()
@@ -223,7 +220,7 @@ public class GameManager : MonoBehaviour
         newAction += DestroyDDOL;
         LoadingScreen.StartLoadingScreen(newAction);
         VibrationManager.CancelAllVibrations();
-        Time.timeScale = PlayerPrefs.GetFloat("REU_GameSpeed", i.gameSpeed)/100 ;
+        Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         timeInZone = 0;
         EndlessUI.instance.HideEndlessUI();
     }
@@ -290,40 +287,6 @@ public class GameManager : MonoBehaviour
             BallBehaviour.instance = i_newBall.GetComponent<BallBehaviour>();
             ball = i_newBall.GetComponent<BallBehaviour>();
             ball.transform.position = playerOne.transform.position + new Vector3(0, 2, 0);
-        }
-    }
-
-    public static void ChangeDifficulty(bool? _newAdaptative, int? _newDifficulty)
-    {
-        if (_newDifficulty == null)
-        {
-            i.currentDifficultySetting = PlayerPrefs.GetInt("REU_Overall Difficulty", i.currentDifficultySetting);
-            if (i.currentDifficultySetting == 0) { i.isDifficultyAdaptative = true; }
-            else { i.isDifficultyAdaptative = false; }
-            return;
-        }
-
-        if (_newDifficulty == 0)
-        {
-            i.currentDifficultySetting = 0;
-            i.isDifficultyAdaptative = true;
-        }
-        else
-        {
-            i.isDifficultyAdaptative = false;
-            switch (_newDifficulty)
-            {
-                // Something with damage dealt/taken? Or with the amount of energy you get? Or the number of enemies?
-                case 1:
-                    i.currentDifficultySetting = 1;
-                    break;
-                case 2:
-                    i.currentDifficultySetting = 2;
-                    break;
-                case 3:
-                    i.currentDifficultySetting = 3;
-                    break;
-            }
         }
     }
 

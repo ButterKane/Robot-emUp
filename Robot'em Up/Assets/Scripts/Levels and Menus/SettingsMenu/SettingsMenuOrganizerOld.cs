@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [ExecuteInEditMode]
-public class SettingsMenuOrganizer : MonoBehaviour
+public class SettingsMenuOrganizerOld : MonoBehaviour
 {
     public float leftMargin = 10;
     public float spaceBetweenBoxes = 20;

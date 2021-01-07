@@ -28,7 +28,7 @@ public class VibrationManager : MonoBehaviour
 			_forceCurve.AddKey(new Keyframe(1f, 1f));
 		}
 		Vibrator i_vibrator = new GameObject().AddComponent<Vibrator>();
-		i_vibrator.vibrationCoroutine = i_vibrator.StartCoroutine(i_vibrator.Vibrate_C(_playerIndex, _duration, _force, _forceCurve, (PlayerPrefs.GetFloat("REU_Haptic_intensity", 100)/100)));
+		i_vibrator.vibrationCoroutine = i_vibrator.StartCoroutine(i_vibrator.Vibrate_C(_playerIndex, _duration, _force, _forceCurve));
 		vibrators.Add(i_vibrator);
 	}
 
@@ -58,7 +58,7 @@ public class Vibrator : MonoBehaviour
 		}
 		Destroy(this.gameObject);
 	}
-	public IEnumerator Vibrate_C ( PlayerIndex _playerIndex, float _duration, VibrationForce _force, AnimationCurve _forceCurve, float _settingsVibrationModificator )
+	public IEnumerator Vibrate_C ( PlayerIndex _playerIndex, float _duration, VibrationForce _force, AnimationCurve _forceCurve )
 	{
 		float i_momentumMultiplier;
 		#if !UNITY_EDITOR
@@ -69,23 +69,23 @@ public class Vibrator : MonoBehaviour
 		#endif
 		for (float i = 0; i < _duration; i += Time.deltaTime)
 		{
-			float forceCurveMultiplier = (_forceCurve.Evaluate(i / _duration)) * _settingsVibrationModificator;
+			float forceCurveMultiplier = (_forceCurve.Evaluate(i / _duration)) * PlayerPrefs.GetFloat("vibration.force", 1f);
 			switch (_force)
 			{
 				case VibrationForce.VeryLight:
-					GamePad.SetVibration(_playerIndex, 0.1f * i_momentumMultiplier * forceCurveMultiplier, 0.1f * i_momentumMultiplier * forceCurveMultiplier) ;
+					GamePad.SetVibration(_playerIndex, 0.2f * i_momentumMultiplier * forceCurveMultiplier, 0.2f * i_momentumMultiplier * forceCurveMultiplier) ;
 					break;
 				case VibrationForce.Light:
-					GamePad.SetVibration(_playerIndex, 0.2f * i_momentumMultiplier * forceCurveMultiplier, 0.2f * i_momentumMultiplier * forceCurveMultiplier);
+					GamePad.SetVibration(_playerIndex, 0.3f * i_momentumMultiplier * forceCurveMultiplier, 0.2f * i_momentumMultiplier * forceCurveMultiplier);
 					break;
 				case VibrationForce.Medium:
-					GamePad.SetVibration(_playerIndex, 0.3f * i_momentumMultiplier * forceCurveMultiplier, 0.3f * i_momentumMultiplier * forceCurveMultiplier);
-					break;
-				case VibrationForce.Heavy:
 					GamePad.SetVibration(_playerIndex, 0.4f * i_momentumMultiplier * forceCurveMultiplier, 0.4f * i_momentumMultiplier * forceCurveMultiplier);
 					break;
-				case VibrationForce.VeryHeavy:
+				case VibrationForce.Heavy:
 					GamePad.SetVibration(_playerIndex, 0.5f * i_momentumMultiplier * forceCurveMultiplier, 0.5f * i_momentumMultiplier * forceCurveMultiplier);
+					break;
+				case VibrationForce.VeryHeavy:
+					GamePad.SetVibration(_playerIndex, 0.6f * i_momentumMultiplier * forceCurveMultiplier, 0.6f * i_momentumMultiplier * forceCurveMultiplier);
 					break;
 			}
 			yield return new WaitForEndOfFrame();

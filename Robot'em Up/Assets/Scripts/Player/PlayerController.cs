@@ -326,7 +326,7 @@ public class PlayerController : PawnController, IHitable
             {
                 ui.DisplayHealth(HealthAnimationType.Loss);
             }
-            base.Damage(_amount * (PlayerPrefs.GetFloat("REU_GameSpeed", GameManager.i.damageTakenSettingsMod)/100), _enableInvincibilityFrame);   // manages the recovery time as well
+            base.Damage(_amount * PlayerPrefs.GetFloat("difficulty", 1f), _enableInvincibilityFrame);   // manages the recovery time as well
         }
     }
     #endregion
