@@ -245,7 +245,8 @@ public class DashController : MonoBehaviour
 				}
 				if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
 				{
-					StartCoroutine(StopDash_C());
+					if (linkedPawn.isPlayer)
+						StartCoroutine(StopDash_C());
 					//linkedPawn.WallSplat(WallSplatForce.Heavy, _startPosition - _endPosition);
 				}
 			}
@@ -254,7 +255,8 @@ public class DashController : MonoBehaviour
 		}
 		if (wallHit)
 		{
-			StartCoroutine(StopDash_C());
+			if (linkedPawn.isPlayer)
+				StartCoroutine(StopDash_C());
 		}
 		transform.position = _endPosition;
 		GenerateClone();
