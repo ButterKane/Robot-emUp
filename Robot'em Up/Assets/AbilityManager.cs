@@ -26,14 +26,6 @@ public class AbilityManager : MonoBehaviour
 		SaveUpgrades();
 	}
 
-	private void Update ()
-	{
-		if (Input.GetKeyDown(KeyCode.P))
-		{
-			Debug.Log("Current upgrades: " + SaveUpgrades());
-		}
-	}
-
 	public static Upgrade GetAbilityLevel (ConcernedAbility _ability)
 	{
 		if (unlockedAbilities.ContainsKey(_ability)) {

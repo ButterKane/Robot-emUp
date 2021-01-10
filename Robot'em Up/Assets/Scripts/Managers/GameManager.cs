@@ -130,10 +130,6 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (LoadingScreen.loading) { return; }
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            FeedbackManager.SendFeedback("event.DunkJumping", playerOne);
-        }
         timeInZone += Time.deltaTime;
         if (deadPlayers.Count >= 2 && !deathPanelCalled)
         {

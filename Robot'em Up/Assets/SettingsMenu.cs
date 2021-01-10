@@ -87,11 +87,16 @@ public class SettingsMenu : MonoBehaviour
 	{
 		if (opened) return;
 		FeedbackManager.SendFeedback("event.PressSettings", this);
-		SelectSetting(PlayerPrefs.GetInt("selectedSetting", 0));
 		if (IngameMenu.instance != null)
 			IngameMenu.instance.CloseMainPanel();
 		opened = true;
 		canvas.enabled = true;
+		Invoke("SelectDefaultSetting", Time.deltaTime);
+	}
+
+	private void SelectDefaultSetting()
+	{
+		SelectSetting(PlayerPrefs.GetInt("selectedSetting", 0));
 	}
 
 	public void Close()

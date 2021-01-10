@@ -667,7 +667,7 @@ public class PawnController : MonoBehaviour
 		}
 		currentPawnState = null;
 	}
-	public void WallSplat ( WallSplatForce _force, Vector3 _normalDirection)
+	public void WallSplat ( WallSplatForce _force, Vector3 _normalDirection, bool takeDamages)
 	{
 		if (currentPawnState != null && currentPawnState.name == "WallSplatted") { return; }
 		Vector3 i_normalDirectionNormalized = _normalDirection.normalized;
@@ -675,7 +675,7 @@ public class PawnController : MonoBehaviour
 		{
 			Debug.Log("Tried wallsplat on ground: Return"); return;
 		}
-		ChangePawnState("WallSplatted", WallSplat_C(_force, _normalDirection), CancelWallSplat_C());
+		ChangePawnState("WallSplatted", WallSplat_C(_force, _normalDirection, takeDamages), CancelWallSplat_C());
 	}
 	private void PushLight ( Vector3 _pushFlatDirection, PushForce _force )
 	{
@@ -830,11 +830,11 @@ public class PawnController : MonoBehaviour
 			{
 				if (isPlayer)
 				{
-					WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position));
+					WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position), false);
 				}
 				else
 				{
-					WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position));
+					WallSplat(WallSplatForce.Light, transform.position - hitCollider.ClosestPoint(transform.position), true);
 				}
 			}
 
@@ -911,7 +911,7 @@ public class PawnController : MonoBehaviour
 		moveState = MoveState.Idle;
 		yield return null;
 	}
-	private IEnumerator WallSplat_C (WallSplatForce _force, Vector3 _normalDirection)
+	private IEnumerator WallSplat_C (WallSplatForce _force, Vector3 _normalDirection, bool takeDamages)
 	{
 		animator.SetTrigger("FallingTrigger");
 		moveState = MoveState.Pushed;
@@ -929,10 +929,14 @@ public class PawnController : MonoBehaviour
 		Vector3 i_initialPosition = transform.position;
 		float i_damages = pushDatas.wallSplatDamages;
 		if (isPlayer) { i_damages = pushDatas.wallSplatPlayerDamages; }
-		Damage(i_damages);
+		if (takeDamages) { Damage(i_damages); } else
+		{
+			FeedbackManager.SendFeedback("event.DashHit", transform);
+		}
 		switch (_force)
 		{
 			case WallSplatForce.Light:
+				Debug.Log("Setting trigger");
 				animator.SetTrigger("WallSplatTrigger");
 				animator.SetTrigger("StandingUpTrigger");
 				float i_wallSplatLightRecoverTime = pushDatas.wallSplatLightRecoverTime + Random.Range(pushDatas.randomWallSplatLightRecoverTimeAddition.x, pushDatas.randomWallSplatLightRecoverTimeAddition.y) ;
@@ -1064,11 +1068,11 @@ public class PawnController : MonoBehaviour
 			{
 				if (isPlayer)
 				{
-					WallSplat(WallSplatForce.Heavy, transform.position - i_hitCollider.ClosestPoint(transform.position));
+					WallSplat(WallSplatForce.Heavy, transform.position - i_hitCollider.ClosestPoint(transform.position), false);
 				}
 				else
 				{
-					WallSplat(WallSplatForce.Heavy, transform.position - i_hitCollider.ClosestPoint(transform.position));
+					WallSplat(WallSplatForce.Heavy, transform.position - i_hitCollider.ClosestPoint(transform.position), true);
 				}
 			}
 

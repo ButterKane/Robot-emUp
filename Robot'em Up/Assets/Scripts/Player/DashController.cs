@@ -49,6 +49,7 @@ public class DashController : MonoBehaviour
 	private GameObject currentDashFX;
 	private PlayerUI playerUI;
 	[HideInInspector] public int maxStackAmount = 2;
+	private bool wallHit = false;
 
 	[ReadOnly] public DashState state;
 	private void Awake ()
@@ -72,21 +73,23 @@ public class DashController : MonoBehaviour
 		{
 			playerUI.DisplayDashes();
 		}
+		wallHit = false;
 		Analytics.CustomEvent("PlayerDash", new Dictionary<string, object> { { "Zone", GameManager.GetCurrentZoneName() }, });
 		_direction = _direction.normalized;
 		Vector3 i_startPosition = transform.position;
 		Vector3 i_endPosition = transform.position + _direction * distance;
 		//Check for min distance & maxDistance
 		RaycastHit hit;
-		if (Physics.Raycast(linkedPawn.GetCenterPosition(), _direction, out hit, distance))
+		if (Physics.SphereCast(linkedPawn.GetCenterPosition() - _direction, dashHitboxSize ,_direction, out hit, distance + 1, LayerMask.GetMask("Environment")))
 		{
 			if (Vector3.Distance(linkedPawn.GetCenterPosition(), hit.point) <= minDistance)
 			{
 				return; //Cancel dash
 			}
-			else if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Environment"))
+			else
 			{
-				i_endPosition = hit.point - (_direction * 0.5f);
+				i_endPosition = hit.point - (_direction * 1f);
+				wallHit = true;
 			}
 		}
 		i_endPosition.y = i_startPosition.y;
@@ -109,7 +112,7 @@ public class DashController : MonoBehaviour
 
 	public void CheckForUpgrades()
 	{
-		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dash) > 0)
+		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dash) > 1)
 		{
 			maxStackAmount = upgradeMaxStackAmount;
 		} else
@@ -217,7 +220,7 @@ public class DashController : MonoBehaviour
 				GenerateClone();
 				i_cloneCounter = 0;
 			}
-			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition(), dashHitboxSize, i_dashDirection.normalized, 0.1f) ;
+			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition()+ Vector3.up * 1f, dashHitboxSize, i_dashDirection.normalized , 0.1f) ;
 			foreach (RaycastHit hit in hits)
 			{
 				PlayerController hitPawn = hit.collider.transform.gameObject.GetComponent<PlayerController>();
@@ -249,6 +252,10 @@ public class DashController : MonoBehaviour
 			transform.position = Vector3.Lerp(_startPosition, _endPosition, dashSpeedCurve.Evaluate(i/duration));
 			yield return null;
 		}
+		if (wallHit)
+		{
+			StartCoroutine(StopDash_C());
+		}
 		transform.position = _endPosition;
 		GenerateClone();
 		ChangeState(DashState.None);
@@ -257,10 +264,10 @@ public class DashController : MonoBehaviour
 	}
 	IEnumerator StopDash_C()
 	{
+		transform.position += Vector3.up * 2f;
 		GenerateClone();
 		ChangeState(DashState.None);
-		linkedPawn.WallSplat(WallSplatForce.Light, -transform.forward);
-		FeedbackManager.SendFeedback("event.DashHit", transform);
+		linkedPawn.WallSplat(WallSplatForce.Light, -transform.forward, false);
 		yield return null;
 	}
 	IEnumerator FadePlayerSpeed()

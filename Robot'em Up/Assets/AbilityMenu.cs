@@ -188,7 +188,6 @@ public class AbilityMenu : MonoBehaviour
 	IEnumerator HighlightUpgrade_C(ConcernedAbility ability, Upgrade upgrade)
 	{
 		yield return new WaitForEndOfFrame();
-		Debug.Log("Highlighting ability: " + ability);
 		canInteract = false;
 		foreach (AbilityGroupData ab in abilities)
 		{

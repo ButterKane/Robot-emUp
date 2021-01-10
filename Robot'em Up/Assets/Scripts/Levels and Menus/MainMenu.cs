@@ -65,9 +65,15 @@ public class MainMenu : MonoBehaviour
     public Image levelSelectorUpArrow;
     public Image levelSelectorDownArrow;
 
+    public Transform goBackInformation;
+    public Transform confirmInformation;
+
+    private Canvas canvas;
+
     private void Start()
     {
         instance = this;
+        canvas = GetComponent<Canvas>();
         Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         animator = GetComponent<Animator>();
         buttons = menuButtons;
@@ -188,27 +194,24 @@ public class MainMenu : MonoBehaviour
 
     public void ShowCredits()
     {
-        if (!creditShown)
-        {
-            creditShown = true;
-            animator.SetTrigger("ShowCredits");
-        }
+        confirmInformation.gameObject.SetActive(false);
+        animator.SetBool("ShowCredits", true);
+        creditShown = true;
+        MainMenuCameraPivot.RotateToCredits();
     }
 
     public void HideCredits()
     {
-        if (creditShown)
-        {
-            creditShown = false;
-            animator.SetTrigger("HideCredits");
-        }
+        confirmInformation.gameObject.SetActive(true);
+        animator.SetBool("ShowCredits", false);
+        creditShown = false;
+        MainMenuCameraPivot.RotateToMainPanel();
     }
 
     public void ShowSelector()
     {
         selectorOutline.enabled = true;
         selectorArrow.enabled = true;
-
     }
 
     public void HideSelector()
@@ -261,15 +264,15 @@ public class MainMenu : MonoBehaviour
         SelectButton(buttons[2], false);
     }
 
+    void SelectSettingButton()
+    {
+        SelectButton(buttons[3], false);
+    }
+
 
     void SelectButton ( Button _button, bool _showAnimation = true )
     {
-        AnimatorClipInfo[] currentClipInfo = null;
-        if (animator != null)
-        {
-            currentClipInfo = animator.GetCurrentAnimatorClipInfo(0);
-        }
-        if (creditShown || (currentClipInfo != null && currentClipInfo[0].clip.name != "MainMenu")) { return; }
+        if (creditShown) { return; }
         if (selectedButton != null)
         {
             if (selectedButton == _button) { return; }
@@ -322,6 +325,7 @@ public class MainMenu : MonoBehaviour
 
     public void OpenLevelSelector ()
     {
+        goBackInformation.gameObject.SetActive(true);
         HideButtons();
         sceneList.gameObject.SetActive(true);
         LevelSelector lselector = sceneList.GetComponent<LevelSelector>();
@@ -353,6 +357,7 @@ public class MainMenu : MonoBehaviour
 
     public void CloseLevelSelector ()
     {
+        goBackInformation.gameObject.SetActive(false);
         levelSelectorDownArrow.enabled = false;
         levelSelectorUpArrow.enabled = false;
         FeedbackManager.SendFeedback("event.PressExit", this);
@@ -402,23 +407,34 @@ public class MainMenu : MonoBehaviour
 
     public void GoToSettings ()
     {
-        FeedbackManager.SendFeedback("event.PressSettings", this);
-        SettingsMenu.instance.Open();
+        confirmInformation.gameObject.SetActive(false);
+        goBackInformation.gameObject.SetActive(true);
         isMainMenuActive = false;
         foreach (Button b in menuButtons)
         {
             b.gameObject.SetActive(false);
         }
+        Invoke("OpenSettings", Time.deltaTime);
+        canvas.enabled = false;
     }
 
     public void CloseSettings()
     {
+        confirmInformation.gameObject.SetActive(true);
+        goBackInformation.gameObject.SetActive(false);
         Time.timeScale = PlayerPrefs.GetFloat("gamespeed", 1f);
         foreach (Button b in menuButtons)
         {
             b.gameObject.SetActive(true);
         }
-        Invoke("SelectLevelSelectorButton", Time.deltaTime);
+        Invoke("SelectSettingButton", Time.deltaTime);
+        isMainMenuActive = true;
+        canvas.enabled = true;
+    }
+
+    private void OpenSettings()
+    {
+        SettingsMenu.instance.Open();
     }
 
     public void OpenInputRemap()

@@ -46,30 +46,31 @@ public class Disclaimer : MonoBehaviour
 	{
 		opened = true;
 		menu.gameObject.SetActive(false);
-		background.DOFade(1f, 0f).SetUpdate(true);
-		textA.DOFade(1f, 1f).SetEase(Ease.OutSine).SetUpdate(true);
-		textB.DOFade(1f, 1f).SetEase(Ease.OutSine).SetUpdate(true);
+		background.DOFade(1f, 0f);
+		textA.DOFade(1f, 1f).SetEase(Ease.OutSine);
+		textB.DOFade(1f, 1f).SetEase(Ease.OutSine);
 	}
 
 	private void CloseDisclaimer()
 	{
-		background.DOFade(0, 1f).SetEase(Ease.OutSine).SetUpdate(true);
-		textA.DOFade(0, 1f).SetEase(Ease.OutSine).SetUpdate(true);
-		textB.DOFade(0, 1f).SetEase(Ease.OutSine).SetUpdate(true);
-		imageSkip.DOFade(0, 1f).SetEase(Ease.OutSine).SetUpdate(true);
-		textSkip.DOFade(0, 1f).SetEase(Ease.OutSine).SetUpdate(true);
+		background.DOFade(0, 1f).SetEase(Ease.OutSine);
+		textA.DOFade(0, 1f).SetEase(Ease.OutSine);
+		textB.DOFade(0, 1f).SetEase(Ease.OutSine);
+		imageSkip.DOFade(0, 1f).SetEase(Ease.OutSine);
+		textSkip.DOFade(0, 1f).SetEase(Ease.OutSine);
 		menu.gameObject.SetActive(true);
 		mloader.LoadMusic();
 		opened = false;
 		PlayerPrefs.SetInt("Disclaimer", 1);
 	}
 
-	private void Update ()
+	private void FixedUpdate ()
 	{
+		Time.timeScale = 1f;
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);
 		if (canSkip)
 		{
-			if (i_state.Buttons.A == ButtonState.Pressed)
+			if (i_state.Buttons.A == ButtonState.Pressed && opened)
 			{
 				CloseDisclaimer();
 			}
@@ -89,9 +90,10 @@ public class Disclaimer : MonoBehaviour
 
 	private void ShowSkipPanel()
 	{
+		Time.timeScale = 1f;
 		skipPanelShown = true;
-		imageSkip.DOFade(1, 1f).SetEase(Ease.OutSine).SetUpdate(true);
-		textSkip.DOFade(1, 1f).SetEase(Ease.OutSine).SetUpdate(true);
+		imageSkip.DOFade(1, 1f).SetEase(Ease.OutSine);
+		textSkip.DOFade(1, 1f).SetEase(Ease.OutSine);
 		canSkip = true;
 	}
 }
