@@ -672,7 +672,7 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	IEnumerator Stagger_C()
 	{
 		bossPointer.SetActive(true);
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForEndOfFrame();
 		transform.forward = -Vector3.forward;
 		animator.SetTrigger("Stagger");
 	}
@@ -680,7 +680,6 @@ public class BossBehaviour : MonoBehaviour, IHitable
 	{
 		hitByDunk = false;
 		animator.SetTrigger("StaggerHit");
-		yield return new WaitForSeconds(0.25f);
 		animator.SetTrigger("Reconstruct");
 		ParticleSystem.EmissionModule em = bossExplosionFX.GetComponent<ParticleSystem>().emission;
 		em.enabled = false;

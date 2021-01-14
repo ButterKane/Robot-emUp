@@ -64,7 +64,7 @@ public class Disclaimer : MonoBehaviour
 		PlayerPrefs.SetInt("Disclaimer", 1);
 	}
 
-	private void FixedUpdate ()
+	private void Update ()
 	{
 		Time.timeScale = 1f;
 		GamePadState i_state = GamePad.GetState(PlayerIndex.One);

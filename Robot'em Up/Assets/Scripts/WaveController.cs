@@ -133,6 +133,9 @@ public class WaveController : MonoBehaviour
 			waveList[currentWaveIndex].onStartSpawnEvent.onEnd.AddListener(() => { StartCoroutine(StartWave_C(currentWaveIndex)); eventPlaying = false; });
 			waveList[currentWaveIndex].onStartSpawnEvent.StartEvent();
 			return;
+		} else
+		{
+			if (waveList[currentWaveIndex].currentEnemies.Count <= 0) { EndArena(); return; }
 		}
 		if (currentWaveIndex <= waveList.Count)
 		{

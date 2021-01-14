@@ -67,7 +67,6 @@ public class ScreenBehavior : NarrativeInteractiveElements
             case AIScreenState.Broken:
                 break;
         }
-        Debug.Log("Changing state: " + _state);
         currentState = _state;
     }
 

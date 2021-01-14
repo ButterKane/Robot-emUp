@@ -384,7 +384,7 @@ public class BallBehaviour : MonoBehaviour
 		{
 			outOfScreenTime = 0;
 		}
-		if (ballInformations.ballDatas != null && outOfScreenTime > ballInformations.ballDatas.maxTimeOutOfScreen && ballCoroutine == null)
+		if (ballInformations.ballDatas != null && outOfScreenTime > ballInformations.ballDatas.maxTimeOutOfScreen && ballCoroutine == null && GameManager.alivePlayers.Count > 0)
 		{
 			ballCoroutine = StartCoroutine(GoToNearestPlayer_C());
 		}

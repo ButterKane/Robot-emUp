@@ -35,8 +35,8 @@ public class TerrainMeshCreator : EditorWindow
                 int l = (int)resolution;               // длина в точках
                 int w = (int)resolution;               // ширина в точках
                                                        // Длинна, ширина террейна
-                float width = terrain.terrainData.heightmapWidth * terrain.terrainData.heightmapScale.x;
-                float length = terrain.terrainData.heightmapWidth * terrain.terrainData.heightmapScale.z;
+                float width = terrain.terrainData.heightmapResolution * terrain.terrainData.heightmapScale.x;
+                float length = terrain.terrainData.heightmapResolution * terrain.terrainData.heightmapScale.z;
                 float height = 0f;
                 LogMessage("Terrain width = " + width + ", length = " + length, 0);
                 Vector3 terrainPos = terrain.transform.position;

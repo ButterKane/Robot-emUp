@@ -117,8 +117,6 @@ public class GameManager : MonoBehaviour
         cameraGlobalSettings = Resources.Load<CameraGlobalSettings>("CameraGlobalDatas");
         mainCamera = Camera.main;
         cameraBrain = Camera.main.GetComponent<Cinemachine.CinemachineBrain>();
-
-        Debug.Log("Applying default values");
         SettingsDefaultValues.ApplyDefaultSettings(); //Ensure that settings are set to default value if no saved value is found
     }
 

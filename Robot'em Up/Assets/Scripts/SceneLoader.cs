@@ -31,7 +31,7 @@ public class SceneLoader : MonoBehaviour
 		{
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
 			{
-				bool activateScene = false;
+				bool activateScene = true;
 				if (i == buildIndex + 1) { activateScene = true; }
 				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive, activateScene));
 			}
@@ -51,7 +51,7 @@ public class SceneLoader : MonoBehaviour
 			if (i <= 0) { continue; }
 			if (!SceneManager.GetSceneByBuildIndex(i).isLoaded)
 			{
-				bool activateScene = false;
+				bool activateScene = true;
 				if (i == buildIndex - 1) { activateScene = true; }
 				StartCoroutine(LoadLevelAsynchronously_C(i, LoadSceneMode.Additive, activateScene));
 			}
@@ -71,11 +71,15 @@ public class SceneLoader : MonoBehaviour
 		{
 			yield return null;
 		}
+		asyncLoad.allowSceneActivation = true;
+		while (asyncLoad.progress < 1.0f)
+		{
+			yield return null;
+		}
 		if (_setActiveScene)
 		{
 			SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(_buildIndex));
 		}
-		asyncLoad.allowSceneActivation = true;
 	}
 
 	IEnumerator UnloadLevelAsynchronously_C ( int _buildIndex, UnloadSceneOptions _mode )

@@ -123,7 +123,6 @@ public class PuzzleElevator : PuzzleActivable
         }
         if (state == ElevatorState.MovingDown && !isActivated && !IsBlocked() && delayBlocked <= 0)
         {
-            Debug.Log(transform.name + " Moving down " + progression);
             progression -= Time.deltaTime * speed;
             progression = Mathf.Clamp(progression, 0, journeyLength);
             if (progression > 0)
@@ -150,7 +149,6 @@ public class PuzzleElevator : PuzzleActivable
 
     override public void Desactivate()
     {
-        Debug.Log("Desactivating");
         if (isActivated)
         {
             isActivated = false;

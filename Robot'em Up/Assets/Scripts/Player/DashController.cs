@@ -112,7 +112,7 @@ public class DashController : MonoBehaviour
 
 	public void CheckForUpgrades()
 	{
-		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dash) > 1)
+		if (AbilityManager.GetAbilityLevel(ConcernedAbility.Dash) == Upgrade.Upgrade1 || AbilityManager.GetAbilityLevel(ConcernedAbility.Dash) == Upgrade.Upgrade2)
 		{
 			maxStackAmount = upgradeMaxStackAmount;
 		} else
@@ -220,7 +220,7 @@ public class DashController : MonoBehaviour
 				GenerateClone();
 				i_cloneCounter = 0;
 			}
-			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition()+ Vector3.up * 1f, dashHitboxSize, i_dashDirection.normalized , 0.1f) ;
+			RaycastHit[] hits = Physics.SphereCastAll(linkedPawn.GetCenterPosition(), dashHitboxSize, i_dashDirection.normalized , 0.1f) ;
 			foreach (RaycastHit hit in hits)
 			{
 				PlayerController hitPawn = hit.collider.transform.gameObject.GetComponent<PlayerController>();

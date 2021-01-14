@@ -226,7 +226,6 @@ public class EnemyShield : EnemyBehaviour
             if(!isShieldActivated || Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward) > angleRangeForRebound)
             {
 
-                print(Vector3.Angle(_ball.GetCurrentDirection(), -transform.forward));
                 if (isShieldActivated)
                 {
                     AbortAttack();

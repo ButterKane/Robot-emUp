@@ -279,7 +279,7 @@ public class DunkController : MonoBehaviour
 		passController.DisableBallReception();
 		ChangeState(DunkState.Jumping);
 		pawnController.Freeze();
-		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dunk) > 0) //If ability "Dunk" is upgraded
+		if ((int)AbilityManager.GetAbilityLevel(ConcernedAbility.Dunk) > 1) //If ability "Dunk" is upgraded
 		{
 			AttractEnemies();
 		}
